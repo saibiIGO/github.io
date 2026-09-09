@@ -29,17 +29,50 @@
     <h2>ネット対局サイトへのリンク</h2>
     <p>普段の練習や指導対局で使用する外部サイトです。以下のボタンをクリックすると移動します。</p>
  
+
+
+
 <!-- 教室用：アクセスカウンター -->
 <div style="text-align: center; margin: 20px 0; font-family: sans-serif; font-size: 14px; color: #555;">
     <p style="margin-bottom: 5px; font-weight: bold;">
         👥 教室ホームページへの訪問者数
     </p>
-    <!-- カウンター画像（登録不要で自動で数字が増えます） -->
-    <img src="https://getloli.com" border="0" alt="アクセスカウンター" style="vertical-align: middle;">
+    
+    <!-- ここにJavaScriptで計算した数字が表示されます -->
+    <span id="visitor-count" style="font-size: 24px; font-weight: bold; color: #333; font-family: 'Courier New', monospace; letter-spacing: 2px; background: #f0f0f0; padding: 2px 8px; border-radius: 4px; border: 1px solid #ccc;">
+        000000
+    </span>
+
     <p style="font-size: 11px; color: #888; margin-top: 5px;">
         ※ページが開かれた回数を自動でカウントしています。
     </p>
 </div>
+
+<!-- 💡 将来のためのJavaScriptプログラム -->
+<script>
+    // カウントを保存・管理してくれる無料の仕組み（API）を呼び出します
+    // 「kyoushitsu-counter-unique」の部分を、あなただけの好きな英数字に変えるとカウントがリセットされます
+    const counterName = "kyoushitsu-counter-unique-2026"; 
+    const url = `https://countapi.xyz{counterName}`;
+
+    // サーバーに「アクセスがあったよ」と伝えて、最新の数字を受け取る命令
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            // 届いた数字を「000025」のように6桁の形に整えます
+            const formattedCount = String(data.value).padStart(6, '0');
+            
+            // 画面の「visitor-count」という場所に、整えた数字をはめ込みます
+            document.getElementById("visitor-count").innerText = formattedCount;
+        })
+        .catch(error => {
+            // 万が一エラーが起きた場合は、文字で優しく表示します
+            document.getElementById("visitor-count").innerText = "読み込み中...";
+            console.error("カウンターの読み込みに失敗しました:", error);
+        });
+</script>
+
+
 
     <!-- リンクボタンのブロック -->
     <div style="display: flex; flex-wrap: wrap; gap: 10px;">
