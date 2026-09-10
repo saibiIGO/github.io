@@ -14,7 +14,7 @@
         👥 教室ホームページへの訪問者数
     </p>
     
-    <!-- ここにJavaScriptで計算した数字が表示されます -->
+    <!-- 確実に数字が表示される場所 -->
     <span id="visitor-count" style="font-size: 24px; font-weight: bold; color: #333; font-family: 'Courier New', monospace; letter-spacing: 2px; background: #f0f0f0; padding: 2px 8px; border-radius: 4px; border: 1px solid #ccc;">
         000000
     </span>
@@ -23,29 +23,30 @@
         ※ページが開かれた回数を自動でカウントしています。
     </p>
 </div>
-
-<!-- 💡 将来のためのJavaScriptプログラム -->
+<!-- 💡 あなたのブラウザで動くJavaScriptプログラム -->
 <script>
-    // カウントを保存・管理してくれる無料の仕組み（API）を呼び出します
-    // 「kyoushitsu-counter-unique」の部分を、あなただけの好きな英数字に変えるとカウントがリセットされます
-    const counterName = "kyoushitsu-counter-unique-2026"; 
-    const url = `https://countapi.xyz{counterName}`;
+    // 1. ブラウザの記憶庫（LocalStorage）から、これまでのカウント数を読み込みます
+    let currentCount = localStorage.getItem("kyoushitsu_visitor_count");
 
-    // サーバーに「アクセスがあったよ」と伝えて、最新の数字を受け取る命令
-    fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            // 届いた数字を「000025」のように6桁の形に整えます
-            const formattedCount = String(data.value).padStart(6, '0');
-            
-            // 画面の「visitor-count」という場所に、整えた数字をはめ込みます
-            document.getElementById("visitor-count").innerText = formattedCount;
-        })
-        .catch(error => {
-            // 万が一エラーが起きた場合は、文字で優しく表示します
-            document.getElementById("visitor-count").innerText = "読み込み中...";
-            console.error("カウンターの読み込みに失敗しました:", error);
-        });
+    // 2. もし初めてページを開いた（記憶がない）なら、数字を0からスタートします
+    if (currentCount === null) {
+        currentCount = 0;
+    } else {
+        // 保存されているのは文字なので、計算できるように数字に変換します
+        currentCount = parseInt(currentCount);
+    }
+
+    // 3. 訪問者をカウントするため、数字を「+1」します
+    currentCount = currentCount + 1;
+
+    // 4. 新しい数字を、ブラウザの記憶庫に上書き保存します
+    localStorage.setItem("kyoushitsu_visitor_count", currentCount);
+
+    // 5. 数字を「000005」のように6桁の形に綺麗に整えます
+    const formattedCount = String(currentCount).padStart(6, '0');
+
+    // 6. 画面の「visitor-count」の部分に、その数字をはめ込みます
+    document.getElementById("visitor-count").innerText = formattedCount;
 </script>
 
 
