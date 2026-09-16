@@ -48,7 +48,76 @@
     // 6. 画面の「visitor-count」の部分に、その数字をはめ込みます
     document.getElementById("visitor-count").innerText = formattedCount;
 </script>
+<!-- ここからコピー -->
+<style>
+  .igo-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-family: sans-serif;
+  }
+  .igo-table th, .igo-table td {
+    border: 1px solid #ccc;
+    padding: 12px;
+    text-align: left;
+  }
+  .igo-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    width: 25%;
+  }
+  @media (max-width: 600px) {
+    .igo-table, .igo-table tbody, .igo-table tr, .igo-table td, .igo-table th {
+      display: block;
+      width: 100%;
+    }
+    .igo-table tr {
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+    }
+    .igo-table th, .igo-table td {
+      border: none;
+      border-bottom: 1px solid #eee;
+    }
+    .igo-table th {
+      background-color: #eaf2f8;
+    }
+  }
+</style>
 
+<h2>囲碁教室のご案内</h2>
+
+<table class="igo-table">
+  <thead>
+    <tr>
+      <th>教室名</th>
+      <th>場所</th>
+      <th>日時</th>
+      <th>特徴</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>レディース囲碁教室</strong><br><small>代表：岸田一男</small></td>
+      <td>因島図書館</td>
+      <td>毎週火曜日<br>10:15〜11:45<br><small>※図書館休館日・祝日は除く</small></td>
+      <td>主婦の皆様が時間の余裕がある時間帯を設定しています。</td>
+    </tr>
+    <tr>
+      <td><strong>碁力養成囲碁教室</strong><br><small>代表：福井盛人（尾道囲碁名人５期ほか）</small></td>
+      <td>因島図書館</td>
+      <td>毎週金曜日<br>13:00〜16:30<br><small>※図書館休館日は除く</small></td>
+      <td>囲碁のメッカで唯一有段者育成教室</td>
+    </tr>
+    <tr>
+      <td><strong>囲碁ROOM才美</strong><br><small>代表：岸田一男</small></td>
+      <td>因島図書館</td>
+      <td>第2・4土曜日<br>10:15〜11:45<br><small>※図書館休館日は除く</small></td>
+      <td>無学年（幼児から年齢性別制限なし）</td>
+    </tr>
+  </tbody>
+</table>
+<!-- ここまでコピー -->
 
     <p>「教室まで通うのが難しい」「夜間に指導を受けたい」という方向けに、インターネットを通じたオンライン囲碁教室もスタートしました！</p>
 
