@@ -7,7 +7,33 @@
 <body style="max-width:800px; margin:0 auto; padding:20px; font-family:sans-serif; line-height:1.6;">
 
     <h1>新設：ネット囲碁教室のご案内</h1>
+    
+<!-- 💡 修正後：FC2カウンターを組み込んだ全員の累計カウンター -->
+<div style="text-align: center; margin: 20px 0; font-family: sans-serif; font-size: 14px; color: #555;">
+    <p style="margin-bottom: 5px; font-weight: bold;">
+        👥 教室ホームページへの訪問者数
+    </p>
+    
+    <!-- 確実に数字（画像）が表示される場所 -->
+    <span id="visitor-count" style="display: inline-block; font-size: 24px; font-weight: bold; color: #333; font-family: 'Courier New', monospace; background: #f0f0f0; padding: 6px 12px; border-radius: 4px; border: 1px solid #ccc; line-height: 1;">
+        <!-- ⬇️ 1つ目の「累計カウンター」を設置 ⬇️ -->
+        <script language="javascript" type="text/javascript" src="//counter1.fc2.com/counter.php?id=41200094&main=1"></script><noscript><img src="//counter1.fc2.com/counter_img.php?id=41200094&main=1" /></noscript>
+    </span>
 
+    <!-- ⬇️ 2つ目の「現在の閲覧者数」を下に綺麗に並べます ⬇️ -->
+    <p style="font-size: 12px; color: #666; margin-top: 8px; font-weight: bold;">
+        🟢 現在の閲覧者数: 
+        <script language="javascript" type="text/javascript" src="//counter1.fc2.com/views.php?id=41200094&main=1"></script><noscript><img src="//counter1.fc2.com/counter_now.php?id=41200094&main=1" /></noscript> 人
+    </p>
+
+    <p style="font-size: 11px; color: #888; margin-top: 5px;">
+        ※ページが開かれた回数を自動でカウントしています。
+    </p>
+</div>
+
+<!-- ⚠️ 元々下の方にあった【💡 あなたのブラウザで動くJavaScriptプログラム】（<script>〜</script>）は完全に削除してください -->
+
+    
 <!-- 教室用：アクセスカウンター -->
 <div style="text-align: center; margin: 20px 0; font-family: sans-serif; font-size: 14px; color: #555;">
     <p style="margin-bottom: 5px; font-weight: bold;">
@@ -23,31 +49,7 @@
         ※ページが開かれた回数を自動でカウントしています。
     </p>
 </div>
-<!-- 💡 あなたのブラウザで動くJavaScriptプログラム -->
-<script>
-    // 1. ブラウザの記憶庫（LocalStorage）から、これまでのカウント数を読み込みます
-    let currentCount = localStorage.getItem("kyoushitsu_visitor_count");
 
-    // 2. もし初めてページを開いた（記憶がない）なら、数字を0からスタートします
-    if (currentCount === null) {
-        currentCount = 0;
-    } else {
-        // 保存されているのは文字なので、計算できるように数字に変換します
-        currentCount = parseInt(currentCount);
-    }
-
-    // 3. 訪問者をカウントするため、数字を「+1」します
-    currentCount = currentCount + 1;
-
-    // 4. 新しい数字を、ブラウザの記憶庫に上書き保存します
-    localStorage.setItem("kyoushitsu_visitor_count", currentCount);
-
-    // 5. 数字を「000005」のように6桁の形に綺麗に整えます
-    const formattedCount = String(currentCount).padStart(6, '0');
-
-    // 6. 画面の「visitor-count」の部分に、その数字をはめ込みます
-    document.getElementById("visitor-count").innerText = formattedCount;
-</script>
 
    <h2>新設：教室の概要</h2>
     <ul>
