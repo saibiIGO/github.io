@@ -28,6 +28,158 @@
     <header>
 
 <!-- 全体を包む見やすい薄い背景のボックス -->
+<div style="background-color: #fcf8f2; padding: 25px; border-radius: 8px; border: 1px solid #e0d0b0; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); box-sizing: border-box; font-family: sans-serif; text-align: left;">
+  
+  <!-- 【最上部：横いっぱいに配置】教室のベースとなる趣旨・メッセージ -->
+  <div style="width: 100%; text-align: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #e0d0b0;">
+    <p style="margin: 0; font-size: 16px; color: #555; letter-spacing: 0.05em; font-weight: bold;">「知頭に加え、本当に必要な考える力を。</p>
+    <p style="margin: 5px 0 0 0; font-size: 22px; color: #b35900; font-weight: bold; letter-spacing: 0.1em;">囲碁で磨く、全世代の地頭力」</p>
+  </div>
+
+  <!-- 【下部：左右2段組 of エリア】 -->
+  <div style="display: flex; flex-wrap: wrap; gap: 30px; box-sizing: border-box;">
+    
+    <!-- 👈【左半分】：タイトル、主題歌、3つのボタン -->
+    <div style="flex: 1; min-width: 280px; box-sizing: border-box;">
+      
+      <!-- タイトルと音声プレイヤー -->
+      <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+        <h1 style="margin: 0; font-size: 32px; color: #003366; font-weight: bold; line-height: 1.2;">
+          才美塾囲碁教室
+        </h1>
+        <!-- 🎵 タイトル下の主題歌プレイヤー -->
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 12px; color: #003366; font-weight: bold; white-space: nowrap;">🎵 主題歌・校歌:</span>
+          <audio controls src="song.wav" style="height: 28px; width: 100%; max-width: 200px;">
+            お使いのブラウザは音声再生に対応していません。
+          </audio>
+        </div>
+      </div>
+      
+      <div style="display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 250px;">
+        <!-- 古文書ボタン -->
+        <a href="komonjo.pdf" target="_blank" style="display: block; background-color: #8B4513; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
+          📜 古文書の案内 (PDF)
+        </a>
+        <!-- ハーモニカボタン -->
+        <a href="harmonica.pdf" target="_blank" style="display: block; background-color: #20B2AA; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
+          🎵 ハーモニカの案内 (PDF)
+        </a>
+        <!-- ピアノボタン -->
+        <a href="piano.pdf" target="_blank" style="display: block; background-color: #333333; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
+          🎹 ピアノの案内 (PDF)
+        </a>
+      </div>
+    </div>
+    
+    <!-- 👉【右半分】：スケジュール・宿題・概要 -->
+    <div style="flex: 1; min-width: 280px; padding: 15px; background-color: white; border-radius: 6px; border: 1px solid #ddd; box-sizing: border-box; display: flex; flex-direction: column; gap: 15px;">
+      
+      <!-- ① 教室スケジュール -->
+      <div>
+        <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px; border-bottom: none; padding-bottom: 0;">📅 教室スケジュール</h3>
+        <a href="schedule.pdf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
+          ➔ 教室スケジュールはこちら (PDF)
+        </a>
+      </div>
+      
+      <!-- ② 今週の宿題 -->
+      <div>
+        <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px; border-bottom: none; padding-bottom: 0;">🎁 今週の詰碁宿題</h3>
+        <a href="tsumego.pdf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
+          ➔ 今週の詰碁宿題をダウンロード (PDF)
+        </a>
+      </div>
+      
+      <!-- ③ 教室の概要・趣旨 -->
+      <div>
+        <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px; border-bottom: none; padding-bottom: 0;">📖 教室の概要</h3>
+        <p style="margin: 0; font-size: 13px; color: #666; line-height: 1.5;">
+          子どもから大人まで、自分のペースでじっくり楽しむ無学年の囲碁教室です。オンライン広場（Discord）なども活用し、全世代の考える力を育みます。
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- お知らせ・写真・動画コーナー -->
+  <div style="margin-top: 30px; padding-top: 25px; border-top: 1px solid #e0d0b0; display: flex; flex-wrap: wrap; gap: 25px;">
+    
+    <!-- 左側：お知らせ ＆ 動画 -->
+    <div style="flex: 1.2; min-width: 280px; display: flex; flex-direction: column; gap: 20px;">
+      <!-- 🗒 お知らせ -->
+      <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px;">
+        <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">🗒 お知らせ</h3>
+        <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #444; line-height: 1.6;">
+          <li><strong>2026年9月27日：</strong> ホームページに主題歌（校歌）の再生機能とお知らせ・動画・写真コーナーを追加しました！</li>
+          <li><strong>2026年9月20日：</strong> 今週の詰碁宿題を更新しました。</li>
+        </ul>
+      </div>
+
+      <!-- 📺 動画（YouTube埋め込み） -->
+      <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px;">
+        <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📺 動画で見る才美塾</h3>
+        <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; border-radius: 4px;">
+          <iframe src="https://youtube.com" 
+                  style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" 
+                  allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右側：写真ギャラリー -->
+    <div style="flex: 0.8; min-width: 240px; padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px;">
+      <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📸 教室の様子</h3>
+      <div style="text-align: center;">
+        <img src="photo.jpg" alt="教室の写真" style="width: 100%; height: auto; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+        <p style="margin: 8px 0 0 0; font-size: 12px; color: #666;">楽しく囲碁を学ぶ生徒たちの様子</p>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+    </header>
+</div>
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>さいび塾（才美塾）囲碁教室 - 尾道市因島の囲碁教室</title>
+    <meta name="description" content="尾道市因島の『さいび塾（才美塾）囲碁教室』の公式ホームページです。無学年でじっくり楽しめるネット囲碁対局や、生徒同士のオンライン交流を行っています。">
+    <meta name="keywords" content="さいび,才美塾,さいびじゅく,囲碁教室,因島,尾道">
+
+    <style>
+        body { font-family: sans-serif; line-height: 1.8; color: #333; background-color: #f4f6f8; margin: 0; padding: 0; }
+        .container { max-width: 800px; margin: 30px auto; padding: 30px; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        header { text-align: center; padding: 50px 20px; background: linear-gradient(135deg, #2c3e50, #34495e); color: #fff; border-radius: 6px; margin-bottom: 35px; }
+        header h1 { font-size: 2.2rem; margin: 0 0 15px 0; }
+        header p { font-size: 1.1rem; margin: 0; opacity: 0.9; }
+        h2 { color: #2c3e50; border-left: 5px solid #ff9f43; padding-left: 15px; margin-top: 40px; margin-bottom: 20px; font-size: 1.5rem; }
+        h3 { color: #34495e; font-size: 1.2rem; margin-top: 25px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+        .btn-box { text-align: center; margin: 30px 0; }
+        .btn-contact { display: inline-block; background-color: #ff9f43; color: #fff; padding: 15px 35px; text-decoration: none; font-weight: bold; border-radius: 30px; }
+        .btn-homework { display: inline-block; background-color: #27ae60; color: #fff; padding: 15px 35px; text-decoration: none; font-weight: bold; border-radius: 30px; }
+        ul { padding-left: 20px; } li { margin-bottom: 8px; } a { color: #2980b9; text-decoration: none; }
+    </style>
+</head>
+<body>
+<div class="container">
+    
+    <header>
+
+<!-- 全体を包む見やすい薄い背景のボックス -->
 @@ -36,18 +36,18 @@
     <p style="margin: 5px 0 0 0; font-size: 22px; color: #b35900; font-weight: bold; letter-spacing: 0.1em;">囲碁で磨く、全世代の地頭力」</p>
   </div>
