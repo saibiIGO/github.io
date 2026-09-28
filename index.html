@@ -42,7 +42,6 @@
     <!-- 👈【左半分】：タイトル、主題歌、3つのボタン -->
     <div style="flex: 1; min-width: 280px; box-sizing: border-box;">
 
-
 <!-- タイトルと音声プレイヤー -->
 <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
   <h1 style="margin: 0; font-size: 32px; color: #003366; font-weight: bold; line-height: 1.2;">
@@ -69,19 +68,24 @@
     🎵 ハーモニカの演奏
   </button>
   
-  <!-- 🎹 ピアノボタン（裏で短い効果音を読み込み、クリック時に再生しながらPDFを開く） -->
-  <audio id="click-sound" src="click.wav" preload="auto"></audio>
-  <a href="piano.wav" target="_blank" onclick="playClickSound()" style="display: block; background-color: #333333; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
-    🎹 ピアノの案内 (PDF)
-  </a>
+  <!-- 🎹 ピアノボタン（裏で軽いmp3を読み込み、再生/停止。PDFも一緒に開く） -->
+  <audio id="piano-sound" src="piano.mp3" preload="auto"></audio>
+  <button id="piano-btn" onclick="togglePiano()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #333333; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
+    🎹 ピアノの演奏 (PDFも開く)
+  </button>
 </div>
 
 <!-- 音楽・効果音をコントロールするスクリプト -->
 <script>
-// --- ハーモニカの制御（再生・停止切り替え） ---
+// --- ハーモニカの制御 ---
 function toggleHarmonica() {
   const sound = document.getElementById('harmonica-sound');
   const btn = document.getElementById('harmonica-btn');
+  
+  // ピアノを止める
+  document.getElementById('piano-sound').pause();
+  document.getElementById('piano-btn').innerHTML = "🎹 ピアノの演奏 (PDFも開く)";
+  document.getElementById('piano-btn').style.backgroundColor = "#333333";
   
   if (sound.paused) {
     sound.currentTime = 0;
@@ -105,21 +109,39 @@ document.getElementById('harmonica-sound').addEventListener('ended', function() 
 });
 
 
-// --- ピアノボタン（効果音）の制御 ---
-function playClickSound() {
-  const clickSound = document.getElementById('click-sound');
+// --- ピアノの制御 ---
+function togglePiano() {
+  const sound = document.getElementById('piano-sound');
+  const btn = document.getElementById('piano-btn');
   
-  // ピアノの案内を開くときは、鳴りっぱなしのハーモニカを自動で止める
-  const harmonicaSound = document.getElementById('harmonica-sound');
-  const harmonicaBtn = document.getElementById('harmonica-btn');
-  harmonicaSound.pause();
-  harmonicaBtn.innerHTML = "🎵 ハーモニカの演奏";
-  harmonicaBtn.style.backgroundColor = "#20B2AA";
+  // ハーモニカを止める
+  document.getElementById('harmonica-sound').pause();
+  document.getElementById('harmonica-btn').innerHTML = "🎵 ハーモニカの演奏";
+  document.getElementById('harmonica-btn').style.backgroundColor = "#20B2AA";
   
-  // 効果音を最初から再生
-  clickSound.currentTime = 0;
-  clickSound.play();
+  if (sound.paused) {
+    sound.currentTime = 0;
+    sound.play();
+    btn.innerHTML = "⏹️ 演奏を止める";
+    btn.style.backgroundColor = "#2c3e50";
+    btn.style.color = "#ffffff";
+    
+    // 💡 ピアノの演奏が始まった瞬間に、別タブで案内PDF（piano.pdf）を開く処理を追加！
+    window.open('piano.pdf', '_blank');
+  } else {
+    sound.pause();
+    btn.innerHTML = "🎹 ピアノの演奏 (PDFも開く)";
+    btn.style.backgroundColor = "#333333";
+    btn.style.color = "#ffffff";
+  }
 }
+
+document.getElementById('piano-sound').addEventListener('ended', function() {
+  const btn = document.getElementById('piano-btn');
+  btn.innerHTML = "🎹 ピアノの演奏 (PDFも開く)";
+  btn.style.backgroundColor = "#333333";
+  btn.style.color = "#ffffff";
+});
 </script>
 
 
