@@ -43,6 +43,7 @@
     <div style="flex: 1; min-width: 280px; box-sizing: border-box;">
 
 
+        
 <!-- タイトルと音声プレイヤー -->
 <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
   <h1 style="margin: 0; font-size: 32px; color: #003366; font-weight: bold; line-height: 1.2;">
@@ -66,7 +67,7 @@
   <!-- 🎵 ハーモニカボタン（裏で音を管理） -->
   <audio id="harmonica-sound" src="harmonica.wav" preload="auto"></audio>
   <button id="harmonica-btn" onclick="toggleHarmonica()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #20B2AA; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
-    🎵 ハーモニカの演奏
+    🎵 ハーモニカの演奏(on/off)
   </button>
   
   <!-- ピアノボタン -->
@@ -86,12 +87,14 @@ function toggleHarmonica() {
     sound.currentTime = 0; // 常に最初から再生
     sound.play();
     btn.innerHTML = "⏹️ 演奏を止める";
-    btn.style.backgroundColor = "#e05a5a"; // 止めるボタンっぽく赤色に変える
+    btn.style.backgroundColor = "#2c3e50"; // 濃いダークグレーにして見やすく
+    btn.style.color = "#ffffff";           // 文字をはっきりした白に固定
   } else {
     // 再生中なら：止める
     sound.pause();
     btn.innerHTML = "🎵 ハーモニカの演奏";
     btn.style.backgroundColor = "#20B2AA"; // 元の緑色に戻す
+    btn.style.color = "#ffffff";
   }
 }
 
@@ -100,6 +103,7 @@ document.getElementById('harmonica-sound').addEventListener('ended', function() 
   const btn = document.getElementById('harmonica-btn');
   btn.innerHTML = "🎵 ハーモニカの演奏";
   btn.style.backgroundColor = "#20B2AA";
+  btn.style.color = "#ffffff";
 });
 </script>
 
