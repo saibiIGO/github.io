@@ -43,6 +43,84 @@
     <div style="flex: 1; min-width: 280px; box-sizing: border-box;">
 
 
+<!-- タイトルと音声プレイヤー -->
+<div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+  <h1 style="margin: 0; font-size: 32px; color: #003366; font-weight: bold; line-height: 1.2;">
+    才美塾囲碁教室
+  </h1>
+  <!-- 🎵 タイトル下の主題歌プレイヤー -->
+  <div style="display: flex; align-items: center; gap: 8px;">
+    <span style="font-size: 12px; color: #003366; font-weight: bold; white-space: nowrap;">🎵 主題歌・校歌:</span>
+    <audio controls src="song.wav" style="height: 28px; width: 100%; max-width: 200px;">
+      お使いのブラウザは音声再生に対応していません。
+    </audio>
+  </div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 250px;">
+  <!-- 古文書ボタン -->
+  <a href="komonjo.pdf" target="_blank" style="display: block; background-color: #8B4513; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
+    📜 古文書の案内 (PDF)
+  </a>
+  
+  <!-- 🎵 ハーモニカボタン（裏で音を管理・演奏の再生/停止） -->
+  <audio id="harmonica-sound" src="harmonica.wav" preload="auto"></audio>
+  <button id="harmonica-btn" onclick="toggleHarmonica()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #20B2AA; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
+    🎵 ハーモニカの演奏
+  </button>
+  
+  <!-- 🎹 ピアノボタン（裏で短い効果音を読み込み、クリック時に再生しながらPDFを開く） -->
+  <audio id="click-sound" src="click.wav" preload="auto"></audio>
+  <a href="piano.pdf" target="_blank" onclick="playClickSound()" style="display: block; background-color: #333333; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
+    🎹 ピアノの案内 (PDF)
+  </a>
+</div>
+
+<!-- 音楽・効果音をコントロールするスクリプト -->
+<script>
+// --- ハーモニカの制御（再生・停止切り替え） ---
+function toggleHarmonica() {
+  const sound = document.getElementById('harmonica-sound');
+  const btn = document.getElementById('harmonica-btn');
+  
+  if (sound.paused) {
+    sound.currentTime = 0;
+    sound.play();
+    btn.innerHTML = "⏹️ 演奏を止める";
+    btn.style.backgroundColor = "#2c3e50";
+    btn.style.color = "#ffffff";
+  } else {
+    sound.pause();
+    btn.innerHTML = "🎵 ハーモニカの演奏";
+    btn.style.backgroundColor = "#20B2AA";
+    btn.style.color = "#ffffff";
+  }
+}
+
+document.getElementById('harmonica-sound').addEventListener('ended', function() {
+  const btn = document.getElementById('harmonica-btn');
+  btn.innerHTML = "🎵 ハーモニカの演奏";
+  btn.style.backgroundColor = "#20B2AA";
+  btn.style.color = "#ffffff";
+});
+
+
+// --- ピアノボタン（効果音）の制御 ---
+function playClickSound() {
+  const clickSound = document.getElementById('click-sound');
+  
+  // ピアノの案内を開くときは、鳴りっぱなしのハーモニカを自動で止める
+  const harmonicaSound = document.getElementById('harmonica-sound');
+  const harmonicaBtn = document.getElementById('harmonica-btn');
+  harmonicaSound.pause();
+  harmonicaBtn.innerHTML = "🎵 ハーモニカの演奏";
+  harmonicaBtn.style.backgroundColor = "#20B2AA";
+  
+  // 効果音を最初から再生
+  clickSound.currentTime = 0;
+  clickSound.play();
+}
+</script>
 
     </div>
         <!-- 👉【右半分】：スケジュール・宿題・概要 -->
