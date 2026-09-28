@@ -41,43 +41,51 @@
     
     <!-- 👈【左半分】：タイトル、主題歌、3つのボタン -->
     <div style="flex: 1; min-width: 280px; box-sizing: border-box;">
-      
-      <!-- タイトルと音声プレイヤー -->
-      <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
-        <h1 style="margin: 0; font-size: 32px; color: #003366; font-weight: bold; line-height: 1.2;">
-          才美塾囲碁教室
-        </h1>
-        <!-- 🎵 タイトル下の主題歌プレイヤー -->
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <span style="font-size: 12px; color: #003366; font-weight: bold; white-space: nowrap;">🎵 主題歌・校歌:</span>
-          <audio controls src="song.wav" style="height: 28px; width: 100%; max-width: 200px;">
-            お使いのブラウザは音声再生に対応していません。
-          </audio>
-        </div>
-      </div>
-      
-      <div style="display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 250px;">
-        <!-- 古文書ボタン -->
-        <a href="komonjo.pdf" target="_blank" style="display: block; background-color: #8B4513; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
-          📜 古文書の案内 (PDF)
-        </a>
-           <!-- 🎵 ハーモニカボタン（裏で音を鳴らす仕組みに変更） -->
+
+<!-- タイトルと音声プレイヤー -->
+<div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+  <h1 style="margin: 0; font-size: 32px; color: #003366; font-weight: bold; line-height: 1.2;">
+    才美塾囲碁教室
+  </h1>
+  <!-- 🎵 タイトル下の主題歌プレイヤー -->
+  <div style="display: flex; align-items: center; gap: 8px;">
+    <span style="font-size: 12px; color: #003366; font-weight: bold; white-space: nowrap;">🎵 主題歌・校歌:</span>
+    <audio controls src="song.wav" style="height: 28px; width: 100%; max-width: 200px;">
+      お使いのブラウザは音声再生に対応していません。
+    </audio>
+  </div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 250px;">
+  <!-- 古文書ボタン -->
+  <a href="komonjo.pdf" target="_blank" style="display: block; background-color: #8B4513; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
+    📜 古文書の案内 (PDF)
+  </a>
+  
+  <!-- 🎵 ハーモニカボタン（裏で音を鳴らす仕組みに変更） -->
   <audio id="harmonica-sound" src="harmonica.wav" preload="auto"></audio>
   <button onclick="playHarmonica()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #20B2AA; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
     🎵 ハーモニカの演奏
   </button>
-        <!-- ハーモニカボタン -->
-        <a href="harmonica.pdf" target="_blank" style="display: block; background-color: #20B2AA; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
-          🎵 ハーモニカの案内
-        </a>
-        <!-- ピアノボタン -->
-        <a href="piano.pdf" target="_blank" style="display: block; background-color: #333333; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
-          🎹 ピアノの案内 (PDF)
-        </a>
-      </div>
+  
+  <!-- ピアノボタン -->
+  <a href="piano.pdf" target="_blank" style="display: block; background-color: #333333; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
+    🎹 ピアノの案内 (PDF)
+  </a>
+</div>
+
+<!-- 音楽を再生するためのスクリプト -->
+<script>
+function playHarmonica() {
+  const sound = document.getElementById('harmonica-sound');
+  sound.currentTime = 0; // 連続で押されたときに最初から再生する
+  sound.play();
+}
+</script>
+
+        
     </div>
-    
-    <!-- 👉【右半分】：スケジュール・宿題・概要 -->
+        <!-- 👉【右半分】：スケジュール・宿題・概要 -->
     <div style="flex: 1; min-width: 280px; padding: 15px; background-color: white; border-radius: 6px; border: 1px solid #ddd; box-sizing: border-box; display: flex; flex-direction: column; gap: 15px;">
       
       <!-- ① 教室スケジュール -->
