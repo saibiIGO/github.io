@@ -42,6 +42,7 @@
     <!-- 👈【左半分】：タイトル、主題歌、3つのボタン -->
     <div style="flex: 1; min-width: 280px; box-sizing: border-box;">
 
+
 <!-- タイトルと音声プレイヤー -->
 <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
   <h1 style="margin: 0; font-size: 32px; color: #003366; font-weight: bold; line-height: 1.2;">
@@ -62,9 +63,9 @@
     📜 古文書の案内 (PDF)
   </a>
   
-  <!-- 🎵 ハーモニカボタン（裏で音を鳴らす仕組みに変更） -->
+  <!-- 🎵 ハーモニカボタン（裏で音を管理） -->
   <audio id="harmonica-sound" src="harmonica.wav" preload="auto"></audio>
-  <button onclick="playHarmonica()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #20B2AA; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
+  <button id="harmonica-btn" onclick="toggleHarmonica()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #20B2AA; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
     🎵 ハーモニカの演奏
   </button>
   
@@ -74,15 +75,35 @@
   </a>
 </div>
 
-<!-- 音楽を再生するためのスクリプト -->
+<!-- 音楽の再生・停止を切り替えるスクリプト -->
 <script>
-function playHarmonica() {
+function toggleHarmonica() {
   const sound = document.getElementById('harmonica-sound');
-  sound.currentTime = 0; // 連続で押されたときに最初から再生する
-  sound.play();
+  const btn = document.getElementById('harmonica-btn');
+  
+  if (sound.paused) {
+    // 停止中なら：再生する
+    sound.currentTime = 0; // 常に最初から再生
+    sound.play();
+    btn.innerHTML = "⏹️ 演奏を止める";
+    btn.style.backgroundColor = "#e05a5a"; // 止めるボタンっぽく赤色に変える
+  } else {
+    // 再生中なら：止める
+    sound.pause();
+    btn.innerHTML = "🎵 ハーモニカの演奏";
+    btn.style.backgroundColor = "#20B2AA"; // 元の緑色に戻す
+  }
 }
+
+// 音楽が最後まで鳴り終わったら、自動的にボタンの表示を元に戻す設定
+document.getElementById('harmonica-sound').addEventListener('ended', function() {
+  const btn = document.getElementById('harmonica-btn');
+  btn.innerHTML = "🎵 ハーモニカの演奏";
+  btn.style.backgroundColor = "#20B2AA";
+});
 </script>
-        
+
+
     </div>
         <!-- 👉【右半分】：スケジュール・宿題・概要 -->
     <div style="flex: 1; min-width: 280px; padding: 15px; background-color: white; border-radius: 6px; border: 1px solid #ddd; box-sizing: border-box; display: flex; flex-direction: column; gap: 15px;">
