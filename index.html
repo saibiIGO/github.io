@@ -158,39 +158,45 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       </div>
 
 
-
 <!-- ② 今週の宿題 -->
 <div>
   <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px; border-bottom: none; padding-bottom: 0;">🎁 今週の詰碁宿題</h3>
   
-  <!-- ダウンロードリンク -->
   <a href="tmgo.sgf" download="tmgo.sgf" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
     ➔ 今週の詰碁宿題をダウンロード (SGFファイル)
   </a>
 
-  <!-- ここにWeb上の碁盤が表示されます（少し高さを確保しました） -->
-  <div id="tsumego-board" style="width: 100%; max-width: 360px; min-height: 360px; margin: 15px auto 0 auto;"></div>
+  <!-- 碁盤の背景を一時的にグレーにして、枠が出ているか分かりやすくしました -->
+  <div id="tsumego-board" style="width: 100%; max-width: 360px; min-height: 360px; margin: 15px auto 0 auto; background-color: #f0f0f0; border: 1px solid #ccc;">
+    <p style="text-align: center; padding-top: 150px; color: #666; font-size: 12px;">囲碁盤を読み込み中...</p>
+  </div>
 </div>
 
-<!-- 最も安定している公式のプログラム読み込み元に変更しました -->
+<!-- プログラムの読み込み元 -->
 <script type="text/javascript" src="https://waltheri.net"></script>
 <script type="text/javascript" src="https://waltheri.net"></script>
 <link type="text/css" rel="stylesheet" href="https://waltheri.net" />
 
 <script>
-  // ページの読み込み完了を待たずに、すぐに碁盤を作成する確実な記述にしました
-  try {
-    var player = new WGo.BasicPlayer(document.getElementById("tsumego-board"), {
-        sgf_path: "tmgo.sgf", 
-        layout: {top: [], bottom: ["Control"]},
-        enableShortcuts: true
-    });
-  } catch(e) {
-    console.log("碁盤の読み込みエラー:", e);
-  }
+  // ページが完全に準備できてから安全に起動する記述です
+  window.onload = function() {
+    try {
+      var boardDiv = document.getElementById("tsumego-board");
+      // 中の「読み込み中...」の文字を消す
+      boardDiv.innerHTML = ""; 
+      
+      var player = new WGo.BasicPlayer(boardDiv, {
+          sgf_path: "tmgo.sgf", 
+          layout: {top: [], bottom: ["Control"]},
+          enableShortcuts: true
+        });
+    } catch(e) {
+      document.getElementById("tsumego-board").innerHTML = "<p style='color:red; padding:20px;'>エラーが発生しました</p>";
+    }
+  };
 </script>
 
-        
+      
       
       <!-- ③ 教室の概要・趣旨 -->
       <div>
