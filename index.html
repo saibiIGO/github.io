@@ -157,32 +157,37 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         </a>
       </div>
 
-        <!-- ② 今週の宿題 -->
+
+
+<!-- ② 今週の宿題 -->
 <div>
   <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px; border-bottom: none; padding-bottom: 0;">🎁 今週の詰碁宿題</h3>
   
-  <!-- 元のリンクを活かし、Sabakiで開けるSGFのダウンロードに変更 -->
+  <!-- クリックでSabakiで開けるSGFをダウンロードできるようにします -->
   <a href="tmgo.sgf" download="tmgo.sgf" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
     ➔ 今週の詰碁宿題をダウンロード (SGFファイル)
   </a>
 
-  <!-- 【追加】この場所に、スマホでも見やすいサイズの囲碁盤が表示されます -->
+  <!-- ここにWeb上の碁盤が表示されます -->
   <div id="tsumego-board" style="width: 100%; max-width: 360px; margin: 15px auto 0 auto;"></div>
 </div>
 
-<!-- 【追加】Web囲碁盤（WGo.js）を動かすための仕組み（外部スクリプトの読み込み） -->
-<script type="text/javascript" src="https://waltheri.net"></script>
-<script type="text/javascript" src="https://waltheri.net"></script>
-<link type="text/css" rel="stylesheet" href="https://waltheri.net" />
+<!-- Web囲碁盤を動かすための仕組み（外部の安全なプログラムを読み込みます） -->
+<script type="text/javascript" src="https://jsdelivr.net"></script>
+<script type="text/javascript" src="https://jsdelivr.net"></script>
+<link type="text/css" rel="stylesheet" href="https://jsdelivr.net" />
 
 <script>
-  // 【追加】上の囲碁盤の枠に「tmgo.sgf」のデータを読み込んで表示させる命令
-  var player = new WGo.BasicPlayer(document.getElementById("tsumego-board"), {
-      sgf_path: "tmgo.sgf", 
-      layout: {top: [], bottom: ["Control"]}, // 詰碁用にシンプルな操作ボタンだけを表示
-      enableShortcuts: true
+  window.addEventListener('DOMContentLoaded', function() {
+    var player = new WGo.BasicPlayer(document.getElementById("tsumego-board"), {
+        sgf_path: "tmgo.sgf", 
+        layout: {top: [], bottom: ["Control"]},
+        enableShortcuts: true
+    });
   });
 </script>
+
+        
       
       <!-- ③ 教室の概要・趣旨 -->
       <div>
