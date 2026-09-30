@@ -166,34 +166,37 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     ➔ 今週の詰碁宿題をダウンロード (SGFファイル)
   </a>
 
-  <!-- 碁盤の背景を一時的にグレーにして、枠が出ているか分かりやすくしました -->
-  <div id="tsumego-board" style="width: 100%; max-width: 360px; min-height: 360px; margin: 15px auto 0 auto; background-color: #f0f0f0; border: 1px solid #ccc;">
-    <p style="text-align: center; padding-top: 150px; color: #666; font-size: 12px;">囲碁盤を読み込み中...</p>
-  </div>
+  <!-- 碁盤を表示する枠 -->
+  <div id="tsumego-board" style="width: 100%; max-width: 360px; min-height: 360px; margin: 15px auto 0 auto; background-color: #f8f9fa;"></div>
 </div>
 
-<!-- プログラムの読み込み元 -->
-<script type="text/javascript" src="https://waltheri.net"></script>
-<script type="text/javascript" src="https://waltheri.net"></script>
-<link type="text/css" rel="stylesheet" href="https://waltheri.net" />
+<!-- 最も確実なCDN（jsDelivr）から最新の安定版プログラムを読み込みます -->
+<script type="text/javascript" src="https://jsdelivr.net"></script>
+<script type="text/javascript" src="https://jsdelivr.net"></script>
+<link type="text/css" rel="stylesheet" href="https://jsdelivr.net" />
 
 <script>
-  // ページが完全に準備できてから安全に起動する記述です
-  window.onload = function() {
-    try {
-      var boardDiv = document.getElementById("tsumego-board");
-      // 中の「読み込み中...」の文字を消す
-      boardDiv.innerHTML = ""; 
-      
-      var player = new WGo.BasicPlayer(boardDiv, {
-          sgf_path: "tmgo.sgf", 
-          layout: {top: [], bottom: ["Control"]},
-          enableShortcuts: true
+  window.addEventListener('load', function() {
+    // セキュリティ制限を回避するため、ファイルの文字データを直接読み込ませる方法に変更しました
+    fetch('tmgo.sgf')
+      .then(response => {
+        if (!response.ok) throw new Error('ファイルの読み込みに失敗しました');
+        return response.text();
+      })
+      .then(sgfText => {
+        // 読み込んだ文字データを使って碁盤を起動
+        var player = new WGo.BasicPlayer(document.getElementById("tsumego-board"), {
+            sgf: sgfText, // パスではなく、テキストデータを直接渡します
+            layout: {top: [], bottom: ["Control"]},
+            enableShortcuts: true
         });
-    } catch(e) {
-      document.getElementById("tsumego-board").innerHTML = "<p style='color:red; padding:20px;'>エラーが発生しました</p>";
-    }
-  };
+      })
+      .catch(error => {
+        console.error(error);
+        document.getElementById("tsumego-board").innerHTML = 
+          "<p style='color:#ff0000; text-align:center; padding-top:150px; font-size:13px;'>詰碁ファイル「tmgo.sgf」が見つからないか、中身が空っぽです。</p>";
+      });
+  });
 </script>
 
       
