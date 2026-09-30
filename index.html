@@ -36,7 +36,8 @@
     <p style="margin: 5px 0 0 0; font-size: 22px; color: #b35900; font-weight: bold; letter-spacing: 0.1em;">囲碁で磨く、全世代の地頭力」</p>
   </div>
 
-  <!-- 【下部：左右2段組 of エリア】 -->
+
+<!-- 【下部：左右2段組 of エリア】 -->
   <div style="display: flex; flex-wrap: wrap; gap: 30px; box-sizing: border-box;">
     
     <!-- 👈【左半分】：タイトル、主題歌、3つのボタン -->
@@ -47,10 +48,10 @@
   <h1 style="margin: 0; font-size: 32px; color: #003366; font-weight: bold; line-height: 1.2;">
     才美塾囲碁教室
   </h1>
-  <!-- 🎵 タイトル下の主題歌プレイヤー -->
+  <!-- 🎵 タイトル下の主題歌プレイヤー（preload="none"を追加して軽量化） -->
   <div style="display: flex; align-items: center; gap: 8px;">
     <span style="font-size: 12px; color: #003366; font-weight: bold; white-space: nowrap;">🎵 主題歌・塾歌:</span>
-    <audio controls src="song.wav" style="height: 28px; width: 100%; max-width: 200px;">
+    <audio controls src="song.wav" preload="none" style="height: 28px; width: 100%; max-width: 200px;">
       お使いのブラウザは音声再生に対応していません。
     </audio>
   </div>
@@ -62,14 +63,14 @@
     📜 古文書の案内 (PDF)
   </a>
   
-  <!-- 🎵 ハーモニカボタン（裏で音を管理・演奏の再生/停止） -->
-  <audio id="harmonica-sound" src="harmonica.mp3" preload="auto"></audio>
+  <!-- 🎵 ハーモニカボタン（preload="none"に変更。ファイルがない場合のフリーズを防ぎます。また、存在するsong.mp3に仮修正しています） -->
+  <audio id="harmonica-sound" src="song.mp3" preload="none"></audio>
   <button id="harmonica-btn" onclick="toggleHarmonica()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #20B2AA; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
     🎵 ハーモニカの演奏
   </button>
   
-  <!-- 🎹 ピアノボタン（裏で軽いmp3を読み込み、再生/停止。PDFも一緒に開く） -->
-  <audio id="piano-sound" src="piano.mp3" preload="auto"></audio>
+  <!-- 🎹 ピアノボタン（preload="none"に変更して即座にページを表示させます） -->
+  <audio id="piano-sound" src="piano.mp3" preload="none"></audio>
   <button id="piano-btn" onclick="togglePiano()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #333333; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
     🎹 ピアノの演奏 (PDFも開く)
   </button>
@@ -89,7 +90,7 @@ function toggleHarmonica() {
   
   if (sound.paused) {
     sound.currentTime = 0;
-    sound.play();
+    sound.play().catch(e => console.log("再生エラー:", e));
     btn.innerHTML = "⏹️ 演奏を止める";
     btn.style.backgroundColor = "#2c3e50";
     btn.style.color = "#ffffff";
@@ -121,12 +122,11 @@ function togglePiano() {
   
   if (sound.paused) {
     sound.currentTime = 0;
-    sound.play();
+    sound.play().catch(e => console.log("再生エラー:", e));
     btn.innerHTML = "⏹️ 演奏を止める";
     btn.style.backgroundColor = "#2c3e50";
     btn.style.color = "#ffffff";
     
-    // 💡 ピアノの演奏が始まった瞬間に、別タブで案内PDF（piano.pdf）を開く処理を追加！
     window.open('piano.pdf', '_blank');
   } else {
     sound.pause();
@@ -143,6 +143,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   btn.style.color = "#ffffff";
 });
 </script>
+
 
 
     </div>
