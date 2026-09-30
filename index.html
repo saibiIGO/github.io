@@ -36,8 +36,7 @@
     <p style="margin: 5px 0 0 0; font-size: 22px; color: #b35900; font-weight: bold; letter-spacing: 0.1em;">囲碁で磨く、全世代の地頭力」</p>
   </div>
 
-
-<!-- 【下部：左右2段組 of エリア】 -->
+  <!-- 【下部：左右2段組 of エリア】 -->
   <div style="display: flex; flex-wrap: wrap; gap: 30px; box-sizing: border-box;">
     
     <!-- 👈【左半分】：タイトル、主題歌、3つのボタン -->
@@ -48,10 +47,10 @@
   <h1 style="margin: 0; font-size: 32px; color: #003366; font-weight: bold; line-height: 1.2;">
     才美塾囲碁教室
   </h1>
-  <!-- 🎵 タイトル下の主題歌プレイヤー（preload="none"を追加して軽量化） -->
+  <!-- 🎵 タイトル下の主題歌プレイヤー -->
   <div style="display: flex; align-items: center; gap: 8px;">
     <span style="font-size: 12px; color: #003366; font-weight: bold; white-space: nowrap;">🎵 主題歌・塾歌:</span>
-    <audio controls src="song.MP3" preload="none" style="height: 28px; width: 100%; max-width: 200px;">
+    <audio controls src="song.wav" style="height: 28px; width: 100%; max-width: 200px;">
       お使いのブラウザは音声再生に対応していません。
     </audio>
   </div>
@@ -63,14 +62,14 @@
     📜 古文書の案内 (PDF)
   </a>
   
-  <!-- 🎵 ハーモニカボタン（preload="none"に変更。ファイルがない場合のフリーズを防ぎます。また、存在するsong.mp3に仮修正しています） -->
-  <audio id="harmonica-sound" src="harmonica.mp3" preload="none"></audio>
+  <!-- 🎵 ハーモニカボタン（裏で音を管理・演奏の再生/停止） -->
+  <audio id="harmonica-sound" src="harmonica.wav" preload="auto"></audio>
   <button id="harmonica-btn" onclick="toggleHarmonica()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #20B2AA; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
     🎵 ハーモニカの演奏
   </button>
   
-  <!-- 🎹 ピアノボタン（preload="none"に変更して即座にページを表示させます） -->
-  <audio id="piano-sound" src="piano.mp3" preload="none"></audio>
+  <!-- 🎹 ピアノボタン（裏で軽いmp3を読み込み、再生/停止。PDFも一緒に開く） -->
+  <audio id="piano-sound" src="piano.mp3" preload="auto"></audio>
   <button id="piano-btn" onclick="togglePiano()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #333333; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
     🎹 ピアノの演奏 (PDFも開く)
   </button>
@@ -90,7 +89,7 @@ function toggleHarmonica() {
   
   if (sound.paused) {
     sound.currentTime = 0;
-    sound.play().catch(e => console.log("再生エラー:", e));
+    sound.play();
     btn.innerHTML = "⏹️ 演奏を止める";
     btn.style.backgroundColor = "#2c3e50";
     btn.style.color = "#ffffff";
@@ -122,11 +121,12 @@ function togglePiano() {
   
   if (sound.paused) {
     sound.currentTime = 0;
-    sound.play().catch(e => console.log("再生エラー:", e));
+    sound.play();
     btn.innerHTML = "⏹️ 演奏を止める";
     btn.style.backgroundColor = "#2c3e50";
     btn.style.color = "#ffffff";
     
+    // 💡 ピアノの演奏が始まった瞬間に、別タブで案内PDF（piano.pdf）を開く処理を追加！
     window.open('piano.pdf', '_blank');
   } else {
     sound.pause();
@@ -145,7 +145,6 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 </script>
 
 
-
     </div>
         <!-- 👉【右半分】：スケジュール・宿題・概要 -->
     <div style="flex: 1; min-width: 280px; padding: 15px; background-color: white; border-radius: 6px; border: 1px solid #ddd; box-sizing: border-box; display: flex; flex-direction: column; gap: 15px;">
@@ -157,52 +156,14 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
           ➔ 教室スケジュールはこちら (PDF)
         </a>
       </div>
-
-
-<!-- ② 今週の宿題 -->
-<div>
-  <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px; border-bottom: none; padding-bottom: 0;">🎁 今週の詰碁宿題</h3>
-  
-  <a href="tmgo.sgf" download="tmgo.sgf" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
-    ➔ 今週の詰碁宿題をダウンロード (SGFファイル)
-  </a>
-
-  <!-- 碁盤を表示する枠 -->
-  <div id="tsumego-board" style="width: 100%; max-width: 360px; min-height: 360px; margin: 15px auto 0 auto; background-color: #f8f9fa;"></div>
-</div>
-
-
-<!-- 最も確実なCDN（jsDelivr）から最新の安定版プログラムを読み込みます -->
-<script type="text/javascript" src="https://jsdelivr.net"></script>
-<script type="text/javascript" src="https://jsdelivr.net"></script>
-<link type="text/css" rel="stylesheet" href="https://jsdelivr.net" />
-
-
-<script>
-  window.addEventListener('load', function() {
-    // セキュリティ制限を回避するため、ファイルの文字データを直接読み込ませる方法に変更しました
-    fetch('tmgo.sgf')
-      .then(response => {
-        if (!response.ok) throw new Error('ファイルの読み込みに失敗しました');
-        return response.text();
-      })
-      .then(sgfText => {
-        // 読み込んだ文字データを使って碁盤を起動
-        var player = new WGo.BasicPlayer(document.getElementById("tsumego-board"), {
-            sgf: sgfText, // パスではなく、テキストデータを直接渡します
-            layout: {top: [], bottom: ["Control"]},
-            enableShortcuts: true
-        });
-      })
-      .catch(error => {
-        console.error(error);
-        document.getElementById("tsumego-board").innerHTML = 
-          "<p style='color:#ff0000; text-align:center; padding-top:150px; font-size:13px;'>詰碁ファイル「tmgo.sgf」が見つからないか、中身が空っぽです。</p>";
-      });
-  });
-</script>
-
       
+      <!-- ② 今週の宿題 -->
+      <div>
+        <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px; border-bottom: none; padding-bottom: 0;">🎁 今週の詰碁宿題</h3>
+        <a href="tmgo.sgf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
+          ➔ 今週の詰碁宿題をダウンロード (PDF)
+        </a>
+      </div>
       
       <!-- ③ 教室の概要・趣旨 -->
       <div>
