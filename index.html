@@ -258,90 +258,265 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     </div>
 
 
+ <div style="flex: 0.8; min-width: 240px; padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px;">
+      <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📸 教室の様子</h3>
+      <div style="text-align: center;">
+        <img src="photo.jpg" alt="教室の写真" style="width: 100%; height: auto; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+        <p style="margin: 8px 0 0 0; font-size: 12px; color: #666;">楽しく囲碁を学ぶ生徒たちの様子</p>
+      </div>
 
-<!-- 👉 【右側エリア決定版】：上段（碁盤＆宿題連動） ＋ 下段（スケジュール・概要・4コマ漫画） -->
-<div style="flex: 0.8; min-width: 280px; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box;">
 
-  <!-- ［上半分］今週の詰碁宿題（SGF）をその場で解ける碁盤スペース -->
-  <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px;">
-    <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">🎁 今週の詰碁宿題（その場で挑戦！）</h3>
-    <div style="text-align: center; width: 100%; height: 320px; background-color: #f7f7f7; border-radius: 4px; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative;">
+
+
+      <div style="text-align: center;">
+        <!-- 👇 スライドショーの枠（ここから） -->
+        <div style="width: 100%; max-width: 100%; overflow: hidden; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative;">
+          
+          <!-- 写真を横一列に並べて動かす箱 -->
+          <div style="display: flex; width: 400%; animation: slideShow 16s infinite;">
+            <img src="photo1.jpg" alt="photo1" style="width: 25%; height: auto; flex-shrink: 0;">
+            <img src="photo2.jpg" alt="photo2" style="width: 25%; height: auto; flex-shrink: 0;">
+            <img src="photo3.jpg" alt="photo3" style="width: 25%; height: auto; flex-shrink: 0;">
+            <img src="photo4.jpg" alt="photo4" style="width: 25%; height: auto; flex-shrink: 0;">
+          </div>
+
+          <!-- アニメーションの動きのルール（CSS） -->
+          <style>
+            @keyframes slideShow {
+              0%   { transform: translateX(0); }       /* 1枚目表示 */
+              20%  { transform: translateX(0); }
+              25%  { transform: translateX(-25%); }    /* 2枚目へ移動 */
+              45%  { transform: translateX(-25%); }
+              50%  { transform: translateX(-50%); }    /* 3枚目へ移動 */
+              70%  { transform: translateX(-50%); }
+              75%  { transform: translateX(-75%); }    /* 4枚目へ移動 */
+              95%  { transform: translateX(-75%); }
+              100% { transform: translateX(0); }       /* 1枚目に戻る */
+            }
+          </style>
+        </div>
+        <!-- 👆 スライドショーの枠（ここまで） -->
+
+        <p style="margin: 8px 0 0 0; font-size: 12px; color: #666;">楽しく囲碁を学ぶ生徒たちの様子</p>
+      </div>
+           <!-- 👇 スライドショーの枠（ここから） -->
+        <div style="width: 100%; max-width: 100%; overflow: hidden; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative;">
+          
+          <!-- 写真を横一列に並べて動かす箱（4枚なので幅400%、合計20秒アニメーション） -->
+          <div style="display: flex; width: 400%; animation: slideShow4 20s infinite;">
+            <img src="photo1.jpg" alt="教室の写真1" style="width: 25%; height: auto; flex-shrink: 0;">
+            <img src="photo2.jpg" alt="教室の写真2" style="width: 25%; height: auto; flex-shrink: 0;">
+            <img src="photo3.jpg" alt="教室の写真3" style="width: 25%; height: auto; flex-shrink: 0;">
+            <img src="photo4.jpg" alt="教室の写真4" style="width: 25%; height: auto; flex-shrink: 0;">
+          </div>
+
+          <!-- アニメーションの動きのルール（CSS） -->
+          <style>
+            @keyframes slideShow4 {
+              0%   { transform: translateX(0); }       /* 1枚目（5秒間） */
+              20%  { transform: translateX(0); }
+              25%  { transform: translateX(-25%); }    /* 2枚目（5秒間） */
+              45%  { transform: translateX(-25%); }
+              50%  { transform: translateX(-50%); }    /* 3枚目（5秒間） */
+              70%  { transform: translateX(-50%); }
+              75%  { transform: translateX(-75%); }    /* 4枚目（5秒間） */
+              95%  { transform: translateX(-75%); }
+              100% { transform: translateX(0); }       /* 1枚目に戻る */
+            }
+          </style>
+        </div>
+        <!-- 👆 スライドショーの枠（ここまで） →
+
+
+
+
+
+
+
+
+  <!-- 👉 改修した右側エリア：上段に碁盤、下段に4コマ漫画 -->
+<div style="flex: 0.8; min-width: 240px; display: flex; flex-direction: column; gap: 20px;">
+
+  <!-- ［上半分］碁盤の埋め込みスペース -->
+  <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px; flex: 1;">
+    <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">☖ 盤面・対局にチャレンジ</h3>
+    <div style="text-align: center; width: 100%; height: 280px; background-color: #f7f7f7; border-radius: 4px; display: flex; justify-content: center; align-items: center; overflow: hidden;">
       
-      <!-- 💡 index.htmlと同じフォルダにある「tmgo.sgf」をWeb用のSGFプレイヤーで読み込んで表示します -->
-      <!-- ※SabakiのWebプレイヤーや、NetGo、WebGOなどのビューアURLの後ろに「?sgf=tmgo.sgf」と繋ぐ形式が一般的です -->
-      <iframe src="https://github.io" style="width: 100%; height: 100%; border: none;" title="今週の詰碁宿題">
+      <!-- 💡 ここに外部の碁盤（COSUMIやSabakiのWebプレイヤー等）のURLを埋め込みます -->
+      <!-- 現在は仮としてCOSUMIのトップページを指定していますが、お好みのURLやHTMLに変更可能です -->
+      <iframe src="https://cosumi.net" style="width: 100%; height: 100%; border: none;" title="囲碁盤">
         お使いのブラウザは碁盤の埋め込みに対応していません。
       </iframe>
 
     </div>
-    <!-- 念のため、今まで通りファイルを直接ダウンロードできるリンクも下部に残して優しさをプラス！ -->
-    <div style="margin-top: 8px; text-align: right;">
-      <a href="tmgo.sgf" target="_blank" style="font-size: 12px; color: #0066cc; text-decoration: underline;">
-        ➔ スマホ等でSGFファイルを直接ダウンロードする場合はこちら
-      </a>
-    </div>
   </div>
 
-  <!-- ［下半分］スケジュール・教室概要 ＋ 4コマ漫画をコンパクトにまとめたスペース -->
-  <div style="padding: 15px; background-color: white; border-radius: 6px; border: 1px solid #ddd; display: flex; flex-direction: column; gap: 15px;">
-    
-    <!-- ① 教室スケジュール -->
-    <div>
-      <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px; font-weight: bold;">📅 教室スケジュール</h3>
-      <a href="schedule.pdf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
-        ➔ 教室スケジュールはこちら (PDF)
-      </a>
-    </div>
-    
-    <!-- ② 教室の概要・趣旨 -->
-    <div>
-      <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px; font-weight: bold;">📖 教室の概要</h3>
-      <p style="margin: 0; font-size: 13px; color: #666; line-height: 1.5;">
-        子どもから大人まで、自分のペースでじっくり楽しむ無学年の囲碁教室です。オンライン広場（Discord）なども活用し、全世代の考える力を育みます。
-      </p>
-    </div>
-
-    <!-- ③ 📸 教室の様子（先ほどの4コマ漫画スライドショーがここにドッキング！） -->
-    <div style="margin-top: 5px;">
-      <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📸 教室の様子（4コマ）</h3>
-      <div style="text-align: center;">
-        <div style="width: 100%; max-width: 100%; height: 240px; overflow: hidden; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; background-color: #fff;">
-          <div style="display: flex; flex-direction: column; width: 100%; height: 400%; animation: slideShowVertical4 20s infinite;">
-            <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between;">
-              <img src="photo1.jpg" alt="教室の写真1" style="width: 100%; height: 180px; object-fit: cover; flex-shrink: 0;">
-              <p style="margin: 0; padding: 8px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff;">① どこに打てばいいんだろう…？（じっくり考える時間）</p>
-            </div>
-            <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between;">
-              <img src="photo2.jpg" alt="教室の写真2" style="width: 100%; height: 180px; object-fit: cover; flex-shrink: 0;">
-              <p style="margin: 0; padding: 8px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff;">② 先生が優しくヒントを教えてくれるよ！</p>
-            </div>
-            <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between;">
-              <img src="photo3.jpg" alt="教室の写真3" style="width: 100%; height: 180px; object-fit: cover; flex-shrink: 0;">
-              <p style="margin: 0; padding: 8px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff;">③ 「あ、そっか！」ひらめいてパチリ！</p>
-            </div>
-            <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between;">
-              <img src="photo4.jpg" alt="教室の写真4" style="width: 100%; height: 180px; object-fit: cover; flex-shrink: 0;">
-              <p style="margin: 0; padding: 8px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff;">④ 「勝てた！」みんな笑顔でハイタッチ！</p>
-            </div>
+  <!-- ［下半分］元の写真ギャラリー（4コマ漫画スライドショー）がここに移動しました -->
+  <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px; flex: 1;">
+    <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📸 教室の様子</h3>
+    <div style="text-align: center;">
+      
+      <!-- 👇 4コマ漫画スライドショーの枠（高さは240pxのまま綺麗に収まります） -->
+      <div style="width: 100%; max-width: 100%; height: 240px; overflow: hidden; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; background-color: #fff;">
+        <div style="display: flex; flex-direction: column; width: 100%; height: 400%; animation: slideShowVertical4 20s infinite;">
+          <!-- 1コマ目 -->
+          <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between;">
+            <img src="photo1.jpg" alt="photo1" style="width: 100%; height: 180px; object-fit: cover; flex-shrink: 0;">
+            <p style="margin: 0; padding: 8px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff;">① どこに打てばいいんだろう…？（じっくり考える時間）</p>
           </div>
-          <style>
-            @keyframes slideShowVertical4 {
-              0%   { transform: translateY(0); }
-              20%  { transform: translateY(0); }
-              25%  { transform: translateY(-25%); }
-              45%  { transform: translateY(-25%); }
-              50%  { transform: translateY(-50%); }
-              70%  { transform: translateY(-50%); }
-              75%  { transform: translateY(-75%); }
-              95%  { transform: translateY(-75%); }
-              100% { transform: translateY(0); }
-            }
-          </style>
+          <!-- 2コマ目 -->
+          <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between;">
+            <img src="photo2.jpg" alt="photo2" style="width: 100%; height: 180px; object-fit: cover; flex-shrink: 0;">
+            <p style="margin: 0; padding: 8px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff;">② 先生が優しくヒントを教えてくれるよ！</p>
+          </div>
+          <!-- 3コマ目 -->
+          <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between;">
+            <img src="photo3.jpg" alt="photo3" style="width: 100%; height: 180px; object-fit: cover; flex-shrink: 0;">
+            <p style="margin: 0; padding: 8px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff;">③ 「あ、そっか！」ひらめいてパチリ！</p>
+          </div>
+          <!-- 4コマ目 -->
+          <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between;">
+            <img src="photo4.jpg" alt="photo4" style="width: 100%; height: 180px; object-fit: cover; flex-shrink: 0;">
+            <p style="margin: 0; padding: 8px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff;">④ 「勝てた！」みんな笑顔でハイタッチ！</p>
+          </div>
         </div>
+        <style>
+          @keyframes slideShowVertical4 {
+            0%   { transform: translateY(0); }
+            20%  { transform: translateY(0); }
+            25%  { transform: translateY(-25%); }
+            45%  { transform: translateY(-25%); }
+            50%  { transform: translateY(-50%); }
+            70%  { transform: translateY(-50%); }
+            75%  { transform: translateY(-75%); }
+            95%  { transform: translateY(-75%); }
+            100% { transform: translateY(0); }
+          }
+        </style>
       </div>
+      <!-- 👆 4コマ漫画スライドショーの枠（ここまで） -->
+
+    </div>
+  </div>
+
+</div><!-- 右側エリア全体の閉じタグ -->
+  <!-- ［上半分］今週の詰碁宿題（その場で挑戦！） -->
+  <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px;">
+    <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">🎁 今週の詰碁宿題（その場で挑戦！）</h3>
+    
+    <!-- 💡 外部URLを使わず、HTML5の機能で19×19の碁盤の形をその場で作るエリアに変えました -->
+    <div style="text-align: center; width: 100%; max-width: 320px; margin: 0 auto; background-color: #fdf8f1; border-radius: 4px; box-shadow: inset 0 0 10px rgba(0,0,0,0.1); overflow: hidden; padding: 10px; box-sizing: border-box;">
+      
+      <!-- 碁盤の格子線を描くキャンバス -->
+      <canvas id="gobanCanvas" width="300" height="300" style="background-color: #e6b06c; border: 2px solid #b37d3b; border-radius: 2px; cursor: pointer; display: block; margin: 0 auto;"></canvas>
+
+      <!-- 簡単な操作ボタン -->
+      <div style="margin-top: 8px; display: flex; justify-content: center; gap: 10px;">
+        <button onclick="resetGoban()" style="padding: 4px 10px; font-size: 12px; background-color: #666; color: white; border: none; border-radius: 3px; cursor: pointer;">最初から打つ</button>
+      </div>
+
+      <!-- 碁盤をパチパチ動かすためのプログラム -->
+      <script>
+        const canvas = document.getElementById('gobanCanvas');
+        const ctx = canvas.getContext('2d');
+        const size = 19; // 19路盤
+        const padding = 15;
+        const cellSize = (canvas.width - padding * 2) / (size - 1);
+        let boardState = Array(size).fill(null).map(() => Array(size).fill(0)); // 0:空, 1:黒, 2:白
+        let nextColor = 1; // 1は黒からスタート
+
+        function drawGoban() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.fillStyle = '#e6b06c';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          
+          // 線を描く
+          ctx.strokeStyle = '#332211';
+          ctx.lineWidth = 1;
+          for (let i = 0; i < size; i++) {
+            // 横線
+            ctx.beginPath();
+            ctx.moveTo(padding, padding + i * cellSize);
+            ctx.lineTo(canvas.width - padding, padding + i * cellSize);
+            ctx.stroke();
+            // 縦線
+            ctx.beginPath();
+            ctx.moveTo(padding + i * cellSize, padding);
+            ctx.lineTo(padding + i * cellSize, canvas.height - padding);
+            ctx.stroke();
+          }
+          
+          // 星（黒い点）を描く（19路盤の一般的な位置）
+          const stars =;
+          ctx.fillStyle = '#332211';
+          stars.forEach(x => {
+            stars.forEach(y => {
+              ctx.beginPath();
+              ctx.arc(padding + x * cellSize, padding + y * cellSize, 3, 0, Math.PI * 2);
+              ctx.fill();
+            });
+          });
+
+          // 置かれた碁石を描く
+          for (let x = 0; x < size; x++) {
+            for (let y = 0; y < size; y++) {
+              if (boardState[x][y] !== 0) {
+                ctx.beginPath();
+                ctx.arc(padding + x * cellSize, padding + y * cellSize, cellSize * 0.45, 0, Math.PI * 2);
+                if (boardState[x][y] === 1) {
+                  ctx.fillStyle = '#000000';
+                  ctx.fill();
+                } else if (boardState[x][y] === 2) {
+                  ctx.fillStyle = '#ffffff';
+                  ctx.fill();
+                  ctx.strokeStyle = '#ccc';
+                  ctx.lineWidth = 1;
+                  ctx.stroke();
+                }
+              }
+            }
+          }
+        }
+
+        // クリックした場所に石を置く
+        canvas.addEventListener('click', function(e) {
+          const rect = canvas.getBoundingClientRect();
+          const mouseX = e.clientX - rect.left;
+          const mouseY = e.clientY - rect.top;
+          
+          const x = Math.round((mouseX - padding) / cellSize);
+          const y = Math.round((mouseY - padding) / cellSize);
+          
+          if (x >= 0 && x < size && y >= 0 && y < size) {
+            if (boardState[x][y] === 0) {
+              boardState[x][y] = nextColor;
+              nextColor = nextColor === 1 ? 2 : 1; // 黒と白を交互に切り替え
+              drawGoban();
+            }
+          }
+        });
+
+        function resetGoban() {
+          boardState = Array(size).fill(null).map(() => Array(size).fill(0));
+          nextColor = 1;
+          drawGoban();
+        }
+
+        // 最初に碁盤を描画
+        drawGoban();
+      </script>
     </div>
 
+    <!-- SGFのダウンロードリンク -->
+    <div style="margin-top: 12px; text-align: right;">
+      <a href="tmgo.sgf" target="_blank" style="font-size: 13px; color: #0066cc; text-decoration: underline; font-weight: bold; display: inline-block;">
+        ➔ 今週の詰碁宿題をダウンロード (SGF)
+      </a>
+    </div>
   </div>
+      
+
+
 
 </div><!-- 右側エリア全体の閉じタグ -->
 
