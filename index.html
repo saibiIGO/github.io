@@ -158,12 +158,38 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       </div>
       
       <!-- ② 今週の宿題 -->
-      <div>
-        <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px; border-bottom: none; padding-bottom: 0;">🎁 今週の詰碁宿題</h3>
-        <a href="tmgo.sgf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
-          ➔ 今週の詰碁宿題をダウンロード (SGF)
-        </a>
+
+      <!-- 👉 改修した右側エリア：上段に碁盤、下段に4コマ漫画 -->
+<div style="flex: 0.8; min-width: 240px; display: flex; flex-direction: column; gap: 20px;">
+
+  <!-- ［上半分］碁盤の埋め込みスペース -->
+  <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px; flex: 1;">
+    <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">☖ 盤面・対局にチャレンジ</h3>
+    <div style="text-align: center; width: 100%; height: 280px; background-color: #f7f7f7; border-radius: 4px; display: flex; justify-content: center; align-items: center; overflow: hidden;">
+      
+      <!-- 💡 変更：WGo.js を使って、自サイトの sgf ファイルを直接読み込みます -->
+      <!-- data-wgo に SGFファイルのパスを指定。プレイヤ設定で詰碁モード（enableWheel:falseなど）に調整 -->
+      <div data-wgo="tmgo.sgf" 
+           data-wgo-enablewheel="false" 
+           data-wgo-layout="{top: [], bottom: ['control']}" 
+           style="width: 100%; height: 100%;">
+        お使いのブラウザは碁盤の表示に対応していません。
       </div>
+
+    </div>
+  </div>
+
+  <!-- ［下半分］詰碁宿題のダウンロードエリア -->
+  <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px;">
+    <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px; border-bottom: none; padding-bottom: 0;">🎁 今週の詰碁宿題</h3>
+    <a href="tmgo.sgf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
+      ➔ 今週の詰碁宿題をダウンロード (SGF)
+    </a>
+  </div>
+
+</div>
+ 
+      
       
       <!-- ③ 教室の概要・趣旨 -->
       <div>
