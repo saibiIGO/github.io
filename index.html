@@ -158,45 +158,54 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       </div>
       
       <!-- ② 今週の宿題 -->
+
 <!-- 👉 改修した右側エリア：上段に碁盤、下段に4コマ漫画 -->
 <div style="flex: 0.8; min-width: 240px; display: flex; flex-direction: column; gap: 20px;">
 
-  
+  <!-- ［上半分］碁盤の埋め込みスペース -->
+  <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px; flex: 1;">
+    <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">☖ 盤面・対局にチャレンジ</h3>
+    <div style="text-align: center; width: 100%; height: 280px; background-color: #f7f7f7; border-radius: 4px; display: flex; justify-content: center; align-items: center; overflow: hidden;">
+      
+      <!-- 💡 iframe を廃止し、自作の自動再生碁盤（器）を配置します -->
+      <div id="自動デモ碁盤" style="width: 100%; height: 100%;">
+        お使いのブラウザは碁盤の表示に対応していません。
+      </div>
 
-  <!-- ［下半分］詰碁宿題のダウンロードエリア -->
-  <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px;">
-    <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px; border-bottom: none; padding-bottom: 0;">🎁 今週の詰碁宿題</h3>
-    <a href="tmgo.sgf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
-      ➔ 今週の詰碁宿題をダウンロード (SGF)
-    </a>
+    </div>
   </div>
 
 </div>
 
 <!-- ===================================================
-     ★ 連動するプログラム（WGo.js）の読み込みと設定
+     ★ 碁盤をパチパチ自動で動かすためのプログラム
 =================================================== -->
-<!-- 1. 必要なファイルを読み込む（cdnjsから最新の安定版を取得） -->
+<!-- 1. 碁盤のデザインと仕組みをインターネット経由で読み込む -->
 <link rel="stylesheet" type="text/css" href="https://cloudflare.com">
 <script type="text/javascript" src="https://cloudflare.com"></script>
 <script type="text/javascript" src="https://cloudflare.com"></script>
 
-<!-- 2. ページが読み込まれた後に、確実に碁盤を生成するスクリプト -->
+<!-- 2. ページを開いた瞬間に、tmgo.sgf を読み込んで自動再生する指示 -->
 <script type="text/javascript">
   window.addEventListener('DOMContentLoaded', function() {
-    // 碁盤を表示する要素を取得
-    var element = document.getElementById("詰碁盤");
+    var element = document.getElementById("自動デモ碁盤");
     
     if (element && typeof WGo !== 'undefined') {
-      // 中身の「対応していません」のテキストをクリア
+      // 中身のテキストをクリア
       element.innerHTML = "";
       
-      // 碁盤プレイヤーを強制的に初期化・生成
+      // 碁盤プレイヤーを生成
       var player = new WGo.BasicPlayer(element, {
-        sgf: "tmgo.sgf",                   // 読み込むSGFファイル名
-        enableWheel: false,                // マウスホイールでの進む/戻るを無効化
-        layout: {top: [], bottom: ['control']} // 画面下部にコントロールボタンを配置
+        sgf: "tmgo.sgf",                      // 同じフォルダにあるSGFファイル
+        enableWheel: false,                   // ホイール操作を無効化
+        layout: {top: [], bottom: ['control']} // 下部に再生・停止ボタンを表示
       });
+
+      // ページ表示から1秒後に、2秒間隔（2000ミリ秒）でパチパチと自動再生を開始する
+      setTimeout(function() {
+        player.playInterval = 2000; 
+        player.start();
+      }, 1000);
     }
   });
 </script>
