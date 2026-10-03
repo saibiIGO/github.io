@@ -308,10 +308,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       </div>
     </div>
 
-
-      
-
-  <!-- 👉 改修した右側エリア：上段に碁盤、下段に4コマ漫画 -->
+<!-- 👉 改修した右側エリア：上段に碁盤、下段に4コマ漫画 -->
 <div style="flex: 0.8; min-width: 240px; display: flex; flex-direction: column; gap: 20px;">
 
   <!-- ［上半分］碁盤の埋め込みスペース -->
@@ -319,14 +316,50 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">☖ 盤面・対局にチャレンジ</h3>
     <div style="text-align: center; width: 100%; height: 280px; background-color: #f7f7f7; border-radius: 4px; display: flex; justify-content: center; align-items: center; overflow: hidden;">
       
-      <!-- 💡 ここに外部の碁盤（COSUMIやSabakiのWebプレイヤー等）のURLを埋め込みます -->
-      <!-- 現在は仮としてCOSUMIのトップページを指定していますが、お好みのURLやHTMLに変更可能です -->
-      <iframe src="https://cosumi.net" style="width: 100%; height: 100%; border: none;" title="囲碁盤">
-        お使いのブラウザは碁盤の埋め込みに対応していません。
-      </iframe>
+      <!-- 💡 iframe を廃止し、自作の自動再生碁盤（器）を配置します -->
+      <div id="自動デモ碁盤" style="width: 100%; height: 100%;">
+        お使いのブラウザは碁盤の表示に対応していません。
+      </div>
 
     </div>
   </div>
+
+</div>
+
+<!-- ===================================================
+     ★ 碁盤をパチパチ自動で動かすためのプログラム
+=================================================== -->
+<!-- 1. 碁盤のデザインと仕組みをインターネット経由で読み込む -->
+<link rel="stylesheet" type="text/css" href="https://cloudflare.com">
+<script type="text/javascript" src="https://cloudflare.com"></script>
+<script type="text/javascript" src="https://cloudflare.com"></script>
+
+<!-- 2. ページを開いた瞬間に、tmgo.sgf を読み込んで自動再生する指示 -->
+<script type="text/javascript">
+  window.addEventListener('DOMContentLoaded', function() {
+    var element = document.getElementById("自動デモ碁盤");
+    
+    if (element && typeof WGo !== 'undefined') {
+      // 中身のテキストをクリア
+      element.innerHTML = "";
+      
+      // 碁盤プレイヤーを生成
+      var player = new WGo.BasicPlayer(element, {
+        sgf: "tmgo.sgf",                      // 同じフォルダにあるSGFファイル
+        enableWheel: false,                   // ホイール操作を無効化
+        layout: {top: [], bottom: ['control']} // 下部に再生・停止ボタンを表示
+      });
+
+      // ページ表示から1秒後に、2秒間隔（2000ミリ秒）でパチパチと自動再生を開始する
+      setTimeout(function() {
+        player.playInterval = 2000; 
+        player.start();
+      }, 1000);
+    }
+  });
+</script>
+
+
 
   <!-- ［下半分］元の写真ギャラリー（4コマ漫画スライドショー）がここに移動しました -->
   <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px; flex: 1;">
