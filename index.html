@@ -269,63 +269,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 
 
       <div style="text-align: center;">
-        <!-- 👇 スライドショーの枠（ここから） -->
-        <div style="width: 100%; max-width: 100%; overflow: hidden; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative;">
-          
-          <!-- 写真を横一列に並べて動かす箱 -->
-          <div style="display: flex; width: 400%; animation: slideShow 16s infinite;">
-            <img src="photo1.jpg" alt="photo1" style="width: 25%; height: auto; flex-shrink: 0;">
-            <img src="photo2.jpg" alt="photo2" style="width: 25%; height: auto; flex-shrink: 0;">
-            <img src="photo3.jpg" alt="photo3" style="width: 25%; height: auto; flex-shrink: 0;">
-            <img src="photo4.jpg" alt="photo4" style="width: 25%; height: auto; flex-shrink: 0;">
-          </div>
-
-          <!-- アニメーションの動きのルール（CSS） -->
-          <style>
-            @keyframes slideShow {
-              0%   { transform: translateX(0); }       /* 1枚目表示 */
-              20%  { transform: translateX(0); }
-              25%  { transform: translateX(-25%); }    /* 2枚目へ移動 */
-              45%  { transform: translateX(-25%); }
-              50%  { transform: translateX(-50%); }    /* 3枚目へ移動 */
-              70%  { transform: translateX(-50%); }
-              75%  { transform: translateX(-75%); }    /* 4枚目へ移動 */
-              95%  { transform: translateX(-75%); }
-              100% { transform: translateX(0); }       /* 1枚目に戻る */
-            }
-          </style>
-        </div>
-        <!-- 👆 スライドショーの枠（ここまで） -->
-
-        <p style="margin: 8px 0 0 0; font-size: 12px; color: #666;">楽しく囲碁を学ぶ生徒たちの様子</p>
-      </div>
-           <!-- 👇 スライドショーの枠（ここから） -->
-        <div style="width: 100%; max-width: 100%; overflow: hidden; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative;">
-          
-          <!-- 写真を横一列に並べて動かす箱（4枚なので幅400%、合計20秒アニメーション） -->
-          <div style="display: flex; width: 400%; animation: slideShow4 20s infinite;">
-            <img src="photo1.jpg" alt="教室の写真1" style="width: 25%; height: auto; flex-shrink: 0;">
-            <img src="photo2.jpg" alt="教室の写真2" style="width: 25%; height: auto; flex-shrink: 0;">
-            <img src="photo3.jpg" alt="教室の写真3" style="width: 25%; height: auto; flex-shrink: 0;">
-            <img src="photo4.jpg" alt="教室の写真4" style="width: 25%; height: auto; flex-shrink: 0;">
-          </div>
-
-          <!-- アニメーションの動きのルール（CSS） -->
-          <style>
-            @keyframes slideShow4 {
-              0%   { transform: translateX(0); }       /* 1枚目（5秒間） */
-              20%  { transform: translateX(0); }
-              25%  { transform: translateX(-25%); }    /* 2枚目（5秒間） */
-              45%  { transform: translateX(-25%); }
-              50%  { transform: translateX(-50%); }    /* 3枚目（5秒間） */
-              70%  { transform: translateX(-50%); }
-              75%  { transform: translateX(-75%); }    /* 4枚目（5秒間） */
-              95%  { transform: translateX(-75%); }
-              100% { transform: translateX(0); }       /* 1枚目に戻る */
-            }
-          </style>
-        </div>
-        <!-- 👆 スライドショーの枠（ここまで） →
+      
 
 
 
