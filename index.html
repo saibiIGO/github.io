@@ -257,73 +257,94 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       </div>
     </div>
 
-   <!-- 👉 改修した右側エリア：上段に碁盤、下段に4コマ漫画 -->
-<div style="flex: 0.8; min-width: 240px; display: flex; flex-direction: column; gap: 20px;">
 
-  <!-- ［上半分］碁盤の埋め込みスペース -->
-  <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px; flex: 1;">
-    <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">☖ 盤面・対局にチャレンジ</h3>
-    <div style="text-align: center; width: 100%; height: 280px; background-color: #f7f7f7; border-radius: 4px; display: flex; justify-content: center; align-items: center; overflow: hidden;">
+
+<!-- 👉 【右側エリア決定版】：上段（碁盤＆宿題連動） ＋ 下段（スケジュール・概要・4コマ漫画） -->
+<div style="flex: 0.8; min-width: 280px; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box;">
+
+  <!-- ［上半分］今週の詰碁宿題（SGF）をその場で解ける碁盤スペース -->
+  <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px;">
+    <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">🎁 今週の詰碁宿題（その場で挑戦！）</h3>
+    <div style="text-align: center; width: 100%; height: 320px; background-color: #f7f7f7; border-radius: 4px; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative;">
       
-      <!-- 💡 ここに外部の碁盤（COSUMIやSabakiのWebプレイヤー等）のURLを埋め込みます -->
-      <!-- 現在は仮としてCOSUMIのトップページを指定していますが、お好みのURLやHTMLに変更可能です -->
-      <iframe src="https://cosumi.net" style="width: 100%; height: 100%; border: none;" title="囲碁盤">
+      <!-- 💡 index.htmlと同じフォルダにある「tmgo.sgf」をWeb用のSGFプレイヤーで読み込んで表示します -->
+      <!-- ※SabakiのWebプレイヤーや、NetGo、WebGOなどのビューアURLの後ろに「?sgf=tmgo.sgf」と繋ぐ形式が一般的です -->
+      <iframe src="https://github.io" style="width: 100%; height: 100%; border: none;" title="今週の詰碁宿題">
         お使いのブラウザは碁盤の埋め込みに対応していません。
       </iframe>
 
     </div>
-  </div>
-
-  <!-- ［下半分］元の写真ギャラリー（4コマ漫画スライドショー）がここに移動しました -->
-  <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px; flex: 1;">
-    <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📸 教室の様子</h3>
-    <div style="text-align: center;">
-      
-      <!-- 👇 4コマ漫画スライドショーの枠（高さは240pxのまま綺麗に収まります） -->
-      <div style="width: 100%; max-width: 100%; height: 240px; overflow: hidden; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; background-color: #fff;">
-        <div style="display: flex; flex-direction: column; width: 100%; height: 400%; animation: slideShowVertical4 20s infinite;">
-          <!-- 1コマ目 -->
-          <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between;">
-            <img src="photo1.jpg" alt="photo1" style="width: 100%; height: 180px; object-fit: cover; flex-shrink: 0;">
-            <p style="margin: 0; padding: 8px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff;">① どこに打てばいいんだろう…？（じっくり考える時間）</p>
-          </div>
-          <!-- 2コマ目 -->
-          <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between;">
-            <img src="photo2.jpg" alt="photo2" style="width: 100%; height: 180px; object-fit: cover; flex-shrink: 0;">
-            <p style="margin: 0; padding: 8px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff;">② 先生が優しくヒントを教えてくれるよ！</p>
-          </div>
-          <!-- 3コマ目 -->
-          <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between;">
-            <img src="photo3.jpg" alt="photo3" style="width: 100%; height: 180px; object-fit: cover; flex-shrink: 0;">
-            <p style="margin: 0; padding: 8px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff;">③ 「あ、そっか！」ひらめいてパチリ！</p>
-          </div>
-          <!-- 4コマ目 -->
-          <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between;">
-            <img src="photo4.jpg" alt="photo4" style="width: 100%; height: 180px; object-fit: cover; flex-shrink: 0;">
-            <p style="margin: 0; padding: 8px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff;">④ 「勝てた！」みんな笑顔でハイタッチ！</p>
-          </div>
-        </div>
-        <style>
-          @keyframes slideShowVertical4 {
-            0%   { transform: translateY(0); }
-            20%  { transform: translateY(0); }
-            25%  { transform: translateY(-25%); }
-            45%  { transform: translateY(-25%); }
-            50%  { transform: translateY(-50%); }
-            70%  { transform: translateY(-50%); }
-            75%  { transform: translateY(-75%); }
-            95%  { transform: translateY(-75%); }
-            100% { transform: translateY(0); }
-          }
-        </style>
-      </div>
-      <!-- 👆 4コマ漫画スライドショーの枠（ここまで） -->
-
+    <!-- 念のため、今まで通りファイルを直接ダウンロードできるリンクも下部に残して優しさをプラス！ -->
+    <div style="margin-top: 8px; text-align: right;">
+      <a href="tmgo.sgf" target="_blank" style="font-size: 12px; color: #0066cc; text-decoration: underline;">
+        ➔ スマホ等でSGFファイルを直接ダウンロードする場合はこちら
+      </a>
     </div>
   </div>
 
+  <!-- ［下半分］スケジュール・教室概要 ＋ 4コマ漫画をコンパクトにまとめたスペース -->
+  <div style="padding: 15px; background-color: white; border-radius: 6px; border: 1px solid #ddd; display: flex; flex-direction: column; gap: 15px;">
+    
+    <!-- ① 教室スケジュール -->
+    <div>
+      <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px; font-weight: bold;">📅 教室スケジュール</h3>
+      <a href="schedule.pdf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
+        ➔ 教室スケジュールはこちら (PDF)
+      </a>
+    </div>
+    
+    <!-- ② 教室の概要・趣旨 -->
+    <div>
+      <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px; font-weight: bold;">📖 教室の概要</h3>
+      <p style="margin: 0; font-size: 13px; color: #666; line-height: 1.5;">
+        子どもから大人まで、自分のペースでじっくり楽しむ無学年の囲碁教室です。オンライン広場（Discord）なども活用し、全世代の考える力を育みます。
+      </p>
+    </div>
+
+    <!-- ③ 📸 教室の様子（先ほどの4コマ漫画スライドショーがここにドッキング！） -->
+    <div style="margin-top: 5px;">
+      <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📸 教室の様子（4コマ）</h3>
+      <div style="text-align: center;">
+        <div style="width: 100%; max-width: 100%; height: 240px; overflow: hidden; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; background-color: #fff;">
+          <div style="display: flex; flex-direction: column; width: 100%; height: 400%; animation: slideShowVertical4 20s infinite;">
+            <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between;">
+              <img src="photo1.jpg" alt="教室の写真1" style="width: 100%; height: 180px; object-fit: cover; flex-shrink: 0;">
+              <p style="margin: 0; padding: 8px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff;">① どこに打てばいいんだろう…？（じっくり考える時間）</p>
+            </div>
+            <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between;">
+              <img src="photo2.jpg" alt="教室の写真2" style="width: 100%; height: 180px; object-fit: cover; flex-shrink: 0;">
+              <p style="margin: 0; padding: 8px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff;">② 先生が優しくヒントを教えてくれるよ！</p>
+            </div>
+            <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between;">
+              <img src="photo3.jpg" alt="教室の写真3" style="width: 100%; height: 180px; object-fit: cover; flex-shrink: 0;">
+              <p style="margin: 0; padding: 8px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff;">③ 「あ、そっか！」ひらめいてパチリ！</p>
+            </div>
+            <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between;">
+              <img src="photo4.jpg" alt="教室の写真4" style="width: 100%; height: 180px; object-fit: cover; flex-shrink: 0;">
+              <p style="margin: 0; padding: 8px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff;">④ 「勝てた！」みんな笑顔でハイタッチ！</p>
+            </div>
+          </div>
+          <style>
+            @keyframes slideShowVertical4 {
+              0%   { transform: translateY(0); }
+              20%  { transform: translateY(0); }
+              25%  { transform: translateY(-25%); }
+              45%  { transform: translateY(-25%); }
+              50%  { transform: translateY(-50%); }
+              70%  { transform: translateY(-50%); }
+              75%  { transform: translateY(-75%); }
+              95%  { transform: translateY(-75%); }
+              100% { transform: translateY(0); }
+            }
+          </style>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
 </div><!-- 右側エリア全体の閉じタグ -->
-  
+
 
 
 
