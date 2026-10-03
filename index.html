@@ -158,61 +158,12 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       </div>
       
       <!-- ② 今週の宿題 -->
-
-<!-- 👉 改修した右側エリア：上段に碁盤、下段に4コマ漫画 -->
-<div style="flex: 0.8; min-width: 240px; display: flex; flex-direction: column; gap: 20px;">
-
-  <!-- ［上半分］碁盤の埋め込みスペース -->
-  <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px; flex: 1;">
-    <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">☖ 盤面・対局にチャレンジ</h3>
-    <div style="text-align: center; width: 100%; height: 280px; background-color: #f7f7f7; border-radius: 4px; display: flex; justify-content: center; align-items: center; overflow: hidden;">
-      
-      <!-- 💡 iframe を廃止し、自作の自動再生碁盤（器）を配置します -->
-      <div id="自動デモ碁盤" style="width: 100%; height: 100%;">
-        お使いのブラウザは碁盤の表示に対応していません。
+      <div>
+        <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px; border-bottom: none; padding-bottom: 0;">🎁 今週の詰碁宿題</h3>
+        <a href="tmgo.sgf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
+          ➔ 今週の詰碁宿題をダウンロード (SGF)
+        </a>
       </div>
-
-    </div>
-  </div>
-
-</div>
-
-<!-- ===================================================
-     ★ 碁盤をパチパチ自動で動かすためのプログラム
-=================================================== -->
-<!-- 1. 碁盤のデザインと仕組みをインターネット経由で読み込む -->
-<link rel="stylesheet" type="text/css" href="https://cloudflare.com">
-<script type="text/javascript" src="https://cloudflare.com"></script>
-<script type="text/javascript" src="https://cloudflare.com"></script>
-
-<!-- 2. ページを開いた瞬間に、tmgo.sgf を読み込んで自動再生する指示 -->
-<script type="text/javascript">
-  window.addEventListener('DOMContentLoaded', function() {
-    var element = document.getElementById("自動デモ碁盤");
-    
-    if (element && typeof WGo !== 'undefined') {
-      // 中身のテキストをクリア
-      element.innerHTML = "";
-      
-      // 碁盤プレイヤーを生成
-      var player = new WGo.BasicPlayer(element, {
-        sgf: "tmgo.sgf",                      // 同じフォルダにあるSGFファイル
-        enableWheel: false,                   // ホイール操作を無効化
-        layout: {top: [], bottom: ['control']} // 下部に再生・停止ボタンを表示
-      });
-
-      // ページ表示から1秒後に、2秒間隔（2000ミリ秒）でパチパチと自動再生を開始する
-      setTimeout(function() {
-        player.playInterval = 2000; 
-        player.start();
-      }, 1000);
-    }
-  });
-</script>
-
-
- 
-      
       
       <!-- ③ 教室の概要・趣旨 -->
       <div>
@@ -306,118 +257,72 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       </div>
     </div>
 
-<!-- 👉 改修した右側エリア：上段に碁盤、下段に4コマ漫画 -->
-<div style="flex: 0.8; min-width: 240px; display: flex; flex-direction: column; gap: 20px;">
+    <!-- 右側：写真ギャラリー -->
+          <div style="text-align: center;">
+    
+              <div style="text-align: center;">
+        <!-- 👇 4コマ漫画スライドショーの枠（ここから） -->
+        <!-- 💡 文字も一緒に入れるため、枠の高さを少し広めの「240px」に調整しています -->
+        <div style="width: 100%; max-width: 100%; height: 240px; overflow: hidden; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; background-color: #fff;">
+          
+          <!-- 写真と文字をセットにした箱を縦に動かします（合計20秒アニメーション） -->
+          <div style="display: flex; flex-direction: column; width: 100%; height: 400%; animation: slideShowVertical4 20s infinite;">
+            
+            <!-- 1コマ目 -->
+            <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between;">
+              <img src="photo1.jpg" alt="photo1" style="width: 100%; height: 180px; object-fit: cover; flex-shrink: 0;">
+              <p style="margin: 0; padding: 8px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff;">① どこに打てばいいんだろう…？（じっくり考える時間）</p>
+            </div>
 
-  <!-- ［上半分］碁盤の埋め込みスペース -->
-  <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px; flex: 1;">
-    <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">☖ 盤面・対局にチャレンジ</h3>
-    <div style="text-align: center; width: 100%; height: 280px; background-color: #f7f7f7; border-radius: 4px; display: flex; justify-content: center; align-items: center; overflow: hidden;">
+            <!-- 2コマ目 -->
+            <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between;">
+              <img src="photo2.jpg" alt="photo2" style="width: 100%; height: 180px; object-fit: cover; flex-shrink: 0;">
+              <p style="margin: 0; padding: 8px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff;">② 先生が優しくヒントを教えてくれるよ！</p>
+            </div>
+
+            <!-- 3コマ目 -->
+            <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between;">
+              <img src="photo3.jpg" alt="photo3" style="width: 100%; height: 180px; object-fit: cover; flex-shrink: 0;">
+              <p style="margin: 0; padding: 8px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff;">③ 「あ、筋場ｶ！」ひらめいてパチリ！</p>
+            </div>
+
+            <!-- 4コマ目 -->
+            <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between;">
+              <img src="photo4.jpg" alt="photo4" style="width: 100%; height: 180px; object-fit: cover; flex-shrink: 0;">
+              <p style="margin: 0; padding: 8px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff;">④ 「勝てた！」みんな笑顔でハイタッチ！</p>
+            </div>
+
+          </div>
+
+          <!-- アニメーションルール -->
+          <style>
+            @keyframes slideShowVertical4 {
+              0%   { transform: translateY(0); }
+              20%  { transform: translateY(0); }
+              25%  { transform: translateY(-25%); }
+              45%  { transform: translateY(-25%); }
+              50%  { transform: translateY(-50%); }
+              70%  { transform: translateY(-50%); }
+              75%  { transform: translateY(-75%); }
+              95%  { transform: translateY(-75%); }
+              100% { transform: translateY(0); }
+            }
+          </style>
+        </div>
+        <!-- 👆 4コマ漫画スライドショーの枠（ここまで） -->
+      </div>
       
-      <!-- 💡 iframe を廃止し、自作の自動再生碁盤（器）を配置します -->
-      <div id="自動デモ碁盤" style="width: 100%; height: 100%;">
-        お使いのブラウザは碁盤の表示に対応していません。
+   
+
+        <p style="margin: 8px 0 0 0; font-size: 12px; color: #666;">楽しく囲碁を学ぶ生徒たちの様子</p>
       </div>
 
+      
     </div>
+
   </div>
 
 </div>
-
-<!-- ===================================================
-     ★ 碁盤をパチパチ自動で動かすためのプログラム
-=================================================== -->
-<!-- 1. 碁盤のデザインと仕組みをインターネット経由で読み込む -->
-<link rel="stylesheet" type="text/css" href="https://cloudflare.com">
-<script type="text/javascript" src="https://cloudflare.com"></script>
-<script type="text/javascript" src="https://cloudflare.com"></script>
-
-<!-- 2. ページを開いた瞬間に、tmgo.sgf を読み込んで自動再生する指示 -->
-<script type="text/javascript">
-  window.addEventListener('DOMContentLoaded', function() {
-    var element = document.getElementById("自動デモ碁盤");
-    
-    if (element && typeof WGo !== 'undefined') {
-      // 中身のテキストをクリア
-      element.innerHTML = "";
-      
-      // 碁盤プレイヤーを生成
-      var player = new WGo.BasicPlayer(element, {
-        sgf: "tmgo.sgf",                      // 同じフォルダにあるSGFファイル
-        enableWheel: false,                   // ホイール操作を無効化
-        layout: {top: [], bottom: ['control']} // 下部に再生・停止ボタンを表示
-      });
-
-      // ページ表示から1秒後に、2秒間隔（2000ミリ秒）でパチパチと自動再生を開始する
-      setTimeout(function() {
-        player.playInterval = 2000; 
-        player.start();
-      }, 1000);
-    }
-  });
-</script>
-
-
-
-  <!-- ［下半分］元の写真ギャラリー（4コマ漫画スライドショー）がここに移動しました -->
-  <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px; flex: 1;">
-    <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📸 教室の様子</h3>
-    <div style="text-align: center;">
-      
-      <!-- 👇 4コマ漫画スライドショーの枠（高さは240pxのまま綺麗に収まります） -->
-      <div style="width: 100%; max-width: 100%; height: 240px; overflow: hidden; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; background-color: #fff;">
-        <div style="display: flex; flex-direction: column; width: 100%; height: 400%; animation: slideShowVertical4 20s infinite;">
-          <!-- 1コマ目 -->
-          <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between;">
-            <img src="photo1.jpg" alt="photo1" style="width: 100%; height: 180px; object-fit: cover; flex-shrink: 0;">
-            <p style="margin: 0; padding: 8px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff;">① どこに打てばいいんだろう…？（じっくり考える時間）</p>
-          </div>
-          <!-- 2コマ目 -->
-          <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between;">
-            <img src="photo2.jpg" alt="photo2" style="width: 100%; height: 180px; object-fit: cover; flex-shrink: 0;">
-            <p style="margin: 0; padding: 8px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff;">② 先生が優しくヒントを教えてくれるよ！</p>
-          </div>
-          <!-- 3コマ目 -->
-          <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between;">
-            <img src="photo3.jpg" alt="photo3" style="width: 100%; height: 180px; object-fit: cover; flex-shrink: 0;">
-            <p style="margin: 0; padding: 8px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff;">③ 「あ、そっか！」ひらめいてパチリ！</p>
-          </div>
-          <!-- 4コマ目 -->
-          <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between;">
-            <img src="photo4.jpg" alt="photo4" style="width: 100%; height: 180px; object-fit: cover; flex-shrink: 0;">
-            <p style="margin: 0; padding: 8px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff;">④ 「勝てた！」みんな笑顔でハイタッチ！</p>
-          </div>
-        </div>
-        <style>
-          @keyframes slideShowVertical4 {
-            0%   { transform: translateY(0); }
-            20%  { transform: translateY(0); }
-            25%  { transform: translateY(-25%); }
-            45%  { transform: translateY(-25%); }
-            50%  { transform: translateY(-50%); }
-            70%  { transform: translateY(-50%); }
-            75%  { transform: translateY(-75%); }
-            95%  { transform: translateY(-75%); }
-            100% { transform: translateY(0); }
-          }
-        </style>
-      </div>
-      <!-- 👆 4コマ漫画スライドショーの枠（ここまで） -->
-
-    </div>
-  </div>
-
-</div><!-- 右側エリア全体の閉じタグ -->  
-
-
-</div><!-- 💡 これで右側エリアすべての閉じタグが完璧に閉まります -->
-
-
-
-
-
-
-
       
   <!-- =======================================================
        ★新設：お知らせ・写真・動画コーナー（2段組の下に追加）
@@ -643,7 +548,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   <div style="background-color: #ffffff; border: 1px solid #ccc; border-radius: 8px; padding: 18px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
     <p style="margin: 0 0 10px 0;">
       <a href="https://www.nihonkiin.or.jp/teach/kiin_editor/" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 10px 20px; background-color: #7b1fa2; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: bold; border-radius: 5px;">
-        ④ 棋譜再生・編集「棋院エディタ」 ➔
+        ④ 棋譜再生・編集「棋院エディタ」 ➔https://cosumi.net
       </a>
     </p>
     <p style="font-size: 13px; color: #444; line-height: 1.6; margin: 0;">
