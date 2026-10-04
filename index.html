@@ -79,15 +79,43 @@
       🎹 ピアノの演奏 (PDFも開く)
     </button>
 
-    <!-- 📐 ④ 手割り 動画ボタン -->
-    <button class="sb-btn" data-video-id="ここに手割りのYouTube動画IDを入れてください" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #4a5568; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
-      📐 「手割り」講義動画
-    </button>
+<!-- 📐 ④ 手割り 動画ボタン -->
+<button class="sb-btn" data-video-id="ここに手割りのYouTube動画IDを入れてください" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #4a5568; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit; margin-bottom: 10px;">
+  📐 「手割り」講義動画
+</button>
 
-    <!-- 🎯 ⑤ 筋・筋場 動画ボタン -->
-    <button class="sb-btn" data-video-id="ここに手筋・筋場のYouTube動画IDを入れてください" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #003366; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
-      🎯 「筋・筋場」講義動画
-    </button>
+<!-- 🎯 ⑤ 筋・筋場 動画ボタン -->
+<button class="sb-btn" data-video-id="ここに手筋・筋場のYouTube動画IDを入れてください" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #003366; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit; margin-bottom: 20px;">
+  🎯 「筋・筋場」講義動画
+</button>
+
+<!-- 📺 YouTube動画が表示されるエリア（レスポンシブ対応） -->
+<div id="video-container" style="display: none; width: 100%; max-width: 560px; margin: 0 auto; position: relative; padding-top: 56.25%;">
+  <iframe id="youtube-player" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></iframe>
+</div>
+
+<!-- ⚙️ 切り替え用のJavaScriptプログラム（このまま貼り付けてください） -->
+<script>
+function switchYouTube(button) {
+  // ボタンから動画IDを取得
+  const videoId = button.getAttribute('data-video-id');
+  const container = document.getElementById('video-container');
+  const player = document.getElementById('youtube-player');
+  
+  // 初期テキストのまま、または空欄の場合は処理しない
+  if (!videoId || videoId.includes('ここに') || videoId.trim() === '') {
+    alert('有効なYouTube動画IDが設定されていません。ボタンの「data-video-id」に動画IDを入力してください。');
+    return;
+  }
+  
+  // YouTubeの埋め込みURLをセットして表示
+  player.src = "https://youtube.com" + videoId;
+  container.style.display = 'block';
+  
+  // スムーズに動画位置までスクロール（スマホ・PC両対応）
+  container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+</script>
 
     <!-- ✨ ⑥ 予備 動画ボタン -->
     <button class="sb-btn" data-video-id="ここに予備のYouTube動画IDを入れてください" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #718096; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
