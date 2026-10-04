@@ -79,13 +79,14 @@
       🎹 ピアノの演奏 (PDFも開く)
     </button>
 
-<!-- 📐 ④ 手割り 動画ボタン -->
-<button class="sb-btn" data-video-id="ここに手割りのYouTube動画IDを入れてください" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #4a5568; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit; margin-bottom: 10px;">
+
+    <!-- 📐 ④ 手割り 動画ボタン（動画ID設定済み） -->
+<button class="sb-btn" data-video-id="vEvMlP6fMzU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #4a5568; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit; margin-bottom: 10px;">
   📐 「手割り」講義動画
 </button>
 
-<!-- 🎯 ⑤ 筋・筋場 動画ボタン -->
-<button class="sb-btn" data-video-id="ここに手筋・筋場のYouTube動画IDを入れてください" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #003366; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit; margin-bottom: 20px;">
+<!-- 🎯 ⑤ 筋・筋場 動画ボタン（動画ID設定済み） -->
+<button class="sb-btn" data-video-id="p4G1HnyYVWc" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #003366; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit; margin-bottom: 20px;">
   🎯 「筋・筋場」講義動画
 </button>
 
@@ -104,7 +105,7 @@ function switchYouTube(button) {
   
   // 初期テキストのまま、または空欄の場合は処理しない
   if (!videoId || videoId.includes('ここに') || videoId.trim() === '') {
-    alert('有効なYouTube動画IDが設定されていません。ボタンの「data-video-id」に動画IDを入力してください。');
+    alert('有効なYouTube動画IDが設定されていません。');
     return;
   }
   
@@ -116,6 +117,7 @@ function switchYouTube(button) {
   container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 </script>
+  
 
     <!-- ✨ ⑥ 予備 動画ボタン -->
     <button class="sb-btn" data-video-id="ここに予備のYouTube動画IDを入れてください" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #718096; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
