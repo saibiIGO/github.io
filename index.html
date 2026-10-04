@@ -39,53 +39,58 @@
   <!-- 【下部：左右2段組 of エリア】 -->
   <div style="display: flex; flex-wrap: wrap; gap: 30px; box-sizing: border-box;">
     
-    <!-- 👈【左半分】：タイトル、主題歌、3つのボタン -->
-    <div style="flex: 1; min-width: 280px; box-sizing: border-box;">
+    
+      
+  <!-- 👈【左半分】：タイトル、主題歌、3つのボタン -->
+<div style="flex: 1; min-width: 280px; box-sizing: border-box;">
 
-<!-- タイトルと音声プレイヤー -->
-<div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
-  <h1 style="margin: 0; font-size: 32px; color: #003366; font-weight: bold; line-height: 1.2;">
-    才美塾囲碁教室
-  </h1>
-  <!-- 🎵 タイトル下の主題歌プレイヤー -->
-  <div style="display: flex; align-items: center; gap: 8px;">
-    <span style="font-size: 12px; color: #003366; font-weight: bold; white-space: nowrap;">🎵 主題歌・塾歌:</span>
-    <audio controls src="song.mp3" style="height: 28px; width: 100%; max-width: 200px;">
-      お使いのブラウザは音声再生に対応していません。
-    </audio>
+  <!-- タイトルと音声プレイヤー -->
+  <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+    <h1 style="margin: 0; font-size: 32px; color: #003366; font-weight: bold; line-height: 1.2;">
+      才美塾囲碁教室
+    </h1>
+    <!-- 🎵 タイトル下の主題歌プレイヤー -->
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span style="font-size: 12px; color: #003366; font-weight: bold; white-space: nowrap;">🎵 主題歌・塾歌:</span>
+      <audio controls src="song.mp3" style="height: 28px; width: 100%; max-width: 200px;">
+        お使いのブラウザは音声再生に対応していません。
+      </audio>
+    </div>
   </div>
-</div>
 
-<div style="display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 250px;">
-  <!-- 古文書ボタン -->
-  <a href="komonjo.pdf" target="_blank" style="display: block; background-color: #8B4513; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
-    📜 古文書の案内 (PDF)
-  </a>
-  
-  <!-- 🎵 ハーモニカボタン（裏で音を管理・演奏の再生/停止） -->
-  <audio id="harmonica-sound" src="harmonica.mp3" preload="auto"></audio>
-  <button id="harmonica-btn" onclick="toggleHarmonica()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #20B2AA; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
-    🎵 ハーモニカの演奏
-  </button>
-  
-  <!-- 🎹 ピアノボタン（裏で軽いmp3を読み込み、再生/停止。PDFも一緒に開く） -->
-  <audio id="piano-sound" src="piano.mp3" preload="auto"></audio>
-  <button id="piano-btn" onclick="togglePiano()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #333333; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
-    🎹 ピアノの演奏 (PDFも開く)
-  </button>
-</div>
-<!-- 🎵【右半分】：音楽・演奏コーナー（新規追加） -->
+  <div style="display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 250px;">
+    <!-- 古文書ボタン -->
+    <a href="komonjo.pdf" target="_blank" style="display: block; background-color: #8B4513; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
+      📜 古文書の案内 (PDF)
+    </a>
+    
+    <!-- 🎵 ハーモニカボタン（裏で音を管理・演奏の再生/停止） -->
+    <audio id="harmonica-sound" src="harmonica.mp3" preload="auto"></audio>
+    <button id="harmonica-btn" onclick="toggleHarmonica()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #20B2AA; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
+      🎵 ハーモニカの演奏
+    </button>
+    
+    <!-- 🎹 ピアノボタン（裏で軽いmp3を読み込み、再生/停止。PDFも一緒に開く） -->
+    <audio id="piano-sound" src="piano.mp3" preload="auto"></audio>
+    <button id="piano-btn" onclick="togglePiano()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #333333; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
+      🎹 ピアノの演奏 (PDFも開く)
+    </button>
+  </div>
+
+</div> <!-- 💡ここで左半分のエリアをきれいに閉じます -->
+
+
+<!-- 👉【新規追加：右半分の空きスペース】：音楽（演奏動画ボタン・PDF付き） -->
 <div style="flex: 1; min-width: 280px; padding: 15px; background-color: white; border-radius: 6px; border: 1px solid #ddd; box-sizing: border-box; display: flex; flex-direction: column; gap: 15px;">
   
   <!-- ① バイオリン演奏 -->
   <div style="padding-bottom: 10px; border-bottom: 1px dashed #ddd;">
     <h3 style="margin: 0 0 8px 0; font-size: 16px; color: #003366; border-left: 4px solid #b26f1a; padding-left: 8px;">🎻 バイオリン演奏</h3>
     <div style="display: flex; gap: 8px; flex-direction: column;">
-      <!-- 動画切り替えボタン（クリックすると動画プレイヤーが切り替わります） -->
-      <button class="sb-btn" data-video-id="バイオリンのYouTube動画IDを入れてください" onclick="switchYouTube(this)" style="padding: 6px 12px; font-size: 13px; cursor: pointer; border: 1px solid #003366; background-color: white; color: #003366; border-radius: 4px; font-weight: bold; width: 100%; text-align: center;">
+      <!-- 動画選択ボタン：data-video-idに動画IDを指定します -->
+      <button class="sb-btn" data-video-id="ここにバイオリンのYouTube動画IDを入れてください" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #5d6d7e; color: white; padding: 10px; border-radius: 6px; font-weight: bold; font-size: 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-family: inherit;">
         ▶ バイオリン演奏動画を見る
       </button>
-      <!-- PDFリンク -->
       <a href="violin.pdf" target="_blank" style="font-size: 13px; color: #0066cc; text-decoration: underline; font-weight: bold; padding-left: 5px;">
         ➔ 楽譜・プログラム (PDF)
       </a>
@@ -96,26 +101,22 @@
   <div style="padding-bottom: 10px; border-bottom: 1px dashed #ddd;">
     <h3 style="margin: 0 0 8px 0; font-size: 16px; color: #003366; border-left: 4px solid #b26f1a; padding-left: 8px;">🎺 オーケストラ</h3>
     <div style="display: flex; gap: 8px; flex-direction: column;">
-      <!-- 動画切り替えボタン -->
-      <button class="sb-btn" data-video-id="オーケストラのYouTube動画IDを入れてください" onclick="switchYouTube(this)" style="padding: 6px 12px; font-size: 13px; cursor: pointer; border: 1px solid #003366; background-color: white; color: #003366; border-radius: 4px; font-weight: bold; width: 100%; text-align: center;">
+      <button class="sb-btn" data-video-id="ここにオーケストラのYouTube動画IDを入れてください" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #5d6d7e; color: white; padding: 10px; border-radius: 6px; font-weight: bold; font-size: 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-family: inherit;">
         ▶ オーケストラ動画を見る
       </button>
-      <!-- PDFリンク -->
       <a href="orchestra.pdf" target="_blank" style="font-size: 13px; color: #0066cc; text-decoration: underline; font-weight: bold; padding-left: 5px;">
         ➔ 楽譜・プログラム (PDF)
       </a>
     </div>
   </div>
   
-  <!-- ③ 予備コーナー -->
+  <!-- ③ 予備 -->
   <div>
     <h3 style="margin: 0 0 8px 0; font-size: 16px; color: #003366; border-left: 4px solid #b26f1a; padding-left: 8px;">✨ 予備コーナー</h3>
     <div style="display: flex; gap: 8px; flex-direction: column;">
-      <!-- 動画切り替えボタン -->
-      <button class="sb-btn" data-video-id="予備のYouTube動画IDを入れてください" onclick="switchYouTube(this)" style="padding: 6px 12px; font-size: 13px; cursor: pointer; border: 1px solid #003366; background-color: white; color: #003366; border-radius: 4px; font-weight: bold; width: 100%; text-align: center;">
+      <button class="sb-btn" data-video-id="ここに予備のYouTube動画IDを入れてください" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #5d6d7e; color: white; padding: 10px; border-radius: 6px; font-weight: bold; font-size: 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-family: inherit;">
         ▶ 予備の動画を見る
       </button>
-      <!-- PDFリンク -->
       <a href="yobi.pdf" target="_blank" style="font-size: 13px; color: #0066cc; text-decoration: underline; font-weight: bold; padding-left: 5px;">
         ➔ 関連資料ダウンロード (PDF)
       </a>
@@ -124,7 +125,7 @@
 
 </div>
 
-        
+
 <!-- 音楽・効果音をコントロールするスクリプト -->
 <script>
 // --- ハーモニカの制御 ---
@@ -132,7 +133,6 @@ function toggleHarmonica() {
   const sound = document.getElementById('harmonica-sound');
   const btn = document.getElementById('harmonica-btn');
   
-  // ピアノを止める
   document.getElementById('piano-sound').pause();
   document.getElementById('piano-btn').innerHTML = "🎹 ピアノの演奏 (PDFも開く)";
   document.getElementById('piano-btn').style.backgroundColor = "#333333";
@@ -164,7 +164,6 @@ function togglePiano() {
   const sound = document.getElementById('piano-sound');
   const btn = document.getElementById('piano-btn');
   
-  // ハーモニカを止める
   document.getElementById('harmonica-sound').pause();
   document.getElementById('harmonica-btn').innerHTML = "🎵 ハーモニカの演奏";
   document.getElementById('harmonica-btn').style.backgroundColor = "#20B2AA";
@@ -175,8 +174,6 @@ function togglePiano() {
     btn.innerHTML = "⏹️ 演奏を止める";
     btn.style.backgroundColor = "#2c3e50";
     btn.style.color = "#ffffff";
-    
-    // 💡 ピアノの演奏が始まった瞬間に、別タブで案内PDF（piano.pdf）を開く処理を追加！
     window.open('piano.pdf', '_blank');
   } else {
     sound.pause();
@@ -195,8 +192,8 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 </script>
 
 
-<!-- 👉【右半分】：スケジュール・宿題・概要 -->
-<div style="flex: 1; min-width: 280px; padding: 15px; background-color: white; border-radius: 6px; border: 1px solid #ddd; box-sizing: border-box; display: flex; flex-direction: column; gap: 15px;">
+<!-- 👉【下に回り込んだエリア】：スケジュール・宿題・概要 -->
+<div style="flex: 1; min-width: 280px; padding: 15px; background-color: white; border-radius: 6px; border: 1px solid #ddd; box-sizing: border-box; display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
   
   <!-- ① 教室スケジュール -->
   <div>
@@ -222,6 +219,11 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     </p>
   </div>
 </div>
+    
+      
+      
+      
+  
 
 <!-- ■ ネット対局とオンライン交流（メインエリア） ■ -->
 <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 20px; margin-bottom: 30px;">
