@@ -39,7 +39,9 @@
   <!-- 【下部：左右2段組 of エリア】 -->
   <div style="display: flex; flex-wrap: wrap; gap: 30px; box-sizing: border-box;">
     
-    
+
+
+
 <!-- 👈【左半分】：タイトル、主題歌、ボタンメニュー列 -->
 <div style="flex: 1; min-width: 280px; box-sizing: border-box;">
 
@@ -71,31 +73,33 @@
       🎵 ハーモニカの演奏
     </button>
     
-    <!-- ③ ピアノボタン -->
-    <audio id="piano-sound" src="piano.mp3" preload="auto"></auto>
- <button id="piano-btn" onclick="togglePiano()" style="display: block; width: 100%; border: non 
-     
+    <!-- ③ ピアノボタン（確実に復活させました） -->
+    <audio id="piano-sound" src="piano.mp3" preload="auto"></audio>
+    <button id="piano-btn" onclick="togglePiano()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #333333; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
       🎹 ピアノの演奏 (PDFも開く)
     </button>
 
-    <!-- 📐 ④ 手割り 動画ボタン（新規追加：ピアノと同じシックな黒グレー色） -->
+    <!-- 📐 ④ 手割り 動画ボタン -->
     <button class="sb-btn" data-video-id="ここに手割りのYouTube動画IDを入れてください" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #4a5568; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
       📐 「手割り」講義動画
     </button>
 
-    <!-- 🎯 ⑤ 手筋・筋場 動画ボタン（新規追加：才美塾のテーマ紺色） -->
+    <!-- 🎯 ⑤ 手筋・筋場 動画ボタン -->
     <button class="sb-btn" data-video-id="ここに手筋・筋場のYouTube動画IDを入れてください" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #003366; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
       🎯 「手筋・筋場」講義動画
     </button>
 
-    <!-- ✨ ⑥ 予備 動画ボタン（新規追加） -->
+    <!-- ✨ ⑥ 予備 動画ボタン -->
     <button class="sb-btn" data-video-id="ここに予備のYouTube動画IDを入れてください" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #718096; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
       ✨ 予備の動画
     </button>
 
   </div>
 
-</div> <!-- ここで左半分のエリアを閉じます -->
+</div> <!-- ここで左半分のエリアを綺麗に閉じます -->
+
+
+      
 
 
 <!-- 👉【右半分】：関連資料・PDFダウンロードコーナー（すっきり整理） -->
