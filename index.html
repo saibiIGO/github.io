@@ -358,10 +358,9 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     </div>
   </div>
 
-    
-   <!-- スライドショーの基本スタイル -->
+
+ <!-- スライドショーの基本スタイル -->
 <style>
-/* 縦スライドのアニメーション（位置の定義のみ） */
 @keyframes slideShowVertical4 {
   0%, 21%     { transform: translateY(0); } 
   25%, 46%    { transform: translateY(-25%); } 
@@ -370,27 +369,26 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 }
 </style>
 
-<!-- 🛠️ 時間設定用の入力ボックス（管理画面やプレビュー用） -->
-<div style="background-color: #f5f5f5; padding: 15px; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 20px; text-align: left; font-size: 14px;">
-  <strong style="color: #333;">⏱️ 各コマの表示時間（秒）を設定：</strong>
-  <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 10px;">
-    <label>①コマ目: <input type="number" id="time1" value="3" min="1" style="width: 50px; padding: 4px; border: 1px solid #ccc; border-radius: 4px;"> 秒</label>
-    <label>②コマ目: <input type="number" id="time2" value="3" min="1" style="width: 50px; padding: 4px; border: 1px solid #ccc; border-radius: 4px;"> 秒</label>
-    <label>③コマ目: <input type="number" id="time3" value="5" min="1" style="width: 50px; padding: 4px; border: 1px solid #ccc; border-radius: 4px;"> 秒</label>
-    <label>④コマ目: <input type="number" id="time4" value="3" min="1" style="width: 50px; padding: 4px; border: 1px solid #ccc; border-radius: 4px;"> 秒</label>
-    <button onclick="updateSlideSpeed()" style="padding: 4px 12px; background-color: #003366; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">設定を反映</button>
+<!-- 🛠️ 【非表示設定】管理者用の時間設定パネル（普段は display: none; で完全に隠れています） -->
+<div id="admin-time-panel" style="display: none; position: fixed; top: 10px; left: 10px; z-index: 9999; background-color: rgba(0,0,0,0.85); color: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); font-size: 13px; text-align: left; width: 260px;">
+  <strong style="color: #fff; display: block; margin-bottom: 8px;">⏱️ スライド時間設定（管理者用）</strong>
+  <div style="display: flex; flex-direction: column; gap: 8px;">
+    <label>①コマ目: <input type="number" id="time1" value="3" min="1" style="width: 50px; padding: 2px; margin-left: 5px;"> 秒</label>
+    <label>②コマ目: <input type="number" id="time2" value="3" min="1" style="width: 50px; padding: 2px; margin-left: 5px;"> 秒</label>
+    <label>③コマ目: <input type="number" id="time3" value="5" min="1" style="width: 50px; padding: 2px; margin-left: 5px;"> 秒</label>
+    <label>④コマ目: <input type="number" id="time4" value="3" min="1" style="width: 50px; padding: 2px; margin-left: 5px;"> 秒</label>
+    <button onclick="updateSlideSpeed()" style="padding: 5px; background-color: #0055aa; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 5px;">設定を反映</button>
+    <button onclick="toggleAdminPanel()" style="padding: 3px; background-color: #555; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px;">パネルを閉じる</button>
   </div>
-  <p id="speed-status" style="margin: 8px 0 0 0; font-size: 12px; color: #666;">現在の合計時間: 14秒</p>
+  <p id="speed-status" style="margin: 8px 0 0 0; font-size: 11px; color: #ccc;">合計時間: 14秒</p>
 </div>
 
-<!-- 📸 写真ギャラリー本体 -->
+<!-- 📸 写真ギャラリー本体（ユーザーに見える画面） -->
 <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 20px; text-align: center;">
   <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px;">
     <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📸 写真ギャラリー</h3>
     
     <div style="width: 100%; max-width: 100%; height: 240px; overflow: hidden; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; background-color: #fff;">
-      
-      <!-- 【重要】後からプログラムで操作できるように id="slideshow-track" を追加しました -->
       <div id="slideshow-track" style="display: flex; flex-direction: column; width: 100%; height: 400%; animation: slideShowVertical4 14s infinite;">
         
         <!-- 1コマ目 -->
@@ -422,25 +420,40 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   </div>
 </div>
 
-<!-- ⚙️ 入力された秒数を計算して反映するプログラム -->
+<!-- ⚙️ 管理・計算プログラム -->
 <script>
+// 1. 【隠し機能】キーボードの「s」キーを押すと設定パネルが出し入れできる
+document.addEventListener('keydown', function(event) {
+  // 入力欄の中で文字入力しているときは反応させない
+  if (event.target.tagName === 'INPUT') return;
+  
+  // キーボードの「s」(大文字小文字問わず) を押したらパネルを切り替え
+  if (event.key === 's' || event.key === 'S') {
+    toggleAdminPanel();
+  }
+});
+
+// パネルの表示・非表示を切り替える関数
+function toggleAdminPanel() {
+  const panel = document.getElementById('admin-time-panel');
+  if (panel.style.display === 'none') {
+    panel.style.display = 'block';
+  } else {
+    panel.style.display = 'none';
+  }
+}
+
+// 2. 入力された秒数から％を自動計算してスライドショーに反映する
 function updateSlideSpeed() {
-  // 入力ボックスから秒数を取得（数字ではない場合はデフォルト値にする）
   const t1 = parseFloat(document.getElementById('time1').value) || 3;
   const t2 = parseFloat(document.getElementById('time2').value) || 3;
   const t3 = parseFloat(document.getElementById('time3').value) || 5;
   const t4 = parseFloat(document.getElementById('time4').value) || 3;
 
-  // 合計時間を計算
   const totalSeconds = t1 + t2 + t3 + t4;
-
-  // 1秒あたりのパーセントを算出
   const pPerSec = 100 / totalSeconds;
-  
-  // 切り替えに必要なアニメーションの「隙間」を4%（約0.5秒分）とする
   const gap = 4; 
 
-  // 新しい％の配分を計算
   const p1 = Math.round(t1 * pPerSec) - gap;
   const p2_start = p1 + gap;
   const p2_end = Math.round((t1 + t2) * pPerSec) - gap;
@@ -448,7 +461,6 @@ function updateSlideSpeed() {
   const p3_end = Math.round((t1 + t2 + t3) * pPerSec) - gap;
   const p4_start = p3_end + gap;
 
-  // 新しいCSS（@keyframes）を動的に作成
   const newStyleId = 'dynamic-slideshow-style';
   let dynamicStyle = document.getElementById(newStyleId);
   if (!dynamicStyle) {
@@ -457,7 +469,6 @@ function updateSlideSpeed() {
     document.head.appendChild(dynamicStyle);
   }
 
-  // アニメーション内容を書き換え
   dynamicStyle.innerHTML = `
     @keyframes slideShowVertical4 {
       0%, ${p1}% { transform: translateY(0); }
@@ -467,21 +478,17 @@ function updateSlideSpeed() {
     }
   `;
 
-  // スライドショーの要素を取得して、合計時間を上書き適用する
   const track = document.getElementById('slideshow-track');
-  // 一度アニメーションをリセットして再適用
   track.style.animation = 'none';
-  track.offsetHeight; // 画面の再描画を強制
+  track.offsetHeight; 
   track.style.animation = `slideShowVertical4 ${totalSeconds}s infinite`;
 
-  // 画面上のテキスト表示を更新
-  document.getElementById('speed-status').innerText = `現在の合計時間: ${totalSeconds}秒 (①:${t1}秒 / ②:${t2}秒 / ③:${t3}秒 / ④:${t4}秒)`;
+  document.getElementById('speed-status').innerText = `合計: ${totalSeconds}秒 (①:${t1}s / ②:${t2}s / ③:${t3}s / ④:${t4}s)`;
 }
 </script>
+   
+
  
-    
-
-
 
     
 <!-- ==========================================
