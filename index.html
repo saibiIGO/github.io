@@ -487,21 +487,21 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 
 
 
-<!-- ⚙️ 管理・計算プログラム（完成版） -->
+<!-- ⚙️ 管理・計算プログラム（完全修正版） -->
 <script>
 // ==========================================
-// 📦 【問題データ格納庫】修正完了版
+// 📦 【問題データ格納庫】
 // ==========================================
 const tsumegoLibrary = {
   // --- 問題A：先生が最初に作成された画像スライド ---
   problemA: {
     title: "📸 写真ギャラリー（問題A）",
-    times:, // ①コマ目:3s、②コマ目:3s、③コマ目:5s、④コマ目:3s
+    times:, // ①3秒、②3秒、③5秒、④3秒
     
     // 【1コマ目】最初の写真をそのまま表示
     b1: `<img src="photo1.jpg" alt="photo1" style="width: 100%; height: 190px; object-fit: cover; flex-shrink: 0;">`,
     
-    // 【2コマ目】先生の優しくヒントを教えてくれる写真
+    // 【2コマ目】先生が優しくヒントを教えてくれる写真
     b2: `<img src="photo2.jpg" alt="photo2" style="width: 100%; height: 190px; object-fit: cover; flex-shrink: 0;">`,
     
     // 【3コマ目】わかった！ここに打ってみようの写真
@@ -549,7 +549,6 @@ const tsumegoLibrary = {
 
 // キーボード「S」でパネル開閉
 document.addEventListener('keydown', function(event) {
-  // 文字入力中（INPUTやTEXTAREA、SELECT）はショートカットを発動させない
   if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA' || event.target.tagName === 'SELECT') return;
   if (event.key === 's' || event.key === 'S') {
     toggleAdminPanel();
@@ -558,7 +557,9 @@ document.addEventListener('keydown', function(event) {
 
 function toggleAdminPanel() {
   const panel = document.getElementById('admin-time-panel');
-  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  if (panel) {
+    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  }
 }
 
 // 格納庫（ライブラリ）から選択した問題をフォームに読み込む
@@ -584,7 +585,7 @@ function updateSlideSettings() {
   const newTitle = document.getElementById('admin-quiz-title').value;
   document.getElementById('quiz-gallery-title').innerHTML = newTitle;
 
-  // 碁盤（石の配置）をスロットにガバッと流し込む
+  // 碁盤（石の配置）をスロットに流し込む
   document.getElementById('board-slot-1').innerHTML = data ? data.b1 : '';
   document.getElementById('board-slot-2').innerHTML = data ? data.b2 : '';
   document.getElementById('board-slot-3').innerHTML = data ? data.b3 : '';
@@ -625,9 +626,11 @@ function updateSlideSettings() {
   document.head.appendChild(dynamicStyle);
 
   const track = document.getElementById('slideshow-track');
-  track.style.animation = 'none';
-  track.offsetHeight; 
-  track.style.animation = `slideShowVertical4 ${totalSeconds}s infinite`;
+  if (track) {
+    track.style.animation = 'none';
+    track.offsetHeight; 
+    track.style.animation = `slideShowVertical4 ${totalSeconds}s infinite`;
+  }
 
   document.getElementById('speed-status').innerText = `合計: ${totalSeconds}秒 (①:${t1}s / ②:${t2}s / ③:${t3}s / ④:${t4}s)`;
 }
@@ -640,15 +643,6 @@ window.addEventListener('DOMContentLoaded', () => {
 </script>
 
 
-    
-
-    
-    
-
-    
-   
-
- 
 
     
 <!-- ==========================================
