@@ -359,7 +359,193 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   </div>
 
 
-   
+   <!-- スライドショーの基本スタイル -->
+<style>
+@keyframes slideShowVertical4 {
+  0%, 21%     { transform: translateY(0); } 
+  25%, 46%    { transform: translateY(-25%); } 
+  50%, 82%    { transform: translateY(-50%); } 
+  86%, 100%   { transform: translateY(-75%); } 
+}
+
+/* 🧱 詰碁の碁盤を表現する共通スタイル */
+.igo-board-container {
+  width: 100%;
+  height: 190px;
+  background-color: #dfb06c; /* 碁盤の木目色 */
+  background-image: 
+    linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px);
+  background-size: 20px 20px; /* 碁盤のマス目 */
+  background-position: center;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 碁石の共通スタイル */
+.stone {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  box-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+}
+.stone.black {
+  background: radial-gradient(circle at 30% 30%, #555, #000);
+}
+.stone.white {
+  background: radial-gradient(circle at 30% 30%, #fff, #ccc);
+  border: 1px solid #bbb;
+}
+/* 着手点やヒントのマーク */
+.mark-hint {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 2px dashed #ff3333;
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+  0% { transform: scale(0.9); opacity: 0.6; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.6; }
+}
+</style>
+
+<!-- 🛠️ 管理者用の時間設定パネル（Sキーで出し入れ可能） -->
+<div id="admin-time-panel" style="display: none; position: fixed; top: 10px; left: 10px; z-index: 9999; background-color: rgba(0,0,0,0.85); color: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); font-size: 13px; text-align: left; width: 260px;">
+  <strong style="color: #fff; display: block; margin-bottom: 8px;">⏱️ 詰碁スライド時間設定（管理者用）</strong>
+  <div style="display: flex; flex-direction: column; gap: 8px;">
+    <label>①問 目: <input type="number" id="time1" value="3" min="1" style="width: 50px; padding: 2px; margin-left: 5px;"> 秒</label>
+    <label>②ヒント: <input type="number" id="time2" value="3" min="1" style="width: 50px; padding: 2px; margin-left: 5px;"> 秒</label>
+    <label>③正 解: <input type="number" id="time3" value="5" min="1" style="width: 50px; padding: 2px; margin-left: 5px;"> 秒</label>
+    <label>④大成功: <input type="number" id="time4" value="3" min="1" style="width: 50px; padding: 2px; margin-left: 5px;"> 秒</label>
+    <button onclick="updateSlideSpeed()" style="padding: 5px; background-color: #0055aa; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 5px;">設定を反映</button>
+    <button onclick="toggleAdminPanel()" style="padding: 3px; background-color: #555; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px;">パネルを閉じる</button>
+  </div>
+  <p id="speed-status" style="margin: 8px 0 0 0; font-size: 11px; color: #ccc;">合計時間: 14秒</p>
+</div>
+
+<!-- 📐 詰碁4コマスライドギャラリー本体 -->
+<div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 20px; text-align: center;">
+  <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px;">
+    <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">🧩 今週の４コマ詰碁クイズ</h3>
+    
+    <div style="width: 100%; max-width: 100%; height: 240px; overflow: hidden; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; background-color: #fff;">
+      <div id="slideshow-track" style="display: flex; flex-direction: column; width: 100%; height: 400%; animation: slideShowVertical4 14s infinite;">
+        
+        <!-- 1コマ目：問題 -->
+        <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box;">
+          <div class="igo-board-container">
+            <!-- 囲碁盤の上に配置する石（サンプルの位置です。後述の方法で変更できます） -->
+            <div class="stone black" style="top: 70px; left: 110px;"></div>
+            <div class="stone black" style="top: 90px; left: 130px;"></div>
+            <div class="stone white" style="top: 70px; left: 130px;"></div>
+            <div class="stone white" style="top: 90px; left: 110px;"></div>
+          </div>
+          <p style="margin: 0; padding: 10px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff; line-height: 1.4;">① 黒番：どこに打てばいいんだろう…？</p>
+        </div>
+
+        <!-- 2コマ目：ヒント -->
+        <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box;">
+          <div class="igo-board-container">
+            <div class="stone black" style="top: 70px; left: 110px;"></div>
+            <div class="stone black" style="top: 90px; left: 130px;"></div>
+            <div class="stone white" style="top: 70px; left: 130px;"></div>
+            <div class="stone white" style="top: 90px; left: 110px;"></div>
+            <!-- 点滅するヒントマーク -->
+            <div class="mark-hint" style="top: 72px; left: 92px;"></div>
+          </div>
+          <p style="margin: 0; padding: 10px 0; font-size: 13px; color: #d9534f; font-weight: bold; background-color: #fff; line-height: 1.4;">② 先生からのヒント：このあたりが怪しいよ！</p>
+        </div>
+
+        <!-- 3コマ目：正解 -->
+        <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box;">
+          <div class="igo-board-container">
+            <div class="stone black" style="top: 70px; left: 110px;"></div>
+            <div class="stone black" style="top: 90px; left: 130px;"></div>
+            <div class="stone white" style="top: 70px; left: 130px;"></div>
+            <div class="stone white" style="top: 90px; left: 110px;"></div>
+            <!-- 正解の黒石を置く（赤枠付きで分かりやすく） -->
+            <div class="stone black" style="top: 70px; left: 90px; outline: 2px solid red;"></div>
+          </div>
+          <p style="margin: 0; padding: 10px 0; font-size: 13px; color: #003366; font-weight: bold; background-color: #fff; line-height: 1.4;">③ わかった！ここに打てば正解だ！</p>
+        </div>
+
+        <!-- 4コマ目：大成功 -->
+        <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between; box-box-sizing: border-box;">
+          <div class="igo-board-container" style="background-color: #fffde7;">
+            <!-- お祝いの文字や派手な演出など -->
+            <span style="font-size: 40px;">🎉💮🎉</span>
+          </div>
+          <p style="margin: 0; padding: 10px 0; font-size: 13px; color: #5cb85c; font-weight: bold; background-color: #fff; line-height: 1.4;">④ やったね！詰碁クリア！大成功！</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ⚙️ 管理・計算プログラム -->
+<script>
+document.addEventListener('keydown', function(event) {
+  if (event.target.tagName === 'INPUT') return;
+  if (event.key === 's' || event.key === 'S') {
+    toggleAdminPanel();
+  }
+});
+
+function toggleAdminPanel() {
+  const panel = document.getElementById('admin-time-panel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+
+function updateSlideSpeed() {
+  const t1 = parseFloat(document.getElementById('time1').value) || 3;
+  const t2 = parseFloat(document.getElementById('time2').value) || 3;
+  const t3 = parseFloat(document.getElementById('time3').value) || 5;
+  const t4 = parseFloat(document.getElementById('time4').value) || 3;
+
+  const totalSeconds = t1 + t2 + t3 + t4;
+  const pPerSec = 100 / totalSeconds;
+  const gap = 4; 
+
+  const p1 = Math.round(t1 * pPerSec) - gap;
+  const p2_start = p1 + gap;
+  const p2_end = Math.round((t1 + t2) * pPerSec) - gap;
+  const p3_start = p2_end + gap;
+  const p3_end = Math.round((t1 + t2 + t3) * pPerSec) - gap;
+  const p4_start = p3_end + gap;
+
+  const newStyleId = 'dynamic-slideshow-style';
+  let dynamicStyle = document.getElementById(newStyleId);
+  if (!dynamicStyle) {
+    dynamicStyle = document.createElement('style');
+    dynamicStyle.id = newStyleId;
+    document.head.appendChild(dynamicStyle);
+  }
+
+  dynamicStyle.innerHTML = `
+    @keyframes slideShowVertical4 {
+      0%, ${p1}% { transform: translateY(0); }
+      ${p2_start}%, ${p2_end}% { transform: translateY(-25%); }
+      ${p3_start}%, ${p3_end}% { transform: translateY(-50%); }
+      ${p4_start}%, 100% { transform: translateY(-75%); }
+    }
+  `;
+
+  const track = document.getElementById('slideshow-track');
+  track.style.animation = 'none';
+  track.offsetHeight; 
+  track.style.animation = `slideShowVertical4 ${totalSeconds}s infinite`;
+
+  document.getElementById('speed-status').innerText = `合計: ${totalSeconds}秒 (①:${t1}s / ②:${t2}s / ③:${t3}s / ④:${t4}s)`;
+}
+</script>
+
 
  
 
