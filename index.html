@@ -360,8 +360,8 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 
 
 
-    
-    <!-- スライドショーの基本スタイル -->
+
+<!-- スライドショーの基本スタイル -->
 <style>
 @keyframes slideShowVertical4 {
   0%, 21%     { transform: translateY(0); } 
@@ -405,26 +405,36 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   animation: pulse 1.5s infinite;
 }
 @keyframes pulse {
-  0% { transform: scale(0.9); opacity: 0.6; }
+  0 { transform: scale(0.9); opacity: 0.6; }
   50% { transform: scale(1.2); opacity: 1; }
   100% { transform: scale(0.9); opacity: 0.6; }
 }
 </style>
 
 <!-- 🛠️ 管理者用の隠し設定パネル（Sキーで表示/非表示） -->
-<div id="admin-time-panel" style="display: none; position: fixed; top: 10px; left: 10px; z-index: 9999; background-color: rgba(0,0,0,0.9); color: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); font-size: 13px; text-align: left; width: 280px; box-sizing: border-box;">
-  <strong style="color: #fff; display: block; margin-bottom: 12px; font-size: 14px; border-bottom: 1px solid #555; padding-bottom: 5px;">⚙️ 4コマ詰碁 設定パネル</strong>
+<div id="admin-time-panel" style="display: none; position: fixed; top: 10px; left: 10px; z-index: 9999; background-color: rgba(0,0,0,0.95); color: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); font-size: 13px; text-align: left; width: 280px; box-sizing: border-box;">
+  <strong style="color: #fff; display: block; margin-bottom: 12px; font-size: 14px; border-bottom: 1px solid #555; padding-bottom: 5px;">⚙️ 4コマ詰碁 管理パネル</strong>
   
   <div style="display: flex; flex-direction: column; gap: 10px;">
-    <!-- ✍️ タイトル編集ボックスを追加しました -->
+    
+    <!-- 📦 格納庫から問題を選ぶメニュー（追加） -->
     <label style="display: flex; flex-direction: column; gap: 4px;">
-      <span>📌 スライドのタイトル：</span>
-      <input type="text" id="admin-quiz-title" value="🧩 今週の４コマ手筋クイズ" style="width: 100%; padding: 4px; border-radius: 4px; border: 1px solid #ccc; color: #333;">
+      <span style="color: #5cb85c; font-weight: bold;">📦 格納庫から問題を選択：</span>
+      <select id="admin-problem-select" onchange="loadProblemFromLibrary()" style="width: 100%; padding: 4px; border-radius: 4px; color: #333; font-weight: bold; background-color: #fff;">
+        <option value="problemA">問題A：基本の手筋クイズ</option>
+        <option value="problemB">問題B：ウッテガエの手筋クイズ</option>
+        <option value="problemC">問題C：シチョウの問題</option>
+      </select>
+    </label>
+
+    <label style="display: flex; flex-direction: column; gap: 4px; margin-top: 5px;">
+      <span>📌 タイトル（個別修正も可能）：</span>
+      <input type="text" id="admin-quiz-title" value="" style="width: 100%; padding: 4px; border-radius: 4px; border: 1px solid #ccc; color: #333;">
     </label>
 
     <div style="margin-top: 5px; border-top: 1px solid #555; padding-top: 8px;">
-      <span style="display: block; margin-bottom: 5px;">⏱️ 表示時間（秒）：</span>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+      <span>⏱️ 表示時間（秒）：</span>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px;">
         <label>①問題: <input type="number" id="time1" value="3" min="1" style="width: 45px; padding: 2px; color: #333;"></label>
         <label>②ヒント: <input type="number" id="time2" value="3" min="1" style="width: 45px; padding: 2px; color: #333;"></label>
         <label>③正解: <input type="number" id="time3" value="5" min="1" style="width: 45px; padding: 2px; color: #333;"></label>
@@ -432,7 +442,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       </div>
     </div>
 
-    <button onclick="updateSlideSettings()" style="padding: 6px; background-color: #0055aa; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 5px;">設定を反映</button>
+    <button onclick="updateSlideSettings()" style="padding: 6px; background-color: #0055aa; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 5px;">設定を反映（公開）</button>
     <button onclick="toggleAdminPanel()" style="padding: 4px; background-color: #555; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; text-align: center;">パネルを閉じる</button>
   </div>
   <p id="speed-status" style="margin: 8px 0 0 0; font-size: 11px; color: #ccc;">合計時間: 14秒</p>
@@ -441,7 +451,6 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 <!-- 📐 詰碁4コマスライドギャラリー本体 -->
 <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 20px; text-align: center;">
   <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px;">
-    <!-- 【変更ポイント】後から書き換えられるように id="quiz-gallery-title" をつけました -->
     <h3 id="quiz-gallery-title" style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">🧩 今週の４コマ手筋クイズ</h3>
     
     <div style="width: 100%; max-width: 100%; height: 240px; overflow: hidden; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; background-color: #fff;">
@@ -449,44 +458,25 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         
         <!-- 1コマ目：問題 -->
         <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box;">
-          <div class="igo-board-container">
-            <div class="stone black" style="top: 70px; left: 110px;"></div>
-            <div class="stone black" style="top: 90px; left: 130px;"></div>
-            <div class="stone white" style="top: 70px; left: 130px;"></div>
-            <div class="stone white" style="top: 90px; left: 110px;"></div>
-          </div>
+          <div id="board-slot-1" class="igo-board-container"></div>
           <p style="margin: 0; padding: 10px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff; line-height: 1.4;">① 黒番：どこに打てばいいんだろう…？</p>
         </div>
 
         <!-- 2コマ目：ヒント -->
         <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box;">
-          <div class="igo-board-container">
-            <div class="stone black" style="top: 70px; left: 110px;"></div>
-            <div class="stone black" style="top: 90px; left: 130px;"></div>
-            <div class="stone white" style="top: 70px; left: 130px;"></div>
-            <div class="stone white" style="top: 90px; left: 110px;"></div>
-            <div class="mark-hint" style="top: 72px; left: 92px;"></div>
-          </div>
+          <div id="board-slot-2" class="igo-board-container"></div>
           <p style="margin: 0; padding: 10px 0; font-size: 13px; color: #d9534f; font-weight: bold; background-color: #fff; line-height: 1.4;">② 先生からのヒント：このあたりが怪しいよ！</p>
         </div>
 
         <!-- 3コマ目：正解 -->
         <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box;">
-          <div class="igo-board-container">
-            <div class="stone black" style="top: 70px; left: 110px;"></div>
-            <div class="stone black" style="top: 90px; left: 130px;"></div>
-            <div class="stone white" style="top: 70px; left: 130px;"></div>
-            <div class="stone white" style="top: 90px; left: 110px;"></div>
-            <div class="stone black" style="top: 70px; left: 90px; outline: 2px solid red;"></div>
-          </div>
+          <div id="board-slot-3" class="igo-board-container"></div>
           <p style="margin: 0; padding: 10px 0; font-size: 13px; color: #003366; font-weight: bold; background-color: #fff; line-height: 1.4;">③ わかった！ここに打てば正解だ！</p>
         </div>
 
         <!-- 4コマ目：大成功 -->
         <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box;">
-          <div class="igo-board-container" style="background-color: #fffde7;">
-            <span style="font-size: 40px;">🎉💮🎉</span>
-          </div>
+          <div id="board-slot-4" class="igo-board-container"></div>
           <p style="margin: 0; padding: 10px 0; font-size: 13px; color: #5cb85c; font-weight: bold; background-color: #fff; line-height: 1.4;">④ やったね！詰碁クリア！大成功！</p>
         </div>
 
@@ -497,67 +487,81 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 
 <!-- ⚙️ 管理・計算プログラム -->
 <script>
-document.addEventListener('keydown', function(event) {
-  // 文字入力中（INPUTやTEXTAREA）はショートカットを発動させない
-  if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
-  if (event.key === 's' || event.key === 'S') {
-    toggleAdminPanel();
+// ==========================================
+// 📦 【問題データ格納庫】ここを自由に書き換え・追加できます！
+// ==========================================
+const tsumegoLibrary = {
+  // --- 問題A ---
+  problemA: {
+    title: "🧩 今週の４コマ手筋クイズ（問題A）",
+    times:, // 各コマの秒数
+    b1: `<!-- 黒石2つ、白石2つ -->
+         <div class="stone black" style="top:70px; left:110px;"></div>
+         <div class="stone black" style="top:90px; left:130px;"></div>
+         <div class="stone white" style="top:70px; left:130px;"></div>
+         <div class="stone white" style="top:90px; left:110px;"></div>`,
+    b2: `<!-- 問題の石 ＋ 点滅ヒント -->
+         <div class="stone black" style="top:70px; left:110px;"></div>
+         <div class="stone black" style="top:90px; left:130px;"></div>
+         <div class="stone white" style="top:70px; left:130px;"></div>
+         <div class="stone white" style="top:90px; left:110px;"></div>
+         <div class="mark-hint" style="top:72px; left:92px;"></div>`,
+    b3: `<!-- 問題の石 ＋ 正解の黒石(赤枠) -->
+         <div class="stone black" style="top:70px; left:110px;"></div>
+         <div class="stone black" style="top:90px; left:130px;"></div>
+         <div class="stone white" style="top:70px; left:130px;"></div>
+         <div class="stone white" style="top:90px; left:110px;"></div>
+         <div class="stone black" style="top:70px; left:90px; outline:2px solid red;"></div>`,
+    b4: `<span style="font-size:40px;">🎉💮🎉</span>`
+  },
+
+  // --- 問題B ---
+  problemB: {
+    title: "🧩 今週の詰碁クイズ（問題B：ウッテガエ）",
+    times:,
+    b1: `<!-- 白石を囲む配置 -->
+         <div class="stone white" style="top:80px; left:100px;"></div>
+         <div class="stone black" style="top:60px; left:100px;"></div>
+         <div class="stone black" style="top:80px; left:80px;"></div>`,
+    b2: `<!-- 白石を囲む配置 ＋ ヒント -->
+         <div class="stone white" style="top:80px; left:100px;"></div>
+         <div class="stone black" style="top:60px; left:100px;"></div>
+         <div class="stone black" style="top:80px; left:80px;"></div>
+         <div class="mark-hint" style="top:82px; left:122px;"></div>`,
+    b3: `<!-- 正解 -->
+         <div class="stone white" style="top:80px; left:100px;"></div>
+         <div class="stone black" style="top:60px; left:100px;"></div>
+         <div class="stone black" style="top:80px; left:80px;"></div>
+         <div class="stone black" style="top:80px; left:120px; outline:2px solid red;"></div>`,
+    b4: `<span style="font-size:40px;">✨大正解✨</span>`
+  },
+
+  // --- 問題C ---
+  problemC: {
+    title: "🧩 チャレンジ詰碁（問題C：シチョウ）",
+    times:,
+    b1: `<div class="stone black" style="top:100px; left:100px;"></div>`,
+    b2: `<div class="stone black" style="top:100px; left:100px;"></div><div class="mark-hint" style="top:102px; left:122px;"></div>`,
+    b3: `<div class="stone black" style="top:100px; left:100px;"></div><div class="stone black" style="top:100px; left:120px; outline:2px solid red;"></div>`,
+    b4: `<span style="font-size:40px;">👍 ナイス！</span>`
   }
+};
+
+// ==========================================
+// ⚙️ システム処理部分
+// ==========================================
+
+// キーボード「S」でパネル開閉
+document.addEventListener('keydown', function(event) {
+  if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA' || event.target.tagName === 'SELECT') return;
+  if (event.key === 's' || event.key === 'S') { toggleAdminPanel(); }
 });
 
 function toggleAdminPanel() {
   const panel = document.getElementById('admin-time-panel');
-  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-}
 
-// 時間とタイトルの両方を更新する関数
-function updateSlideSettings() {
-  // 1. タイトルの変更を反映
-  const newTitle = document.getElementById('admin-quiz-title').value || "🧩 今週の４コマ手筋クイズ";
-  document.getElementById('quiz-gallery-title').innerHTML = newTitle;
-
-  // 2. 時間の変更と％計算
-  const t1 = parseFloat(document.getElementById('time1').value) || 3;
-  const t2 = parseFloat(document.getElementById('time2').value) || 3;
-  const t3 = parseFloat(document.getElementById('time3').value) || 5;
-  const t4 = parseFloat(document.getElementById('time4').value) || 3;
-
-  const totalSeconds = t1 + t2 + t3 + t4;
-  const pPerSec = 100 / totalSeconds;
-  const gap = 4; 
-
-  const p1 = Math.round(t1 * pPerSec) - gap;
-  const p2_start = p1 + gap;
-  const p2_end = Math.round((t1 + t2) * pPerSec) - gap;
-  const p3_start = p2_end + gap;
-  const p3_end = Math.round((t1 + t2 + t3) * pPerSec) - gap;
-  const p4_start = p3_end + gap;
-
-  const newStyleId = 'dynamic-slideshow-style';
-  let dynamicStyle = document.getElementById(newStyleId);
-  if (!dynamicStyle) {
-    dynamicStyle = document.createElement('style');
-    dynamicStyle.id = newStyleId;
-  }
-
-  dynamicStyle.innerHTML = `
-    @keyframes slideShowVertical4 {
-      0%, ${p1}% { transform: translateY(0); }
-      ${p2_start}%, ${p2_end}% { transform: translateY(-25%); }
-      ${p3_start}%, ${p3_end}% { transform: translateY(-50%); }
-      ${p4_start}%, 100% { transform: translateY(-75%); }
-    }
-  `;
-  document.head.appendChild(dynamicStyle);
-
-  const track = document.getElementById('slideshow-track');
-  track.style.animation = 'none';
-  track.offsetHeight; 
-  track.style.animation = `slideShowVertical4 ${totalSeconds}s infinite`;
-
-  document.getElementById('speed-status').innerText = `合計: ${totalSeconds}秒 (①:${t1}s / ②:${t2}s / ③:${t3}s / ④:${t4}s)`;
-}
-</script>
+    
+    
 
     
    
