@@ -357,7 +357,60 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       </div>
     </div>
   </div>
+<!-- アニメーション用のCSS（HTMLの上部や、同じファイル内に貼り付けてください） -->
+<style>
+@keyframes slideShowVertical4 {
+  0%, 20% { transform: translateY(0); }       /* 1コマ目表示 */
+  25%, 45% { transform: translateY(-25%); }   /* 2コマ目表示 */
+  50%, 70% { transform: translateY(-50%); }   /* 3コマ目表示 */
+  75%, 95% { transform: translateY(-75%); }   /* 4コマ目表示 */
+  100% { transform: translateY(0); }          /* 1コマ目に戻る */
+}
+</style>
 
+<!-- 👉【右側】：写真ギャラリー（4コマ漫画風スライドショー） -->
+<div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 20px; text-align: center;">
+  <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px;">
+    <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📸 写真ギャラリー</h3>
+    
+    <!-- 外枠の高さ（height）を、画像＋文字が収まる「240px」に設定 -->
+    <div style="width: 100%; max-width: 100%; height: 240px; overflow: hidden; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; background-color: #fff;">
+      <!-- スライドする中身（高さを400%に設定） -->
+      <div style="display: flex; flex-direction: column; width: 100%; height: 400%; animation: slideShowVertical4 20s infinite;">
+        
+        <!-- 1コマ目（1コマあたりの高さを外枠と同じ240pxにするため、全体400%の中の25%に設定） -->
+        <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box;">
+          <img src="photo1.jpg" alt="photo1" style="width: 100%; height: 190px; object-fit: cover; flex-shrink: 0;">
+          <p style="margin: 0; padding: 10px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff; line-height: 1.4;">① どこに打てばいいんだろう…？</p>
+        </div>
+
+        <!-- 2コマ目 -->
+        <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box;">
+          <img src="photo2.jpg" alt="photo2" style="width: 100%; height: 190px; object-fit: cover; flex-shrink: 0;">
+          <p style="margin: 0; padding: 10px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff; line-height: 1.4;">② 先生が優しくヒントを教えてくれるよ！</p>
+        </div>
+
+        <!-- 3コマ目 -->
+        <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box;">
+          <img src="photo3.jpg" alt="photo3" style="width: 100%; height: 190px; object-fit: cover; flex-shrink: 0;">
+          <p style="margin: 0; padding: 10px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff; line-height: 1.4;">③ わかった！ここに打ってみよう！</p>
+        </div>
+
+        <!-- 4コマ目（※文言が3コマ目と同じになっていたため④に変更しました） -->
+        <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box;">
+          <img src="photo4.jpg" alt="photo4" style="width: 100%; height: 190px; object-fit: cover; flex-shrink: 0;">
+          <p style="margin: 0; padding: 10px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff; line-height: 1.4;">④ やったね！大成功！</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+    
   <!-- 👉【右側】：写真ギャラリー（4コマ漫画風スライドショー） -->
   <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 20px; text-align: center;">
     <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px;">
