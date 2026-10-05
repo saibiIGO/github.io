@@ -486,7 +486,8 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 </div>
 
 
-<!-- ⚙️ 管理・計算プログラム（完全修正版） -->
+
+ <!-- ⚙️ 管理・計算プログラム（完全修正版） -->
 <script>
 // ==========================================
 // 📦 【問題データ格納庫】
@@ -498,8 +499,8 @@ const tsumegoLibrary = {
     time1: 3,
     time2: 3,
     time3: 5,
-    time4: 3,   
-      
+    time4: 3,
+    
     // 【1コマ目】最初の写真をそのまま表示
     b1: `<img src="photo1.jpg" alt="photo1" style="width: 100%; height: 190px; object-fit: cover; flex-shrink: 0;">`,
     
@@ -516,7 +517,10 @@ const tsumegoLibrary = {
   // --- 問題B：ウッテガエの手筋（碁盤） ---
   problemB: {
     title: "🧩 今週の詰碁クイズ（問題B：ウッテガエ）",
-    times:,
+    time1: 3,
+    time2: 3,
+    time3: 5,
+    time4: 3,
     b1: `<!-- 白石を囲む配置 -->
          <div class="stone white" style="top:80px; left:100px;"></div>
          <div class="stone black" style="top:60px; left:100px;"></div>
@@ -537,7 +541,10 @@ const tsumegoLibrary = {
   // --- 問題C：シチョウの問題（碁盤） ---
   problemC: {
     title: "🧩 チャレンジ詰碁（問題C：シチョウ）",
-    times:,
+    time1: 3,
+    time2: 3,
+    time3: 5,
+    time4: 3,
     b1: `<div class="stone black" style="top:100px; left:100px;"></div>`,
     b2: `<div class="stone black" style="top:100px; left:100px;"></div><div class="mark-hint" style="top:102px; left:122px;"></div>`,
     b3: `<div class="stone black" style="top:100px; left:100px;"></div><div class="stone black" style="top:100px; left:120px; outline:2px solid red;"></div>`,
@@ -571,10 +578,10 @@ function loadProblemFromLibrary() {
   
   if (data) {
     document.getElementById('admin-quiz-title').value = data.title;
-    document.getElementById('time1').value = data.times[0];
-    document.getElementById('time2').value = data.times[1];
-    document.getElementById('time3').value = data.times[2];
-    document.getElementById('time4').value = data.times[3];
+    document.getElementById('time1').value = data.time1;
+    document.getElementById('time2').value = data.time2;
+    document.getElementById('time3').value = data.time3;
+    document.getElementById('time4').value = data.time4;
   }
 }
 
@@ -588,10 +595,15 @@ function updateSlideSettings() {
   document.getElementById('quiz-gallery-title').innerHTML = newTitle;
 
   // 碁盤（石の配置）をスロットに流し込む
-  document.getElementById('board-slot-1').innerHTML = data ? data.b1 : '';
-  document.getElementById('board-slot-2').innerHTML = data ? data.b2 : '';
-  document.getElementById('board-slot-3').innerHTML = data ? data.b3 : '';
-  document.getElementById('board-slot-4').innerHTML = data ? data.b4 : '';
+  const slot1 = document.getElementById('board-slot-1');
+  const slot2 = document.getElementById('board-slot-2');
+  const slot3 = document.getElementById('board-slot-3');
+  const slot4 = document.getElementById('board-slot-4');
+
+  if(slot1) slot1.innerHTML = data ? data.b1 : '';
+  if(slot2) slot2.innerHTML = data ? data.b2 : '';
+  if(slot3) slot3.innerHTML = data ? data.b3 : '';
+  if(slot4) slot4.innerHTML = data ? data.b4 : '';
 
   // 時間計算 ＆ ％割り振り
   const t1 = parseFloat(document.getElementById('time1').value) || 3;
@@ -643,6 +655,11 @@ window.addEventListener('DOMContentLoaded', () => {
   updateSlideSettings();
 });
 </script>
+   
+    
+    
+    
+
 
 
 
