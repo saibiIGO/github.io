@@ -485,37 +485,33 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   </div>
 </div>
 
-<!-- ⚙️ 管理・計算プログラム -->
+
+
+<!-- ⚙️ 管理・計算プログラム（完成版） -->
 <script>
 // ==========================================
-// 📦 【問題データ格納庫】ここを自由に書き換え・追加できます！
+// 📦 【問題データ格納庫】修正完了版
 // ==========================================
 const tsumegoLibrary = {
-  // --- 問題A ---
+  // --- 問題A：先生が最初に作成された画像スライド ---
   problemA: {
-    title: "🧩 今週の４コマ手筋クイズ（問題A）",
-    times:, // 各コマの秒数
-    b1: `<!-- 黒石2つ、白石2つ -->
-         <div class="stone black" style="top:70px; left:110px;"></div>
-         <div class="stone black" style="top:90px; left:130px;"></div>
-         <div class="stone white" style="top:70px; left:130px;"></div>
-         <div class="stone white" style="top:90px; left:110px;"></div>`,
-    b2: `<!-- 問題の石 ＋ 点滅ヒント -->
-         <div class="stone black" style="top:70px; left:110px;"></div>
-         <div class="stone black" style="top:90px; left:130px;"></div>
-         <div class="stone white" style="top:70px; left:130px;"></div>
-         <div class="stone white" style="top:90px; left:110px;"></div>
-         <div class="mark-hint" style="top:72px; left:92px;"></div>`,
-    b3: `<!-- 問題の石 ＋ 正解の黒石(赤枠) -->
-         <div class="stone black" style="top:70px; left:110px;"></div>
-         <div class="stone black" style="top:90px; left:130px;"></div>
-         <div class="stone white" style="top:70px; left:130px;"></div>
-         <div class="stone white" style="top:90px; left:110px;"></div>
-         <div class="stone black" style="top:70px; left:90px; outline:2px solid red;"></div>`,
-    b4: `<span style="font-size:40px;">🎉💮🎉</span>`
+    title: "📸 写真ギャラリー（問題A）",
+    times:, // ①コマ目:3s、②コマ目:3s、③コマ目:5s、④コマ目:3s
+    
+    // 【1コマ目】最初の写真をそのまま表示
+    b1: `<img src="photo1.jpg" alt="photo1" style="width: 100%; height: 190px; object-fit: cover; flex-shrink: 0;">`,
+    
+    // 【2コマ目】先生の優しくヒントを教えてくれる写真
+    b2: `<img src="photo2.jpg" alt="photo2" style="width: 100%; height: 190px; object-fit: cover; flex-shrink: 0;">`,
+    
+    // 【3コマ目】わかった！ここに打ってみようの写真
+    b3: `<img src="photo3.jpg" alt="photo3" style="width: 100%; height: 190px; object-fit: cover; flex-shrink: 0;">`,
+    
+    // 【4コマ目】最後の仕上げ（4枚目の写真）
+    b4: `<img src="photo4.jpg" alt="photo4" style="width: 100%; height: 190px; object-fit: cover; flex-shrink: 0;">`
   },
 
-  // --- 問題B ---
+  // --- 問題B：ウッテガエの手筋（碁盤） ---
   problemB: {
     title: "🧩 今週の詰碁クイズ（問題B：ウッテガエ）",
     times:,
@@ -536,7 +532,7 @@ const tsumegoLibrary = {
     b4: `<span style="font-size:40px;">✨大正解✨</span>`
   },
 
-  // --- 問題C ---
+  // --- 問題C：シチョウの問題（碁盤） ---
   problemC: {
     title: "🧩 チャレンジ詰碁（問題C：シチョウ）",
     times:,
@@ -553,12 +549,98 @@ const tsumegoLibrary = {
 
 // キーボード「S」でパネル開閉
 document.addEventListener('keydown', function(event) {
+  // 文字入力中（INPUTやTEXTAREA、SELECT）はショートカットを発動させない
   if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA' || event.target.tagName === 'SELECT') return;
-  if (event.key === 's' || event.key === 'S') { toggleAdminPanel(); }
+  if (event.key === 's' || event.key === 'S') {
+    toggleAdminPanel();
+  }
 });
 
 function toggleAdminPanel() {
   const panel = document.getElementById('admin-time-panel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+
+// 格納庫（ライブラリ）から選択した問題をフォームに読み込む
+function loadProblemFromLibrary() {
+  const selectedKey = document.getElementById('admin-problem-select').value;
+  const data = tsumegoLibrary[selectedKey];
+  
+  if (data) {
+    document.getElementById('admin-quiz-title').value = data.title;
+    document.getElementById('time1').value = data.times[0];
+    document.getElementById('time2').value = data.times[1];
+    document.getElementById('time3').value = data.times[2];
+    document.getElementById('time4').value = data.times[3];
+  }
+}
+
+// 設定をスライドショーに反映（公開）する
+function updateSlideSettings() {
+  const selectedKey = document.getElementById('admin-problem-select').value;
+  const data = tsumegoLibrary[selectedKey];
+  
+  // タイトル反映
+  const newTitle = document.getElementById('admin-quiz-title').value;
+  document.getElementById('quiz-gallery-title').innerHTML = newTitle;
+
+  // 碁盤（石の配置）をスロットにガバッと流し込む
+  document.getElementById('board-slot-1').innerHTML = data ? data.b1 : '';
+  document.getElementById('board-slot-2').innerHTML = data ? data.b2 : '';
+  document.getElementById('board-slot-3').innerHTML = data ? data.b3 : '';
+  document.getElementById('board-slot-4').innerHTML = data ? data.b4 : '';
+
+  // 時間計算 ＆ ％割り振り
+  const t1 = parseFloat(document.getElementById('time1').value) || 3;
+  const t2 = parseFloat(document.getElementById('time2').value) || 3;
+  const t3 = parseFloat(document.getElementById('time3').value) || 5;
+  const t4 = parseFloat(document.getElementById('time4').value) || 3;
+
+  const totalSeconds = t1 + t2 + t3 + t4;
+  const pPerSec = 100 / totalSeconds;
+  const gap = 4; 
+
+  const p1 = Math.round(t1 * pPerSec) - gap;
+  const p2_start = p1 + gap;
+  const p2_end = Math.round((t1 + t2) * pPerSec) - gap;
+  const p3_start = p2_end + gap;
+  const p3_end = Math.round((t1 + t2 + t3) * pPerSec) - gap;
+  const p4_start = p3_end + gap;
+
+  const newStyleId = 'dynamic-slideshow-style';
+  let dynamicStyle = document.getElementById(newStyleId);
+  if (!dynamicStyle) {
+    dynamicStyle = document.createElement('style');
+    dynamicStyle.id = newStyleId;
+  }
+
+  dynamicStyle.innerHTML = `
+    @keyframes slideShowVertical4 {
+      0%, ${p1}% { transform: translateY(0); }
+      ${p2_start}%, ${p2_end}% { transform: translateY(-25%); }
+      ${p3_start}%, ${p3_end}% { transform: translateY(-50%); }
+      ${p4_start}%, 100% { transform: translateY(-75%); }
+    }
+  `;
+  document.head.appendChild(dynamicStyle);
+
+  const track = document.getElementById('slideshow-track');
+  track.style.animation = 'none';
+  track.offsetHeight; 
+  track.style.animation = `slideShowVertical4 ${totalSeconds}s infinite`;
+
+  document.getElementById('speed-status').innerText = `合計: ${totalSeconds}秒 (①:${t1}s / ②:${t2}s / ③:${t3}s / ④:${t4}s)`;
+}
+
+// 最初（ページ読み込み時）に問題Aを自動セットしておく
+window.addEventListener('DOMContentLoaded', () => {
+  loadProblemFromLibrary();
+  updateSlideSettings();
+});
+</script>
+
+
+    
 
     
     
