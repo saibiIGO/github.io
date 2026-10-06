@@ -184,61 +184,147 @@ function switchYouTube(button) {
 
       
 <!-- 👉【右半分】：関連資料・PDFダウンロードコーナー -->
-<div style="flex: 1; min-width: 280px; padding: 15px; background-color: #ffffff; border-radius: 6px; border: 1px solid #ddd; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px;">
-  <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 5px;">📚 講義の関連資料 (PDF)</h3>
+<!-- ==========================================
+     1. CSSコード（見た目の設定）
+=========================================== -->
+<style>
+/* 共通のボックスデザイン */
+.igo-sidebar-box {
+  flex: 1;
+  min-width: 280px;
+  padding: 15px;
+  background-color: #ffffff;
+  border-radius: 6px;
+  border: 1px solid #dddddd;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 上のボックス（資料ダウンロード） */
+.igo-box-download {
+  gap: 10px;
+}
+
+.igo-box-download .igo-title {
+  margin: 0 0 5px 0;
+  font-size: 16px;
+  color: #003366;
+  font-weight: bold;
+  border-bottom: 2px solid #003366;
+  padding-bottom: 5px;
+}
+
+.igo-download-item {
+  border-bottom: 1px dashed #dddddd;
+}
+
+.igo-download-item:last-child {
+  border-bottom: none;
+}
+
+/* 下のボックス（スケジュール・概要） */
+.igo-box-info {
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.igo-box-info .igo-title {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  color: #333333;
+  border-left: 4px solid #003366;
+  padding-left: 8px;
+}
+
+/* 共通のテキストスタイル */
+.igo-box-info p {
+  margin: 0;
+  font-size: 13px;
+  color: #666666;
+  line-height: 1.6;
+}
+
+/* 共通のリンクボタン */
+.igo-link {
+  display: block;
+  padding: 8px 0;
+  font-size: 14px;
+  color: #0066cc;
+  text-decoration: underline;
+  font-weight: bold;
+  transition: opacity 0.2s ease;
+}
+
+/* スケジュール・宿題リンクはインラインブロック */
+.igo-box-info .igo-link {
+  display: inline-block;
+  padding: 2px 0;
+}
+
+/* マウスを乗せたときの効果 */
+.igo-link:hover {
+  opacity: 0.7;
+  text-decoration: none;
+}
+</style>
+
+<!-- ==========================================
+     2. HTMLコード（表示させる内容）
+=========================================== -->
+<!-- 👉【右半分】：関連資料・PDFダウンロードコーナー（すっきり整理） -->
+<div class="igo-sidebar-box igo-box-download">
+  <h3 class="igo-title">📚 講義の関連資料 (PDF)</h3>
 
   <!-- ① 手割りPDF -->
-  <div style="border-bottom: 1px dashed #ddd;">
-    <a href="tewari.pdf" target="_blank" style="display: block; padding: 8px 0; font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
+  <div class="igo-download-item">
+    <a href="tewari.pdf" target="_blank" class="igo-link">
       ➔ 「手割り」解説テキストはこちら (PDF)
     </a>
   </div>
 
   <!-- ② 筋・筋場PDF -->
-  <div style="border-bottom: 1px dashed #ddd;">
-    <a href="tesuji_sujiba.pdf" target="_blank" style="display: block; padding: 8px 0; font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
+  <div class="igo-download-item">
+    <a href="tesuji_sujiba.pdf" target="_blank" class="igo-link">
       ➔ 「筋・筋場」解説テキストはこちら (PDF)
     </a>
   </div>
 
   <!-- ③ 予備PDF -->
-  <div>
-    <a href="yobi.pdf" target="_blank" style="display: block; padding: 8px 0; font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
+  <div class="igo-download-item">
+    <a href="yobi.pdf" target="_blank" class="igo-link">
       ➔ 予備の関連資料ダウンロード (PDF)
     </a>
   </div>
 </div>
 
 <!-- 👉【下に回り込んだエリア】：スケジュール・宿題・概要 -->
-<div style="flex: 1; min-width: 280px; padding: 15px; background-color: #ffffff; border-radius: 6px; border: 1px solid #ddd; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; margin-top: 20px;">
-  
+<div class="igo-sidebar-box igo-box-info">
+
   <!-- ① 教室スケジュール -->
   <div>
-    <h3 style="margin: 0 0 8px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px;">📅 教室スケジュール</h3>
-    <a href="schedule.pdf" target="_blank" style="display: inline-block; font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold; padding: 2px 0;">
+    <h3 class="igo-title">📅 教室スケジュール</h3>
+    <a href="schedule.pdf" target="_blank" class="igo-link">
       ➔ 教室スケジュールはこちら (PDF)
     </a>
   </div>
 
   <!-- ② 今週の宿題 -->
   <div>
-    <h3 style="margin: 0 0 8px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px;">🎁 今週の詰碁宿題</h3>
-    <a href="tmgo.sgf" target="_blank" style="display: inline-block; font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold; padding: 2px 0;">
+    <h3 class="igo-title">🎁 今週の詰碁宿題</h3>
+    <a href="tmgo.sgf" target="_blank" class="igo-link">
       ➔ 今週の詰碁宿題をダウンロード (SGF)
     </a>
   </div>
 
   <!-- ③ 教室の概要・趣旨 -->
   <div>
-    <h3 style="margin: 0 0 8px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px;">📖 教室の概要</h3>
-    <p style="margin: 0; font-size: 13px; color: #666; line-height: 1.6;">
+    <h3 class="igo-title">📖 教室の概要</h3>
+    <p>
       子どもから大人まで、自分のペースでじっくり楽しむ無学年の囲碁教室です。オンライン広場（Discord）なども活用し、全世代の考える力を育みます。
-    </p>
+   </p>
   </div>
 </div>
-
-
-
 
 <!-- 音楽・効果音をコントロールするスクリプト -->
 <script>
