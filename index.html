@@ -79,14 +79,13 @@
       🎹 ピアノの演奏 (PDFも開く)
     </button>
 
-
-    <!-- 📐 ④ 手割り 動画ボタン（動画ID設定済み） -->
-<button class="sb-btn" data-video-id="https://www.youtube.com/watch?v=vEvMlP6fMzU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #4a5568; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit; margin-bottom: 10px;">
+<!-- 📐 ④ 手割り 動画ボタン -->
+<button class="sb-btn" data-video-id="vEvMlP6fMzU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #4a5568; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit; margin-bottom: 10px;">
   📐 「手割り」講義動画
 </button>
 
-<!-- 🎯 ⑤ 筋・筋場 動画ボタン（動画ID設定済み） -->
-<button class="sb-btn" data-video-id="" onclick="switchYouTube(https://www.youtube.com/watch?v=vEvMlP6fMzU&t=24shis)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #003366; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit; margin-bottom: 20px;">
+<!-- 🎯 ⑤ 筋・筋場 動画ボタン（※手割りと別の動画IDがあれば vEvMlP6fMzU の部分を書き換えてください） -->
+<button class="sb-btn" data-video-id="vEvMlP6fMzU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #003366; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit; margin-bottom: 20px;">
   🎯 「筋・筋場」講義動画
 </button>
 
@@ -95,7 +94,7 @@
   <iframe id="youtube-player" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></iframe>
 </div>
 
-<!-- ⚙️ 切り替え用のJavaScriptプログラム（このまま貼り付けてください） -->
+<!-- ⚙️ 切り替え用のJavaScriptプログラム -->
 <script>
 function switchYouTube(button) {
   // ボタンから動画IDを取得
@@ -103,20 +102,22 @@ function switchYouTube(button) {
   const container = document.getElementById('video-container');
   const player = document.getElementById('youtube-player');
   
-  // 初期テキストのまま、または空欄の場合は処理しない
-  if (!videoId || videoId.includes('ここに') || videoId.trim() === '') {
+  // 空欄の場合は処理しない
+  if (!videoId || videoId.trim() === '') {
     alert('有効なYouTube動画IDが設定されていません。');
     return;
   }
   
-  // YouTubeの埋め込みURLをセットして表示
-  player.src = "https://www.youtube.com/shorts/N2jOIWm2R3o" + videoId;
+  // YouTubeの通常の埋め込み用URLをセットして表示
+  player.src = "https://youtube.com" + videoId;
   container.style.display = 'block';
   
   // スムーズに動画位置までスクロール（スマホ・PC両対応）
   container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 </script>
+
+
   
 
     <!-- ✨ ⑥ 予備 動画ボタン -->
