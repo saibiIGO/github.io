@@ -316,63 +316,36 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     </div>
 
 
-        <!-- 📺 動画（YouTube埋め込み＆切り替えボタン） -->
+
+          <!-- 📺 動画（YouTubeへ直接アクセスするボタン） -->
     <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px;">
       <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📺 動画で見る才美塾</h3>
       
-      <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; border-radius: 4px;">
-        <!-- 💡 初期表示を教えていただいた動画1（依田九段の講義動画）の埋め込み専用URLに固定しました -->
-        <iframe id="saibijuku-player"
-                src="https://youtube.com" 
-                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerpolicy="strict-origin-when-cross-origin"
-                allowfullscreen></iframe>
-      </div>
+      <p style="font-size: 14px; color: #555; margin: 0 0 15px 0; line-height: 1.5;">
+        ※ YouTubeの仕様により、動画は新しいタブ（外部ページ）で安全に開きます。
+      </p>
 
       <!-- 動画選択用のボタングループ -->
-      <div style="margin-top: 15px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
-        <!-- 動画1：クリックするとプレイヤーがこの動画に切り替わります -->
-        <button class="sb-btn" data-video-id="FXq1JZVky0A" onclick="switchYouTube(this)" style="padding: 8px 16px; font-size: 14px; cursor: pointer; border: 1px solid #003366; background-color: #003366; color: white; border-radius: 4px; font-weight: bold; transition: 0.2s;">
-          動画 1（囲碁講座：形と筋）
-        </button>
+      <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
         
-        <!-- 動画2：検索結果URLのため、別タブでYouTubeを開くリンクボタンにしています -->
-        <a href="https://www.youtube.com/results?search_query=%E5%90%89%E5%8E%9F%E7%94%B1%E9%A6%99%E9%87%8C+%E5%9B%B2%E7%A2%81%E6%95%99%E5%AE%A4" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
-          <button class="sb-btn" style="padding: 8px 16px; font-size: 14px; cursor: pointer; border: 1px solid #003366; background-color: white; color: #003366; border-radius: 4px; font-weight: bold; transition: 0.2s;">
-            動画 2（吉原由香里 囲碁教室 検索） ↗
+        <!-- 動画1：依田九段の「形と筋」動画へジャンプ -->
+        <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+          <button style="padding: 10px 20px; font-size: 14px; cursor: pointer; border: 1px solid #003366; background-color: #003366; color: white; border-radius: 4px; font-weight: bold; transition: 0.2s;">
+            🎬 動画 1（囲碁講座：形と筋） ↗
           </button>
         </a>
+        
+        <!-- 動画2：吉原由香里 囲碁教室 検索結果へジャンプ -->
+        <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+          <button style="padding: 10px 20px; font-size: 14px; cursor: pointer; border: 1px solid #003366; background-color: white; color: #003366; border-radius: 4px; font-weight: bold; transition: 0.2s;">
+            🔍 動画 2（吉原由香里 囲碁教室 検索） ↗
+          </button>
+        </a>
+
       </div>
     </div>
   </div>
 
-  <!-- 💡 ボタンを正しく動作させるためのプログラム -->
-  <script>
-    function switchYouTube(button) {
-      // 1. クリックされたボタンから動画IDを取得
-      const videoId = button.getAttribute('data-video-id');
-      if (!videoId) return;
-      
-      // 2. プレイヤーのsrcを正しい埋め込みURLに書き換え
-      const player = document.getElementById('saibijuku-player');
-      player.src = "https://youtube.com" + videoId;
-      
-      // 3. ボタンの見た目（アクティブ状態）を切り替え
-      const buttons = document.querySelectorAll('.sb-btn');
-      buttons.forEach(btn => {
-        btn.style.backgroundColor = "white";
-        btn.style.color = "#003366";
-      });
-      
-      button.style.backgroundColor = "#003366";
-      button.style.color = "white";
-    }
-  </script>
-  
-          
-
-      
       
     
 
