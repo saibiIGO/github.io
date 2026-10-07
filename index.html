@@ -299,13 +299,15 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   </div> 
 </div>
 
+
+
 <!-- ■ お知らせ・写真・動画コーナー（下部エリア） ■ -->
 <div style="margin-top: 30px; padding-top: 25px; border-top: 1px solid #e0d0b0; display: flex; flex-wrap: wrap; gap: 25px;">
  
   <!-- 👈【左側】：お知らせ ＆ 動画 -->
   <div style="flex: 1.2; min-width: 280px; display: flex; flex-direction: column; gap: 20px;">
     
-    <!-- 🗒 お知らせ（ここを最新の文章に書き換えました） -->
+    <!-- 🗒 お知らせ -->
     <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px;">
       <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">🗒 お知らせ</h3>
       <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #444; line-height: 1.7;">
@@ -320,6 +322,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📺 動画で見る才美塾</h3>
       
       <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; border-radius: 4px;">
+        <!-- 💡 初期表示を、確実にエラーなく映る動画（4vp1b2rWVgA）に安全に変更しました -->
         <iframe id="saibijuku-player"
                 src="https://youtube.com" 
                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" 
@@ -327,16 +330,14 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
                 allowfullscreen></iframe>
       </div>
 
-      <!-- 動画選択用のボタングループ -->
+      <!-- 動画選択用のボタングループ（押しやすい大きなボタン） -->
       <div style="margin-top: 15px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
-        <button class="sb-btn" data-video-id="CN3BGw5_suw" onclick="switchYouTube(this)" style="padding: 6px 12px; font-size: 13px; cursor: pointer; border: 1px solid #003366; background-color: #003366; color: white; border-radius: 4px; font-weight: bold;">
-          動画 1（塾長講義）
+        <!-- 💡 最初から表示されている動画2のボタンを紺色（選択状態）にしてあります -->
+        <button class="sb-btn" data-video-id="4vp1b2rWVgA" onclick="switchYouTube(this)" style="padding: 8px 16px; font-size: 14px; cursor: pointer; border: 1px solid #003366; background-color: #003366; color: white; border-radius: 4px; font-weight: bold;">
+          動画 1（囲碁講座：形と筋）
         </button>
-        <button class="sb-btn" data-video-id="4vp1b2rWVgA" onclick="switchYouTube(this)" style="padding: 6px 12px; font-size: 13px; cursor: pointer; border: 1px solid #003366; background-color: white; color: #003366; border-radius: 4px; font-weight: bold;">
-          動画 2（囲碁講座：形と筋）
-        </button>
-        <button class="sb-btn" data-video-id="dAb6UFKMpZ0" onclick="switchYouTube(this)" style="padding: 6px 12px; font-size: 13px; cursor: pointer; border: 1px solid #003366; background-color: white; color: #003366; border-radius: 4px; font-weight: bold;">
-          動画 3（囲碁講座：大局観）
+        <button class="sb-btn" data-video-id="dAb6UFKMpZ0" onclick="switchYouTube(this)" style="padding: 8px 16px; font-size: 14px; cursor: pointer; border: 1px solid #003366; background-color: white; color: #003366; border-radius: 4px; font-weight: bold;">
+          動画 2（囲碁講座：大局観）
         </button>
       </div>
     </div>
@@ -345,11 +346,9 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 
   <!-- 👉【右側】：写真ギャラリー -->
   <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; text-align: center;">
-    
     <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; height: 100%;">
       <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📸 写真ギャラリー</h3>
 
-      <!-- フェードイン・アウトのアニメーションルール -->
       <style>
         @keyframes fadeSlideShow4 {
           0%, 20%   { opacity: 1; z-index: 4; }
@@ -424,22 +423,18 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       </style>
 
       <div class="slide-container">
-        <!-- 1コマ目 -->
         <div class="slide-item" style="animation: fadeSlideShow4 20s infinite;">
           <img src="photo1.jpg" alt="photo1" class="slide-img">
           <p class="slide-text">① どこに打てばいいんだろう…？（じっくり考える時間）</p>
         </div>
-        <!-- 2コマ目 -->
         <div class="slide-item" style="animation: fadeSlideShow4_2 20s infinite;">
           <img src="photo2.jpg" alt="photo2" class="slide-img">
           <p class="slide-text">② 先生が優しくヒントを教えてくれるよ！</p>
         </div>
-        <!-- 3コマ目 -->
         <div class="slide-item" style="animation: fadeSlideShow4_3 20s infinite;">
           <img src="photo3.jpg" alt="photo3" class="slide-img">
           <p class="slide-text">③ 「あ、筋場ｶ！」ひらめいてパチリ！</p>
         </div>
-        <!-- 4コマ目 -->
         <div class="slide-item" style="animation: fadeSlideShow4_4 20s infinite;">
           <img src="photo4.jpg" alt="photo4" class="slide-img">
           <p class="slide-text">④ 「勝てた！」みんな笑顔でハイタッチ！</p>
@@ -469,6 +464,8 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     button.style.color = 'white';
   }
 </script>
+    
+
 
 
     
