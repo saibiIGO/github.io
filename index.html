@@ -299,7 +299,6 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   </div> 
 </div>
 
-
 <!-- ■ お知らせ・写真・動画コーナー（下部エリア） ■ -->
 <div style="margin-top: 30px; padding-top: 25px; border-top: 1px solid #e0d0b0; display: flex; flex-wrap: wrap; gap: 25px;">
  
@@ -312,7 +311,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #444; line-height: 1.6;">
         <li><strong>2026年9月29日：</strong> <a href="https://boo.jp" target="_blank" rel="noopener">🎬 映画『初恋芸人』プロデューサー 峯松里香さんの寄稿記事（因島高校同窓会）</a>へのリンクを追加しました！</li>
         <li><strong>2026年9月27日：</strong> ホームページに主題歌（塾歌）の再生機能とお知らせ・動画・写真コーナーを追加しました！</li>
-        <li><strong>2026年9月27日：</strong> 今週の詰碁宿題を更新しました。</li>
+        <li><strong>2026年9月27日：</strong> 今週の詰碁宿宿題を更新しました。</li>
       </ul>
     </div>
 
@@ -329,7 +328,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
                 allowfullscreen></iframe>
       </div>
 
-      <!-- 動画選択用のボタングループ（こちらに正しい動画IDとタイトルを設定しました） -->
+      <!-- 動画選択用のボタングループ -->
       <div style="margin-top: 15px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
         <button class="sb-btn" data-video-id="CN3BGw5_suw" onclick="switchYouTube(this)" style="padding: 6px 12px; font-size: 13px; cursor: pointer; border: 1px solid #003366; background-color: #003366; color: white; border-radius: 4px; font-weight: bold;">
           動画 1（塾長講義）
@@ -453,32 +452,31 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 
 </div>
 
-    
-
-
-
-
-<!-- ⚙️ 切り替え用JavaScriptスクリプト -->
+<!-- 💡 動画切り替えプログラム（ここを追加しました） -->
 <script>
-  function switchYouTube(buttonElement) {
-    const videoId = buttonElement.getAttribute('data-video-id');
-    const player = document.getElementById('saibijuku-player');
+  function switchYouTube(button) {
+    // 1. クリックされたボタンから動画IDを取得
+    var videoId = button.getAttribute('data-video-id');
     
-    // 動画IDが初期値のままでなければ切り替える
-    if(videoId && !videoId.includes("入れてください")) {
-      player.src = `https://youtube.com{videoId}?rel=0&autoplay=1`;
-
-      const buttons = document.querySelectorAll('.sb-btn');
-      buttons.forEach(btn => {
-        btn.style.backgroundColor = 'white';
-        btn.style.color = '#003366';
-      });
-      
-      buttonElement.style.backgroundColor = '#003366';
-      buttonElement.style.color = 'white';
+    // 2. YouTubeの画面（iframe）の文字を書き換えて動画を切り替える
+    var player = document.getElementById('saibijuku-player');
+    if (player && videoId) {
+      player.src = 'https://youtube.com' + videoId;
     }
+    
+    // 3. ボタンの色を切り替えて、いまどれを選んでいるか分かりやすくする
+    var buttons = document.querySelectorAll('.sb-btn');
+    buttons.forEach(function(btn) {
+      btn.style.backgroundColor = 'white';
+      btn.style.color = '#003366';
+    });
+    button.style.backgroundColor = '#003366';
+    button.style.color = 'white';
   }
 </script>
+
+
+    
 
 
     
