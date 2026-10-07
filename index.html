@@ -301,8 +301,6 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 
  
 
-
-
 <!-- ■ お知らせ・写真・動画コーナー（下部エリア） ■ -->
 <div style="margin-top: 30px; padding-top: 25px; border-top: 1px solid #e0d0b0; display: flex; flex-wrap: wrap; gap: 25px;">
  
@@ -348,114 +346,113 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   </div>
 
 
+  <!-- 👉【右側】：写真ギャラリー（右の列を作る枠をしっかりと追加しました） -->
+  <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; text-align: center;">
+    
+    <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; height: 100%;">
+      <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📸 写真ギャラリー</h3>
 
-<!-- 👇 4コマ漫画スライドショーの枠（ここから） -->
-<!-- フェードイン・アウトのアニメーションルール（横に広がらない安全な設定） -->
-<style>
-  @keyframes fadeSlideShow4 {
-    0%, 20%   { opacity: 1; z-index: 4; } /* 1コマ目表示 */
-    24%, 44%  { opacity: 0; z-index: 1; } 
-    48%, 68%  { opacity: 0; z-index: 1; }
-    72%, 92%  { opacity: 0; z-index: 1; }
-    96%, 100% { opacity: 1; z-index: 4; }
-  }
-  @keyframes fadeSlideShow4_2 {
-    0%, 20%   { opacity: 0; z-index: 1; }
-    24%, 44%  { opacity: 1; z-index: 4; } /* 2コマ目表示 */
-    48%, 68%  { opacity: 0; z-index: 1; }
-    72%, 92%  { opacity: 0; z-index: 1; }
-    96%, 100% { opacity: 0; z-index: 1; }
-  }
-  @keyframes fadeSlideShow4_3 {
-    0%, 44%   { opacity: 0; z-index: 1; }
-    48%, 68%  { opacity: 1; z-index: 4; } /* 3コマ目表示 */
-    72%, 92%  { opacity: 0; z-index: 1; }
-    96%, 100% { opacity: 0; z-index: 1; }
-  }
-  @keyframes fadeSlideShow4_4 {
-    0%, 68%   { opacity: 0; z-index: 1; }
-    72%, 92%  { opacity: 1; z-index: 4; } /* 4コマ目表示 */
-    96%, 100% { opacity: 0; z-index: 1; }
-  }
+      <!-- フェードイン・アウトのアニメーションルール -->
+      <style>
+        @keyframes fadeSlideShow4 {
+          0%, 20%   { opacity: 1; z-index: 4; }
+          24%, 44%  { opacity: 0; z-index: 1; } 
+          48%, 68%  { opacity: 0; z-index: 1; }
+          72%, 92%  { opacity: 0; z-index: 1; }
+          96%, 100% { opacity: 1; z-index: 4; }
+        }
+        @keyframes fadeSlideShow4_2 {
+          0%, 20%   { opacity: 0; z-index: 1; }
+          24%, 44%  { opacity: 1; z-index: 4; }
+          48%, 68%  { opacity: 0; z-index: 1; }
+          72%, 92%  { opacity: 0; z-index: 1; }
+          96%, 100% { opacity: 0; z-index: 1; }
+        }
+        @keyframes fadeSlideShow4_3 {
+          0%, 44%   { opacity: 0; z-index: 1; }
+          48%, 68%  { opacity: 1; z-index: 4; }
+          72%, 92%  { opacity: 0; z-index: 1; }
+          96%, 100% { opacity: 0; z-index: 1; }
+        }
+        @keyframes fadeSlideShow4_4 {
+          0%, 68%   { opacity: 0; z-index: 1; }
+          72%, 92%  { opacity: 1; z-index: 4; }
+          96%, 100% { opacity: 0; z-index: 1; }
+        }
 
-  .slide-container {
-    width: 100%;
-    max-width: 100%;
-    height: 240px;
-    overflow: hidden;
-    border-radius: 4px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    position: relative;
-    background-color: #fff;
-    box-sizing: border-box;
-  }
+        .slide-container {
+          width: 100%;
+          max-width: 100%;
+          height: 240px;
+          overflow: hidden;
+          border-radius: 4px;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+          position: relative;
+          background-color: #fff;
+          box-sizing: border-box;
+        }
 
-  /* 4つのコマを同じ場所に重ねる設定 */
-  .slide-item {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    box-sizing: border-box;
-    background-color: #fff;
-  }
+        .slide-item {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+          box-sizing: border-box;
+          background-color: #fff;
+        }
 
-  /* 写真が絶対に横に引き伸ばされないための設定 */
-  .slide-img {
-    width: 100%;
-    height: 170px;
-    object-fit: contain; /* 横長・縦長の写真でも、切れないように枠内に収めます */
-    background-color: #f8f9fa; /* 写真の隙間を薄いグレーで埋めます */
-    flex-shrink: 0;
-    display: block;
-  }
+        .slide-img {
+          width: 100%;
+          height: 170px;
+          object-fit: contain;
+          background-color: #f8f9fa;
+          flex-shrink: 0;
+          display: block;
+        }
 
-  .slide-text {
-    margin: 0;
-    padding: 10px 5px;
-    font-size: 13px;
-    color: #333;
-    font-weight: bold;
-    background-color: #fff;
-    text-align: center;
-    line-height: 1.3;
-  }
-</style>
+        .slide-text {
+          margin: 0;
+          padding: 10px 5px;
+          font-size: 13px;
+          color: #333;
+          font-weight: bold;
+          background-color: #fff;
+          text-align: center;
+          line-height: 1.3;
+        }
+      </style>
 
-<div class="slide-container">
-  
-  <!-- 1コマ目 -->
-  <div class="slide-item" style="animation: fadeSlideShow4 20s infinite;">
-    <img src="photo1.jpg" alt="photo1" class="slide-img">
-    <p class="slide-text">① どこに打てばいいんだろう…？（じっくり考える時間）</p>
-  </div>
+      <div class="slide-container">
+        <!-- 1コマ目 -->
+        <div class="slide-item" style="animation: fadeSlideShow4 20s infinite;">
+          <img src="photo1.jpg" alt="photo1" class="slide-img">
+          <p class="slide-text">① どこに打てばいいんだろう…？（じっくり考える時間）</p>
+        </div>
+        <!-- 2コマ目 -->
+        <div class="slide-item" style="animation: fadeSlideShow4_2 20s infinite;">
+          <img src="photo2.jpg" alt="photo2" class="slide-img">
+          <p class="slide-text">② 先生が優しくヒントを教えてくれるよ！</p>
+        </div>
+        <!-- 3コマ目 -->
+        <div class="slide-item" style="animation: fadeSlideShow4_3 20s infinite;">
+          <img src="photo3.jpg" alt="photo3" class="slide-img">
+          <p class="slide-text">③ 「あ、筋場ｶ！」ひらめいてパチリ！</p>
+        </div>
+        <!-- 4コマ目 -->
+        <div class="slide-item" style="animation: fadeSlideShow4_4 20s infinite;">
+          <img src="photo4.jpg" alt="photo4" class="slide-img">
+          <p class="slide-text">④ 「勝てた！」みんな笑顔でハイタッチ！</p>
+        </div>
+      </div>
 
-  <!-- 2コマ目 -->
-  <div class="slide-item" style="animation: fadeSlideShow4_2 20s infinite;">
-    <img src="photo2.jpg" alt="photo2" class="slide-img">
-    <p class="slide-text">② 先生が優しくヒントを教えてくれるよ！</p>
-  </div>
-
-  <!-- 3コマ目 -->
-  <div class="slide-item" style="animation: fadeSlideShow4_3 20s infinite;">
-    <img src="photo3.jpg" alt="photo3" class="slide-img">
-    <p class="slide-text">③ 「あ、筋場ｶ！」ひらめいてパチリ！</p>
-  </div>
-
-  <!-- 4コマ目 -->
-  <div class="slide-item" style="animation: fadeSlideShow4_4 20s infinite;">
-    <img src="photo4.jpg" alt="photo4" class="slide-img">
-    <p class="slide-text">④ 「勝てた！」みんな笑顔でハイタッチ！</p>
-  </div>
+    </div>
+  </div> <!-- 👉 右側の列を閉じるタグ -->
 
 </div>
-<!-- 👆 4コマ漫画スライドショーの枠（ここまで） -->
-
-
     
 
 
