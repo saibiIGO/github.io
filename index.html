@@ -260,7 +260,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       
       <!-- かわいい碁石キャラクターのイラスト -->
       <div style="margin: 15px 0;">
-        <img src="ingo.png" alt="ingo.png" style="width: 180px; height: auto;">
+        <img src="ingo.png" alt="ingo.png" style="width: 250px; height: auto;">
       </div>
       
       <p style="font-size: 1.05rem; color: #333; line-height: 1.6; text-align: left;">
@@ -316,13 +316,12 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     </div>
 
 
-      
-          <!-- 📺 動画（YouTube埋め込み＆切り替えボタン） -->
+        <!-- 📺 動画（YouTube埋め込み＆切り替えボタン） -->
     <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px;">
       <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📺 動画で見る才美塾</h3>
       
       <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; border-radius: 4px;">
-        <!-- 💡 初期表示を動画1の埋め込み専用URLに設定し、Firefox対策の属性を追加しました -->
+        <!-- 💡 初期表示を教えていただいた動画1（依田九段の講義動画）の埋め込み専用URLに固定しました -->
         <iframe id="saibijuku-player"
                 src="https://youtube.com" 
                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" 
@@ -333,39 +332,45 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 
       <!-- 動画選択用のボタングループ -->
       <div style="margin-top: 15px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
-        <button class="sb-btn" data-video-id="4vp1b2rWVgA" onclick="switchYouTube(this)" style="padding: 8px 16px; font-size: 14px; cursor: pointer; border: 1px solid #003366; background-color: #003366; color: white; border-radius: 4px; font-weight: bold; transition: 0.2s;">
+        <!-- 動画1：クリックするとプレイヤーがこの動画に切り替わります -->
+        <button class="sb-btn" data-video-id="FXq1JZVky0A" onclick="switchYouTube(this)" style="padding: 8px 16px; font-size: 14px; cursor: pointer; border: 1px solid #003366; background-color: #003366; color: white; border-radius: 4px; font-weight: bold; transition: 0.2s;">
           動画 1（囲碁講座：形と筋）
         </button>
-        <button class="sb-btn" data-video-id="dAb6UFKMpZ0" onclick="switchYouTube(this)" style="padding: 8px 16px; font-size: 14px; cursor: pointer; border: 1px solid #003366; background-color: white; color: #003366; border-radius: 4px; font-weight: bold; transition: 0.2s;">
-          動画 2（囲碁講座：大局観）
-        </button>
+        
+        <!-- 動画2：検索結果URLのため、別タブでYouTubeを開くリンクボタンにしています -->
+        <a href="https://www.youtube.com/results?search_query=%E5%90%89%E5%8E%9F%E7%94%B1%E9%A6%99%E9%87%8C+%E5%9B%B2%E7%A2%81%E6%95%99%E5%AE%A4" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+          <button class="sb-btn" style="padding: 8px 16px; font-size: 14px; cursor: pointer; border: 1px solid #003366; background-color: white; color: #003366; border-radius: 4px; font-weight: bold; transition: 0.2s;">
+            動画 2（吉原由香里 囲碁教室 検索） ↗
+          </button>
+        </a>
       </div>
     </div>
   </div>
 
-  <!-- 💡 ボタンを動作させるためのJavaScriptプログラムを追加 -->
+  <!-- 💡 ボタンを正しく動作させるためのプログラム -->
   <script>
     function switchYouTube(button) {
-      // 1. クリックされたボタンから動画ID（11桁）を取得
+      // 1. クリックされたボタンから動画IDを取得
       const videoId = button.getAttribute('data-video-id');
+      if (!videoId) return;
       
-      // 2. プレイヤー（iframe）のsrcをYouTubeの「埋め込み用URL」に書き換える
+      // 2. プレイヤーのsrcを正しい埋め込みURLに書き換え
       const player = document.getElementById('saibijuku-player');
       player.src = "https://youtube.com" + videoId;
       
-      // 3. ボタンの見た目（アクティブ状態）を切り替える
+      // 3. ボタンの見た目（アクティブ状態）を切り替え
       const buttons = document.querySelectorAll('.sb-btn');
       buttons.forEach(btn => {
-        // すべてのボタンを一旦「白背景・青文字」にする
         btn.style.backgroundColor = "white";
         btn.style.color = "#003366";
       });
       
-      // クリックされたボタンだけ「青背景・白文字」にする
       button.style.backgroundColor = "#003366";
       button.style.color = "white";
     }
   </script>
+  
+          
 
       
       
