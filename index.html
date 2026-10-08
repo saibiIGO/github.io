@@ -11,6 +11,7 @@
     <style>
         body { font-family: sans-serif; line-height: 1.8; color: #333; background-color: #f4f6f8; margin: 0; padding: 0; }
         .container { max-width: 800px; margin: 30px auto; padding: 30px; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        /* 使用しなくなったheaderのスタイルは削除または無視して大丈夫です */
         h2 { color: #2c3e50; border-left: 5px solid #ff9f43; padding-left: 15px; margin-top: 40px; margin-bottom: 20px; font-size: 1.5rem; }
         h3 { color: #34495e; font-size: 1.2rem; margin-top: 25px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
         .btn-box { text-align: center; margin: 30px 0; }
@@ -22,29 +23,42 @@
 <body>
 <div class="container">
 
+    <!-- 💡 ここにあった <header>〜</header> を削除しました -->
+
 <!-- 全体を包む見やすい薄い背景のボックス -->
 <div style="background-color: #fcf8f2; padding: 25px; border-radius: 8px; border: 1px solid #e0d0b0; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); box-sizing: border-box; font-family: sans-serif; text-align: left;">
 
-  <!-- 💡 【最上部：横いっぱいに配置】メッセージを洗練された和モダンなロゴ枠に刷新 -->
+    <!-- 💡 【最上部：横いっぱいに配置】メッセージを洗練された和モダンなロゴ枠に刷新 -->
   <div style="width: 100%; text-align: center; margin-bottom: 30px; padding: 25px 20px; background-color: #ffffff; border-top: 4px solid #b35900; border-bottom: 4px solid #b35900; box-shadow: 0 4px 12px rgba(0,0,0,0.02); box-sizing: border-box; position: relative;">
+
+    <!-- 装飾用の小さな四角（和風のアクセント） -->
     <div style="position: absolute; top: -7px; left: 50%; transform: translateX(-50%); background-color: #b35900; color: #fff; font-size: 10px; padding: 1px 8px; border-radius: 3px; letter-spacing: 0.1em;">CONCEPT</div>
-    <p style="margin: 0 0 10px 0; font-size: 15px; color: #666; font-weight: bold; letter-spacing: 0.10em; font-family: 'Georgia', serif;">
+ <!-- 文字ポイントを大きくし、太字のグラデェーション -->
+    <p style="margin: 0 0 10px 0; font-size: 15px; color: #666; font-weight: bold; letter-spacing: 0.10em; font-weight: 500; font-family: 'Georgia', serif;">
        知頭に加え、本当に必要な考える力を
     </p>
+
+    <!-- メインコピー：文字を少し大きくし、太字のグラデーション風カラーで印象的に -->
     <p style="margin: 0; font-size: 24px; color: #b35900; font-weight: bold; letter-spacing: 0.15em; line-height: 1.4; text-shadow: 1px 1px 1px rgba(0,0,0,0.05);">
       囲碁で磨く、全世代の地頭力
     </p>
+
   </div>
+
+
 
   <!-- 【下部：左右2段組 of エリア】 -->
   <div style="display: flex; flex-wrap: wrap; gap: 30px; box-sizing: border-box;">
 
     <!-- 👈【左半分】：タイトル、主題歌、ボタンメニュー列 -->
     <div style="flex: 1; min-width: 280px; box-sizing: border-box;">
+
+      <!-- タイトルと音声プレイヤー -->
       <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
         <h1 style="margin: 0; font-size: 32px; color: #003366; font-weight: bold; line-height: 1.2;">
           才美塾囲碁教室
         </h1>
+        <!-- 🎵 タイトル下の主題歌プレイヤー -->
         <div style="display: flex; align-items: center; gap: 8px;">
           <span style="font-size: 12px; color: #003366; font-weight: bold; white-space: nowrap;">🎵 主題歌・塾歌:</span>
           <audio controls src="song.mp3" style="height: 28px; width: 100%; max-width: 200px;">
@@ -53,211 +67,398 @@
         </div>
       </div>
 
-      <!-- 🎛️ ボタンメニュー群 -->
-      <div style="display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 250px;">
-        <a href="komonjo.pdf" target="_blank" style="display: block; background-color: #8B4513; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
-          📜 古文書の案内 (PDF)
-        </a>
-        
-        <audio id="harmonica-sound" src="harmonica.mp3" preload="auto"></audio>
-        <button id="harmonica-btn" onclick="toggleHarmonica()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #20B2AA; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
-          🎵 ハーモニカの演奏
-        </button>
-        
-        <audio id="piano-sound" src="piano.mp3" preload="auto"></audio>
-        <button id="piano-btn" onclick="togglePiano()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #333333; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
-          🎹 ピアノの演奏 (PDFも開く)
-        </button>
 
-        <button class="sb-btn" data-video-id="23BP-eTUiEU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #4a5568; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
-          📐 「手割り」講義動画
-        </button>
 
-        <button class="sb-btn" data-video-id="23BP-eTUiEU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #003366; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
-          🎯 「筋・筋場」講義動画
-        </button>
 
-        <button class="sb-btn" data-video-id="23BP-eTUiEU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #718096; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
-          ✨ 予備の動画
-        </button>
+
+      <!-- 🎛️ ボタンメニュー群（すっきりした見た目を維持し、消えたボタンをすべて復活！） -->
+  <div style="display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 250px;">
+
+    <!-- ① 古文書ボタン -->
+    <a href="komonjo.pdf" target="_blank" style="display: block; background-color: #8B4513; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
+      📜 古文書の案内 (PDF)
+    </a>
+
+    <!-- ② ハーモニカボタン -->
+    <audio id="harmonica-sound" src="harmonica.mp3" preload="auto"></audio>
+    <button id="harmonica-btn" onclick="toggleHarmonica()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #20B2AA; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
+      🎵 ハーモニカの演奏
+    </button>
+
+    <!-- ③ ピアノボタン -->
+    <audio id="piano-sound" src="piano.mp3" preload="auto"></audio>
+    <button id="piano-btn" onclick="togglePiano()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #333333; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
+      🎹 ピアノの演奏 (PDFも開く)
+    </button>
+
+    <!-- 📐 ④ 手割り 動画ボタン -->
+    <button class="sb-btn" data-video-id="23BP-eTUiEU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #4a5568; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
+      📐 「手割り」講義動画
+    </button>
+
+    <!-- 🎯 ⑤ 筋・筋場 動画ボタン -->
+    <button class="sb-btn" data-video-id="23BP-eTUiEU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #003366; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
+      🎯 「筋・筋場」講義動画
+    </button>
+
+    <!-- ✨ ⑥ 予備 動画ボタン -->
+    <button class="sb-btn" data-video-id="23BP-eTUiEU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #718096; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
+      ✨ 予備の動画
+    </button>
+
+  </div>
+</div> <!-- 左半分のエリアを閉じます -->
+
+<!-- 👉【右半分】：関連資料・PDFダウンロードコーナー -->
+<div style="flex: 1; min-width: 280px; padding: 15px; background-color: white; border-radius: 6px; border: 1px solid #ddd; box-sizing: border-box; display: flex; flex-direction: column; gap: 15px;">
+  <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📚 講義の関連資料 (PDF)</h3>
+
+  <!-- ① 手割りPDF -->
+  <div style="padding: 5px 0; border-bottom: 1px dashed #ddd;">
+    <a href="tewari.pdf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
+      ➔ 「手割り」解説テキストはこちら (PDF)
+    </a>
+  </div>
+
+  <!-- ② 筋・筋場PDF -->
+  <div style="padding: 5px 0; border-bottom: 1px dashed #ddd;">
+    <a href="tesuji_sujiba.pdf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
+      ➔ 「筋・筋場」解説テキストはこちら (PDF)
+    </a>
+  </div>
+
+  <!-- ③ 予備PDF -->
+  <div style="padding: 5px 0; border-bottom: 1px dashed #ddd;">
+    <a href="yobi.pdf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
+      ➔ 予備の関連資料ダウンロード (PDF)
+    </a>
+  </div>
+
+  <!-- 📺 YouTube動画が表示されるエリア（すっきり配置した右半分の下に格納） -->
+  <div id="video-container" style="display: none; width: 100%; max-width: 250px; margin-top: 10px; position: relative; padding-top: 56.25%;">
+    <iframe id="youtube-player" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></iframe>
+  </div>
+
+
+<!-- ⚙️ 動画を動かすための最終プログラム（完成版） -->
+<script>
+function switchYouTube(button) {
+  var videoId = button.getAttribute('data-video-id');
+  var container = document.getElementById('video-container');
+  var player = document.getElementById('youtube-player');
+
+  // YouTubeの正しい埋め込み用URLを組み立てて再生する命令です
+  player.src = "https://www.youtube.com/embed/" + videoId;
+  container.style.display = 'block';
+
+  // 動画の位置まで画面を自動でスルスルとスクロールさせます
+  container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+</script>
+
+
+
+
+  <!-- ① 教室スケジュール -->
+
+    <!-- ⚙️ 動画切り替え用のJavaScriptプログラム -->
+  <script>
+  <!-- ⚙️ 名前（ID）の重複バグを完全に回避する、改良版JavaScriptプログラム -->
+  <script>
+  function switchYouTube(button) {
+    const videoId = button.getAttribute('data-video-id');
+
+    // （・・・この間の英語のプログラムもすべて含めて・・・）
+
+    setTimeout(() => {
+      container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 50);
+  }
+  </script>
+
+
+
+
+  </script>
+
+  <!-- ① 教室スケジュール ➔ この後に元の記述が安全に続きます -->
+
+
+
+
+    <!-- ① 教室スケジュール -->
+  <div>
+    <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px; border-bottom: none; padding-bottom: 0;">📅 教室スケジュール</h3>
+    <a href="schedule.pdf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
+      ➔ 教室スケジュールはこちら (PDF)
+    </a>
+  </div>
+
+  <!-- ② 今週の宿題 -->
+  <div>
+    <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px; border-bottom: none; padding-bottom: 0;">🎁 今週の詰碁宿題</h3>
+    <a href="tmgo.sgf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
+      ➔ 今週の詰碁宿題をダウンロード (SGF)
+    </a>
+  </div>
+
+  <!-- ③ 教室の概要・趣旨 -->
+  <div>
+    <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px; border-bottom: none; padding-bottom: 0;">📖 教室の概要</h3>
+    <p style="margin: 0; font-size: 13px; color: #666; line-height: 1.5;">
+      子どもから大人まで、自分のペースでじっくり楽しむ無学年の囲碁教室です。オンライン広場（Discord）なども活用し、全世代の考える力を育みます。
+    </p>
+  </div>
+</div>
+</div>
+
+
+<!-- 音楽・効果音をコントロールするスクリプト -->
+<script>
+// --- ハーモニカの制御 ---
+function toggleHarmonica() {
+  const sound = document.getElementById('harmonica-sound');
+  const btn = document.getElementById('harmonica-btn');
+
+  document.getElementById('piano-sound').pause();
+  document.getElementById('piano-btn').innerHTML = "🎹 ピアノの演奏 (PDFも開く)";
+  document.getElementById('piano-btn').style.backgroundColor = "#333333";
+
+  if (sound.paused) {
+    sound.currentTime = 0;
+    sound.play();
+    btn.innerHTML = "⏹️ 演奏を止める";
+    btn.style.backgroundColor = "#2c3e50";
+    btn.style.color = "#ffffff";
+  } else {
+    sound.pause();
+    btn.innerHTML = "🎵 ハーモニカの演奏";
+    btn.style.backgroundColor = "#20B2AA";
+    btn.style.color = "#ffffff";
+  }
+}
+
+document.getElementById('harmonica-sound').addEventListener('ended', function() {
+  const btn = document.getElementById('harmonica-btn');
+  btn.innerHTML = "🎵 ハーモニカの演奏";
+  btn.style.backgroundColor = "#20B2AA";
+  btn.style.color = "#ffffff";
+});
+
+
+// --- ピアノの制御 ---
+function togglePiano() {
+  const sound = document.getElementById('piano-sound');
+  const btn = document.getElementById('piano-btn');
+
+  document.getElementById('harmonica-sound').pause();
+  document.getElementById('harmonica-btn').innerHTML = "🎵 ハーモニカの演奏";
+  document.getElementById('harmonica-btn').style.backgroundColor = "#20B2AA";
+
+  if (sound.paused) {
+    sound.currentTime = 0;
+    sound.play();
+    btn.innerHTML = "⏹️ 演奏を止める";
+    btn.style.backgroundColor = "#2c3e50";
+    btn.style.color = "#ffffff";
+    window.open('piano.pdf', '_blank');
+  } else {
+    sound.pause();
+    btn.innerHTML = "🎹 ピアノの演奏 (PDFも開く)";
+    btn.style.backgroundColor = "#333333";
+    btn.style.color = "#ffffff";
+  }
+}
+
+document.getElementById('piano-sound').addEventListener('ended', function() {
+  const btn = document.getElementById('piano-btn');
+  btn.innerHTML = "🎹 ピアノの演奏 (PDFも開く)";
+  btn.style.backgroundColor = "#333333";
+  btn.style.color = "#ffffff";
+});
+</script>
+
+<!-- ■ ネット対局とオンライン交流（メインエリア） ■ -->
+<div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 20px; margin-bottom: 30px; width: 100%; box-sizing: border-box;">
+
+  <!-- ① 囲碁対局「INGO」（小学生向け・わくわく碁盤デザイン） -->
+  <div style="flex: 1; min-width: 290px; border: 3px solid #d7a15c; padding: 20px; border-radius: 12px; background-color: #fdf8f1; display: flex; flex-direction: column; justify-content: space-between; text-align: center; box-sizing: border-box;">
+    <div>
+      <h3 style="color: #b26f1a; margin-top: 0; font-size: 1.4rem; margin-bottom: 5px;">ネット対局碁「INGO」</h3>
+      <p style="color: #666; font-size: 0.9rem; margin-top: 0; margin-bottom: 15px;">〜だれでも無料の対局場！〜</p>
+
+      <!-- かわいい碁石キャラクターのイラスト -->
+      <div style="margin: 15px 0;">
+        <img src="ingo.png" alt="ingo.png" style="width: 250px; height: auto;">
       </div>
+
+      <p style="font-size: 1.05rem; color: #333; line-height: 1.6; text-align: left;">
+        INGOは時差、言葉の壁を超えて囲碁を楽しむ場です。時間制限がなく、囲碁が好きな人なら子供から大人まで**無学年**でじっくり自分のペースで楽しむことができます！
+      </p>
     </div>
 
-    <!-- 👉【右半分】：関連資料・写真ギャラリー・宿盤エリア -->
-    <div style="flex: 1; min-width: 280px; padding: 15px; background-color: white; border-radius: 6px; border: 1px solid #ddd; box-sizing: border-box; display: flex; flex-direction: column; gap: 15px;">
-      <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📚 講義の関連資料 (PDF)</h3>
-
-      <div style="padding: 5px 0; border-bottom: 1px dashed #ddd;">
-        <a href="tewari.pdf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
-          ➔ 「手割り」解説テキストはこちら (PDF)
-        </a>
-      </div>
-      
-      <div style="padding: 5px 0; border-bottom: 1px dashed #ddd;">
-        <a href="tesuji_sujiba.pdf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
-          ➔ 「筋・筋場」解説テキストはこちら (PDF)
-        </a>
-      </div>
-
-      <div style="padding: 5px 0; border-bottom: 1px dashed #ddd;">
-        <a href="yobi.pdf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
-          ➔ 予備の関連資料ダウンロード (PDF)
-        </a>
-      </div>
-
-      <!-- 📺 YouTube動画表示エリア（右半分の内部に格納） -->
-      <div id="video-container" style="display: none; width: 100%; position: relative; padding-top: 56.25%;">
-        <iframe id="youtube-player" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.15);"></iframe>
-      </div>
-
-      <!-- 📸 写真ギャラリー（白い枠のカード） -->
-      <div style="margin-top: 5px; padding: 10px; background-color: #fff; border: 1px solid #eee; border-radius: 6px;">
-        <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📸 写真ギャラリー</h3>
-        <style>
-          @keyframes fadeSlideShow4 { 0%, 20% { opacity: 1; z-index: 4; } 24%, 44% { opacity: 0; z-index: 1; } 48%, 68% { opacity: 0; z-index: 1; } 72%, 92% { opacity: 0; z-index: 1; } 96%, 100% { opacity: 1; z-index: 4; } }
-          @keyframes fadeSlideShow4_2 { 0%, 20% { opacity: 0; z-index: 1; } 24%, 44% { opacity: 1; z-index: 4; } 48%, 68% { opacity: 0; z-index: 1; } 72%, 92% { opacity: 0; z-index: 1; } 96%, 100% { opacity: 0; z-index: 1; } }
-          @keyframes fadeSlideShow4_3 { 0%, 44% { opacity: 0; z-index: 1; } 48%, 68% { opacity: 1; z-index: 4; } 72%, 92% { opacity: 0; z-index: 1; } 96%, 100% { opacity: 0; z-index: 1; } }
-          @keyframes fadeSlideShow4_4 { 0%, 68% { opacity: 0; z-index: 1; } 72%, 92% { opacity: 1; z-index: 4; } 96%, 100% { opacity: 0; z-index: 1; } }
-          .slide-container { width: 100%; max-width: 100%; height: 240px; overflow: hidden; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; background-color: #fff; box-sizing: border-box; }
-          .slide-item { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: flex-start; box-sizing: border-box; background-color: #fff; }
-          .slide-img { width: 100%; height: 170px; object-fit: contain; background-color: #f8f9fa; flex-shrink: 0; display: block; }
-          .slide-text { margin: 0; padding: 10px 5px; font-size: 13px; color: #333; font-weight: bold; background-color: #fff; text-align: center; line-height: 1.3; }
-        </style>
-        <div class="slide-container" style="margin-bottom: 15px;">
-          <div class="slide-item" style="animation: fadeSlideShow4 20s infinite;">
-            <img src="photo1.jpg" alt="photo1" class="slide-img">
-            <p class="slide-text">① どこに打てばいいんだろう…？（じっくり考える時間）</p>
-          </div>
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>さいび塾（才美塾）囲碁教室 - 尾道市因島の囲碁教室</title>
-    <meta name="description" content="尾道市因島の『さいび塾（才美塾）囲碁教室』の公式ホームページです。無学年でじっくり楽しめるネット囲碁対局や、生徒同士のオンライン交流を行っています。">
-    <meta name="keywords" content="さいび,才美塾,さいびじゅく,囲碁教室,因島,尾道">
-
-    <style>
-        body { font-family: sans-serif; line-height: 1.8; color: #333; background-color: #f4f6f8; margin: 0; padding: 0; }
-        .container { max-width: 800px; margin: 30px auto; padding: 30px; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        h2 { color: #2c3e50; border-left: 5px solid #ff9f43; padding-left: 15px; margin-top: 40px; margin-bottom: 20px; font-size: 1.5rem; }
-        h3 { color: #34495e; font-size: 1.2rem; margin-top: 25px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
-        .btn-box { text-align: center; margin: 30px 0; }
-        .btn-contact { display: inline-block; background-color: #ff9f43; color: #fff; padding: 15px 35px; text-decoration: none; font-weight: bold; border-radius: 30px; }
-        .btn-homework { display: inline-block; background-color: #27ae60; color: #fff; padding: 15px 35px; text-decoration: none; font-weight: bold; border-radius: 30px; }
-        ul { padding-left: 20px; } li { margin-bottom: 8px; } a { color: #2980b9; text-decoration: none; }
-    </style>
-</head>
-<body>
-<div class="container">
-
-<!-- 全体を包む見やすい薄い背景のボックス -->
-<div style="background-color: #fcf8f2; padding: 25px; border-radius: 8px; border: 1px solid #e0d0b0; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); box-sizing: border-box; font-family: sans-serif; text-align: left;">
-
-  <!-- 💡 【最上部：横いっぱいに配置】メッセージを洗練された和モダンなロゴ枠に刷新 -->
-  <div style="width: 100%; text-align: center; margin-bottom: 30px; padding: 25px 20px; background-color: #ffffff; border-top: 4px solid #b35900; border-bottom: 4px solid #b35900; box-shadow: 0 4px 12px rgba(0,0,0,0.02); box-sizing: border-box; position: relative;">
-    <div style="position: absolute; top: -7px; left: 50%; transform: translateX(-50%); background-color: #b35900; color: #fff; font-size: 10px; padding: 1px 8px; border-radius: 3px; letter-spacing: 0.1em;">CONCEPT</div>
-    <p style="margin: 0 0 10px 0; font-size: 15px; color: #666; font-weight: bold; letter-spacing: 0.10em; font-family: 'Georgia', serif;">
-       知頭に加え、本当に必要な考える力を
-    </p>
-    <p style="margin: 0; font-size: 24px; color: #b35900; font-weight: bold; letter-spacing: 0.15em; line-height: 1.4; text-shadow: 1px 1px 1px rgba(0,0,0,0.05);">
-      囲碁で磨く、全世代の地頭力
+    <p style="margin-top: 25px; margin-bottom: 0;">
+      <a href="https://ingo-web.com/" class="btn" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 12px 25px; background-color: #28a745; color: white; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 1.1rem; border-bottom: 4px solid #1e7e34; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        ⚔️このボタンから 囲碁をはじめよう！
+      </a>
     </p>
   </div>
 
-  <!-- 【下部：左右2段組 of エリア】 -->
-  <div style="display: flex; flex-wrap: wrap; gap: 30px; box-sizing: border-box;">
+  <!-- ② オンライン交流「Discord」（小学生向け・わくわくメイン拠点デザイン） -->
+  <div style="flex: 1; min-width: 290px; border: 3px solid #5865F2; padding: 20px; border-radius: 12px; background-color: #f2f3ff; display: flex; flex-direction: column; justify-content: space-between; text-align: center; box-sizing: border-box;">
+    <div>
+      <h3 style="color: #5865F2; margin-top: 0; font-size: 1.4rem; margin-bottom: 5px;">みんなのひろば「Discord」</h3>
+      <p style="color: #666; font-size: 0.9rem; margin-top: 0; margin-bottom: 15px;">〜Saibi塾の新しいメインの場所だよ！〜</p>
 
-    <!-- 👈【左半分】：タイトル、主題歌、ボタンメニュー列 -->
-    <div style="flex: 1; min-width: 280px; box-sizing: border-box;">
-      <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
-        <h1 style="margin: 0; font-size: 32px; color: #003366; font-weight: bold; line-height: 1.2;">
-          才美塾囲碁教室
-        </h1>
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <span style="font-size: 12px; color: #003366; font-weight: bold; white-space: nowrap;">🎵 主題歌・塾歌:</span>
-          <audio controls src="song.mp3" style="height: 28px; width: 100%; max-width: 200px;">
-            お使いのブラウザは音声再生に対応していません。
-          </audio>
-        </div>
+      <!-- コミュニティをイメージしたかわいい学校・ひろばのイラスト -->
+      <div style="margin: 15px 0;">
+        <img src="discord.png" alt="discord.png" style="width: 250px; height: auto;">
       </div>
 
-      <!-- 🎛️ ボタンメニュー群 -->
-      <div style="display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 250px;">
-        <a href="komonjo.pdf" target="_blank" style="display: block; background-color: #8B4513; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
-          📜 古文書の案内 (PDF)
-        </a>
-        
-        <audio id="harmonica-sound" src="harmonica.mp3" preload="auto"></audio>
-        <button id="harmonica-btn" onclick="toggleHarmonica()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #20B2AA; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
-          🎵 ハーモニカの演奏
-        </button>
-        
-        <audio id="piano-sound" src="piano.mp3" preload="auto"></audio>
-        <button id="piano-btn" onclick="togglePiano()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #333333; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
-          🎹 ピアノの演奏 (PDFも開く)
-        </button>
-
-        <button class="sb-btn" data-video-id="23BP-eTUiEU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #4a5568; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
-          📐 「手割り」講義動画
-        </button>
-
-        <button class="sb-btn" data-video-id="23BP-eTUiEU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #003366; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
-          🎯 「筋・筋場」講義動画
-        </button>
-
-        <button class="sb-btn" data-video-id="23BP-eTUiEU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #718096; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
-          ✨ 予備の動画
-        </button>
-      </div>
+      <p style="font-size: 1.05rem; color: #333; line-height: 1.6; text-align: left;">
+        **無学年（むがくねん）**でみんながあつまるオンラインのひろばです！声（こえ）やチャットでリアルタイムにお話しできるよ。毎日のざつだん、いごの待ち合わせ、先生とのレッスンなどにたくさん使っていきます！
+      </p>
     </div>
 
-    <!-- 👉【右半分】：関連資料・写真ギャラリー・宿盤エリア -->
-    <div style="flex: 1; min-width: 280px; padding: 15px; background-color: white; border-radius: 6px; border: 1px solid #ddd; box-sizing: border-box; display: flex; flex-direction: column; gap: 15px;">
-      <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📚 講義の関連資料 (PDF)</h3>
+    <p style="margin-top: 25px; margin-bottom: 0;">
+      <a href="https://discord.gg/GBGzk38eV" class="btn" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 12px 25px; background-color: #5865F2; color: white; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 1.1rem; border-bottom: 4px solid #3843b2; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        💬 Discord囲碁コミュニケーション広場に入る！
+      </a>
+    </p>
+  </div> 
+</div>
 
-      <div style="padding: 5px 0; border-bottom: 1px dashed #ddd;">
-        <a href="tewari.pdf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
-          ➔ 「手割り」解説テキストはこちら (PDF)
+<!-- ■ お知らせ・写真・動画コーナー（下部エリア） ■ -->
+<div style="margin-top: 30px; padding-top: 25px; border-top: 1px solid #e0d0b0; display: flex; flex-wrap: wrap; gap: 25px;">
+
+  <!-- 👈【左側】：お知らせ ＆ 動画 -->
+  <div style="flex: 1.2; min-width: 280px; display: flex; flex-direction: column; gap: 20px;">
+
+    <!-- 🗒 お知らせ -->
+    <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px;">
+      <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">🗒 お知らせ</h3>
+      <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #444; line-height: 1.7;">
+        <li style="margin-bottom: 8px;"><strong>2026年10月7日：</strong> 今週の詰碁宿題を新しく更新しました！各自チャレンジしてね。</li>
+        <li style="margin-bottom: 8px;"><strong>2026年9月29日：</strong> <a href="https://0845.boo.jp/doso/archives/1940" target="_blank" rel="noopener" style="color: #003366; font-weight: bold; text-decoration: underline;">🎬 映画『初恋芸人』プロデューサー 峯松里香さんの寄稿記事（因島高校同窓会）</a>へのリンクを追加しました。ぜひご覧ください！</li>
+        <li><strong>2026年9月27日：</strong> 才美塾のホームページを新しくリニューアルし、主題歌（塾歌）の再生機能や動画・写真コーナーを追加しました！</li>
+      </ul>
+    </div>
+
+
+
+          <!-- 📺 動画（YouTubeへ安全に直接アクセスするボタン） -->
+    <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px;">
+      <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📺 動画で見る才美塾</h3>
+
+      <p style="font-size: 14px; color: #555; margin: 0 0 15px 0; line-height: 1.5;">
+        ※動画はYouTube（外部サイト）の公式ページで安全に開きます。
+      </p>
+
+      <!-- 動画選択用のボタングループ -->
+      <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 10px;">
+
+      <!-- 動画1：依田九段の「形と筋」動画へジャンプ -->
+        <a href="https://www.youtube.com/watch?v=3xoSozj2dms" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+          <button style="padding: 10px 20px; font-size: 14px; cursor: pointer; border: 1px solid #003366; background-color: #003366; color: white; border-radius: 4px; font-weight: bold; transition: 0.2s;">
+            🎬 動画 1（囲碁講座：形と筋） ↗
+          </button>
         </a>
-      </div>
-      
-      <div style="padding: 5px 0; border-bottom: 1px dashed #ddd;">
-        <a href="tesuji_sujiba.pdf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
-          ➔ 「筋・筋場」解説テキストはこちら (PDF)
+
+        <!-- 動画2：吉原由香里先生の「囲碁の上達法」動画へジャンプ -->
+        <a href="https://www.youtube.com/watch?v=mLXAU5810V0" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+          <button style="padding: 10px 20px; font-size: 14px; cursor: pointer; border: 1px solid #003366; background-color: white; color: #003366; border-radius: 4px; font-weight: bold; transition: 0.2s;">
+            🎬 動画 2（吉原由香里 囲碁教室 動画） ↗
+          </button>
         </a>
-      </div>
+  </div>
+    </div>
+  </div>
 
-      <div style="padding: 5px 0; border-bottom: 1px dashed #ddd;">
-        <a href="yobi.pdf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
-          ➔ 予備の関連資料ダウンロード (PDF)
-        </a>
-      </div>
 
-      <!-- 📺 YouTube動画表示エリア（右半分の内部に格納） -->
-      <div id="video-container" style="display: none; width: 100%; position: relative; padding-top: 56.25%;">
-        <iframe id="youtube-player" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.15);"></iframe>
-      </div>
 
-      <!-- 📸 写真ギャラリー（白い枠のカード） -->
-      <div style="margin-top: 5px; padding: 10px; background-color: #fff; border: 1px solid #eee; border-radius: 6px;">
-        <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📸 写真ギャラリー</h3>
-        <style>
-          @keyframes fadeSlideShow4 { 0%, 20% { opacity: 1; z-index: 4; } 24%, 44% { opacity: 0; z-index: 1; } 48%, 68% { opacity: 0; z-index: 1; } 72%, 92% { opacity: 0; z-index: 1; } 96%, 100% { opacity: 1; z-index: 4; } }
-          @keyframes fadeSlideShow4_2 { 0%, 20% { opacity: 0; z-index: 1; } 24%, 44% { opacity: 1; z-index: 4; } 48%, 68% { opacity: 0; z-index: 1; } 72%, 92% { opacity: 0; z-index: 1; } 96%, 100% { opacity: 0; z-index: 1; } }
-          @keyframes fadeSlideShow4_3 { 0%, 44% { opacity: 0; z-index: 1; } 48%, 68% { opacity: 1; z-index: 4; } 72%, 92% { opacity: 0; z-index: 1; } 96%, 100% { opacity: 0; z-index: 1; } }
-          @keyframes fadeSlideShow4_4 { 0%, 68% { opacity: 0; z-index: 1; } 72%, 92% { opacity: 1; z-index: 4; } 96%, 100% { opacity: 0; z-index: 1; } }
-          .slide-container { width: 100%; max-width: 100%; height: 240px; overflow: hidden; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; background-color: #fff; box-sizing: border-box; }
-          .slide-item { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: flex-start; box-sizing: border-box; background-color: #fff; }
-          .slide-img { width: 100%; height: 170px; object-fit: contain; background-color: #f8f9fa; flex-shrink: 0; display: block; }
-          .slide-text { margin: 0; padding: 10px 5px; font-size: 13px; color: #333; font-weight: bold; background-color: #fff; text-align: center; line-height: 1.3; }
-        </style>
-        <div class="slide-container" style="margin-bottom: 15px;">
-          <div class="slide-item" style="animation: fadeSlideShow4 20s infinite;">
-            <img src="photo1.jpg" alt="photo1" class="slide-img">
-            <p class="slide-text">① どこに打てばいいんだろう…？（じっくり考える時間）</p>
-          </div>
+  <!-- 👉【右側】：写真ギャラリー -->
+  <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; text-align: center;">
+    <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; height: 100%;">
+      <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📸 写真ギャラリー</h3>
+
+      <style>
+        @keyframes fadeSlideShow4 {
+          0%, 20%   { opacity: 1; z-index: 4; }
+          24%, 44%  { opacity: 0; z-index: 1; } 
+          48%, 68%  { opacity: 0; z-index: 1; }
+          72%, 92%  { opacity: 0; z-index: 1; }
+          96%, 100% { opacity: 1; z-index: 4; }
+        }
+        @keyframes fadeSlideShow4_2 {
+          0%, 20%   { opacity: 0; z-index: 1; }
+          24%, 44%  { opacity: 1; z-index: 4; }
+          48%, 68%  { opacity: 0; z-index: 1; }
+          72%, 92%  { opacity: 0; z-index: 1; }
+          96%, 100% { opacity: 0; z-index: 1; }
+        }
+        @keyframes fadeSlideShow4_3 {
+          0%, 44%   { opacity: 0; z-index: 1; }
+          48%, 68%  { opacity: 1; z-index: 4; }
+          72%, 92%  { opacity: 0; z-index: 1; }
+          96%, 100% { opacity: 0; z-index: 1; }
+        }
+        @keyframes fadeSlideShow4_4 {
+          0%, 68%   { opacity: 0; z-index: 1; }
+          72%, 92%  { opacity: 1; z-index: 4; }
+          96%, 100% { opacity: 0; z-index: 1; }
+        }
+
+        .slide-container {
+          width: 100%;
+          max-width: 100%;
+          height: 240px;
+          overflow: hidden;
+          border-radius: 4px;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+          position: relative;
+          background-color: #fff;
+          box-sizing: border-box;
+        }
+
+        .slide-item {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+          box-sizing: border-box;
+          background-color: #fff;
+        }
+
+        .slide-img {
+          width: 100%;
+          height: 170px;
+          object-fit: contain;
+          background-color: #f8f9fa;
+          flex-shrink: 0;
+          display: block;
+        }
+
+        .slide-text {
+          margin: 0;
+          padding: 10px 5px;
+          font-size: 13px;
+          color: #333;
+          font-weight: bold;
+          background-color: #fff;
+          text-align: center;
+          line-height: 1.3;
+        }
+      </style>
+
+      <div class="slide-container">
+        <div class="slide-item" style="animation: fadeSlideShow4 20s infinite;">
+          <img src="photo1.jpg" alt="photo1" class="slide-img">
+          <p class="slide-text">① どこに打てばいいんだろう…？（じっくり考える時間）</p>
+        </div>
 
         <div class="slide-item" style="animation: fadeSlideShow4_2 20s infinite;">
           <img src="photo2.jpg" alt="photo2" class="slide-img">
