@@ -58,43 +58,44 @@
         </div>
       </div>
 
-      <!-- 🎛️ ボタンメニュー群（すべて幅・デザインを統一） -->
-      <div style="display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 250px;">
-        
-        <!-- ① 古文書ボタン -->
-        <a href="komonjo.pdf" target="_blank" style="display: block; background-color: #8B4513; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
-          📜 古文書の案内 (PDF)
-        </a>
-        
-        <!-- ② ハーモニカボタン -->
-        <audio id="harmonica-sound" src="harmonica.mp3" preload="auto"></audio>
-        <button id="harmonica-btn" onclick="toggleHarmonica()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #20B2AA; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
-          🎵 ハーモニカの演奏
-        </button>
-        
-        <!-- ③ ピアノボタン -->
-        <audio id="piano-sound" src="piano.mp3" preload="auto"></auto>
-          <button id="piano-btn" onclick="togglePiano()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #333333; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
+
+      <!-- 🎛️ ボタンメニュー群（すっきりした見た目を維持し、消えたボタンをすべて復活！） -->
+  <div style="display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 250px;">
+    
+    <!-- ① 古文書ボタン -->
+    <a href="komonjo.pdf" target="_blank" style="display: block; background-color: #8B4513; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
+      📜 古文書の案内 (PDF)
+    </a>
+    
+    <!-- ② ハーモニカボタン -->
+    <audio id="harmonica-sound" src="harmonica.mp3" preload="auto"></audio>
+    <button id="harmonica-btn" onclick="toggleHarmonica()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #20B2AA; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
+      🎵 ハーモニカの演奏
+    </button>
+    
+    <!-- ③ ピアノボタン -->
+    <audio id="piano-sound" src="piano.mp3" preload="auto"></audio>
+    <button id="piano-btn" onclick="togglePiano()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #333333; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
       🎹 ピアノの演奏 (PDFも開く)
     </button>
 
     <!-- 📐 ④ 手割り 動画ボタン -->
-    <button class="sb-btn" data-video-id="23BP-eTUiEU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #4a5568; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit; margin-top: 12px;">
+    <button class="sb-btn" data-video-id="23BP-eTUiEU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #4a5568; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
       📐 「手割り」講義動画
     </button>
 
     <!-- 🎯 ⑤ 筋・筋場 動画ボタン -->
-    <button class="sb-btn" data-video-id="23BP-eTUiEU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #003366; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit; margin-top: 12px;">
+    <button class="sb-btn" data-video-id="23BP-eTUiEU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #003366; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
       🎯 「筋・筋場」講義動画
     </button>
 
     <!-- ✨ ⑥ 予備 動画ボタン -->
-    <button class="sb-btn" data-video-id="23BP-eTUiEU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #718096; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit; margin-top: 12px; margin-bottom: 20px;">
+    <button class="sb-btn" data-video-id="23BP-eTUiEU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #718096; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
       ✨ 予備の動画
     </button>
 
   </div>
-</div> <!-- 左半分のエリア（min-width: 280px）を閉じます -->
+</div> <!-- 左半分のエリアを閉じます -->
 
 <!-- 👉【右半分】：関連資料・PDFダウンロードコーナー -->
 <div style="flex: 1; min-width: 280px; padding: 15px; background-color: white; border-radius: 6px; border: 1px solid #ddd; box-sizing: border-box; display: flex; flex-direction: column; gap: 15px;">
@@ -121,7 +122,7 @@
     </a>
   </div>
 
-  <!-- 📺 YouTube動画が表示されるエリア（右半分のパーツ内に完全に独立して追加！） -->
+  <!-- 📺 YouTube動画が表示されるエリア（すっきり配置した右半分の下に格納） -->
   <div id="video-container" style="display: none; width: 100%; max-width: 250px; margin-top: 10px; position: relative; padding-top: 56.25%;">
     <iframe id="youtube-player" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></iframe>
   </div>
@@ -145,8 +146,9 @@
   }
   </script>
 
-  <!-- ① 教室スケジュール ➔ この直後に元からあったスケジュール等の記述が綺麗に続きます -->
-
+  <!-- ① 教室スケジュール ➔ この後に元の記述が安全に続きます -->
+    
+        
             
     
     <!-- ① 教室スケジュール -->
