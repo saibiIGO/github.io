@@ -139,36 +139,20 @@
     <iframe id="youtube-player" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></iframe>
   </div>
 
+    </div> <!-- 📸 写真ギャラリーの「.slide-container」の閉じタグ -->
+  </div> <!-- 📸 写真ギャラリーの「padding: 15px...」白いボックスの閉じタグ -->
 
-<!-- ⚙️ 動画を動かすための最終プログラム（完成版） -->
-<script>
-function switchYouTube(button) {
-  var videoId = button.getAttribute('data-video-id');
-  var container = document.getElementById('video-container');
-  var player = document.getElementById('youtube-player');
-  
-  // YouTubeの正しい埋め込み用URLを組み立てて再生する命令です
-  player.src = "https://www.youtube.com/embed/" + videoId;
-  container.style.display = 'block';
-  
-  // 動画の位置まで画面を自動でスルスルとスクロールさせます
-  container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-}
-</script>
-
-    
-
-
-  <!-- ① 教室スケジュール -->
-    
-    <!-- ⚙️ 動画切り替え用のJavaScriptプログラム -->
-  <script>
-  <!-- ⚙️ 名前（ID）の重複バグを完全に回避する、改良版JavaScriptプログラム -->
+  <!-- ⚙️ 動画切り替え用のJavaScriptプログラム（不具合を完全に修正しました） -->
   <script>
   function switchYouTube(button) {
     const videoId = button.getAttribute('data-video-id');
+    const container = button.closest('.video-container') || button.parentElement;
+    if (!container) return;
     
-    // （・・・この間の英語のプログラムもすべて含めて・・・）
+    let iframe = container.querySelector('iframe');
+    if (iframe) {
+      iframe.src = 'https://youtube.com' + videoId + '?autoplay=1';
+    }
     
     setTimeout(() => {
       container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -176,112 +160,68 @@ function switchYouTube(button) {
   }
   </script>
 
-    
-  
-  
-  </script>
-
-  <!-- ① 教室スケジュール ➔ この後に元の記述が安全に続きます -->
-    
-        
-   <!-- ① 教室スケジュール -->
-  <div>
-    <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px; border-bottom: none; padding-bottom: 0;">📅 教室スケジュール</h3>
+  <!-- 📅 ① 教室スケジュール -->
+  <div style="margin-top: 25px; text-align: left;">
+    <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px; border-bottom: none; padding-bottom: 0; font-weight: bold;">📅 教室スケジュール</h3>
     <a href="schedule.pdf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
       ➔ 教室スケジュールはこちら (PDF)
     </a>
   </div>
   
-  <!-- ② 今週の宿題 -->
-  <div style="margin-top: 15px;">
-    <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px; border-bottom: none; padding-bottom: 0;">🎁 今週の詰碁宿題</h3>
-    <a href="tmgo.sgf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold; display: block; margin-bottom: 10px;">
+  <!-- 🎁 ② 今週の宿題（自作SGF再現 9路盤エリア） -->
+  <div style="margin-top: 25px; text-align: left;">
+    <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px; border-bottom: none; padding-bottom: 0; font-weight: bold;">🎁 今週の詰碁宿題</h3>
+    <a href="tmgo.sgf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold; display: block; margin-bottom: 12px;">
       ➔ 今週の詰碁宿題をダウンロード (SGF)
     </a>
 
-    <!-- 💡 送っていただいたSGFを100%再現した9路盤エリア -->
+    <!-- 💡 HTML/CSS 9路盤 -->
     <div style="background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 6px; padding: 12px; margin-top: 8px; display: inline-block; text-align: left; box-sizing: border-box; max-width: 100%;">
-      <p style="margin: 0 0 8px 0; font-size: 13px; font-weight: bold; color: #d32f2f;">【今週の問題】黒番（黒の番です）</p>
+      <p style="margin: 0 0 8px 0; font-size: 13px; font-weight: bold; color: #d32f2f;">【今週の問題】黒先（黒番です）</p>
       
-      <!-- 9路盤（横9マス×縦9マス、各24px、合計216px幅） -->
-      <div style="display: grid; grid-template-columns: repeat(9, 24px); grid-template-rows: repeat(9, 24px); background-color: #dcaf6d; border: 2px solid #333; width: 216px; height: 216px; position: relative; box-shadow: inset 0 0 8px rgba(0,0,0,0.15);">
+      <div style="display: grid; grid-template-columns: repeat(9, 24px); grid-template-rows: repeat(9, 24px); background-color: #dcaf6d; border: 2px solid #333; width: 216px; height: 216px; position: relative; box-shadow: inset 0 0 8px rgba(0,0,0,0.15); box-sizing: content-box;">
         
-        <!-- 1行目 (A1-I1) -->
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <div style="border-bottom: 1px solid #333;"></div>
+        <!-- 1行目 -->
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-bottom: 1px solid #333;"></div>
+        <!-- 2行目 -->
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-bottom: 1px solid #333;"></div>
+        <!-- 3行目 -->
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-bottom: 1px solid #333;"></div>
+        <!-- 4行目 -->
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div><div style="border-bottom: 1px solid #333;"></div>
 
-        <!-- 2行目 (A2-I2) -->
+        <!-- 5行目 -->
         <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
         <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
         <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
         <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <div style="border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#000; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#000; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#000; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#000; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
+        <div style="border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#000; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
 
-        <!-- 3行目 (A3-I3) -->
+        <!-- 6行目 -->
         <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
         <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
         <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
         <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#000; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#fff; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#fff; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
         <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <div style="border-bottom: 1px solid #333;"></div>
+        <div style="border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#fff; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
 
-        <!-- 4行目 (A4-I4) -->
+        <!-- 7行目 -->
         <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
         <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
         <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
         <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#000; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#fff; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
         <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <div style="border-bottom: 1px solid #333;"></div>
 
-        <!-- 5行目 (A5-I5) -->
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <!-- 5の5 (ef) 黒 -->  <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#000; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
-        <!-- 5の6 (ff) 黒 -->  <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#000; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
-        <!-- 5の7 (gf) 黒 -->  <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#000; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
-        <!-- 5の8 (hf) 黒 -->  <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#000; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
-        <!-- 5の9 (if) 黒 -->  <div style="border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#000; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
 
-        <!-- 6行目 (A6-I6) -->
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <!-- 6の5 (dg) 黒 -->  <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#000; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
-        <!-- 6の6 (fg) 白 -->  <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#fff; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
-        <!-- 6の7 (gg) 白 -->  <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#fff; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <!-- 6の9 (ig) 白 -->  <div style="border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#fff; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
-
-        <!-- 7行目 (A7-I7) -->
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <!-- 7の5 (dh) 黒 -->  <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#000; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
-        <!-- 7の6 (eh) 白 -->  <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#fff; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
-        <!-- 7の8 (hh) 白 -->  <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#fff; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
-        <div style="border-bottom: 1px solid #333;"></div>
 
  
   <!-- ③ 教室の概要・趣旨 -->
