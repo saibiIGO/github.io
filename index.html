@@ -356,32 +356,43 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 
       <!-- 動画選択用のボタングループ -->
       <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 10px;">
-        
-        <!-- 動画1：依田九段の「形と筋」動画へジャンプ -->
-        <a href="https://www.youtube.com/watch?v=3xoSozj2dms" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
-          <button style="padding: 10px 20px; font-size: 14px; cursor: pointer; border: 1px solid #003366; background-color: #003366; color: white; border-radius: 4px; font-weight: bold; transition: 0.2s;">
-            🎬 動画 1（囲碁講座：形と筋） ↗
-          </button>
-        </a>
-        
-        <!-- 動画2：吉原由香里先生の「囲碁の上達法」動画へジャンプ -->
-        <a href="https://www.youtube.com/watch?v=mLXAU5810V0" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
-          <button style="padding: 10px 20px; font-size: 14px; cursor: pointer; border: 1px solid #003366; background-color: white; color: #003366; border-radius: 4px; font-weight: bold; transition: 0.2s;">
-            🎬 動画 2（吉原由香里 囲碁教室 動画） ↗
-          </button>
-        </a>
+
+        <!-- 動画1：依田九段の「形と筋」動画 埋め込み -->
+<div style="margin-bottom: 20px;">
+  <p style="font-weight: bold; font-size: 14px; color: #003366; margin-bottom: 8px;">🎬 動画 1（囲碁講座：形と筋）</p>
+  <iframe 
+    width="560" 
+    height="315" 
+    src="https://youtube.com" 
+    title="YouTube video player" 
+    frameborder="0" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    referrerpolicy="strict-origin-when-cross-origin" 
+    allowfullscreen>
+   iframe>
+</div>
+
+<!-- 動画2：吉原由香里先生の「囲碁の上達法」動画 埋め込み -->
+<div>
+  <p style="font-weight: bold; font-size: 14px; color: #003366; margin-bottom: 8px;">🎬 動画 2（吉原由香里 囲碁教室 動画）</p>
+  <iframe 
+    width="560" 
+    height="315" 
+    src="https://youtube.com" 
+    title="YouTube video player" 
+    frameborder="0" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    referrerpolicy="strict-origin-when-cross-origin" 
+    allowfullscreen>
+   iframe>
+</div>
+  
 
       </div>
     </div>
   </div>
 
       
-  
-  
-
-      
-    
-
 
   <!-- 👉【右側】：写真ギャラリー -->
   <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; text-align: center;">
