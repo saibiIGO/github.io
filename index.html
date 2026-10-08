@@ -184,8 +184,7 @@ function switchYouTube(button) {
   <!-- ① 教室スケジュール ➔ この後に元の記述が安全に続きます -->
     
         
-            
-    <!-- ① 教室スケジュール -->
+   <!-- ① 教室スケジュール -->
   <div>
     <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px; border-bottom: none; padding-bottom: 0;">📅 教室スケジュール</h3>
     <a href="schedule.pdf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
@@ -200,71 +199,91 @@ function switchYouTube(button) {
       ➔ 今週の詰碁宿題をダウンロード (SGF)
     </a>
 
-    <!-- 💡 ここから：HTML/CSSで描くミニ碁盤（詰碁問題エリア） -->
-    <div style="background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 6px; padding: 12px; margin-top: 8px; display: inline-block; text-align: left;">
-      <p style="margin: 0 0 8px 0; font-size: 13px; font-weight: bold; color: #d32f2f;">【問題】黒先白死（黒番。白を殺してください）</p>
+    <!-- 💡 送っていただいたSGFを100%再現した9路盤エリア -->
+    <div style="background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 6px; padding: 12px; margin-top: 8px; display: inline-block; text-align: left; box-sizing: border-box; max-width: 100%;">
+      <p style="margin: 0 0 8px 0; font-size: 13px; font-weight: bold; color: #d32f2f;">【今週の問題】黒番（黒の番です）</p>
       
-      <!-- 碁盤（6×6マスの部分盤） -->
-      <div style="display: grid; grid-template-columns: repeat(6, 30px); grid-template-rows: repeat(6, 30px); background-color: #dcaf6d; border: 2px solid #333; width: 180px; height: 180px; position: relative; box-shadow: inset 0 0 10px rgba(0,0,0,0.15);">
+      <!-- 9路盤（横9マス×縦9マス、各24px、合計216px幅） -->
+      <div style="display: grid; grid-template-columns: repeat(9, 24px); grid-template-rows: repeat(9, 24px); background-color: #dcaf6d; border: 2px solid #333; width: 216px; height: 216px; position: relative; box-shadow: inset 0 0 8px rgba(0,0,0,0.15);">
         
-        <!-- 交差点（線）の再現。すべてのマスに背景として十字線を引く -->
-        <!-- 1行目 -->
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"><div style="width:18px; height:18px; background:#fff; border:1px solid #000; border-radius:50%; z-index:2;"></div></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"><div style="width:18px; height:18px; background:#fff; border:1px solid #000; border-radius:50%; z-index:2;"></div></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"><div style="width:18px; height:18px; background:#fff; border:1px solid #000; border-radius:50%; z-index:2;"></div></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"></div>
-        <div style="border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"></div>
+        <!-- 1行目 (A1-I1) -->
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-bottom: 1px solid #333;"></div>
 
-        <!-- 2行目 -->
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"><div style="width:18px; height:18px; background:#000; border:1px solid #000; border-radius:50%; z-index:2;"></div></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"><div style="width:18px; height:18px; background:#000; border:1px solid #000; border-radius:50%; z-index:2;"></div></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"><div style="width:18px; height:18px; background:#fff; border:1px solid #000; border-radius:50%; z-index:2;"></div></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"></div>
-        <div style="border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"></div>
+        <!-- 2行目 (A2-I2) -->
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-bottom: 1px solid #333;"></div>
 
-        <!-- 3行目 -->
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"><div style="width:18px; height:18px; background:#000; border:1px solid #000; border-radius:50%; z-index:2;"></div></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"><div style="width:18px; height:18px; background:#000; border:1px solid #000; border-radius:50%; z-index:2;"></div></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"></div>
-        <div style="border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"></div>
+        <!-- 3行目 (A3-I3) -->
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-bottom: 1px solid #333;"></div>
 
-        <!-- 4行目 -->
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"></div>
-        <div style="border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"></div>
+        <!-- 4行目 (A4-I4) -->
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-bottom: 1px solid #333;"></div>
 
-        <!-- 5行目 -->
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"></div>
-        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"></div>
-        <div style="border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"></div>
+        <!-- 5行目 (A5-I5) -->
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <!-- 5の5 (ef) 黒 -->  <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#000; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
+        <!-- 5の6 (ff) 黒 -->  <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#000; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
+        <!-- 5の7 (gf) 黒 -->  <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#000; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
+        <!-- 5の8 (hf) 黒 -->  <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#000; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
+        <!-- 5の9 (if) 黒 -->  <div style="border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#000; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
 
-        <!-- 6行目 -->
-        <div style="border-right: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"></div>
-        <div style="border-right: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"></div>
-        <div style="border-right: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"></div>
-        <div style="border-right: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"></div>
-        <div style="border-right: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative;"></div>
-        <div style="display: flex; align-items: center; justify-content: center; position: relative;"></div>
+        <!-- 6行目 (A6-I6) -->
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <!-- 6の5 (dg) 黒 -->  <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#000; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
+        <!-- 6の6 (fg) 白 -->  <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#fff; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
+        <!-- 6の7 (gg) 白 -->  <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#fff; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <!-- 6の9 (ig) 白 -->  <div style="border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#fff; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
 
-        <!-- 十字線の中心線を引くための疑似的な背景線（簡易版） -->
-        <div style="position: absolute; top: 15px; left: 15px; right: 15px; bottom: 15px; border-top: 1px solid #333; border-left: 1px solid #333; pointer-events: none; z-index: 1;"></div>
-      </div>
-      <p style="margin: 6px 0 0 0; font-size: 11px; color: #666; line-height: 1.3;">※右上隅の攻防です。一の1、一の2、一の3に白石、二の1、二の2、三の2、三の3に黒石が配置されています。</p>
-    </div>
-    <!-- 💡 ここまで：詰碁問題エリア -->
+        <!-- 7行目 (A7-I7) -->
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <!-- 7の5 (dh) 黒 -->  <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#000; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
+        <!-- 7の6 (eh) 白 -->  <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#fff; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
+        <div style="border-right: 1px solid #333; border-bottom: 1px solid #333;"></div>
+        <!-- 7の8 (hh) 白 -->  <div style="border-right: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center;"><div style="width:18px; height:18px; background:#fff; border:1px solid #000; border-radius:50%; z-index:2; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);"></div></div>
+        <div style="border-bottom: 1px solid #333;"></div>
 
-  </div>
-  
+ 
   <!-- ③ 教室の概要・趣旨 -->
   <div style="margin-top: 15px;">
     <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px; border-bottom: none; padding-bottom: 0;">📖 教室の概要</h3>
