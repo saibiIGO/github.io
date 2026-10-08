@@ -37,22 +37,32 @@
   <!-- 【下部：左右2段組 of エリア】 -->
   <div style="display: flex; flex-wrap: wrap; gap: 30px; box-sizing: border-box;">
 
-    <!-- 👈【左半分】：タイトル、主題歌、ボタンメニュー列 -->
-    <div style="flex: 1; min-width: 280px; box-sizing: border-box;">
+<!-- 👈【左半分】：タイトル、主題歌、ボタンメニュー列 -->
+<div style="flex: 1; min-width: 280px; box-sizing: border-box;">
 
-      <!-- タイトルと音声プレイヤー -->
-      <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
-        <h1 style="margin: 0; font-size: 32px; color: #003366; font-weight: bold; line-height: 1.2;">
-          才美塾囲碁教室
-        </h1>
-        <!-- 🎵 タイトル下の主題歌プレイヤー -->
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <span style="font-size: 12px; color: #003366; font-weight: bold; white-space: nowrap;">🎵 主題歌・塾歌:</span>
-          <audio controls src="song.mp3" style="height: 28px; width: 100%; max-width: 200px;">
-            お使いのブラウザは音声再生に対応していません。
-          </audio>
-        </div>
+  <!-- 💡 タイトルと音声プレイヤーをスタイリッシュな枠（カード）で囲みました -->
+  <div style="background-color: #ffffff; padding: 20px; border-radius: 12px; border: 2px solid #003366; box-shadow: 0 4px 10px rgba(0, 33, 102, 0.08); margin-bottom: 25px; box-sizing: border-box;">
+    <div style="display: flex; flex-direction: column; gap: 15px;">
+      
+      <!-- タイトル：文字に少し影をつけて引き締めました -->
+      <h1 style="margin: 0; font-size: 34px; color: #003366; font-weight: bold; line-height: 1.2; text-shadow: 1px 1px 0px rgba(0,0,0,0.05); letter-spacing: 0.05em;">
+        才美塾囲碁教室
+      </h1>
+      
+      <!-- 🎵 タイトル下の主題歌プレイヤー：枠線と背景を馴染ませました -->
+      <div style="display: flex; flex-direction: column; gap: 6px; background-color: #f0f4f8; padding: 10px 12px; border-radius: 8px;">
+        <span style="font-size: 13px; color: #003366; font-weight: bold; white-space: nowrap; display: flex; align-items: center; gap: 4px;">
+          🎵 主題歌・塾歌
+        </span>
+        <audio controls src="song.mp3" style="height: 32px; width: 100%;">
+          お使いのブラウザは音声再生に対応していません。
+        </audio>
       </div>
+
+    </div>
+  </div>
+
+
 
 
 
