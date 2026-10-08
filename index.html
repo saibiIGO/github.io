@@ -128,38 +128,24 @@
   </div>
 
 
-
-    
-<!-- ⚙️ 重複を解消した、正常な動画切り替えプログラム -->
+<!-- ⚙️ 動画を動かすための最終プログラム（完成版） -->
 <script>
 function switchYouTube(button) {
-  const videoId = button.getAttribute('data-video-id');
+  var videoId = button.getAttribute('data-video-id');
+  var container = document.getElementById('video-container');
+  var player = document.getElementById('youtube-player');
   
-  // 1. ボタンが所属しているボックスの中から動画エリアを直接探す
-  const mainBox = button.closest('.container, body, div');
-  const container = mainBox.querySelector('#video-container') || document.getElementById('video-container');
-  const player = container ? container.querySelector('#youtube-player') : null;
-  
-  if (!videoId || videoId.trim() === '') {
-    alert('有効なYouTube動画IDが設定されていません。');
-    return;
-  }
-  
-  if (!container || !player) {
-    alert('動画を表示するエリアが見つかりません。HTMLの配置を確認してください。');
-    return;
-  }
-  
-  // 2. YouTubeの正しい埋め込み用URLをセットして表示
-  player.src = "https://youtube.com" + videoId;
+  // YouTubeの正しい埋め込み用URLを組み立てて再生する命令です
+  player.src = "https://www.youtube.com/embed/" + videoId;
   container.style.display = 'block';
   
-  // 3. 動画の位置まで画面をスムーズにスクロール
-  setTimeout(() => {
-    container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }, 50);
+  // 動画の位置まで画面を自動でスルスルとスクロールさせます
+  container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 </script>
+
+    
+
 
   <!-- ① 教室スケジュール -->
     
