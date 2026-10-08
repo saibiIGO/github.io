@@ -127,38 +127,59 @@
     <iframe id="youtube-player" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></iframe>
   </div>
 
-  <!-- ⚙️ 動画切り替え用のJavaScriptプログラム -->
+
+
+    
+<!-- ⚙️ 重複を解消した、正常な動画切り替えプログラム -->
+<script>
+function switchYouTube(button) {
+  const videoId = button.getAttribute('data-video-id');
+  
+  // 1. ボタンが所属しているボックスの中から動画エリアを直接探す
+  const mainBox = button.closest('.container, body, div');
+  const container = mainBox.querySelector('#video-container') || document.getElementById('video-container');
+  const player = container ? container.querySelector('#youtube-player') : null;
+  
+  if (!videoId || videoId.trim() === '') {
+    alert('有効なYouTube動画IDが設定されていません。');
+    return;
+  }
+  
+  if (!container || !player) {
+    alert('動画を表示するエリアが見つかりません。HTMLの配置を確認してください。');
+    return;
+  }
+  
+  // 2. YouTubeの正しい埋め込み用URLをセットして表示
+  player.src = "https://youtube.com" + videoId;
+  container.style.display = 'block';
+  
+  // 3. 動画の位置まで画面をスムーズにスクロール
+  setTimeout(() => {
+    container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 50);
+}
+</script>
+
+  <!-- ① 教室スケジュール -->
+    
+    <!-- ⚙️ 動画切り替え用のJavaScriptプログラム -->
   <script>
   <!-- ⚙️ 名前（ID）の重複バグを完全に回避する、改良版JavaScriptプログラム -->
   <script>
   function switchYouTube(button) {
     const videoId = button.getAttribute('data-video-id');
     
-    // 1. ボタンが所属している大元のボックス（左右2段組エリア）の中から「video-container」を直接探す
-    const mainBox = button.closest('.container, body, div');
-    const container = mainBox.querySelector('#video-container') || document.getElementById('video-container');
-    const player = container ? container.querySelector('#youtube-player') : null;
+    // （・・・この間の英語のプログラムもすべて含めて・・・）
     
-    if (!videoId || videoId.trim() === '') {
-      alert('有効なYouTube動画IDが設定されていません。');
-      return;
-    }
-    
-    if (!container || !player) {
-      alert('動画を表示するエリア（プレイヤー）が見つかりません。HTMLの配置を確認してください。');
-      return;
-    }
-    
-    // 2. YouTubeの動画URLをセットして表示をブロック(block)に切り替える
-    player.src = "https://youtube.com" + videoId;
-    container.style.display = 'block';
-    
-    // 3. 動画の位置までスルスルと画面をスクロール
     setTimeout(() => {
       container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }, 50);
   }
   </script>
+
+    
+  
   
   </script>
 
