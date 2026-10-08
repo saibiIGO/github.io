@@ -79,12 +79,12 @@
     </button>
 
 <!-- 📐 ④ 手割り 動画ボタン -->
-<button class="sb-btn" data-video-id="vEvMlP6fMzU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #4a5568; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit; margin-bottom: 10px;">
+<button class="sb-btn" data-video-id="/embed/23BP-eTUiEU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #4a5568; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit; margin-bottom: 10px;">
   📐 「手割り」講義動画
 </button>
 
-<!-- 🎯 ⑤ 筋・筋場 動画ボタン（※手割りと別の動画IDがあれば vEvMlP6fMzU の部分を書き換えてください） -->
-<button class="sb-btn" data-video-id="vEvMlP6fMzU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #003366; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit; margin-bottom: 20px;">
+<!-- 🎯 ⑤ 筋・筋場 動画ボタン -->
+<button class="sb-btn" data-video-id="/embed/23BP-eTUiEU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #003366; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit; margin-bottom: 20px;">
   🎯 「筋・筋場」講義動画
 </button>
 
@@ -101,13 +101,13 @@ function switchYouTube(button) {
   const container = document.getElementById('video-container');
   const player = document.getElementById('youtube-player');
   
-  // 空欄の場合は処理しない
-  if (!videoId || videoId.trim() === '') {
+  // 初期値や空欄、または指定メッセージのままの場合は処理しない
+  if (!videoId || videoId.trim() === '' || videoId.includes('ここに予備の')) {
     alert('有効なYouTube動画IDが設定されていません。');
     return;
   }
   
-  // YouTubeの通常の埋め込み用URLをセットして表示
+  // YouTubeの埋め込み用URLをセットして表示
   player.src = "https://youtube.com" + videoId;
   container.style.display = 'block';
   
@@ -116,13 +116,13 @@ function switchYouTube(button) {
 }
 </script>
 
+<!-- ✨ ⑥ 予備 動画ボタン -->
+<button class="sb-btn" data-video-id="/embed/23BP-eTUiEU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #718096; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
+  ✨ 予備の動画
+</button>
 
-  
+      
 
-    <!-- ✨ ⑥ 予備 動画ボタン -->
-    <button class="sb-btn" data-video-id="ここに予備のYouTube動画IDを入れてください" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #718096; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
-      ✨ 予備の動画
-    </button>
 
   </div>
 
