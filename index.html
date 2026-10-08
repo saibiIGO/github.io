@@ -28,6 +28,7 @@
     <header>
 
     <header>
+    <header>
 
 <!-- 全体を包む見やすい薄い背景のボックス -->
 <div style="background-color: #fcf8f2; padding: 25px; border-radius: 8px; border: 1px solid #e0d0b0; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); box-sizing: border-box; font-family: sans-serif; text-align: left;">
@@ -59,7 +60,7 @@
   </div>
 
   <!-- 🎛️ ボタンメニュー群（すべて幅・デザインを統一） -->
-  <div style="display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 250px; margin-bottom: 20px;">
+  <div style="display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 250px;">
     
     <!-- ① 古文書ボタン -->
     <a href="komonjo.pdf" target="_blank" style="display: block; background-color: #8B4513; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
@@ -79,61 +80,50 @@
     </button>
 
     <!-- 📐 ④ 手割り 動画ボタン -->
-    <button class="sb-btn" data-video-id="23BP-eTUiEU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #4a5568; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
+    <button class="sb-btn" data-video-id="23BP-eTUiEU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #4a5568; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit; margin-bottom: 10px;">
       📐 「手割り」講義動画
     </button>
 
     <!-- 🎯 ⑤ 筋・筋場 動画ボタン -->
-    <button class="sb-btn" data-video-id="23BP-eTUiEU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #003366; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
+    <button class="sb-btn" data-video-id="23BP-eTUiEU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #003366; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit; margin-bottom: 20px;">
       🎯 「筋・筋場」講義動画
     </button>
+
+    <!-- 📺 YouTube動画が表示されるエリア（レスポンシブ対応） -->
+    <div id="video-container" style="display: none; width: 100%; max-width: 560px; margin: 0 auto; position: relative; padding-top: 56.25%;">
+      <iframe id="youtube-player" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></iframe>
+    </div>
+
+    <!-- ⚙️ 切り替え用のJavaScriptプログラム -->
+    <script>
+    function switchYouTube(button) {
+      const videoId = button.getAttribute('data-video-id');
+      const container = document.getElementById('video-container');
+      const player = document.getElementById('youtube-player');
+      
+      if (!videoId || videoId.trim() === '' || videoId.includes('ここに予備の')) {
+        alert('有効なYouTube動画IDが設定されていません。');
+        return;
+      }
+      
+      // 正確なYouTube埋め込みURLを生成
+      player.src = "https://youtube.com" + videoId;
+      container.style.display = 'block';
+      
+      container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    </script>
 
     <!-- ✨ ⑥ 予備 動画ボタン -->
     <button class="sb-btn" data-video-id="23BP-eTUiEU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #718096; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
       ✨ 予備の動画
     </button>
-  </div>
 
-  <!-- 📺 YouTube動画が表示されるエリア（幅をメニュー幅に合わせつつ綺麗に展開） -->
-  <div id="video-container" style="display: none; width: 100%; max-width: 250px; margin-top: 15px; position: relative; padding-top: 56.25%;">
-    <iframe id="youtube-player" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></iframe>
   </div>
 
 </div> <!-- ここで左半分のエリアを綺麗に閉じます -->
-
-<!-- ⚙️ 切り替え用のJavaScriptプログラム（干渉を防ぐためエリアの外側、かつボタンより下に安全に配置） -->
-<script>
-function switchYouTube(button) {
-  const videoId = button.getAttribute('data-video-id');
-  const container = document.getElementById('video-container');
-  const player = document.getElementById('youtube-player');
-  
-  if (!videoId || videoId.trim() === '' || videoId.includes('ここに予備')) {
-    alert('有効なYouTube動画IDが設定されていません。');
-    return;
-  }
-  
-  // URLの組み立てを完全自動化（ミスが起きない形式に修正）
-  player.src = "https://youtube.com" + videoId;
-  container.style.display = 'block';
-  
-  container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-}
-</script>
-
         
 
-<!-- ✨ ⑥ 予備 動画ボタン -->
-<button class="sb-btn" data-video-id="/embed/23BP-eTUiEU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #718096; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
-  ✨ 予備の動画
-</button>
-
-      
-
-
-  </div>
-
-</div> <!-- ここで左半分のエリアを綺麗に閉じます -->
 
 
       
