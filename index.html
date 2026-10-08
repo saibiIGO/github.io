@@ -468,8 +468,11 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     </div> <!-- 📸 写真ギャラリーボックス全体の閉じタグ -->
 
 
-        <!-- 💡 【完全版】路盤切り替え・問題配置・一手戻す・効果音付き碁盤エリア -->
-        <div style="background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 6px; padding: 15px; margin-top: 8px; box-sizing: border-box; width: 100%; max-width: 450px; margin-left: auto; margin-right: auto; text-align: center; font-family: sans-serif;">
+
+
+
+        <!-- 💡 【修正完全版】消しゴム機能搭載＆レイアウト崩れ防止 碁盤エリア -->
+        <div style="background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 6px; padding: 15px; margin-top: 8px; box-sizing: border-box; width: 100%; max-width: 450px; margin-left: auto; margin-right: auto; text-align: center; font-family: sans-serif; overflow: hidden;">
           <p style="margin: 0 0 10px 0; font-size: 13px; font-weight: bold; color: #d32f2f; text-align: left;">【今週の問題】黒先（黒番です）</p>
           
           <!-- ① 路盤切り替えボタン -->
@@ -479,19 +482,25 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
             <button type="button" onclick="initCustomBoard(19)" style="padding: 6px 14px; font-size: 12px; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; font-weight: bold; color: #333;">19路盤</button>
           </div>
           
-          <!-- 碁盤の土台 -->
-          <div style="width: 100%; max-width: 380px; margin: 0 auto; aspect-ratio: 1 / 1; position: relative; background-color: #dcaf6d; border: 2px solid #333; box-shadow: inset 0 0 8px rgba(0,0,0,0.15); box-sizing: border-box;">
+          <!-- 碁盤の土台（はみ出し防止用にmax-widthを調整） -->
+          <div style="width: 100%; max-width: 360px; margin: 0 auto; aspect-ratio: 1 / 1; position: relative; background-color: #dcaf6d; border: 2px solid #333; box-shadow: inset 0 0 8px rgba(0,0,0,0.15); box-sizing: border-box;">
             <!-- 交差点と石を配置するグリッドコンテナ -->
             <div id="custom-grid-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: grid; box-sizing: border-box;"></div>
           </div>
 
-          <!-- ② 操作用ボタン（一手戻す / リセット） -->
-          <div style="margin-top: 12px; display: flex; justify-content: center; gap: 10px;">
-            <button type="button" onclick="undoLastMove()" style="padding: 6px 16px; font-size: 12px; border: 1px solid #0066cc; background: #e6f2ff; color: #0066cc; border-radius: 4px; cursor: pointer; font-weight: bold;">⟲ 一手戻す</button>
-            <button type="button" onclick="resetCurrentBoard()" style="padding: 6px 16px; font-size: 12px; border: 1px solid #d32f2f; background: #ffebee; color: #d32f2f; border-radius: 4px; cursor: pointer; font-weight: bold;">✕ 最初からやり直す</button>
+          <!-- ② 新機能：操作モード切り替え（置く / 消す） -->
+          <div style="margin-top: 12px; display: flex; justify-content: center; gap: 6px;">
+            <button type="button" id="mode-play-btn" onclick="setBoardMode('play')" style="padding: 6px 12px; font-size: 12px; border: 2px solid #003366; background: #003366; color: #fff; border-radius: 4px; cursor: pointer; font-weight: bold;">⚫⚪ 石を置く</button>
+            <button type="button" id="mode-erase-btn" onclick="setBoardMode('erase')" style="padding: 6px 12px; font-size: 12px; border: 2px solid #ccc; background: #fff; color: #666; border-radius: 4px; cursor: pointer; font-weight: bold;">🧹 石を取り上げる</button>
+          </div>
+
+          <!-- ③ 操作用ボタン（一手戻す / リセット） -->
+          <div style="margin-top: 8px; display: flex; justify-content: center; gap: 8px;">
+            <button type="button" onclick="undoLastMove()" style="padding: 5px 12px; font-size: 11px; border: 1px solid #0066cc; background: #e6f2ff; color: #0066cc; border-radius: 4px; cursor: pointer; font-weight: bold;">⟲ 一手戻す</button>
+            <button type="button" onclick="resetCurrentBoard()" style="padding: 5px 12px; font-size: 11px; border: 1px solid #d32f2f; background: #ffebee; color: #d32f2f; border-radius: 4px; cursor: pointer; font-weight: bold;">✕ 最初からやり直す</button>
           </div>
           
-          <p style="margin: 12px 0 0 0; font-size: 11px; color: #666; line-height: 1.3; text-align: left;">※9路盤では今週の問題（黒先）が自動セットされます。クリックすると「パチッ」と音が鳴り、交互に石を置けます。間違えたら「一手戻す」を押してください。</p>
+          <p style="margin: 12px 0 0 0; font-size: 11px; color: #666; line-height: 1.3; text-align: left;">※石を取るときは「石を取り上げる」を押してから、盤上の石をクリックしてください。終わったら「石を置く」に戻してください。</p>
         </div>
 
       </div> <!-- 💡 白い枠の中の下部に追加されたエリア（詰碁宿題コーナー）の閉じタグ -->
@@ -500,24 +509,25 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 <script>
     let currentTurnColor = "black"; 
     let currentSize = 9;
-    let moveHistory = []; // 着手履歴を保存する配列
+    let boardMode = "play"; // "play" = 石を置く, "erase" = 石を消す
+    let moveHistory = []; 
 
-    // パチッという効果音をブラウザで生成する関数
-    function playStoneSound() {
+    // 効果音生成
+    function playStoneSound(isErase = false) {
         try {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             if (!AudioContext) return;
             const ctx = new AudioContext();
-            
-            // 短い打撃音の作成
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
             
             osc.type = 'sine';
-            osc.frequency.setValueAtTime(350, ctx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.08);
+            // 消すときは少し低めの音にする
+            const freq = isErase ? 220 : 350;
+            osc.frequency.setValueAtTime(freq, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.08);
             
-            gain.gain.setValueAtTime(0.3, ctx.currentTime);
+            gain.gain.setValueAtTime(0.2, ctx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
             
             osc.connect(gain);
@@ -530,6 +540,31 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         }
     }
 
+    // モード（置く・消す）を切り替える関数
+    function setBoardMode(mode) {
+        boardMode = mode;
+        const playBtn = document.getElementById("mode-play-btn");
+        const eraseBtn = document.getElementById("mode-erase-btn");
+        
+        if (!playBtn || !eraseBtn) return;
+
+        if (mode === "play") {
+            playBtn.style.background = "#003366";
+            playBtn.style.border = "2px solid #003366";
+            playBtn.style.color = "#fff";
+            eraseBtn.style.background = "#fff";
+            eraseBtn.style.border = "2px solid #ccc";
+            eraseBtn.style.color = "#666";
+        } else {
+            eraseBtn.style.background = "#e64a19";
+            eraseBtn.style.border = "2px solid #e64a19";
+            eraseBtn.style.color = "#fff";
+            playBtn.style.background = "#fff";
+            playBtn.style.border = "2px solid #ccc";
+            playBtn.style.color = "#666";
+        }
+    }
+
     // 碁盤の初期化
     function initCustomBoard(size) {
         const container = document.getElementById("custom-grid-container");
@@ -538,7 +573,8 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         container.innerHTML = "";
         currentTurnColor = "black"; 
         currentSize = size;
-        moveHistory = []; // 履歴をリセット
+        moveHistory = []; 
+        setBoardMode("play"); // 配置換え時は置くモードにリセット
         
         container.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
         container.style.gridTemplateRows = `repeat(${size}, 1fr)`;
@@ -590,26 +626,33 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
                     intersection.appendChild(starDot);
                 }
 
-                // クリック時の挙動
+                // クリック時の処理（置くモードと消すモードで分岐）
                 intersection.onclick = function() {
                     const slot = intersection.querySelector(".stone-slot");
-                    if (slot.dataset.stone) return; // すでに石があれば無視
                     
-                    placeStone(row, col, currentTurnColor, true); // ユーザーの着手
-                    currentTurnColor = (currentTurnColor === "black") ? "white" : "black";
+                    if (boardMode === "erase") {
+                        // 【消すモード】石があれば消去する
+                        if (!slot.dataset.stone) return;
+                        removeStone(row, col);
+                        playStoneSound(true);
+                    } else {
+                        // 【置くモード】空いていれば置く
+                        if (slot.dataset.stone) return;
+                        placeStone(row, col, currentTurnColor, true);
+                        currentTurnColor = (currentTurnColor === "black") ? "white" : "black";
+                    }
                 };
                 
                 container.appendChild(intersection);
             }
         }
 
-        // ③ 9路盤の場合のみ、詰碁の初期配置をセット
         if (size === 9) {
             setupPuzzlePattern();
         }
     }
 
-    // 石を実際に配置する共通関数
+    // 石を置く関数
     function placeStone(row, col, color, isUserMove = false) {
         const slot = document.getElementById(`slot-${row}-${col}`);
         if (!slot) return;
@@ -620,65 +663,6 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
             slot.style.border = "none";
             slot.style.boxShadow = "1px 1px 3px rgba(0,0,0,0.5)";
         } else {
-            slot.style.background = "white";
-            slot.style.border = "1px solid #999";
-            slot.style.boxShadow = "1px 1px 3px rgba(0,0,0,0.3)";
-        }
-
-        if (isUserMove) {
-            playStoneSound();
-            moveHistory.push({ row, col }); // ユーザーの着手のみ履歴に記録
-        }
-    }
-
-    // 9路盤用の詰碁問題の配置
-    function setupPuzzlePattern() {
-        // 元のHTMLにあった配置（5行目〜8行目の下辺中央の攻防）を再現
-        // 黒石の配置 (行, 列) ※0から数えるので4=5行目、8=9列目
-        const blackStones = [
-            {r: 4, c: 4}, {r: 4, c: 5}, {r: 4, c: 6}, {r: 4, c: 7}, {r: 4, c: 8},
-            {r: 5, c: 2}, {r: 6, c: 2}, {r: 8, c: 2}
-        ];
-        // 白石の配置
-        const whiteStones = [
-            {r: 5, c: 5}, {r: 5, c: 6}, {r: 5, c: 8},
-            {r: 6, c: 3}, {r: 6, c: 7}, {r: 8, c: 3}
-        ];
-
-        blackStones.forEach(s => placeStone(s.r, s.c, "black", false));
-        whiteStones.forEach(s => placeStone(s.r, s.c, "white", false));
-    }
-
-    // 「一手戻す」機能
-    function undoLastMove() {
-        if (moveHistory.length === 0) return;
-        
-        // 最後の着手を取り出す
-        const lastMove = moveHistory.pop();
-        const slot = document.getElementById(`slot-${lastMove.row}-${lastMove.col}`);
-        
-        if (slot) {
-            // 石を消去
-            slot.removeAttribute("data-stone");
-            slot.style.background = "transparent";
-            slot.style.border = "none";
-            slot.style.boxShadow = "none";
-            
-            // 手番を入れ替えて元に戻す
-            currentTurnColor = (currentTurnColor === "black") ? "white" : "black";
-            playStoneSound(); // 戻すときも「カチッ」と音を鳴らす
-        }
-    }
-
-    // 「最初からやり直す」機能
-    function resetCurrentBoard() {
-        initCustomBoard(currentSize);
-    }
-
-    // 安全な即時初期化
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", () => initCustomBoard(9));
-    } else {
         initCustomBoard(9);
     }
 </script>
