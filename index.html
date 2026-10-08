@@ -25,6 +25,7 @@
     
     <!-- 💡 ここにあった <header>〜</header> を削除しました -->
 
+
 <!-- 全体を包む見やすい薄い背景のボックス -->
 <div style="background-color: #fcf8f2; padding: 25px; border-radius: 8px; border: 1px solid #e0d0b0; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); box-sizing: border-box; font-family: sans-serif; text-align: left;">
 
@@ -46,12 +47,14 @@
   </div>
     
   <!-- 【下部：左右2段組 of エリア】 -->
-  <div style="display: flex; flex-wrap: wrap; gap: 30px; box-sizing: border-box;">
+  <!-- 💡 gap（隙間）を20pxに縮め、窮屈さを解消しました -->
+  <div style="display: flex; flex-wrap: wrap; gap: 20px; box-sizing: border-box; width: 100%;">
 
     <!-- 👈【左半分】：タイトル、主題歌、ボタンメニュー列 -->
-    <div style="flex: 1; min-width: 280px; box-sizing: border-box;">
+    <!-- 💡 幅の計算を「半分ずつ（calc(50% - 10px)）」に固定し、大きな画面で絶対に落ちないようにしました -->
+    <div style="flex: 1; min-width: 250px; max-width: calc(50% - 10px); box-sizing: border-box;">
 
-      <!-- 💡 タイトルと音声プレイヤーをスタイリッシュな枠（カード）で囲みました -->
+      <!-- タイトルと音声プレイヤーをスタイリッシュな枠（カード）で囲みました -->
       <div style="background-color: #ffffff; padding: 20px; border-radius: 12px; border: 2px solid #003366; box-shadow: 0 4px 10px rgba(0, 33, 102, 0.08); margin-bottom: 25px; box-sizing: border-box;">
         <div style="display: flex; flex-direction: column; gap: 15px;">
           
@@ -60,7 +63,7 @@
             才美塾囲碁教室
           </h1>
           
-          <!-- 🎵 タイトル下の主題歌プレイヤー：枠線と背景を馴染ませました -->
+          <!-- 🎵 タイトル下の主題歌プレイヤー -->
           <div style="display: flex; flex-direction: column; gap: 6px; background-color: #f0f4f8; padding: 10px 12px; border-radius: 8px;">
             <span style="font-size: 13px; color: #003366; font-weight: bold; white-space: nowrap; display: flex; align-items: center; gap: 4px;">
               🎵 主題歌・塾歌
@@ -73,8 +76,8 @@
         </div>
       </div>
 
-      <!-- 🎛️ ボタンメニュー群（すっきりした見た目を維持し、消えたボタンをすべて復活！） -->
-      <div style="display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 250px;">
+      <!-- 🎛️ ボタンメニュー群（幅いっぱいに広がるよう調整） -->
+      <div style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
         
         <!-- ① 古文書ボタン -->
         <a href="komonjo.pdf" target="_blank" style="display: block; background-color: #8B4513; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
@@ -112,8 +115,8 @@
     </div> <!-- 左半分のエリア終了 -->
 
     <!-- 👉【右半分】：関連資料・PDFダウンロードコーナー -->
-    <!-- 💡 左半分のタイトル枠と統一感を出すため、角丸(12px)と薄い影にグレードアップしました -->
-    <div style="flex: 1; min-width: 280px; padding: 25px; background-color: white; border-radius: 12px; border: 1px solid #ddd; box-shadow: 0 4px 10px rgba(0,0,0,0.04); box-sizing: border-box; display: flex; flex-direction: column; gap: 15px;">
+    <!-- 💡 左半分と同じく、最大幅を「半分ずつ」に制限して横並びを死守します -->
+    <div style="flex: 1; min-width: 250px; max-width: calc(50% - 10px); padding: 25px; background-color: white; border-radius: 12px; border: 1px solid #ddd; box-shadow: 0 4px 10px rgba(0,0,0,0.04); box-sizing: border-box; display: flex; flex-direction: column; gap: 15px;">
       
       <h3 style="margin: 0 0 5px 0; font-size: 18px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 8px;">
         📚 講義の関連資料 (PDF)
@@ -140,7 +143,7 @@
         </a>
       </div>
 
-      <!-- 📺 YouTube動画が表示されるエリア（ここに動画プレイヤーが入る、またはJavaScriptで動く領域になります） -->
+      <!-- 📺 YouTube動画が表示されるエリア -->
       <div id="youtube-area" style="margin-top: 10px;"></div>
 
     </div><!-- 右半分のエリア終了 -->
@@ -148,6 +151,8 @@
   </div><!-- 左右2段組の終わり -->
 
 </div><!-- 全体を包むボックスの閉じタグ（おしまい） -->
+    
+
 
 
 <!-- ⚙️ 動画を動かすための最終プログラム（完成版） -->
