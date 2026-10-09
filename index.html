@@ -426,7 +426,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     </div>
   </div>
 
-<!-- 👉【右側】：4コマスライドショウ　写真（碁盤）ギャラリー（局面セレクト・Sキー隠しボックス版） -->
+<!-- 👉【右側】：4コマスライドショウ　写真（碁盤）ギャラリー（局面セレクト・Sキー隠しボックス完全版） -->
 <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; text-align: center; position: relative;">
   <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; height: 100%;">
     
@@ -549,15 +549,15 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   let currentSlideIndex = 0;
   let slideTimeoutId = null;
   
-  // 初期状態の各コマの秒数設定（すべて5秒）
+  // 【修正】初期状態の各コマの秒数設定（初期値はすべて5秒 = 5000ミリ秒）
   let slideTimes =;
 
-  // 📝 各テーマ別の時間プリセット設定（ミリ秒単位）
+  // 【修正】各テーマ別の時間プリセット設定（ミリ秒単位のデータを格納）
   const themePresets = {
-    fuseki:,  // 布石：1枚目をじっくり
-    tsumego:,  // 詰碁：考える時間を最長に
-    tesuji:,  // 手筋：ひらめきと解説のバランス
-    yose:     [4000,  4000, 4000, 4000]   // ヨセ：全体をテンポよく
+    fuseki:,   // 布石：10秒、5秒、5秒、5秒
+    tsumego:,  // 詰碁：15秒、3秒、5秒、5秒
+    tesuji:,    // 手筋：8秒、4秒、6秒、4秒
+    yose: [4000, 4000, 4000, 4000]        // ヨセ：4秒、4秒、4秒、4秒
   };
 
   // セレクトスイッチが切り替わった時にボックスの数値を自動書き換えする関数
@@ -579,10 +579,16 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     const container = document.getElementById('goSlideContainer');
     const slides = container.getElementsByClassName('slide-item');
     
+    // 現在のactiveを外す
     slides[currentSlideIndex].classList.remove('active');
+    
+    // 次のインデックスに進める
     currentSlideIndex = (currentSlideIndex + 1) % slides.length;
+    
+    // 新しいactiveをつける
     slides[currentSlideIndex].classList.add('active');
     
+    // 次の切り替えタイマーをそのコマの秒数でセット
     slideTimeoutId = setTimeout(playSlide, slideTimes[currentSlideIndex]);
   }
 
@@ -593,18 +599,22 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     const t3 = parseInt(document.getElementById('timeInput3').value) * 1000;
     const t4 = parseInt(document.getElementById('timeInput4').value) * 1000;
     
+    // 配列の数値を新しい入力値に更新
     slideTimes = [t1, t2, t3, t4];
 
+    // 既存のタイマーを一度クリア
     if (slideTimeoutId) { clearTimeout(slideTimeoutId); }
     
     const container = document.getElementById('goSlideContainer');
     const slides = container.getElementsByClassName('slide-item');
     for (let slide of slides) { slide.classList.remove('active'); }
     
+    // 1枚目（インデックス0）から再開させる
     currentSlideIndex = 0;
-    slides[0].classList.add('active');
+    slides[currentSlideIndex].classList.add('active');
     
-    slideTimeoutId = setTimeout(playSlide, slideTimes[0]);
+    // 1枚目の時間でタイマーを再始動
+    slideTimeoutId = setTimeout(playSlide, slideTimes[currentSlideIndex]);
     
     // 設定を反映したら自動で設定ボックスを閉じる
     document.getElementById('adminTimeBox').style.display = 'none';
@@ -612,6 +622,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 
   // ⌨️ キーボードの「S」が押されたら設定エリアを出し入れする
   window.addEventListener('keydown', (event) => {
+    // 入力エリアを触っている時はキー開閉を無視する
     if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'SELECT') { return; }
 
     if (event.key === 's' || event.key === 'S') {
@@ -624,11 +635,13 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     }
   });
 
-  // 初回スタート
+  // ページ読み込み完了時に最初のタイマー（1枚目の時間分）をスタート
   window.addEventListener('DOMContentLoaded', () => {
-    slideTimeoutId = setTimeout(playSlide, slideTimes[0]);
+    slideTimeoutId = setTimeout(playSlide, slideTimes[currentSlideIndex]);
   });
 </script>
+
+
 
 
 
