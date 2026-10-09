@@ -341,17 +341,17 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       <!-- 動画選択用のボタングループ -->
       <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 10px;">
 
-      <!-- 動画1：依田九段の「形と筋」動画へジャンプ -->
+      <!-- 動画1：福島あきら　「形と筋」動画へジャンプ -->
         <a href="https://www.youtube.com/watch?v=3xoSozj2dms" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
           <button style="padding: 10px 20px; font-size: 14px; cursor: pointer; border: 1px solid #003366; background-color: #003366; color: white; border-radius: 4px; font-weight: bold; transition: 0.2s;">
-            🎬 動画 1（囲碁講座：形と筋） ↗
+            🎬 動画 1囲碁講座：形と筋） ↗
           </button>
         </a>
 
-        <!-- 動画2：福井盛人先生の「囲碁の上達法」動画へジャンプ -->
+        <!-- 動画2：福井盛人　「囲碁の上達法」動画へジャンプ -->
         <a href="https://www.youtube.com/watch?v=NGRH9IKMbZg" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
           <button style="padding: 10px 20px; font-size: 14px; cursor: pointer; border: 1px solid #003366; background-color: white; color: #003366; border-radius: 4px; font-weight: bold; transition: 0.2s;">
-            🎬 動画 2（因島　碁力養成教室 動画） ↗
+            🎬 動画 2　因島　碁力養成教室  ↗
           </button>
         </a>
   </div>
@@ -460,44 +460,46 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       </div> <!-- .slide-container の閉じタグ -->
      
  
+       </div> <!-- 💡 白い枠の中の下部に追加されたエリア（詰碁宿題コーナー）の閉じタグ -->
+  </div> <!-- 📸 写真ギャラリーボックス全体の閉じタグ -->
 
-      </div> <!-- 白い枠の中の下部に追加されたエリア の閉じタグ -->
-    </div> <!-- 📸 写真ギャラリーボックス全体の閉じタグ -->
+  <!-- 💡 【新設】SGFファイルドロップエリア ＆ 線が確実に表示される状態に戻した安心の碁盤エリア -->
+  <div style="background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 6px; padding: 15px; margin-top: 8px; box-sizing: border-box; width: 100%; max-width: 450px; margin-left: auto; margin-right: auto; text-align: center; font-family: sans-serif; overflow: hidden; display: flow-root; clear: both;">
+    <p style="margin: 0 0 10px 0; font-size: 13px; font-weight: bold; color: #d32f2f; text-align: left;">【今週の問題】黒先（黒番です）</p>
+    
+    <!-- 📁 【新設】ここにSGFファイルをポトンと落とします -->
+    <div id="sgf-drop-zone" style="border: 2px dashed #0066cc; background-color: #f0f7ff; padding: 15px; margin-bottom: 15px; border-radius: 6px; font-size: 12px; color: #0066cc; cursor: pointer; transition: background 0.2s;">
+      <strong>ここにSGFファイルをドロップ</strong><br><span style="font-size: 10px; color: #666;">（またはクリックしてファイルを選択）</span>
+    </div>
+    <input type="file" id="sgf-file-input" accept=".sgf" style="display: none;">
 
+    <!-- ① 路盤切り替えボタン -->
+    <div style="margin-bottom: 12px; display: flex; justify-content: center; gap: 8px;">
+      <button type="button" onclick="initCustomBoard(9)" style="padding: 6px 14px; font-size: 12px; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; font-weight: bold; color: #333;">9路盤</button>
+      <button type="button" onclick="initCustomBoard(13)" style="padding: 6px 14px; font-size: 12px; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; font-weight: bold; color: #333;">13路盤</button>
+      <button type="button" onclick="initCustomBoard(19)" style="padding: 6px 14px; font-size: 12px; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; font-weight: bold; color: #333;">19路盤</button>
+    </div>
+    
+    <!-- 碁盤の土台 -->
+    <div style="width: 100%; max-width: 360px; margin: 0 auto; aspect-ratio: 1 / 1; position: relative; background-color: #dcaf6d; border: 2px solid #333; box-shadow: inset 0 0 8px rgba(0,0,0,0.15); box-sizing: border-box;">
+      <!-- 交差点と石を配置するグリッドコンテナ -->
+      <div id="custom-grid-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: grid; box-sizing: border-box;"></div>
+    </div>
 
-        <!-- 💡 線が確実に表示される状態に戻した安心の碁盤エリア -->
-        <div style="background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 6px; padding: 15px; margin-top: 8px; box-sizing: border-box; width: 100%; max-width: 450px; margin-left: auto; margin-right: auto; text-align: center; font-family: sans-serif; overflow: hidden; display: flow-root; clear: both;">
-          <p style="margin: 0 0 10px 0; font-size: 13px; font-weight: bold; color: #d32f2f; text-align: left;">【今週の問題】黒先（黒番です）</p>
-          
-          <!-- ① 路盤切り替えボタン -->
-          <div style="margin-bottom: 12px; display: flex; justify-content: center; gap: 8px;">
-            <button type="button" onclick="initCustomBoard(9)" style="padding: 6px 14px; font-size: 12px; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; font-weight: bold; color: #333;">9路盤</button>
-            <button type="button" onclick="initCustomBoard(13)" style="padding: 6px 14px; font-size: 12px; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; font-weight: bold; color: #333;">13路盤</button>
-            <button type="button" onclick="initCustomBoard(19)" style="padding: 6px 14px; font-size: 12px; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; font-weight: bold; color: #333;">19路盤</button>
-          </div>
-          
-          <!-- 碁盤の土台 -->
-          <div style="width: 100%; max-width: 360px; margin: 0 auto; aspect-ratio: 1 / 1; position: relative; background-color: #dcaf6d; border: 2px solid #333; box-shadow: inset 0 0 8px rgba(0,0,0,0.15); box-sizing: border-box;">
-            <!-- 交差点と石を配置するグリッドコンテナ -->
-            <div id="custom-grid-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: grid; box-sizing: border-box;"></div>
-          </div>
-
-          <!-- ② 操作用ボタン（一手戻す / リセット） -->
-          <div style="margin-top: 12px; display: flex; justify-content: center; gap: 10px;">
-            <button type="button" onclick="undoLastMove()" style="padding: 6px 16px; font-size: 12px; border: 1px solid #0066cc; background: #e6f2ff; color: #0066cc; border-radius: 4px; cursor: pointer; font-weight: bold;">⟲ 一手戻す</button>
-            <button type="button" onclick="resetCurrentBoard()" style="padding: 6px 16px; font-size: 12px; border: 1px solid #d32f2f; background: #ffebee; color: #d32f2f; border-radius: 4px; cursor: pointer; font-weight: bold;">✕ 最初からやり直す</button>
-          </div>
-          
-          <p style="margin: 12px 0 0 0; font-size: 11px; color: #666; line-height: 1.3; text-align: left;">※9路盤では今週の問題（黒先）が自動セットされます。クリックすると「パチッ」と音が鳴り、交互に石を置けます。間違えたら「一手戻す」を押してください。</p>
-        </div>
-
-      </div> <!-- 💡 白い枠の中の下部に追加されたエリア（詰碁宿題コーナー）の閉じタグ -->
-    </div> <!-- 📸 写真ギャラリーボックス全体の閉じタグ -->
+    <!-- ② 操作用ボタン（一手戻す / リセット） -->
+    <div style="margin-top: 12px; display: flex; justify-content: center; gap: 10px;">
+      <button type="button" onclick="undoLastMove()" style="padding: 6px 16px; font-size: 12px; border: 1px solid #0066cc; background: #e6f2ff; color: #0066cc; border-radius: 4px; cursor: pointer; font-weight: bold;">⟲ 一手戻す</button>
+      <button type="button" onclick="resetCurrentBoard()" style="padding: 6px 16px; font-size: 12px; border: 1px solid #d32f2f; background: #ffebee; color: #d32f2f; border-radius: 4px; cursor: pointer; font-weight: bold;">✕ 最初からやり直す</button>
+    </div>
+    
+    <p style="margin: 12px 0 0 0; font-size: 11px; color: #666; line-height: 1.3; text-align: left;">※SGFファイルをドロップすると自動的に問題がセットされます。クリックすると「パチッ」と音が鳴り、交互に石を置けます。間違えたら「一手戻す」を押してください。</p>
+  </div>
 
 <script>
     let currentTurnColor = "black"; 
     let currentSize = 9;
     let moveHistory = []; 
+    let initialPuzzleStones = []; // SGFから読み込んだ初期配置を記憶する変数
 
     // 効果音生成
     function playStoneSound() {
@@ -526,7 +528,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     }
 
     // 碁盤の初期化
-    function initCustomBoard(size) {
+    function initCustomBoard(size, keepInitialStones = false) {
         const container = document.getElementById("custom-grid-container");
         if (!container) return;
         
@@ -534,6 +536,10 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         currentTurnColor = "black"; 
         currentSize = size;
         moveHistory = []; 
+        
+        if (!keepInitialStones) {
+            initialPuzzleStones = []; // 新しくボタンで切り替えた時は初期配置データをリセット
+        }
         
         container.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
         container.style.gridTemplateRows = `repeat(${size}, 1fr)`;
@@ -565,8 +571,13 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
                     <div class="stone-slot" id="slot-${row}-${col}" style="position: absolute; top: 50%; left: 50%; width: 85%; height: 85%; transform: translate(-50%, -50%); border-radius: 50%;"></div>
                 `;
                 
+                // 星（点）の配置
                 if (
                     (size === 9 && (row === 4 && col === 4)) || 
+                    (size === 13 && (
+                        (row === 3 || row === 6 || row === 9) && 
+                        (col === 3 || col === 6 || col === 9)
+                    )) ||
                     (size === 19 && (
                         (row === 3 || row === 9 || row === 15) && 
                         (col === 3 || col === 9 || col === 15)
@@ -596,8 +607,13 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
             }
         }
 
-        if (size === 9) {
-            setupPuzzlePattern();
+        // SGF等から読み込まれた初期配置があれば再配置する
+        if (keepInitialStones && initialPuzzleStones.length > 0) {
+            initialPuzzleStones.forEach(stone => {
+                placeStone(stone.row, stone.col, stone.color, false);
+            });
+        } else if (size === 9) {
+            setupPuzzlePattern(); // デフォルトのサンプル問題
         }
     }
 
@@ -622,45 +638,31 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         }
     }
 
+    // デフォルトのサンプル問題（元々のコードの復元部分）
     function setupPuzzlePattern() {
-        const blackStones = [
-            {r: 4, c: 4}, {r: 4, c: 5}, {r: 4, c: 6}, {r: 4, c: 7}, {r: 4, c: 8},
-            {r: 5, c: 2}, {r: 6, c: 2}, {r: 8, c: 2}
+        const defaultStones = [
+            {r: 3, c: 3, color: "black"},
+            {r: 3, c: 4, color: "black"},
+            {r: 4, c: 3, color: "white"}
         ];
-        const whiteStones = [
-            {r: 5, c: 5}, {r: 5, c: 6}, {r: 5, c: 8},
-            {r: 6, c: 3}, {r: 6, c: 7}, {r: 8, c: 3}
-        ];
-        blackStones.forEach(s => placeStone(s.r, s.c, "black", false));
-        whiteStones.forEach(s => placeStone(s.r, s.c, "white", false));
+        defaultStones.forEach(s => {
+            placeStone(s.r, s.c, s.color, false);
+            initialPuzzleStones.push({row: s.r, col: s.c, color: s.color});
+        });
     }
 
+    // 一手戻す機能
     function undoLastMove() {
         if (moveHistory.length === 0) return;
-        
         const lastMove = moveHistory.pop();
         const slot = document.getElementById(`slot-${lastMove.row}-${lastMove.col}`);
-        
         if (slot) {
             slot.removeAttribute("data-stone");
             slot.style.background = "transparent";
             slot.style.border = "none";
             slot.style.boxShadow = "none";
             currentTurnColor = (currentTurnColor === "black") ? "white" : "black";
-            playStoneSound(); 
-        }
-    }
 
-    function resetCurrentBoard() {
-        initCustomBoard(currentSize);
-    }
-
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", () => initCustomBoard(9));
-    } else {
-        initCustomBoard(9);
-    }
-</script>
 
 
 <!-- 💡 動画切り替えプログラム（不具合を完全に修正しました） -->
