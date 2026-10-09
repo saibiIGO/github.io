@@ -427,7 +427,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   </div>
 
 
-<!-- 👉【右側】：4コマスライドショウ　写真（碁盤）ギャラリー（局面セレクト・Sキー隠しボックス完全動作版） -->
+<!-- 👉【右側】：4コマスライドショウ　写真（碁盤）ギャラリー（システムバグ完全修正版） -->
 <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; text-align: center; position: relative;">
   <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; height: 100%;">
     
@@ -547,32 +547,52 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 
 <!-- 💡 各コマの時間管理 ＆ 局面セレクト制御JavaScript -->
 <script>
+  // 変数の作成
   let currentSlideIndex = 0;
   let slideTimeoutId = null;
   
-  // 初期状態の各コマの秒数（すべて5秒＝5000ミリ秒に確定）
-  let slideTimes =;
+  // 💡【修正】バグで消去されないよう、個別データの形式で秒数を安全に保持します（初期値：5秒）
+  let time1 = 5000;
+  let time2 = 5000;
+  let time3 = 5000;
+  let time4 = 5000;
 
-  // 各テーマ別の時間プリセット設定（ミリ秒値を完全に確定入力）
-  const themePresets = {
-    fuseki:,   // 布石：10秒、5秒、5秒、5秒
-    tsumego:,  // 詰碁：15秒、3秒、5秒、5秒
-    tesuji:,    // 手筋：8秒、4秒、6秒、4秒
-    yose: [4000, 4000, 4000, 4000]        // ヨセ：4秒、4秒、4秒、4秒
-  };
+  // 💡【修正】現在のスライド番号に応じた秒数を正しく返す仕組みにしました
+  function getCurrentDelayTime() {
+    if (currentSlideIndex === 0) return time1;
+    if (currentSlideIndex === 1) return time2;
+    if (currentSlideIndex === 2) return time3;
+    if (currentSlideIndex === 3) return time4;
+    return 5000;
+  }
 
-  // セレクトスイッチが切り替わった時にボックスの数値を自動書き換えする関数
+  // 🎯 局面メニューが切り替わった時にボックスの数値を書き換える関数
   function applyThemePreset() {
     const selectedTheme = document.getElementById('goThemeSelect').value;
     if (selectedTheme === 'custom') return;
 
-    const preset = themePresets[selectedTheme];
-    
-    // インプットボックスの数値を書き換え（ミリ秒を秒に直して代入）
-    document.getElementById('timeInput1').value = preset[0] / 1000;
-    document.getElementById('timeInput2').value = preset[1] / 1000;
-    document.getElementById('timeInput3').value = preset[2] / 1000;
-    document.getElementById('timeInput4').value = preset[3] / 1000;
+    // 各モードの秒数を安全にインプットボックスへ反映
+    if (selectedTheme === 'fuseki') {
+      document.getElementById('timeInput1').value = 10;
+      document.getElementById('timeInput2').value = 5;
+      document.getElementById('timeInput3').value = 5;
+      document.getElementById('timeInput4').value = 5;
+    } else if (selectedTheme === 'tsumego') {
+      document.getElementById('timeInput1').value = 15;
+      document.getElementById('timeInput2').value = 3;
+      document.getElementById('timeInput3').value = 5;
+      document.getElementById('timeInput4').value = 5;
+    } else if (selectedTheme === 'tesuji') {
+      document.getElementById('timeInput1').value = 8;
+      document.getElementById('timeInput2').value = 4;
+      document.getElementById('timeInput3').value = 6;
+      document.getElementById('timeInput4').value = 4;
+    } else if (selectedTheme === 'yose') {
+      document.getElementById('timeInput1').value = 4;
+      document.getElementById('timeInput2').value = 4;
+      document.getElementById('timeInput3').value = 4;
+      document.getElementById('timeInput4').value = 4;
+    }
   }
 
   // スライドを切り替えるメイン関数
@@ -580,50 +600,50 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     const container = document.getElementById('goSlideContainer');
     const slides = container.getElementsByClassName('slide-item');
     
-    // 現在のactiveを外す
+    // 現在の active クラスを取り除く
     slides[currentSlideIndex].classList.remove('active');
     
-    // 次のインデックスに進める
+    // 次のスライド番号へ進める（4枚でループ）
     currentSlideIndex = (currentSlideIndex + 1) % slides.length;
     
-    // 新しいactiveをつける
+    // 新しいスライドに active クラスを付与して表示
     slides[currentSlideIndex].classList.add('active');
     
-    // 次の切り替えタイマーをそのコマの秒数でセット
-    slideTimeoutId = setTimeout(playSlide, slideTimes[currentSlideIndex]);
+    // 次の切り替えタイマーをセット
+    slideTimeoutId = setTimeout(playSlide, getCurrentDelayTime());
   }
 
-  // ボックスに入力された秒数を読み込んで反映させる関数
+  // 先生用ボックスの入力値を反映させて再起動する関数
   function applyNewTimes() {
-    const t1 = parseInt(document.getElementById('timeInput1').value) * 1000;
-    const t2 = parseInt(document.getElementById('timeInput2').value) * 1000;
-    const t3 = parseInt(document.getElementById('timeInput3').value) * 1000;
-    const t4 = parseInt(document.getElementById('timeInput4').value) * 1000;
-    
-    // 配列の数値を新しい入力値に更新
-    slideTimes = [t1, t2, t3, t4];
+    // 画面の入力欄から秒数を取得し、ミリ秒に変換して保存
+    time1 = parseInt(document.getElementById('timeInput1').value) * 1000;
+    time2 = parseInt(document.getElementById('timeInput2').value) * 1000;
+    time3 = parseInt(document.getElementById('timeInput3').value) * 1000;
+    time4 = parseInt(document.getElementById('timeInput4').value) * 1000;
 
-    // 既存のタイマーを一度クリア
+    // 動いているタイマーを一度完全にストップ
     if (slideTimeoutId) { clearTimeout(slideTimeoutId); }
     
+    // 表示状態を1枚目にリセット
     const container = document.getElementById('goSlideContainer');
     const slides = container.getElementsByClassName('slide-item');
-    for (let slide of slides) { slide.classList.remove('active'); }
+    for (let i = 0; i < slides.length; i++) {
+      slides[i].classList.remove('active');
+    }
     
-    // 1枚目（インデックス0）から再開させる
     currentSlideIndex = 0;
     slides[currentSlideIndex].classList.add('active');
     
-    // 1枚目の時間でタイマーを再始動
-    slideTimeoutId = setTimeout(playSlide, slideTimes[currentSlideIndex]);
+    // 新しい時間でタイマースタート
+    slideTimeoutId = setTimeout(playSlide, getCurrentDelayTime());
     
-    // 設定を反映したら自動で設定ボックスを閉じる
+    // 設定パネルを自動で閉じる
     document.getElementById('adminTimeBox').style.display = 'none';
   }
 
-  // ⌨️ キーボードの「S」が押されたら設定エリアを出し入れする
+  // ⌨️ キーボードの「S」キーで設定パネルを出し入れする機能
   window.addEventListener('keydown', (event) => {
-    // 入力エリアを触っている時はキー開閉を無視する
+    // 入力エリアを触っている時はキー開閉を無効化（文字入力のバグを防ぐ）
     if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'SELECT') { return; }
 
     if (event.key === 's' || event.key === 'S') {
@@ -636,11 +656,13 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     }
   });
 
-  // ページ読み込み完了時に最初のタイマー（1枚目の時間分）をスタート
+  // ページを表示した瞬間に、最初のタイマーを始動
   window.addEventListener('DOMContentLoaded', () => {
-    slideTimeoutId = setTimeout(playSlide, slideTimes[currentSlideIndex]);
+    slideTimeoutId = setTimeout(playSlide, getCurrentDelayTime());
   });
 </script>
+    
+
 
 
 
