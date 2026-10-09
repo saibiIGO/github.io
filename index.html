@@ -427,13 +427,16 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   </div>
 
 
-<!-- 👉【右側】：4コマスライドショウ　写真（碁盤）ギャラリー（システムバグ完全修正版） -->
+ <!-- 👉【右側】：4コマスライドショウ　写真（碁盤）ギャラリー（フル機能＆リモコン操作版） -->
 <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; text-align: center; position: relative;">
   <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; height: 100%;">
     
     <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px; user-select: none;">📸 写真ギャラリー</h3>
 
-    <!-- 🛠️ 先生用：設定エリア（普段は display: none で完全に隠れています） -->
+    <!-- 💡 先生用の操作状態・一時通知ポップアップ（生徒にはバレないよう1秒で消えます） -->
+    <div id="controlNotify" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0, 51, 102, 0.85); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 14px; font-weight: bold; z-index: 999; display: none; pointer-events: none;"></div>
+
+    <!-- 🛠️ 先生用：設定エリア（普段は完全に隠れています） -->
     <div id="adminTimeBox" style="display: none; flex-direction: column; gap: 10px; margin-bottom: 15px; padding: 12px; background-color: #f0f4f8; border: 1px dashed #003366; border-radius: 6px; text-align: left; font-size: 12px; color: #333;">
       
       <!-- 🔄 局面セレクトスイッチ -->
@@ -466,7 +469,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         <div><input type="number" id="timeInput4" value="5" min="1" style="width: 50px; padding: 2px 5px; text-align: center; border: 1px solid #ccc; border-radius: 4px;"> 秒</div>
       </div>
       
-      <button onclick="applyNewTimes()" style="margin-top: 5px; width: 100%; padding: 6px; background-color: #003366; color: #fff; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">設定を反映して再起動</button>
+      <button onclick="applyNewTimes()" style="margin-top: 5px; width: 100%; padding: 6px; background-color: #003366; color: #fff; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">設定を反映して自動再生スタート</button>
     </div>
 
     <style>
@@ -545,19 +548,18 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   </div>
 </div>
 
-<!-- 💡 各コマの時間管理 ＆ 局面セレクト制御JavaScript -->
+<!-- 💡 各コマの時間管理 ＆ 局面セレクト ＆ キーボード操作JavaScript -->
 <script>
-  // 変数の作成
   let currentSlideIndex = 0;
   let slideTimeoutId = null;
+  let isPaused = false; // ⏸️ 一時停止状態かどうかを管理するフラグ
   
-  // 💡【修正】バグで消去されないよう、個別データの形式で秒数を安全に保持します（初期値：5秒）
+  // 初期秒数（すべて5秒）
   let time1 = 5000;
   let time2 = 5000;
   let time3 = 5000;
   let time4 = 5000;
 
-  // 💡【修正】現在のスライド番号に応じた秒数を正しく返す仕組みにしました
   function getCurrentDelayTime() {
     if (currentSlideIndex === 0) return time1;
     if (currentSlideIndex === 1) return time2;
@@ -566,12 +568,10 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     return 5000;
   }
 
-  // 🎯 局面メニューが切り替わった時にボックスの数値を書き換える関数
   function applyThemePreset() {
     const selectedTheme = document.getElementById('goThemeSelect').value;
     if (selectedTheme === 'custom') return;
 
-    // 各モードの秒数を安全にインプットボックスへ反映
     if (selectedTheme === 'fuseki') {
       document.getElementById('timeInput1').value = 10;
       document.getElementById('timeInput2').value = 5;
@@ -595,80 +595,90 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     }
   }
 
-  // スライドを切り替えるメイン関数
-  function playSlide() {
+  // スライドの表示を実際に切り替える独立関数
+  function showSlide(index) {
     const container = document.getElementById('goSlideContainer');
     const slides = container.getElementsByClassName('slide-item');
     
-    // 現在の active クラスを取り除く
-    slides[currentSlideIndex].classList.remove('active');
-    
-    // 次のスライド番号へ進める（4枚でループ）
-    currentSlideIndex = (currentSlideIndex + 1) % slides.length;
-    
-    // 新しいスライドに active クラスを付与して表示
+    // すべてのactiveを一度消す
+    for (let i = 0; i < slides.length; i++) {
+      slides[i].classList.remove('active');
+    }
+    // 指定されたスライドを表示
+    currentSlideIndex = index;
     slides[currentSlideIndex].classList.add('active');
+  }
+
+  // 自動ループを動かすメイン関数
+  function playSlide() {
+    if (isPaused) return; // 一時停止中は次をセットしない
     
-    // 次の切り替えタイマーをセット
+    const container = document.getElementById('goSlideContainer');
+    const slides = container.getElementsByClassName('slide-item');
+    
+    // 次のスライド番号を計算
+    let nextIndex = (currentSlideIndex + 1) % slides.length;
+    showSlide(nextIndex);
+    
     slideTimeoutId = setTimeout(playSlide, getCurrentDelayTime());
   }
 
-  // 先生用ボックスの入力値を反映させて再起動する関数
   function applyNewTimes() {
-    // 画面の入力欄から秒数を取得し、ミリ秒に変換して保存
     time1 = parseInt(document.getElementById('timeInput1').value) * 1000;
     time2 = parseInt(document.getElementById('timeInput2').value) * 1000;
     time3 = parseInt(document.getElementById('timeInput3').value) * 1000;
     time4 = parseInt(document.getElementById('timeInput4').value) * 1000;
 
-    // 動いているタイマーを一度完全にストップ
+    isPaused = false; // 一時停止を解除
     if (slideTimeoutId) { clearTimeout(slideTimeoutId); }
     
-    // 表示状態を1枚目にリセット
-    const container = document.getElementById('goSlideContainer');
-    const slides = container.getElementsByClassName('slide-item');
-    for (let i = 0; i < slides.length; i++) {
-      slides[i].classList.remove('active');
-    }
-    
-    currentSlideIndex = 0;
-    slides[currentSlideIndex].classList.add('active');
-    
-    // 新しい時間でタイマースタート
+    showSlide(0); // 1枚目からリスタート
     slideTimeoutId = setTimeout(playSlide, getCurrentDelayTime());
     
-    // 設定パネルを自動で閉じる
     document.getElementById('adminTimeBox').style.display = 'none';
   }
 
-  // ⌨️ キーボードの「S」キーで設定パネルを出し入れする機能
+  // 🔔 先生に現在の状態を1秒だけ通知するポップアップ
+  function showControlNotify(text) {
+    const notify = document.getElementById('controlNotify');
+    notify.innerText = text;
+    notify.style.display = 'block';
+    setTimeout(() => { notify.style.display = 'none'; }, 1000);
+  }
+
+  // ⌨️ キーボード操作の監視
   window.addEventListener('keydown', (event) => {
-    // 入力エリアを触っている時はキー開閉を無効化（文字入力のバグを防ぐ）
+    // 入力エリアを触っている時は、誤動作防止のためリモコンキーをすべて無効化
     if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'SELECT') { return; }
 
+    // 1.「S」キー：設定パネルの出し入れ
     if (event.key === 's' || event.key === 'S') {
       const box = document.getElementById('adminTimeBox');
-      if (box.style.display === 'none') {
-        box.style.display = 'flex';
+      box.style.display = (box.style.display === 'none') ? 'flex' : 'none';
+    }
+
+    // 2.「スペース」キー：一時停止 / 再開
+    if (event.code === 'Space') {
+      event.preventDefault(); // 画面が下にスクロールするのを防ぐ
+      if (!isPaused) {
+        isPaused = true;
+        if (slideTimeoutId) { clearTimeout(slideTimeoutId); }
+        showControlNotify('⏸️ 一時停止中');
       } else {
-        box.style.display = 'none';
+        isPaused = false;
+        showControlNotify('▶️ 自動再生を再開');
+        slideTimeoutId = setTimeout(playSlide, getCurrentDelayTime());
       }
     }
-  });
 
-  // ページを表示した瞬間に、最初のタイマーを始動
-  window.addEventListener('DOMContentLoaded', () => {
-    slideTimeoutId = setTimeout(playSlide, getCurrentDelayTime());
-  });
-</script>
+    // 3.「右矢印」キー：手動で1コマ進む
+    if (event.key === 'ArrowRight') {
+      isPaused = true; // 手動操作が入ったら自動再生は停止
+      if (slideTimeoutId) { clearTimeout(slideTimeoutId); }
+      
+   
+
     
-
-
-
-
-     
-
-
         <!-- 💡 座標表示が追加された安心の碁盤エリア -->
         <div style="background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 6px; padding: 15px; margin-top: 8px; box-sizing: border-box; width: 100%; max-width: 480px; margin-left: auto; margin-right: auto; text-align: center; font-family: sans-serif; overflow: hidden; display: flow-root; clear: both;">
           <p style="margin: 0 0 10px 0; font-size: 13px; font-weight: bold; color: #d32f2f; text-align: left;">【今週の問題】黒先（黒番です）</p>
