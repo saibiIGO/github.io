@@ -426,7 +426,8 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     </div>
   </div>
 
-<!-- 👉【右側】：4コマスライドショウ　写真（碁盤）ギャラリー（局面セレクト・Sキー隠しボックス完全版） -->
+
+<!-- 👉【右側】：4コマスライドショウ　写真（碁盤）ギャラリー（局面セレクト・Sキー隠しボックス完全動作版） -->
 <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; text-align: center; position: relative;">
   <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; height: 100%;">
     
@@ -549,10 +550,10 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   let currentSlideIndex = 0;
   let slideTimeoutId = null;
   
-  // 【修正】初期状態の各コマの秒数設定（初期値はすべて5秒 = 5000ミリ秒）
+  // 初期状態の各コマの秒数（すべて5秒＝5000ミリ秒に確定）
   let slideTimes =;
 
-  // 【修正】各テーマ別の時間プリセット設定（ミリ秒単位のデータを格納）
+  // 各テーマ別の時間プリセット設定（ミリ秒値を完全に確定入力）
   const themePresets = {
     fuseki:,   // 布石：10秒、5秒、5秒、5秒
     tsumego:,  // 詰碁：15秒、3秒、5秒、5秒
@@ -640,8 +641,6 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     slideTimeoutId = setTimeout(playSlide, slideTimes[currentSlideIndex]);
   });
 </script>
-
-
 
 
 
