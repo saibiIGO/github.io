@@ -638,7 +638,37 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
             setupPuzzlePattern(); 
         }
     }
+x; background: #333; transform: translateX(-50%);"></div>
+                    <div style="position: absolute; left: \({leftEdge}; right: calc(100\% -\){rightEdge}); top: 50%; height: 1px; background: #333; transform: translateY(-50%);"></div>
+                    <div class="stone-slot" id="slot-row-{col}" style="position: absolute; top: 50%; left: 50%; width: 85%; height: 85%; transform: translate(-50%, -50%); border-radius: 50%;"></div>
+                `;
+                
+                if (
+                    (size === 9 && row === 4 && col === 4) || 
+                    (size === 13 && (row === 3 || row === 6 || row === 9) && (col === 3 || col === 6 || col === 9)) ||
+                    (size === 19 && (row === 3 || row === 9 || row === 15) && (col === 3 || col === 9 || col === 15))
+                ) {
+                    const starDot = document.createElement("div");
+                    starDot.style = "position:absolute; top:50%; left:50%; width:4px; height:4px; background:#333; border-radius:50%; transform:translate(-50%,-50%);";
+                    intersection.appendChild(starDot);
+                }
 
+                intersection.onclick = function() {
+                    const slot = intersection.querySelector(".stone-slot");
+                    if (slot.dataset.stone) return; 
+                    placeStone(row, col, currentTurnColor, true);
+                    currentTurnColor = (currentTurnColor === "black") ? "white" : "black";
+                };
+                container.appendChild(intersection);
+            }
+        }
+
+        if (keepInitialStones && initialPuzzleStones.length > 0) {
+            initialPuzzleStones.forEach(stone => placeStone(stone.row, stone.col, stone.color, false));
+        } else if (size === 9) {
+            setupPuzzlePattern(); 
+        }
+    }
 
     function placeStone(row, col, color, isUserMove = false) {
         const slot = document.getElementById(`slot-${row}-${col}`);
@@ -652,7 +682,6 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         if (isUserMove) { playStoneSound(); moveHistory.push({ row, col }); }
     }
 
-    // 💡 ここの数値を書き換えるだけで、生徒に解かせる問題を自由に変更できます！
     function setupPuzzlePattern() {
         const defaultStones = [
             {r: 2, c: 2, color: "black"},
@@ -677,9 +706,13 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 
     function resetCurrentBoard() { initCustomBoard(currentSize, true); }
 
-    // 強制起動
+    // 初期化実行
     initCustomBoard(9);
 </script>
+
+
+
+
   
 
 
