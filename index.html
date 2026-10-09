@@ -459,43 +459,53 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         </div>
       </div> <!-- .slide-container の閉じタグ -->
      
- 
-       </div> <!-- 💡 白い枠の中の下部に追加されたエリア（詰碁宿題コーナー）の閉じタグ -->
-  </div> <!-- 📸 写真ギャラリーボックス全体の閉じタグ -->
 
-  <!-- 💡 【新設】SGFファイルドロップエリア ＆ 線が確実に表示される状態に戻した安心の碁盤エリア -->
-        
-   <!-- 💡 線が確実に表示される状態に戻した安心の碁盤エリア -->
-<div style="background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 6px; padding: 15px; margin-top: 8px; box-sizing: border-box; width: 100%; max-width: 450px; margin-left: auto; margin-right: auto; text-align: center; font-family: sans-serif; overflow: hidden; display: flow-root; clear: both;">
-  <p style="margin: 0 0 10px 0; font-size: 13px; font-weight: bold; color: #d32f2f; text-align: left;">【今週の問題】黒先（黒番です）</p>
-  
-  <!-- ① 路盤切り替えボタン -->
-  <div style="margin-bottom: 12px; display: flex; justify-content: center; gap: 8px;">
-    <button type="button" onclick="initCustomBoard(9)" style="padding: 6px 14px; font-size: 12px; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; font-weight: bold; color: #333;">9路盤</button>
-    <button type="button" onclick="initCustomBoard(13)" style="padding: 6px 14px; font-size: 12px; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; font-weight: bold; color: #333;">13路盤</button>
-    <button type="button" onclick="initCustomBoard(19)" style="padding: 6px 14px; font-size: 12px; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; font-weight: bold; color: #333;">19路盤</button>
-  </div>
-  
-  <!-- 碁盤の土台 -->
-  <div style="width: 100%; max-width: 360px; margin: 0 auto; aspect-ratio: 1 / 1; position: relative; background-color: #dcaf6d; border: 2px solid #333; box-shadow: inset 0 0 8px rgba(0,0,0,0.15); box-sizing: border-box;">
-    <!-- 【改良】JSが動かなくても、CSSだけで最初から9路盤の線を強制的に引いておくお助け背景 -->
-    <div id="fallback-lines" style="position: absolute; top: 5.5%; left: 5.5%; right: 5.5%; bottom: 5.5%; background-size: calc(100% / 8) calc(100% / 8); background-image: linear-gradient(to right, #333 1px, transparent 1px), linear-gradient(to bottom, #333 1px, transparent 1px); border-right: 1px solid #333; border-bottom: 1px solid #333; pointer-events: none;"></div>
-    
-    <!-- 交差点と石を配置するグリッドコンテナ -->
-    <div id="custom-grid-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: grid; box-sizing: border-box;"></div>
-  </div>
 
-  <!-- ② 操作用ボタン（一手戻す / リセット） -->
-  <div style="margin-top: 12px; display: flex; justify-content: center; gap: 10px;">
-    <button type="button" onclick="undoLastMove()" style="padding: 6px 16px; font-size: 12px; border: 1px solid #0066cc; background: #e6f2ff; color: #0066cc; border-radius: 4px; cursor: pointer; font-weight: bold;">⟲ 一手戻す</button>
-    <button type="button" onclick="resetCurrentBoard()" style="padding: 6px 16px; font-size: 12px; border: 1px solid #d32f2f; background: #ffebee; color: #d32f2f; border-radius: 4px; cursor: pointer; font-weight: bold;">✕ 最初からやり直す</button>
-  </div>
-  
-  <p style="margin: 12px 0 0 0; font-size: 11px; color: #666; line-height: 1.3; text-align: left;">※クリックすると「パチッ」と音が鳴り、交互に石を置けます。間違えたら「一手戻す」を押してください。</p>
-</div>
+        <!-- 💡 座標表示が追加された安心の碁盤エリア -->
+        <div style="background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 6px; padding: 15px; margin-top: 8px; box-sizing: border-box; width: 100%; max-width: 480px; margin-left: auto; margin-right: auto; text-align: center; font-family: sans-serif; overflow: hidden; display: flow-root; clear: both;">
+          <p style="margin: 0 0 10px 0; font-size: 13px; font-weight: bold; color: #d32f2f; text-align: left;">【今週の問題】黒先（黒番です）</p>
+          
+          <!-- ① 路盤切り替えボタン -->
+          <div style="margin-bottom: 12px; display: flex; justify-content: center; gap: 8px;">
+            <button type="button" onclick="initCustomBoard(9)" style="padding: 6px 14px; font-size: 12px; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; font-weight: bold; color: #333;">9路盤</button>
+            <button type="button" onclick="initCustomBoard(13)" style="padding: 6px 14px; font-size: 12px; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; font-weight: bold; color: #333;">13路盤</button>
+            <button type="button" onclick="initCustomBoard(19)" style="padding: 6px 14px; font-size: 12px; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; font-weight: bold; color: #333;">19路盤</button>
+          </div>
+          
+          <!-- 碁盤を囲む外枠（上・左に座標を表示するためのコンテナ） -->
+          <div style="width: 100%; max-width: 420px; margin: 0 auto; display: grid; grid-template-columns: 24px 1fr; grid-template-rows: 24px 1fr; box-sizing: border-box;">
+            
+            <!-- 左上の空白角 -->
+            <div></div>
+            
+            <!-- 上側：英字座標（国際式・I抜き） -->
+            <div id="coord-top" style="display: flex; justify-content: space-around; align-items: center; font-size: 11px; font-weight: bold; color: #555; box-sizing: border-box;"></div>
+            
+            <!-- 左側：漢数字座標 -->
+            <div id="coord-left" style="display: flex; flex-direction: column; justify-content: space-around; align-items: center; font-size: 11px; font-weight: bold; color: #555; box-sizing: border-box;"></div>
 
-</div> <!-- 白い枠の中の下部に追加されたエリア の閉じタグ -->
-</div> <!-- 📸 写真ギャラリーボックス全体の閉じタグ -->
+            <!-- 碁盤の土台 -->
+            <div style="width: 100%; aspect-ratio: 1 / 1; position: relative; background-color: #dcaf6d; border: 2px solid #333; box-shadow: inset 0 0 8px rgba(0,0,0,0.15); box-sizing: border-box;">
+              <!-- JSが動かなくても、CSSだけで最初から9路盤の線を強制的に引いておくお助け背景 -->
+              <div id="fallback-lines" style="position: absolute; top: 5.5%; left: 5.5%; right: 5.5%; bottom: 5.5%; background-size: calc(100% / 8) calc(100% / 8); background-image: linear-gradient(to right, #333 1px, transparent 1px), linear-gradient(to bottom, #333 1px, transparent 1px); border-right: 1px solid #333; border-bottom: 1px solid #333; pointer-events: none;"></div>
+              
+              <!-- 交差点と石を配置するグリッドコンテナ -->
+              <div id="custom-grid-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: grid; box-sizing: border-box;"></div>
+            </div>
+
+          </div>
+
+          <!-- ② 操作用ボタン（一手戻す / リセット） -->
+          <div style="margin-top: 15px; display: flex; justify-content: center; gap: 10px;">
+            <button type="button" onclick="undoLastMove()" style="padding: 6px 16px; font-size: 12px; border: 1px solid #0066cc; background: #e6f2ff; color: #0066cc; border-radius: 4px; cursor: pointer; font-weight: bold;">⟲ 一手戻す</button>
+            <button type="button" onclick="resetCurrentBoard()" style="padding: 6px 16px; font-size: 12px; border: 1px solid #d32f2f; background: #ffebee; color: #d32f2f; border-radius: 4px; cursor: pointer; font-weight: bold;">✕ 最初からやり直す</button>
+          </div>
+          
+          <p style="margin: 12px 0 0 0; font-size: 11px; color: #666; line-height: 1.3; text-align: left;">※クリックすると「パチッ」と音が鳴り、交互に石を置けます。間違えたら「一手戻す」を押してください。</p>
+        </div>
+
+      </div> <!-- 白い枠の中の下部に追加されたエリア の閉じタグ -->
+    </div> <!-- 📸 写真ギャラリーボックス全体の閉じタグ -->
 
 <script>
     let currentTurnColor = "black"; 
@@ -522,12 +532,53 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         } catch (e) { console.log(e); }
     }
 
+    // 座標ラベルを描画する関数
+    function renderCoordinates(size) {
+        const topContainer = document.getElementById("coord-top");
+        const leftContainer = document.getElementById("coord-left");
+        if (!topContainer || !leftContainer) return;
+
+        topContainer.innerHTML = "";
+        leftContainer.innerHTML = "";
+
+        // 英字（国際式：Iを除く）の配列を作成
+        const alphabet = "ABCDEFGHJKLMNOPQRSTUVWXYZ".split("");
+        
+        // 漢数字の配列
+        const kanjiNumbers = ["一","二","三","四","五","六","七","八","九","十","十一","十二","十三","十四","十五","十六","十七","十八","十九"];
+
+        // 碁盤の線の位置にぴったり合わせるための余白計算（1マスの半分の幅を外側に持たせる）
+        const padPercent = 100 / (size * 2);
+        topContainer.style.paddingLeft = `${padPercent}%`;
+        topContainer.style.paddingRight = `${padPercent}%`;
+        leftContainer.style.paddingTop = `${padPercent}%`;
+        leftContainer.style.paddingBottom = `${padPercent}%`;
+
+        // 上側：英字を配置
+        for (let i = 0; i < size; i++) {
+            const label = document.createElement("div");
+            label.style.width = "100%";
+            label.style.textAlign = "center";
+            label.innerText = alphabet[i] || "";
+            topContainer.appendChild(label);
+        }
+
+        // 左側：漢数字を配置
+        for (let i = 0; i < size; i++) {
+            const label = document.createElement("div");
+            label.style.height = "100%";
+            label.style.display = "flex";
+            label.style.alignItems = "center";
+            label.innerText = kanjiNumbers[i] || (i + 1);
+            leftContainer.appendChild(label);
+        }
+    }
+
     function initCustomBoard(size, keepInitialStones = false) {
         const container = document.getElementById("custom-grid-container");
         const fallback = document.getElementById("fallback-lines");
         if (!container) return;
         
-        // JSが動いたらCSSの予備線は消す
         if (fallback) fallback.style.display = "none";
         
         container.innerHTML = "";
@@ -536,6 +587,9 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         moveHistory = []; 
         
         if (!keepInitialStones) { initialPuzzleStones = []; }
+        
+        // 座標表示を更新
+        renderCoordinates(size);
         
         container.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
         container.style.gridTemplateRows = `repeat(${size}, 1fr)`;
@@ -584,6 +638,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
             setupPuzzlePattern(); 
         }
     }
+
 
     function placeStone(row, col, color, isUserMove = false) {
         const slot = document.getElementById(`slot-${row}-${col}`);
