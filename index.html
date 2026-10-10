@@ -740,16 +740,19 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     <!-- ==========================================
          【本番】SGF読み込み＆自動再生機能付き 多機能碁盤セクション
          ========================================== -->
+    <!-- ==========================================
+         【本番・完全版】SGF対応・星の点付き多機能碁盤セクション
+         ========================================== -->
     <section class="goban-section" style="margin-top: 40px; text-align: center;">
         <h2 style="text-align:center;">自由に対局・研究ができる碁盤</h2>
         <p style="font-size: 0.95rem; color: #555; margin-bottom: 20px;">
-            クリックして自由に対局の練習や研究ができます。下のボタンからSGF（棋譜）ファイルを読み込んで自動再生することも可能です。
+            黒と白を交互にクリックして対局や研究ができます。アタリになった石は自動的に消えます。
         </p>
 
         <!-- 碁盤のコントロールエリア（サイズ選択） -->
-        <div style="margin-bottom: 15px;">
+        <div style="margin-bottom: 20px;">
             <label for="boardSizeSelect" style="font-weight: bold; margin-right: 10px; color: #333;">碁盤のサイズを選択：</label>
-            <select id="boardSizeSelect" onchange="window.changeBoardSize(this.value)" style="padding: 6px 12px; font-size: 15px; border-radius: 5px; border: 1px solid #ccc; background: #fff; cursor: pointer;">
+            <select id="boardSizeSelect" onchange="window.changeBoardSize(this.value)" style="padding: 8px 15px; font-size: 15px; border-radius: 5px; border: 2px solid #337ab7; background: #fff; cursor: pointer; font-weight: bold;">
                 <option value="19" selected>19路盤（通常の対局・棋譜再生）</option>
                 <option value="13">13路盤（中級者向け）</option>
                 <option value="9">9路盤（初心者向け・詰碁）</option>
@@ -758,27 +761,33 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 
         <!-- 碁盤が表示される場所 -->
         <div class="goban-container" style="max-width: 450px; margin: 0 auto; text-align: center; font-family: sans-serif; background: #f7f5f0; padding: 15px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <div style="font-weight: bold; margin-bottom: 10px; color: #333; font-size: 1.1rem;" id="turn-display">手番: 黒 (Next: Black)</div>
+            <div style="font-weight: bold; margin-bottom: 10px; color: #333; font-size: 1.2rem; background: #fff; padding: 5px; border-radius: 5px; border: 1px solid #ddd;" id="turn-display">手番: 黒 (Next: Black)</div>
             
             <!-- 碁盤キャンバス -->
             <canvas id="goBoard" width="380" height="380" style="background: #e1b773; border: 2px solid #b58943; cursor: pointer; box-shadow: inset 0 0 10px rgba(0,0,0,0.2); max-width: 100%; height: auto;"></canvas>
             
             <!-- 対局・研究用の操作ボタン -->
             <div style="margin-top: 15px; margin-bottom: 15px;">
-                <button type="button" onclick="window.undoMove()" style="padding: 8px 15px; background: #666; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; margin-right: 10px;">1手戻る (Undo)</button>
-                <button type="button" onclick="window.resetBoard()" style="padding: 8px 15px; background: #d9534f; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">盤面をクリア (Reset)</button>
+                <button type="button" onclick="window.undoMove()" style="padding: 8px 18px; background: #666; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; margin-right: 10px; font-weight: bold;">1手戻る (Undo)</button>
+                <button type="button" onclick="window.resetBoard()" style="padding: 8px 18px; background: #d9534f; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: bold;">盤面をクリア</button>
             </div>
 
-            <hr style="border: 0; border-top: 1px solid #ccc; margin: 15px 0;">
+            <hr style="border: 0; border-top: 2px dashed #ccc; margin: 15px 0;">
 
             <!-- SGFファイル読み込み＆棋譜並べエリア -->
-            <div style="background: #eee; padding: 10px; border-radius: 5px;">
-                <div style="font-weight: bold; font-size: 0.9rem; margin-bottom: 8px; color: #444;">📋 SGF棋譜ファイルの読み込み</div>
-                <input type="file" id="sgfFileInput" accept=".sgf" style="font-size: 12px; max-width: 100%; margin-bottom: 10px;">
-                <div id="sgf-info" style="font-size: 0.85rem; color: #666; margin-bottom: 10px; min-height: 20px;">ファイルを指定してください</div>
+            <div style="background: #e9eef3; padding: 15px; border-radius: 8px; border: 1px solid #b5c7d9;">
+                <div style="font-weight: bold; font-size: 0.95rem; margin-bottom: 10px; color: #2c3e50;">📋 SGF棋譜ファイルの自動再生</div>
+                
+                <!-- わかりやすいファイル選択ボタン -->
+                <input type="file" id="sgfFileInput" accept=".sgf" style="display: none;">
+                <button type="button" onclick="document.getElementById('sgfFileInput').click()" style="padding: 10px 20px; background: #337ab7; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); margin-bottom: 10px;">📂 パソコンからSGFファイルを選ぶ</button>
+                
+                <!-- ファイル名が綺麗に表示される枠 -->
+                <div id="sgf-info" style="font-size: 0.9rem; color: #2c3e50; font-weight: bold; margin-bottom: 12px; background: #fff; padding: 8px; border-radius: 4px; border: 1px solid #ccc; min-height: 20px; word-break: break-all;">選択されているファイル：なし</div>
+                
                 <div>
-                    <button type="button" onclick="window.prevSgfMove()" style="padding: 5px 10px; background: #337ab7; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 13px; margin-right: 5px;">◀ 前の手</button>
-                    <button type="button" onclick="window.nextSgfMove()" style="padding: 5px 10px; background: #5cb85c; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 13px;">次の手 ▶</button>
+                    <button type="button" onclick="window.prevSgfMove()" style="padding: 8px 16px; background: #f0ad4e; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; margin-right: 10px; font-weight: bold;">◀ 前の手</button>
+                    <button type="button" onclick="window.nextSgfMove()" style="padding: 8px 16px; background: #5cb85c; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: bold;">次の手 ▶</button>
                 </div>
             </div>
         </div>
@@ -793,30 +802,43 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
                 let padding = 20;
                 let cellSize = (canvas.width - padding * 2) / (size - 1);
                 
-                let board = [];
-                let history = [];
+                let board = new Array();
+                let history = new Array();
                 let currentTurn = 1;
 
-                // SGF再生用の管理データ
-                let sgfMoves = [];
+                let sgfMoves = new Array();
                 let currentSgfIndex = -1;
 
                 function initBoard() {
-                    board = Array(size).fill().map(function() { return Array(size).fill(0); });
-                    history = [];
+                    board = new Array(size);
+                    for (let i = 0; i < size; i++) {
+                        board[i] = new Array(size);
+                        for (let j = 0; j < size; j++) {
+                            board[i][j] = 0;
+                        }
+                    }
+                    history = new Array();
                     currentTurn = 1;
                     cellSize = (canvas.width - padding * 2) / (size - 1);
                 }
 
+                // 碁盤の星（黒い点）の位置を正確に指定
                 function getStarPoints() {
-                    if (size === 19) return;
-                    if (size === 13) return;
-                    if (size === 9) return;
-                    return [];
+                    let pts = new Array();
+                    if (size === 19) {
+                        pts.push(3); pts.push(9); pts.push(15);
+                    } else if (size === 13) {
+                        pts.push(3); pts.push(6); pts.push(9);
+                    } else if (size === 9) {
+                        pts.push(4);
+                    }
+                    return pts;
                 }
                 function drawBoard() {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    ctx.strokeStyle = '#333';
+                    
+                    // 升目（線）を描く
+                    ctx.strokeStyle = '#333333';
                     ctx.lineWidth = 1;
                     for (let i = 0; i < size; i++) {
                         ctx.beginPath();
@@ -830,33 +852,39 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
                         ctx.stroke();
                     }
 
-                    ctx.fillStyle = '#333';
+                    // 星（黒い点）を描く
+                    ctx.fillStyle = '#333333';
                     const starPoints = getStarPoints();
-                    starPoints.forEach(function(x) {
-                        starPoints.forEach(function(y) {
+                    for (let i = 0; i < starPoints.length; i++) {
+                        for (let j = 0; j < starPoints.length; j++) {
+                            // 13路盤の四隅の星の調整
+                            if (size === 13 && ((starPoints[i] === 6 && starPoints[j] !== 6) || (starPoints[j] === 6 && starPoints[i] !== 6))) {
+                                continue; 
+                            }
                             ctx.beginPath();
-                            ctx.arc(padding + x * cellSize, padding + y * cellSize, 3, 0, Math.PI * 2);
+                            ctx.arc(padding + starPoints[i] * cellSize, padding + starPoints[j] * cellSize, 3.5, 0, Math.PI * 2);
                             ctx.fill();
-                        });
-                    });
+                        }
+                    }
 
+                    // 石を描く
                     for (let x = 0; x < size; x++) {
                         for (let y = 0; y < size; y++) {
                             if (board[x][y] !== 0) {
                                 ctx.beginPath();
                                 ctx.arc(padding + x * cellSize, padding + y * cellSize, cellSize * 0.45, 0, Math.PI * 2);
                                 
-                                if (board[x][y] === 1) {
+                                if (board[x][y] === 1) { 
                                     let gradient = ctx.createRadialGradient(padding + x * cellSize - 2, padding + y * cellSize - 2, 1, padding + x * cellSize, padding + y * cellSize, cellSize * 0.45);
-                                    gradient.addColorStop(0, '#666');
-                                    gradient.addColorStop(1, '#000');
+                                    gradient.addColorStop(0, '#666666');
+                                    gradient.addColorStop(1, '#000000');
                                     ctx.fillStyle = gradient;
-                                } else {
+                                } else { 
                                     let gradient = ctx.createRadialGradient(padding + x * cellSize - 2, padding + y * cellSize - 2, 1, padding + x * cellSize, padding + y * cellSize, cellSize * 0.45);
-                                    gradient.addColorStop(0, '#fff');
-                                    gradient.addColorStop(1, '#ddd');
+                                    gradient.addColorStop(0, '#ffffff');
+                                    gradient.addColorStop(1, '#dddddd');
                                     ctx.fillStyle = gradient;
-                                    ctx.strokeStyle = '#999';
+                                    ctx.strokeStyle = '#999999';
                                     ctx.lineWidth = 1;
                                     ctx.stroke();
                                 }
@@ -864,8 +892,9 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
                             }
                         }
                     }
+                    
                     if (currentSgfIndex >= 0 && sgfMoves.length > 0) {
-                        document.getElementById('turn-display').innerText = "棋譜再生中: " + (currentSgfIndex + 1) + " / " + sgfMoves.length + " 手目";
+                        document.getElementById('turn-display').innerText = "棋譜再生: " + (currentSgfIndex + 1) + " / " + sgfMoves.length + " 手";
                     } else {
                         document.getElementById('turn-display').innerText = "手番: " + (currentTurn === 1 ? '黒 (Black)' : '白 (White)');
                     }
@@ -904,7 +933,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
                         const ny = lastY + dirs[i].y;
 
                         if (nx >= 0 && nx < size && ny >= 0 && ny < size && board[nx][ny] === opponentColor) {
-                            let group = [];
+                            let group = new Array();
                             let visited = new Set();
                             let libs = getLiberties(nx, ny, opponentColor, visited, group);
 
@@ -916,6 +945,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
                         }
                     }
                 }
+
                 canvas.addEventListener('click', function(e) {
                     const rect = canvas.getBoundingClientRect();
                     const mouseX = e.clientX - rect.left;
@@ -928,10 +958,9 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
                     const y = Math.round(((mouseY * scaleY) - padding) / cellSize);
 
                     if (x >= 0 && x < size && y >= 0 && y < size && board[x][y] === 0) {
-                        // 棋譜再生モードを中断して自由対局へ移行
-                        sgfMoves = [];
+                        sgfMoves = new Array();
                         currentSgfIndex = -1;
-                        document.getElementById('sgf-info').innerText = "手動で石が置かれました";
+                        document.getElementById('sgf-info').innerText = "手動で盤面を変更中";
 
                         history.push({
                             turn: currentTurn, 
@@ -962,35 +991,35 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
                 };
 
                 window.resetBoard = function() {
-                    if (confirm('盤面をきれいに戻しますか？')) {
+                    if (confirm('盤面をきれいにリセットしますか？')) {
                         initBoard();
-                        sgfMoves = [];
+                        sgfMoves = new Array();
                         currentSgfIndex = -1;
-                        document.getElementById('sgf-info').innerText = "ファイルを指定してください";
+                        document.getElementById('sgf-info').innerText = "選択されているファイル：なし";
                         document.getElementById('sgfFileInput').value = "";
                         drawBoard();
                     }
                 };
 
-                // SGF解析処理
                 document.getElementById('sgfFileInput').addEventListener('change', function(e) {
                     const file = e.target.files[0];
                     if (!file) return;
 
+                    // 枠の中にファイル名をハッキリ表示
+                    document.getElementById('sgf-info').innerText = "選択中: " + file.name;
+
                     const reader = new FileReader();
                     reader.onload = function(evt) {
-                        const text = evt.target.result;
-                        parseSgf(text);
+                        parseSgf(evt.target.result, file.name);
                     };
                     reader.readAsText(file);
                 });
 
-                function parseSgf(sgfText) {
+                function parseSgf(sgfText, filename) {
                     initBoard();
-                    sgfMoves = [];
+                    sgfMoves = new Array();
                     currentSgfIndex = -1;
 
-                    // 簡単なSGFパース処理 (B[ab] や W[cd] を抽出)
                     const regex = /([BW])\[([a-s]{2})\]/g;
                     let match;
                     while ((match = regex.exec(sgfText)) !== null) {
@@ -1001,13 +1030,13 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
                     }
 
                     if (sgfMoves.length > 0) {
-                        document.getElementById('sgf-info').innerText = "棋譜の読み込みに成功しました（全 " + sgfMoves.length + " 手）";
+                        document.getElementById('sgf-info').innerText = "読み込み成功: " + filename + " (全 " + sgfMoves.length + " 手)";
                         size = 19;
                         document.getElementById('boardSizeSelect').value = "19";
                         initBoard();
                         drawBoard();
                     } else {
-                        document.getElementById('sgf-info').innerText = "有効な着手が見つかりませんでした";
+                        document.getElementById('sgf-info').innerText = "※着手データが見つかりませんでした";
                     }
                 }
 
@@ -1017,14 +1046,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
                         const move = sgfMoves[currentSgfIndex];
                         
                         history.push({
-                            turn: currentTurn,
-                            prevState: JSON.parse(JSON.stringify(board))
-                        });
 
-                        board[move.x][move.y] = move.color;
-                        checkCaptures(move.x, move.y, move.color);
-                        drawBoard();
-                    }
                 };
 
                 window.prevSgfMove = function() {
