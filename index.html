@@ -485,7 +485,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         <div><input type="number" id="timeInput2" value="5" min="1" style="width: 50px; padding: 2px 5px; text-align: center; border: 1px solid #ccc; border-radius: 4px;"> 秒</div>
       </div>
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <label>③ あ、筋場ｶ！…：</label>
+        <label>③ あ、そうか！…：</label>
         <div><input type="number" id="timeInput3" value="5" min="1" style="width: 50px; padding: 2px 5px; text-align: center; border: 1px solid #ccc; border-radius: 4px;"> 秒</div>
       </div>
       <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -744,108 +744,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     <!-- ==========================================
          【新設】インタラクティブ碁盤セクション
          ========================================== -->
-   <!-- 💡【修正】碁盤を確実に表示するための外部ライブラリ（WGo.js）の正しい読み込み先です -->
-    <script type="text/javascript" src="https://cloudflare.com"></script>
-    <script type="text/javascript" src="https://cloudflare.com"></script>
-    <link type="text/css" rel="stylesheet" href="https://cloudflare.com" />
-
-    <style>
-        body { font-family: sans-serif; line-height: 1.8; color: #333; background-color: #f4f6f8; margin: 0; padding: 0; }
-        .container { max-width: 800px; margin: 30px auto; padding: 30px; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        header { text-align: center; padding: 50px 20px; background: linear-gradient(135deg, #2c3e50, #34495e); color: #fff; border-radius: 6px; margin-bottom: 35px; }
-        header h1 { font-size: 2.2rem; margin: 0 0 15px 0; }
-        header p { font-size: 1.1rem; margin: 0; opacity: 0.9; }
-        h2 { color: #2c3e50; border-left: 5px solid #ff9f43; padding-left: 15px; margin-top: 40px; margin-bottom: 20px; font-size: 1.5rem; }
-        h3 { color: #34495e; font-size: 1.2rem; margin-top: 25px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
-        .btn-box { text-align: center; margin: 30px 0; }
-        .btn-contact { display: inline-block; background-color: #ff9f43; color: #fff; padding: 15px 35px; text-decoration: none; font-weight: bold; border-radius: 30px; }
-        .btn-homework { display: inline-block; background-color: #27ae60; color: #fff; padding: 15px 35px; text-decoration: none; font-weight: bold; border-radius: 30px; }
-        ul { padding-left: 20px; } li { margin-bottom: 8px; } a { color: #2980b9; text-decoration: none; }
-
-        /* 💡 画面サイズに合わせて碁盤が自動縮小するレスポンシブ設定 */
-        .goban-container {
-            max-width: 600px; /* パソコンで見たときの最大サイズ */
-            width: 100%;
-            margin: 30px auto; /* 上下の余白を適切な30pxに調整し、画面の中央に配置 */
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* 碁盤の輪郭を際立たせる影 */
-        }
-    </style>
-</head>
-<body>
-<div class="container">
-    
-    <header>
-        <!-- 全体を包む見やすい薄い背景のボックス -->
-        <div style="background-color: #fcf8f2; padding: 25px; border-radius: 8px; border: 1px solid #e0d0b0; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); box-sizing: border-box; font-family: sans-serif; text-align: left; color: #333;">
-          
-          <!-- 【最上部：横いっぱいに配置】教室のベースとなる趣旨・メッセージ -->
-          <div style="width: 100%; text-align: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #e0d0b0;">
-            <p style="margin: 0; font-size: 16px; color: #555; letter-spacing: 0.05em; font-weight: bold;">「知頭に加え、本当に必要な考える力を」</p>
-            <p style="margin: 5px 0 0 0; font-size: 22px; color: #b35900; font-weight: bold; letter-spacing: 0.1em;">「囲碁で磨く、全世代の地頭力」</p>
-          </div>
-
-          <!-- 【下部：左右2段組 of エリア】 -->
-          <div style="display: flex; flex-wrap: wrap; gap: 30px; box-sizing: border-box;">
-              <!-- 左右コンテンツ領域 -->
-          </div>
-        </div>
-    </header>
-
-    <!-- （他のメインコンテンツや動画・写真エリアがここにある場合は残してください） -->
-
-
-    <!-- ==========================================
-         【新設】ご希望の位置に合体した19路盤セクション
-         ========================================== -->
  
-   <!-- 💡【修正】碁盤を確実に表示するための外部ライブラリ（WGo.js）の正しい読み込み先です -->
-    <script type="text/javascript" src="https://cloudflare.com"></script>
-    <script type="text/javascript" src="https://cloudflare.com"></script>
-    <link type="text/css" rel="stylesheet" href="https://cloudflare.com" />
-
-    <style>
-        body { font-family: sans-serif; line-height: 1.8; color: #333; background-color: #f4f6f8; margin: 0; padding: 0; }
-        .container { max-width: 800px; margin: 30px auto; padding: 30px; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        header { text-align: center; padding: 50px 20px; background: linear-gradient(135deg, #2c3e50, #34495e); color: #fff; border-radius: 6px; margin-bottom: 35px; }
-        header h1 { font-size: 2.2rem; margin: 0 0 15px 0; }
-        header p { font-size: 1.1rem; margin: 0; opacity: 0.9; }
-        h2 { color: #2c3e50; border-left: 5px solid #ff9f43; padding-left: 15px; margin-top: 40px; margin-bottom: 20px; font-size: 1.5rem; }
-        h3 { color: #34495e; font-size: 1.2rem; margin-top: 25px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
-        .btn-box { text-align: center; margin: 30px 0; }
-        .btn-contact { display: inline-block; background-color: #ff9f43; color: #fff; padding: 15px 35px; text-decoration: none; font-weight: bold; border-radius: 30px; }
-        .btn-homework { display: inline-block; background-color: #27ae60; color: #fff; padding: 15px 35px; text-decoration: none; font-weight: bold; border-radius: 30px; }
-        ul { padding-left: 20px; } li { margin-bottom: 8px; } a { color: #2980b9; text-decoration: none; }
-
-        /* 💡 画面サイズに合わせて碁盤が自動縮小するレスポンシブ設定 */
-        .goban-container {
-            max-width: 600px; /* パソコンで見たときの最大サイズ */
-            width: 100%;
-            margin: 30px auto; /* 上下の余白を適切な30pxに調整し、画面の中央に配置 */
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* 碁盤の輪郭を際立たせる影 */
-        }
-    </style>
-</head>
-<body>
-<div class="container">
-    
-    <header>
-        <!-- 全体を包む見やすい薄い背景のボックス -->
-        <div style="background-color: #fcf8f2; padding: 25px; border-radius: 8px; border: 1px solid #e0d0b0; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); box-sizing: border-box; font-family: sans-serif; text-align: left; color: #333;">
-          
-          <!-- 【最上部：横いっぱいに配置】教室のベースとなる趣旨・メッセージ -->
-          <div style="width: 100%; text-align: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #e0d0b0;">
-            <p style="margin: 0; font-size: 16px; color: #555; letter-spacing: 0.05em; font-weight: bold;">「知頭に加え、本当に必要な考える力を」</p>
-            <p style="margin: 5px 0 0 0; font-size: 22px; color: #b35900; font-weight: bold; letter-spacing: 0.1em;">「囲碁で磨く、全世代の地頭力」</p>
-          </div>
-
-          <!-- 【下部：左右2段組 of エリア】 -->
-          <div style="display: flex; flex-wrap: wrap; gap: 30px; box-sizing: border-box;">
-              <!-- 左右コンテンツ領域 -->
-          </div>
-        </div>
-    </header>
-
-    <!-- （他のメインコンテンツや動画・写真エリアがここにある場合は残してください） -->
 
 
     <!-- ==========================================
