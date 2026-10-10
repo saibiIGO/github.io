@@ -740,11 +740,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   initCustomBoard(9);
 </script>
 
-
-    
-    
-    
-      <!-- ==========================================
+    <!-- ==========================================
          【本番】選択・石取り機能付き 自由に対局・研究ができる碁盤
          ========================================== -->
     <section class="goban-section" style="margin-top: 40px; text-align: center;">
@@ -789,9 +785,8 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
                 
                 let board = [];
                 let history = [];
-                let currentTurn = 1; // 1:黒, 2:白
+                let currentTurn = 1;
 
-                // 盤面の初期化
                 function initBoard() {
                     board = Array(size).fill().map(() => Array(size).fill(0));
                     history = [];
@@ -799,7 +794,6 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
                     cellSize = (canvas.width - padding * 2) / (size - 1);
                 }
 
-                // サイズ別の星（点）の位置
                 function getStarPoints() {
                     if (size === 19) return;
                     if (size === 13) return;
@@ -807,11 +801,8 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
                     return [];
                 }
 
-                // 盤面と石の描画
                 function drawBoard() {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    
-                    // 線の描画
                     ctx.strokeStyle = '#333';
                     ctx.lineWidth = 1;
                     for (let i = 0; i < size; i++) {
@@ -826,7 +817,6 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
                         ctx.stroke();
                     }
 
-                    // 星の描画
                     ctx.fillStyle = '#333';
                     const starPoints = getStarPoints();
                     starPoints.forEach(x => {
@@ -837,19 +827,18 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
                         });
                     });
 
-                    // 石の描画
                     for (let x = 0; x < size; x++) {
                         for (let y = 0; y < size; y++) {
                             if (board[x][y] !== 0) {
                                 ctx.beginPath();
                                 ctx.arc(padding + x * cellSize, padding + y * cellSize, cellSize * 0.45, 0, Math.PI * 2);
                                 
-                                if (board[x][y] === 1) { // 黒
+                                if (board[x][y] === 1) {
                                     let gradient = ctx.createRadialGradient(padding + x * cellSize - 2, padding + y * cellSize - 2, 1, padding + x * cellSize, padding + y * cellSize, cellSize * 0.45);
                                     gradient.addColorStop(0, '#666');
                                     gradient.addColorStop(1, '#000');
                                     ctx.fillStyle = gradient;
-                                } else { // 白
+                                } else {
                                     let gradient = ctx.createRadialGradient(padding + x * cellSize - 2, padding + y * cellSize - 2, 1, padding + x * cellSize, padding + y * cellSize, cellSize * 0.45);
                                     gradient.addColorStop(0, '#fff');
                                     gradient.addColorStop(1, '#ddd');
@@ -865,7 +854,6 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
                     document.getElementById('turn-display').innerText = `手番: ${currentTurn === 1 ? '黒 (Black)' : '白 (White)'}`;
                 }
 
-                // 呼吸点（生きているスペース）の計算と石を取る処理
                 function getLiberties(x, y, color, visited, group) {
                     const key = x + ',' + y;
                     if (visited.has(key)) return 0;
@@ -893,9 +881,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
                 function checkCaptures(lastX, lastY, placedColor) {
                     const opponentColor = placedColor === 1 ? 2 : 1;
                     const dirs = [{x:1, y:0}, {x:-1, y:0}, {x:0, y:1}, {x:0, y:-1}];
-                    let globalVisited = new Set();
 
-                    // まず相手の連（グループ）の呼吸点を確認して、0なら取る
                     for (let d of dirs) {
                         const nx = lastX + d.x;
                         const ny = lastY + d.y;
@@ -914,7 +900,6 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
                     }
                 }
 
-                // クリック時の着手処理
                 canvas.addEventListener('click', function(e) {
                     const rect = canvas.getBoundingClientRect();
                     const mouseX = e.clientX - rect.left;
@@ -927,27 +912,41 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
                     const y = Math.round(((mouseY * scaleY) - padding) / cellSize);
 
                     if (x >= 0 && x < size && y >= 0 && y < size && board[x][y] === 0) {
-                        // 打つ前の状態を記録
                         history.push({
                             turn: currentTurn, 
                             prevState: JSON.parse(JSON.stringify(board))
                         });
 
-                        // 石を置く
                         board[x][y] = currentTurn;
-                        
-                        // 囲碁のルール：挟んだ石が取れるか判定
                         checkCaptures(x, y, currentTurn);
 
-                        // 手番交代して再描画
                         currentTurn = currentTurn === 1 ? 2 : 1;
                         drawBoard();
                     }
                 });
 
-                // サイズ変更機能
                 window.changeBoardSize = function(newSize) {
                     size = parseInt(newSize);
+                    initBoard();
+                    drawBoard();
+                };
+
+                window.undoMove = function() {
+                    if (history.length > 0) {
+                        const lastMove = history.pop();
+                        board = lastMove.prevState;
+                        currentTurn = lastMove.turn;
+                        drawBoard();
+                    }
+                };
+
+                window.resetBoard = function() {
+                    if (confirm('盤面をきれいに戻しますか？')) {
+                        initBoard();
+                        drawBoard();
+    
+    
+    
   
  </script> 
  
