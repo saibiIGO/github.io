@@ -744,7 +744,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 <!-- ==========================================
      【本番・完全版】SGF対応・星の点付き多機能碁盤セクション
      ========================================== -->
-<section class="goban-section" style="margin-top: 40px; text-align: center;">
+  <section class="goban-section" style="margin-top: 40px; text-align: center;">
     <h2 style="text-align:center;">自由に対局・研究ができる碁盤</h2>
     <p style="font-size: 0.95rem; color: #555; margin-bottom: 20px;">
         黒と白を交互にクリックして対局や研究ができます。アタリになった石は自動的に消えます。
@@ -767,7 +767,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         <!-- 碁盤キャンバス -->
         <canvas id="goBoard" width="380" height="380" style="background: #e1b773; border: 2px solid #b58943; cursor: pointer; box-shadow: inset 0 0 10px rgba(0,0,0,0.2); max-width: 100%; height: auto;"></canvas>
         
-        <!-- 对局・研究用の操作ボタン -->
+        <!-- 対局・研究用の操作ボタン -->
         <div style="margin-top: 15px; margin-bottom: 15px;">
             <button type="button" onclick="window.undoMove()" style="padding: 8px 18px; background: #666; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; margin-right: 10px; font-weight: bold;">1手戻る (Undo)</button>
             <button type="button" onclick="window.resetBoard()" style="padding: 8px 18px; background: #d9534f; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: bold;">盤面をクリア</button>
@@ -792,7 +792,11 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
             </div>
         </div>
     </div>
-</section>
+    
+    <!-- 外部JavaScriptファイルを読み込む記述 -->
+    <script src="goban.js"></script>
+</section>  
+    ========================================== -->
 
     
     <!--javascript エリア -->
@@ -1275,81 +1279,9 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 </script>
   </section>
 
----
 
-### 🌐 2. HTMLファイル（碁盤セクション部分）
-HTML側の碁盤を表示させたい場所に、以下のコードを貼り付けてください。一番最後の行で先ほどの `goban.js` を読み込む指定をしています。
 
-```html
-<!-- ==========================================
-     【本番・完全版】SGF対応・星の点付き多機能碁盤セクション
-     ========================================== -->
-<section class="goban-section" style="margin-top: 40px; text-align: center;">
-    <h2 style="text-align:center;">自由に対局・研究ができる碁盤</h2>
-    <p style="font-size: 0.95rem; color: #555; margin-bottom: 20px;">
-        黒と白を交互にクリックして対局や研究ができます。アタリになった石は自動的に消えます。
-    </p>
-
-    <!-- 碁盤のコントロールエリア（サイズ選択） -->
-    <div style="margin-bottom: 20px;">
-        <label for="boardSizeSelect" style="font-weight: bold; margin-right: 10px; color: #333;">碁盤のサイズを選択：</label>
-        <select id="boardSizeSelect" onchange="window.changeBoardSize(this.value)" style="padding: 8px 15px; font-size: 15px; border-radius: 5px; border: 2px solid #337ab7; background: #fff; cursor: pointer; font-weight: bold;">
-            <option value="19" selected>19路盤（通常の対局・棋譜再生）</option>
-            <option value="13">13路盤（中級者向け）</option>
-            <option value="9">9路盤（初心者向け・詰碁）</option>
-        </select>
-    </div>
-
-    <!-- 碁盤が表示される場所 -->
-    <div class="goban-container" style="max-width: 450px; margin: 0 auto; text-align: center; font-family: sans-serif; background: #f7f5f0; padding: 15px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-        <div style="font-weight: bold; margin-bottom: 10px; color: #333; font-size: 1.2rem; background: #fff; padding: 5px; border-radius: 5px; border: 1px solid #ddd;" id="turn-display">手番: 黒 (Next: Black)</div>
-        
-        <!-- 碁盤キャンバス -->
-        <canvas id="goBoard" width="380" height="380" style="background: #e1b773; border: 2px solid #b58943; cursor: pointer; box-shadow: inset 0 0 10px rgba(0,0,0,0.2); max-width: 100%; height: auto;"></canvas>
-        
-        <!-- 対局・研究用の操作ボタン -->
-        <div style="margin-top: 15px; margin-bottom: 15px;">
-            <button type="button" onclick="window.undoMove()" style="padding: 8px 18px; background: #666; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; margin-right: 10px; font-weight: bold;">1手戻る (Undo)</button>
-            <button type="button" onclick="window.resetBoard()" style="padding: 8px 18px; background: #d9534f; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: bold;">盤面をクリア</button>
-        </div>
-
-        <hr style="border: 0; border-top: 2px dashed #ccc; margin: 15px 0;">
-
-        <!-- SGFファイル読み込み＆棋譜並べエリア -->
-        <div style="background: #e9eef3; padding: 15px; border-radius: 8px; border: 1px solid #b5c7d9;">
-            <div style="font-weight: bold; font-size: 0.95rem; margin-bottom: 10px; color: #2c3e50;">📋 SGF棋譜ファイルの自動再生</div>
             
-            <!-- ファイル選択ボタン -->
-            <input type="file" id="sgfFileInput" accept=".sgf" style="display: none;">
-            <button type="button" onclick="document.getElementById('sgfFileInput').click()" style="padding: 10px 20px; background: #337ab7; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); margin-bottom: 10px;">📂 パソコンからSGFファイルを選ぶ</button>
-            
-            <!-- ファイル名表示枠 -->
-            <div id="sgf-info" style="font-size: 0.9rem; color: #2c3e50; font-weight: bold; margin-bottom: 12px; background: #fff; padding: 8px; border-radius: 4px; border: 1px solid #ccc; min-height: 20px; word-break: break-all;">選択されているファイル：なし</div>
-            
-            <div>
-                <button type="button" onclick="window.prevSgfMove()" style="padding: 8px 16px; background: #f0ad4e; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; margin-right: 10px; font-weight: bold;">◀ 前の手</button>
-                <button type="button" onclick="window.nextSgfMove()" style="padding: 8px 16px; background: #5cb85c; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: bold;">次の手 ▶</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- 外部JavaScriptファイルを読み込む記述 -->
-    <script src="goban.js"></script>
-</section>
-
-
-    
-    <!-- ==========================================
-     　以上　【本番・完全版】SGF対応・星の点付き多機能碁盤セクション
-　　　　========================================== -->
-
-              
-    
-    
-    
- 
- 
-
 
 <!-- ==========================================
      【新設】スポンサー・地域関連リンク セクション
