@@ -1080,40 +1080,32 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         if (sgfMoves && (currentSgfIndex + 1 < sgfMoves.length)) {
             currentSgfIndex++;
             const move = sgfMoves[currentSgfIndex];
-            currentTurn = move.color;
-            placeStone(move.x, move.y);
+         
             
-            if (sgfInfo && fileInput && fileInput.files && fileInput.files.length > 0) {
-                sgfInfo.textContent = "📂 " + fileInput.files[0].name + " (" + (currentSgfIndex + 1) + " / " + sgfMoves.length + " 手目)";
-            }
-        }
-    };
+                            turn: currentTurn,
+                            prevState: JSON.parse(JSON.stringify(board))
+                        });
 
-    window.prevSgfMove = function() {
-        if (currentSgfIndex >= 0) {
-            window.undoMove();
-            currentSgfIndex--;
-             if (sgfInfo && fileInput && fileInput.files && fileInput.files.length > 0) {
-                if (currentSgfIndex === -1) {
-      if (currentSgfIndex === -1) {
-                    sgfInfo.textContent = `📂 ${fileInput.files[0].name} (開始前 / 全 ${sgfMoves.length} 手)`;
-                } else {
-                    sgfInfo.textContent = `📂 ${fileInput.files[0].name} (${currentSgfIndex + 1} / ${sgfMoves.length} 手目)`;
-                }
-            }
-        }
-    };
+                        board[move.x][move.y] = move.color;
+                        checkCaptures(move.x, move.y, move.color);
+                        drawBoard();
+                    }
+                };
 
-    // 初期化実行
-    initBoard();
-    drawBoard();
-})();
+                window.prevSgfMove = function() {
+                    if (currentSgfIndex >= 0) {
+                        currentSgfIndex--;
+                        window.undoMove();
+                        drawBoard();
+                    }
+                };
 
+                initBoard();
+                drawBoard();
+            })();
+        </script>
+    </section>
     
-
-</script>
-</section>
-
     
     
  
