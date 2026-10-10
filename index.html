@@ -428,12 +428,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 
 <!-- ==========================================
 <!-- 👉【右側】：4コマスライドショウ　写真（碁盤）ギャラリー（操作マニュアル＆補助ボタン内蔵・タグ修正版）
-     ========================================== -->
-
-
-
-
-<!-- 👉【右側】：4コマスライドショウ　写真（碁盤）ギャラリー（操作マニュアル＆補助ボタン内蔵・タグ修正版） -->
+     ========================================== -->thekku
 <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; text-align: center; position: relative;">
   <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; height: 100%;">
     
@@ -853,8 +848,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
                     }
                     document.getElementById('turn-display').innerText = `手番: ${currentTurn === 1 ? '黒 (Black)' : '白 (White)'}`;
                 }
-
-                function getLiberties(x, y, color, visited, group) {
+                 function getLiberties(x, y, color, visited, group) {
                     const key = x + ',' + y;
                     if (visited.has(key)) return 0;
                     visited.add(key);
@@ -944,11 +938,15 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
                     if (confirm('盤面をきれいに戻しますか？')) {
                         initBoard();
                         drawBoard();
-    
-    
-    
-  
- </script> 
+                    }
+                };
+
+                initBoard();
+                drawBoard();
+            })();
+        </script>
+    </section>
+
  
 
 
