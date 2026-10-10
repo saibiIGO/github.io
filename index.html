@@ -741,27 +741,146 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 </script>
 
 
-    <!-- ==========================================
-         【新設】インタラクティブ碁盤セクション
-         ========================================== -->
  
-
-
+      
     <!-- ==========================================
-         【新設】ご希望の位置に合体した19路盤セクション
+         【新設】新・インタラクティブ19路盤セクション
          ========================================== -->
     <section class="goban-section" style="margin-top: 40px; text-align: center;">
         <h2 style="text-align:center;">碁盤の配置テスト</h2>
         <p style="font-size: 0.95rem; color: #555; margin-bottom: 20px;">
             ※下の碁盤はスマホからでも自動でサイズが調整されます。石を動かしたり、下のボタンで操作できます。
         </p>
-
-        <!-- 碁盤が表示される場所 -->
-        <div class="goban-container">
-            <!-- 💡 ご提示いただいた本格的な「19路盤 (SZ[19])」の設定です -->
-            <div data-wgo="(;SZ[19]AP[WGo.js:2])" style="width: 100%;"></div>
+       <!-- 碁盤が表示される場所（対局・練習ができるインタラクティブ碁盤） -->
+        <div class="goban-container" style="max-width: 450px; margin: 0 auto; text-align: center; font-family: sans-serif; background: #f7f5f0; padding: 15px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <div style="font-weight: bold; margin-bottom: 10px; color: #333; font-size: 1.1rem;" id="turn-display">手番: 黒 (Next: Black)</div>
+            
+            <!-- 19路盤のキャンバス -->
+            <canvas id="goBoard" width="380" height="380" style="background: #e1b773; border: 2px solid #b58943; cursor: pointer; box-shadow: inset 0 0 10px rgba(0,0,0,0.2); max-width: 100%; height: auto;"></canvas>
+            
+            <!-- 操作ボタン -->
+            <div style="margin-top: 15px;">
+                <button type="button" onclick="undoMove()" style="padding: 8px 15px; background: #666; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; margin-right: 10px;">1手戻る (Undo)</button>
+                <button type="button" onclick="resetBoard()" style="padding: 8px 15px; background: #d9534f; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">盤面をクリア (Reset)</button>
+            </div>
         </div>
-    </section>
+
+        <script>
+            (function() {
+                const canvas = document.getElementById('goBoard');
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                const size = 19;
+                const padding = 20;
+                const cellSize = (canvas.width - padding * 2) / (size - 1);
+                
+                let board = Array(size).fill().map(() => Array(size).fill(0)); // 0:空, 1:黒, 2:白
+                let history = [];
+                let currentTurn = 1;
+
+                // 19路盤の星の位置
+                const starPoints =;
+
+                function drawBoard() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    
+                    // 線を描く
+                    ctx.strokeStyle = '#333';
+                    ctx.lineWidth = 1;
+                    for (let i = 0; i < size; i++) {
+                        ctx.beginPath();
+                        ctx.moveTo(padding, padding + i * cellSize);
+                        ctx.lineTo(canvas.width - padding, padding + i * cellSize);
+                        ctx.stroke();
+
+                        ctx.beginPath();
+                        ctx.moveTo(padding + i * cellSize, padding);
+                        ctx.lineTo(padding + i * cellSize, canvas.height - padding);
+                        ctx.stroke();
+                    }
+
+                    // 星を描く
+                    ctx.fillStyle = '#333';
+                    starPoints.forEach(x => {
+                        starPoints.forEach(y => {
+                            ctx.beginPath();
+                            ctx.arc(padding + x * cellSize, padding + y * cellSize, 3, 0, Math.PI * 2);
+                            ctx.fill();
+                        });
+                    });
+
+                    // 石を描く
+                    for (let x = 0; x < size; x++) {
+                        for (let y = 0; y < size; y++) {
+                            if (board[x][y] !== 0) {
+                                ctx.beginPath();
+                                ctx.arc(padding + x * cellSize, padding + y * cellSize, cellSize * 0.45, 0, Math.PI * 2);
+                                
+                                if (board[x][y] === 1) { // 黒
+                                    let gradient = ctx.createRadialGradient(padding + x * cellSize - 2, padding + y * cellSize - 2, 1, padding + x * cellSize, padding + y * cellSize, cellSize * 0.45);
+                                    gradient.addColorStop(0, '#666');
+                                    gradient.addColorStop(1, '#000');
+                                    ctx.fillStyle = gradient;
+                                } else { // 白
+                                    let gradient = ctx.createRadialGradient(padding + x * cellSize - 2, padding + y * cellSize - 2, 1, padding + x * cellSize, padding + y * cellSize, cellSize * 0.45);
+                                    gradient.addColorStop(0, '#fff');
+                                    gradient.addColorStop(1, '#ddd');
+                                    ctx.fillStyle = gradient;
+                                    ctx.strokeStyle = '#999';
+                                    ctx.lineWidth = 1;
+                                    ctx.stroke();
+                                }
+                                ctx.fill();
+                            }
+                        }
+                    }
+                    document.getElementById('turn-display').innerText = `手番: ${currentTurn === 1 ? '黒 (Black)' : '白 (White)'}`;
+                }
+
+                canvas.addEventListener('click', function(e) {
+                    const rect = canvas.getBoundingClientRect();
+                    const mouseX = e.clientX - rect.left;
+                    const mouseY = e.clientY - rect.top;
+
+                    // キャンバスの表示サイズと本来の解像度の比率を計算（スマホ対応）
+                    const scaleX = canvas.width / rect.width;
+                    const scaleY = canvas.height / rect.height;
+
+                    const x = Math.round(((mouseX * scaleX) - padding) / cellSize);
+                    const y = Math.round(((mouseY * scaleY) - padding) / cellSize);
+
+                    if (x >= 0 && x < size && y >= 0 && y < size && board[x][y] === 0) {
+                        history.push({x: x, y: y, turn: currentTurn, prevState: JSON.parse(JSON.stringify(board))});
+                        board[x][y] = currentTurn;
+                        currentTurn = currentTurn === 1 ? 2 : 1;
+                        drawBoard();
+                    }
+                });
+
+                window.undoMove = function() {
+                    if (history.length > 0) {
+                        const lastMove = history.pop();
+                        board = lastMove.prevState;
+                        currentTurn = lastMove.turn;
+                        drawBoard();
+                    }
+                };
+
+                window.resetBoard = function() {
+                    if (confirm('盤面をきれいに戻しますか？')) {
+                        board = Array(size).fill().map(() => Array(size).fill(0));
+                        history = [];
+                        currentTurn = 1;
+                        drawBoard();
+                    }
+                };
+
+                drawBoard();
+            })();
+        </script>
+ 
+
+
 
 
 
