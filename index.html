@@ -428,6 +428,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 
 
 
+
 <!-- 👉【右側】：4コマスライドショウ　写真（碁盤）ギャラリー（操作マニュアル＆補助ボタン内蔵・タグ修正版） -->
 <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; text-align: center; position: relative;">
   <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; height: 100%;">
@@ -435,10 +436,10 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px; user-select: none;">📸 写真ギャラリー</h3>
 
     <!-- 💡 先生用の操作状態・一時通知ポップアップ（1秒で消えます） -->
-    <div id="controlNotify" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0, 51, 102, 0.85); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 14px; font-weight: bold; z-index: 999; display: none; pointer-events: none;"></div>
+    <div id="controlNotify" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0, 51, 102, 0.85); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 14px; font-weight: bold; z-index: 999; display: none; pointer-events: none; transition: opacity 0.2s;"></div>
 
     <!-- 🛠️ 先生用：設定エリア -->
-    <div id="adminTimeBox" style="display: none; flex-direction: column; gap: 10px; margin-bottom: 15px; padding: 12px; background-color: #f0f4f8; border: 1px dashed #003366; border-radius: 6px; text-align: left; font-size: 12px; color: #333;">
+    <div id="adminTimeBox" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; padding: 12px; background-color: #f0f4f8; border: 1px dashed #003366; border-radius: 6px; text-align: left; font-size: 12px; color: #333;">
       
       <!-- 📖 先生専用：操作マニュアル -->
       <div style="background-color: #fff; padding: 8px; border-radius: 4px; border: 1px solid #cbd5e1; margin-bottom: 5px;">
@@ -447,7 +448,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
           <li><strong style="color: #0f172a;">[スペース] キー</strong> ： 一時停止 ／ 自動再生の再開</li>
           <li><strong style="color: #0f172a;">[ ▶ ] (右矢印)</strong> ： 手動で次の写真に進む</li>
           <li><strong style="color: #0f172a;">[ ◀ ] (左矢印)</strong> ： 手動で前の写真に戻る</li>
-          <li><strong style="color: #0f172a;">[ Ｓ ] キー</strong> ： この設定画面を閉じる（生徒から隠す）</li>
+          <li><strong style="color: #0f172a;">[ Ｓ ] キー</strong> ： この設定画面を開閉する（生徒から隠す）</li>
         </ul>
         
         <!-- 🖱️ 補助リモコンボタン -->
@@ -572,11 +573,17 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   let currentSlideIndex = 0;
   let slideTimeoutId = null;
   let isPaused = false; 
+  let notifyTimeoutId = null;
   
   let time1 = 5000;
   let time2 = 5000;
   let time3 = 5000;
   let time4 = 5000;
+
+  // 初期起動
+  window.addEventListener('DOMContentLoaded', () => {
+    applyNewTimes();
+  });
 
   function getCurrentDelayTime() {
     if (currentSlideIndex === 0) return time1;
@@ -611,131 +618,53 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       document.getElementById('timeInput3').value = 4;
       document.getElementById('timeInput4').value = 4;
     }
+    applyNewTimes();
   }
 
-  function showSlide(index) {
-    const container = document.getElementById('goSlideContainer');
-    const slides = container.getElementsByClassName('slide-item');
-    for (let i = 0; i < slides.length; i++) {
-      slides[i].classList.remove('active');
-    }
-    currentSlideIndex = index;
-    slides[currentSlideIndex].classList.add('active');
-  }
-
-  function playSlide() {
-    if (isPaused) return;
-    const container = document.getElementById('goSlideContainer');
-    const slides = container.getElementsByClassName('slide-item');
-    let nextIndex = (currentSlideIndex + 1) % slides.length;
-    showSlide(nextIndex);
-    slideTimeoutId = setTimeout(playSlide, getCurrentDelayTime());
-  }
   function applyNewTimes() {
-    time1 = parseInt(document.getElementById('timeInput1').value) * 1000;
-    time2 = parseInt(document.getElementById('timeInput2').value) * 1000;
-    time3 = parseInt(document.getElementById('timeInput3').value) * 1000;
-    time4 = parseInt(document.getElementById('timeInput4').value) * 1000;
-
+    time1 = parseInt(document.getElementById('timeInput1').value, 10) * 1000;
+    time2 = parseInt(document.getElementById('timeInput2').value, 10) * 1000;
+    time3 = parseInt(document.getElementById('timeInput3').value, 10) * 1000;
+    time4 = parseInt(document.getElementById('timeInput4').value, 10) * 1000;
+    
     isPaused = false;
-    updatePauseButtonText();
-    if (slideTimeoutId) { clearTimeout(slideTimeoutId); }
+    document.getElementById('btnRemotePause').innerText = "⏸ 一時停止";
+    showNotify("🔄 設定を反映して再生開始");
     
-    showSlide(0);
-    slideTimeoutId = setTimeout(playSlide, getCurrentDelayTime());
+    startSlideLoop();
+  }
+
+  function startSlideLoop() {
+    clearTimeout(slideTimeoutId);
+    if (isPaused) return;
+
+    slideTimeoutId = setTimeout(() => {
+      changeSlide(1); // 次のスライドへ
+    }, getCurrentDelayTime());
+  }
+
+  function changeSlide(direction) {
+    const slides = document.querySelectorAll('.slide-item');
+    slides[currentSlideIndex].classList.remove('active');
+
+    // インデックスの計算（ループする仕組み）
+    currentSlideIndex = (currentSlideIndex + direction + slides.length) % slides.length;
     
-    document.getElementById('adminTimeBox').style.display = 'none';
+    slides[currentSlideIndex].classList.add('active');
+    
+    // 次の自動切り替えを予約
+    startSlideLoop();
   }
 
-  // 🔔 先生に現在の状態を1秒だけ通知するポップアップ関数
-  function showControlNotify(text) {
-    const notify = document.getElementById('controlNotify');
-    notify.innerText = text;
-    notify.style.display = 'block';
-    setTimeout(() => { notify.style.display = 'none'; }, 1000);
-  }
+  // 画面中央への通知ポップアップ
+  function showNotify(text) {
 
-  // ⏸ 一時停止ボタンの文字を状態に合わせて書き換える関数
-  function updatePauseButtonText() {
-    const btn = document.getElementById('btnRemotePause');
-    if (isPaused) {
-      btn.innerText = '▶ 再生する';
-      btn.style.background = '#bbf7d0'; 
-    } else {
-      btn.innerText = '⏸ 一時停止';
-      btn.style.background = '#e2e8f0';
-    }
-  }
+    
+<!- 👉   以下消去す範囲-->
+    
 
-  // 🖱 画面クリック用の個別リモコン処理（スペース・右矢印・左矢印）
-  function remoteSpace() {
-    if (!isPaused) {
-      isPaused = true;
-      if (slideTimeoutId) { clearTimeout(slideTimeoutId); }
-      showControlNotify('⏸️ 一時停止中');
-    } else {
-      isPaused = false;
-      showControlNotify('▶️ 自動再生を再開');
-      slideTimeoutId = setTimeout(playSlide, getCurrentDelayTime());
-    }
-    updatePauseButtonText();
-  }
-
-  function remoteRight() {
-    isPaused = true;
-    updatePauseButtonText();
-    if (slideTimeoutId) { clearTimeout(slideTimeoutId); }
-    const container = document.getElementById('goSlideContainer');
-    const slides = container.getElementsByClassName('slide-item');
-    let nextIndex = (currentSlideIndex + 1) % slides.length;
-    showSlide(nextIndex);
-    showControlNotify(`👉 手動送り (${currentSlideIndex + 1}/4)`);
-  }
-
-  function remoteLeft() {
-    isPaused = true;
-    updatePauseButtonText();
-    if (slideTimeoutId) { clearTimeout(slideTimeoutId); }
-    const container = document.getElementById('goSlideContainer');
-    const slides = container.getElementsByClassName('slide-item');
-    let prevIndex = (currentSlideIndex - 1 + slides.length) % slides.length;
-    showSlide(prevIndex);
-    showControlNotify(`👈 手動戻し (${currentSlideIndex + 1}/4)`);
-  }
-
-  // ⌨️ キーボード操作の監視
-  window.addEventListener('keydown', (event) => {
-    if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'SELECT') { return; }
-
-    if (event.key === 's' || event.key === 'S') {
-      const box = document.getElementById('adminTimeBox');
-      box.style.display = (box.style.display === 'none') ? 'flex' : 'none';
-    }
-
-    if (event.code === 'Space') {
-      event.preventDefault();
-      remoteSpace();
-    }
-
-    if (event.key === 'ArrowRight') {
-      remoteRight();
-    }
-
-    if (event.key === 'ArrowLeft') {
-      remoteLeft();
-    }
-  });
-
-  // ページ読み込み完了時に最初のタイマー（1枚目の時間分）をスタート
-  window.addEventListener('DOMContentLoaded', () => {
-    slideTimeoutId = setTimeout(playSlide, getCurrentDelayTime());
-  });
-
-  // 💡【合体！】もともとあった囲碁盤の初期化も一緒にここで実行します
-  initCustomBoard(9);
-</script>
-
-
+ 
+<!- 👉   以上消去す範囲の最後-->
 
 
 
