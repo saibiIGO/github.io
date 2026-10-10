@@ -740,18 +740,16 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   initCustomBoard(9);
 </script>
 
-
- 
-      
     <!-- ==========================================
-         【新設】新・インタラクティブ19路盤セクション
+         【本番】自由に対局・研究ができる19路盤セクション
          ========================================== -->
     <section class="goban-section" style="margin-top: 40px; text-align: center;">
-        <h2 style="text-align:center;">碁盤の配置テスト</h2>
+        <h2 style="text-align:center;">自由に対局・研究ができる碁盤</h2>
         <p style="font-size: 0.95rem; color: #555; margin-bottom: 20px;">
-            ※下の碁盤はスマホからでも自動でサイズが調整されます。石を動かしたり、下のボタンで操作できます。
+            黒と白を交互にクリックして、その場で対局の練習や一人での研究（並べ替え）ができます。スマホやタブレットからも遊べます。
         </p>
-       <!-- 碁盤が表示される場所（対局・練習ができるインタラクティブ碁盤） -->
+
+        <!-- 碁盤が表示される場所（対局・練習ができるインタラクティブ碁盤） -->
         <div class="goban-container" style="max-width: 450px; margin: 0 auto; text-align: center; font-family: sans-serif; background: #f7f5f0; padding: 15px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
             <div style="font-weight: bold; margin-bottom: 10px; color: #333; font-size: 1.1rem;" id="turn-display">手番: 黒 (Next: Black)</div>
             
@@ -778,7 +776,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
                 let history = [];
                 let currentTurn = 1;
 
-                // 19路盤の星の位置
+                // 19路盤の星の位置（3, 9, 15番目の線）
                 const starPoints =;
 
                 function drawBoard() {
@@ -842,7 +840,6 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
                     const mouseX = e.clientX - rect.left;
                     const mouseY = e.clientY - rect.top;
 
-                    // キャンバスの表示サイズと本来の解像度の比率を計算（スマホ対応）
                     const scaleX = canvas.width / rect.width;
                     const scaleY = canvas.height / rect.height;
 
@@ -878,11 +875,10 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
                 drawBoard();
             })();
         </script>
+    </section>
+
  
-
-
-
-
+ 
 
 
 <!-- ==========================================
