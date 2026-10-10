@@ -1,3 +1,10 @@
+
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -794,6 +801,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 </section>
 
 <script>
+
 (function() {
     const canvas = document.getElementById('goBoard');
     if (!canvas) return;
@@ -827,10 +835,11 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         }
     }
 
+    // 碁盤の星（黒い点）のインデックス位置を正しく返す
     function getStarPoints() {
         if (size === 19) return;
         if (size === 13) return;
-        if (size === 9) return; // 9路盤の星位置（隅は3の場所、中心は5の場所）
+        if (size === 9) return; // 9路盤の一般的な星と天元の位置
         return [];
     }
 
@@ -857,6 +866,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         const starPoints = getStarPoints();
         for (let x of starPoints) {
             for (let y of starPoints) {
+                // 13路盤の隅の星の調整（辺の星を描画しない場合）
                 if (size === 13 && ((x === 6 && y !== 6) || (y === 6 && x !== 6))) continue; 
                 ctx.beginPath();
                 ctx.arc(padding + x * cellSize, padding + y * cellSize, 3.5, 0, Math.PI * 2);
@@ -924,7 +934,6 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         const enemyColor = -board[lastX][lastY];
         let capturedAny = false;
 
-        // 1. まず相手の石が取れるか判定
         const dirs = [[1,0], [-1,0], [0,1], [0,-1]];
         for (let [dx, dy] of dirs) {
             let nx = lastX + dx, ny = lastY + dy;
@@ -937,11 +946,10 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
             }
         }
         
-        // 2. 相手の石が取れず、自分の置いた石の呼吸点も0なら着手禁止（自殺手）として元に戻す
         if (!capturedAny) {
             let { liberties } = getLiberties(lastX, lastY);
             if (liberties.size === 0) {
-                board[lastX][lastY] = 0; // 着手をキャンセル
+                board[lastX][lastY] = 0; // 自殺手を禁止
                 return false;
             }
         }
@@ -952,13 +960,11 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     function placeStone(x, y) {
         if (board[x][y] !== 0) return false;
         
-        // 履歴を保存
         history.push(JSON.stringify(board));
-        
         board[x][y] = currentTurn;
         
         if (!checkCaptures(x, y)) {
-            history.pop(); // 自殺手なら履歴を削除
+            history.pop();
             return false;
         }
 
@@ -974,7 +980,6 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         const mouseX = e.clientX - rect.left;
         const mouseY = e.clientY - rect.top;
 
-        // スケール比率の考慮（レスポンシブ・スマホ対応用）
         const scaleX = canvas.width / rect.width;
         const scaleY = canvas.height / rect.height;
         const x = Math.round(((mouseX * scaleX) - padding) / cellSize);
@@ -985,7 +990,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         }
     });
 
-    // --- グローバル関数定義 (HTMLのボタンから呼べるようにwindowに紐付け) ---
+    // --- グローバル関数定義 ---
     window.changeBoardSize = function(val) {
         size = parseInt(val, 10);
         initBoard();
@@ -1013,15 +1018,17 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     // --- SGFファイルの解析・再生ロジック ---
     function parseSgf(text) {
         const moves = [];
-        // [B[pd]] や [W[dp]] などの着手パターンを正規表現で抽出
-        const regex = /([BW])\[([a-s]{2})\]/g;
+        const regex = /([BW])\[([a-s]{2})\]/gi;
         let match;
         while ((match = regex.exec(text)) !== null) {
-            let color = match[1] === 'B' ? 1 : -1;
-            let pos = match[2];
-            let x = pos.charCodeAt(0) - 97; // 'a' は 97
+            let color = match[1].toUpperCase() === 'B' ? 1 : -1;
+            let pos = match[2].toLowerCase();
+            let x = pos.charCodeAt(0) - 97;
             let y = pos.charCodeAt(1) - 97;
-            moves.push({ color, x, y });
+            
+            if (x >= 0 && x < size && y >= 0 && y < size) {
+                moves.push({ color, x, y });
+            }
         }
         return moves;
     }
@@ -1031,18 +1038,24 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
             const file = e.target.files[0];
             if (!file) return;
 
-            sgfInfo.textContent = `選択されているファイル：${file.name}`;
+            sgfInfo.textContent = `読み込み中...`;
 
             const reader = new FileReader();
             reader.onload = function(evt) {
-                sgfMoves = parseSgf(evt.target.result);
-                initBoard();
-                currentSgfIndex = -1;
-                drawBoard();
-                if(sgfMoves.length > 0) {
-                    sgfInfo.textContent = `📂 ${file.name} (全 ${sgfMoves.length} 手)`;
-                } else {
-                    sgfInfo.textContent = `⚠️ 有効な着手データが見つかりませんでした。`;
+                try {
+                    sgfMoves = parseSgf(evt.target.result);
+                    initBoard();
+                    currentSgfIndex = -1;
+                    drawBoard();
+                    
+                    if(sgfMoves.length > 0) {
+                        sgfInfo.textContent = `📂 ${file.name} (全 ${sgfMoves.length} 手)`;
+                    } else {
+                        sgfInfo.textContent = `⚠️ ファイル内に有効な着手が見つかりませんでした。`;
+                    }
+                } catch (err) {
+                    console.error("SGF解析エラー:", err);
+                    sgfInfo.textContent = `❌ ファイルの解析中にエラーが発生しました。`;
                 }
             };
             reader.readAsText(file);
@@ -1050,11 +1063,15 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     }
 
     window.nextSgfMove = function() {
-        if (currentSgfIndex + 1 < sgfMoves.length) {
+        if (sgfMoves && (currentSgfIndex + 1 < sgfMoves.length)) {
             currentSgfIndex++;
             const move = sgfMoves[currentSgfIndex];
             currentTurn = move.color;
             placeStone(move.x, move.y);
+            
+            if (sgfInfo && fileInput && fileInput.files[0]) {
+                sgfInfo.textContent = `📂 ${fileInput.files[0].name} (${currentSgfIndex + 1} / ${sgfMoves.length} 手目)`;
+            }
         }
     };
 
@@ -1062,6 +1079,14 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         if (currentSgfIndex >= 0) {
             window.undoMove();
             currentSgfIndex--;
+            
+            if (sgfInfo && fileInput && fileInput.files[0]) {
+                if (currentSgfIndex === -1) {
+                    sgfInfo.textContent = `📂 ${fileInput.files[0].name} (開始前 / 全 ${sgfMoves.length} 手)`;
+                } else {
+                    sgfInfo.textContent = `📂 ${fileInput.files[0].name} (${currentSgfIndex + 1} / ${sgfMoves.length} 手目)`;
+                }
+            }
         }
     };
 
@@ -1069,6 +1094,9 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     initBoard();
     drawBoard();
 })();
+
+    
+
 </script>
 </section>
 
