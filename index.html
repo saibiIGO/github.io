@@ -562,7 +562,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       </div>
       <div class="slide-item">
         <img src="photo3.jpg" alt="photo3" class="slide-img">
-        <p class="slide-text">③ 「あ、筋場ｶ！」ひらめいてパチリ！</p>
+        <p class="slide-text">③ 「あ、そうか！」ひらめいてパチリ！</p>
       </div>
       <div class="slide-item">
         <img src="photo4.jpg" alt="photo4" class="slide-img">
@@ -741,8 +741,32 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 </script>
 
 
+    <!-- ==========================================
+         【新設】インタラクティブ碁盤セクション
+         ========================================== -->
+    <section class="goban-section" style="margin-top: 40px; text-align: center;">
+        <h2>盤面レイアウト（動作テスト）</h2>
+        <p style="font-size: 0.95rem; color: #555;">石をタップして動かしたり、下の矢印ボタンで棋譜を進めたりできます。</p>
+        
+        <div class="goban-container">
+            <!-- 9路盤の設定（SZ[9]）。ここにお好きなSGFデータを自由に入れられます -->
+            <div data-wgo="(;SZ[9]AP[WGo.js:2])" style="width: 100%;"></div>
+        </div>
+    </section>
 
+<script>
+  // 写真ギャラリーのスライド用などの既存スクリプトがあればここに記述します
+  window.addEventListener('DOMContentLoaded', () => {
+    if (typeof slideTimeoutId !== 'undefined') {
+        slideTimeoutId = setTimeout(playSlide, getCurrentDelayTime());
+    }
+  });
 
+  // もともとあった囲碁盤の初期化が必要な場合はここで実行されます
+  if (typeof initCustomBoard === 'function') {
+      initCustomBoard(9);
+  }
+</script>
 
 
   
