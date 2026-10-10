@@ -735,9 +735,226 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   initCustomBoard(9);
 </script>
 
+
+
+    
     <!-- ==========================================
          【本番】選択・石取り機能付き 自由に対局・研究ができる碁盤
          ========================================== -->
+     <!-- ==========================================
+         【本番】対局・石取り・SGF準備機能付き 19路盤セクション
+         ========================================== -->
+    <section class="goban-section" style="margin-top: 40px; text-align: center;">
+        <h2 style="text-align:center;">自由に対局・研究ができる碁盤</h2>
+        <p style="font-size: 0.95rem; color: #555; margin-bottom: 20px;">
+            黒と白を交互にクリックして、その場で対局の練習や研究ができます。アタリになった石は自動的に消えます。
+        </p>
+
+        <!-- 碁盤のコントロールエリア（サイズ選択） -->
+        <div style="margin-bottom: 15px;">
+            <label for="boardSizeSelect" style="font-weight: bold; margin-right: 10px; color: #333;">碁盤のサイズを選択：</label>
+            <select id="boardSizeSelect" onchange="changeBoardSize(this.value)" style="padding: 6px 12px; font-size: 15px; border-radius: 5px; border: 1px solid #ccc; background: #fff; cursor: pointer;">
+                <option value="19" selected>19路盤（本因坊戦・通常の対局）</option>
+                <option value="13">13路盤（中級者向け・練習用）</option>
+                <option value="9">9路盤（初心者向け・詰碁用）</option>
+            </select>
+        </div>
+
+        <!-- 碁盤が表示される場所 -->
+        <div class="goban-container" style="max-width: 450px; margin: 0 auto; text-align: center; font-family: sans-serif; background: #f7f5f0; padding: 15px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <div style="font-weight: bold; margin-bottom: 10px; color: #333; font-size: 1.1rem;" id="turn-display">手番: 黒 (Next: Black)</div>
+            
+            <!-- 碁盤キャンバス -->
+            <canvas id="goBoard" width="380" height="380" style="background: #e1b773; border: 2px solid #b58943; cursor: pointer; box-shadow: inset 0 0 10px rgba(0,0,0,0.2); max-width: 100%; height: auto;"></canvas>
+            
+            <!-- 操作ボタン -->
+            <div style="margin-top: 15px;">
+                <button type="button" onclick="undoMove()" style="padding: 8px 15px; background: #666; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; margin-right: 10px;">1手戻る (Undo)</button>
+                <button type="button" onclick="resetBoard()" style="padding: 8px 15px; background: #d9534f; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">盤面をクリア (Reset)</button>
+            </div>
+        </div>
+
+        <script>
+            (function() {
+                const canvas = document.getElementById('goBoard');
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                
+                let size = 19; 
+                let padding = 20;
+                let cellSize = (canvas.width - padding * 2) / (size - 1);
+                
+                let board = [];
+                let history = [];
+                let currentTurn = 1;
+
+                function initBoard() {
+                    board = Array(size).fill().map(() => Array(size).fill(0));
+                    history = [];
+                    currentTurn = 1;
+                    cellSize = (canvas.width - padding * 2) / (size - 1);
+                }
+
+                function getStarPoints() {
+                    if (size === 19) return;
+                    if (size === 13) return;
+                    if (size === 9) return;
+                    return [];
+                }
+
+                function drawBoard() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.strokeStyle = '#333';
+                    ctx.lineWidth = 1;
+                    for (let i = 0; i < size; i++) {
+                        ctx.beginPath();
+                        ctx.moveTo(padding, padding + i * cellSize);
+                        ctx.lineTo(canvas.width - padding, padding + i * cellSize);
+                        ctx.stroke();
+
+                        ctx.beginPath();
+                        ctx.moveTo(padding + i * cellSize, padding);
+                        ctx.lineTo(padding + i * cellSize, canvas.height - padding);
+                        ctx.stroke();
+                    }
+
+                    ctx.fillStyle = '#333';
+                    const starPoints = getStarPoints();
+                    starPoints.forEach(x => {
+                        starPoints.forEach(y => {
+                            ctx.beginPath();
+                            ctx.arc(padding + x * cellSize, padding + y * cellSize, 3, 0, Math.PI * 2);
+                            ctx.fill();
+                        });
+                    });
+
+                    for (let x = 0; x < size; x++) {
+                        for (let y = 0; y < size; y++) {
+                            if (board[x][y] !== 0) {
+                                ctx.beginPath();
+                                ctx.arc(padding + x * cellSize, padding + y * cellSize, cellSize * 0.45, 0, Math.PI * 2);
+                                
+                                if (board[x][y] === 1) {
+                                    let gradient = ctx.createRadialGradient(padding + x * cellSize - 2, padding + y * cellSize - 2, 1, padding + x * cellSize, padding + y * cellSize, cellSize * 0.45);
+                                    gradient.addColorStop(0, '#666');
+                                    gradient.addColorStop(1, '#000');
+                                    ctx.fillStyle = gradient;
+                                } else {
+                                    let gradient = ctx.createRadialGradient(padding + x * cellSize - 2, padding + y * cellSize - 2, 1, padding + x * cellSize, padding + y * cellSize, cellSize * 0.45);
+                                    gradient.addColorStop(0, '#fff');
+                                    gradient.addColorStop(1, '#ddd');
+                                    ctx.fillStyle = gradient;
+                                    ctx.strokeStyle = '#999';
+                                    ctx.lineWidth = 1;
+                                    ctx.stroke();
+                                }
+                                ctx.fill();
+                            }
+                        }
+                    }
+                    document.getElementById('turn-display').innerText = `手番: ${currentTurn === 1 ? '黒 (Black)' : '白 (White)'}`;
+                }
+                 function getLiberties(x, y, color, visited, group) {
+                    const key = x + ',' + y;
+                    if (visited.has(key)) return 0;
+                    visited.add(key);
+                    group.push({x: x, y: y});
+
+                    let liberties = 0;
+                    const dirs = [{x:1, y:0}, {x:-1, y:0}, {x:0, y:1}, {x:0, y:-1}];
+
+                    for (let d of dirs) {
+                        const nx = x + d.x;
+                        const ny = y + d.y;
+
+                        if (nx >= 0 && nx < size && ny >= 0 && ny < size) {
+                            if (board[nx][ny] === 0) {
+                                liberties++;
+                            } else if (board[nx][ny] === color) {
+                                liberties += getLiberties(nx, ny, color, visited, group);
+                            }
+                        }
+                    }
+                    return liberties;
+                }
+
+                function checkCaptures(lastX, lastY, placedColor) {
+                    const opponentColor = placedColor === 1 ? 2 : 1;
+                    const dirs = [{x:1, y:0}, {x:-1, y:0}, {x:0, y:1}, {x:0, y:-1}];
+
+                    for (let d of dirs) {
+                        const nx = lastX + d.x;
+                        const ny = lastY + d.y;
+
+                        if (nx >= 0 && nx < size && ny >= 0 && ny < size && board[nx][ny] === opponentColor) {
+                            let group = [];
+                            let visited = new Set();
+                            let libs = getLiberties(nx, ny, opponentColor, visited, group);
+
+                            if (libs === 0) {
+                                group.forEach(stone => {
+                                    board[stone.x][stone.y] = 0;
+                                });
+                            }
+                        }
+                    }
+                }
+
+                canvas.addEventListener('click', function(e) {
+                    const rect = canvas.getBoundingClientRect();
+                    const mouseX = e.clientX - rect.left;
+                    const mouseY = e.clientY - rect.top;
+
+                    const scaleX = canvas.width / rect.width;
+                    const scaleY = canvas.height / rect.height;
+
+                    const x = Math.round(((mouseX * scaleX) - padding) / cellSize);
+                    const y = Math.round(((mouseY * scaleY) - padding) / cellSize);
+
+                    if (x >= 0 && x < size && y >= 0 && y < size && board[x][y] === 0) {
+                        history.push({
+                            turn: currentTurn, 
+                            prevState: JSON.parse(JSON.stringify(board))
+                        });
+
+                        board[x][y] = currentTurn;
+                        checkCaptures(x, y, currentTurn);
+
+                        currentTurn = currentTurn === 1 ? 2 : 1;
+                        drawBoard();
+                    }
+                });
+
+                window.changeBoardSize = function(newSize) {
+                    size = parseInt(newSize);
+                    initBoard();
+                    drawBoard();
+                };
+
+                window.undoMove = function() {
+                    if (history.length > 0) {
+                        const lastMove = history.pop();
+                        board = lastMove.prevState;
+                        currentTurn = lastMove.turn;
+                        drawBoard();
+                    }
+                };
+
+                window.resetBoard = function() {
+                    if (confirm('盤面をきれいに戻しますか？')) {
+                        initBoard();
+                        drawBoard();
+                    }
+                };
+
+                initBoard();
+                drawBoard();
+            })();
+        </script>
+    </section>
+
+    
+    
     <section class="goban-section" style="margin-top: 40px; text-align: center;">
         <h2 style="text-align:center;">自由に対局・研究ができる碁盤</h2>
         <p style="font-size: 0.95rem; color: #555; margin-bottom: 20px;">
