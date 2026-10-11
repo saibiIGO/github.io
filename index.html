@@ -1031,16 +1031,23 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 <div class="link-group">
   <h2>🗺️ 尾道市・因島周辺施設リンク</h2>
   <div class="link-grid">
+    <!-- 施設1：尾道市文化振興課（赤色2本線マーク付き） -->
+    <a href="https://city.onomichi.hiroshima.jp" target="_blank" rel="noopener" class="link-card region-card">
+      <div class="card-content" style="display: flex; align-items: center; gap: 12px;">
+        
+        <!-- HTMLで描く赤色2本線のマーク -->
+        <div style="display: flex; flex-direction: column; justify-content: center; gap: 4px; width: 28px; height: 28px; min-width: 28px;">
+          <div style="height: 5px; background-color: #e60012; border-radius: 2px;"></div>
+          <div style="height: 5px; background-color: #e60012; border-radius: 2px;"></div>
+        </div>
 
-    <!-- 【修正箇所】hrefの中身から「city.」を削除します -->
- <a href="https://www.city.onomichi.hiroshima.jp/soshiki/7/" target="_blank" rel="noopener" class="link-card region-card">
-      <div class="card-content">
-        <h3>⚫⚪尾道市企画財政部文化振興課  ➔</h3>
-        <p>尾道市文化財「市技囲碁」の保存・伝承・囲碁文化活動の様々な相談でお世話に鳴っています。</p>
+        <div>
+          <h3 style="margin: 0; font-size: 1.1rem; color: #333;">尾道市企画財政部文化振興課 ➔</h3>
+          <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #666;">尾道市の市技である「囲碁」の保存・伝承や、地域の囲碁文化活動の推進・サポートを行っている課です。</p>
+        </div>
       </div>
-    </a>
-      
-      
+    </a>      
+    
       <a href="https://onomichi.shusaku.in/fes/torachan/28.html" target="_blank" rel="noopener" class="link-card region-card">
       <div class="card-content">
         <h3>⚫⚪ 本因坊秀策囲碁記念館 ➔</h3>
