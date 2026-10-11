@@ -1031,22 +1031,20 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 <div class="link-group">
   <h2>🗺️ 尾道市・因島周辺施設リンク</h2>
   <div class="link-grid">
-    <!-- 施設1：尾道市文化振興課（赤色2本線マーク付き） -->
+     <!-- 施設1：尾道市文化振興課（名前の前に赤色2本線マーク） -->
     <a href="https://city.onomichi.hiroshima.jp" target="_blank" rel="noopener" class="link-card region-card">
-      <div class="card-content" style="display: flex; align-items: center; gap: 12px;">
-        
-        <!-- HTMLで描く赤色2本線のマーク -->
-        <div style="display: flex; flex-direction: column; justify-content: center; gap: 4px; width: 28px; height: 28px; min-width: 28px;">
-          <div style="height: 5px; background-color: #e60012; border-radius: 2px;"></div>
-          <div style="height: 5px; background-color: #e60012; border-radius: 2px;"></div>
-        </div>
-
-        <div>
-          <h3 style="margin: 0; font-size: 1.1rem; color: #333;">尾道市企画財政部文化振興課 ➔</h3>
-          <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #666;">尾道市の市技である「囲碁」の保存・伝承や、地域の囲碁文化活動の推進・サポートを行っている課です。</p>
-        </div>
+      <div class="card-content">
+        <h3 style="display: flex; align-items: center; gap: 8px;">
+          <!-- テキストの前に配置する赤色2本線マーク -->
+          <span style="display: inline-flex; flex-direction: column; justify-content: center; gap: 3px; width: 18px; height: 14px; min-width: 18px; vertical-align: middle;">
+            <span style="height: 4px; background-color: #e60012; border-radius: 1px;"></span>
+            <span style="height: 4px; background-color: #e60012; border-radius: 1px;"></span>
+          </span>
+          尾道市企画財政部文化振興課 ➔
+        </h3>
+        <p>尾道市の市技である「囲碁」の保存・伝承や、地域の囲碁文化活動の推進・サポートを行っている課です。</p>
       </div>
-    </a>      
+    </a> 
     
       <a href="https://onomichi.shusaku.in/fes/torachan/28.html" target="_blank" rel="noopener" class="link-card region-card">
       <div class="card-content">
