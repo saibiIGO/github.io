@@ -763,8 +763,13 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 
     <!-- 碁盤が表示される場所 -->
     <div class="goban-container" style="max-width: 450px; margin: 0 auto; text-align: center; font-family: sans-serif; background: #f7f5f0; padding: 15px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-        <div style="font-weight: bold; margin-bottom: 10px; color: #333; font-size: 1.2rem; background: #fff; padding: 5px; border-radius: 5px; border: 1px solid #ddd;" id="turn-display">手番: 黒 (Next: Black)</div>
-        
+         <div style="font-weight: bold; margin-bottom: 10px; color: #333; font-size: 1.2rem; background: #fff; padding: 5px; border-radius: 5px; border: 1px solid #ddd;" id="turn-display">手番: 黒 (Next: Black)</div>
+        <!-- 取った石の数（アゲハマ）の表示エリア -->
+<div style="font-size: 0.95rem; margin-bottom: 10px; color: #555; background: #fff; padding: 5px; border-radius: 5px; border: 1px solid #ddd; display: flex; justify-content: space-around;" id="captured-display">
+    <span>⬛ 取った白石: <strong id="caps-white" style="color: #d9534f;">0</strong> 個</span>
+    <span>⬜ 取った黒石: <strong id="caps-black" style="color: #d9534f;">0</strong> 個</span>
+</div>
+
         <!-- 碁盤キャンバス -->
         <canvas id="goBoard" width="380" height="380" style="background: #e1b773; border: 2px solid #b58943; cursor: pointer; box-shadow: inset 0 0 10px rgba(0,0,0,0.2); max-width: 100%; height: auto;"></canvas>
         
@@ -808,12 +813,14 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     let size = 19; 
     let padding = 20;
     let cellSize = (canvas.width - padding * 2) / (size - 1);
-    
+    <!-- 死活判定・アゲハマ計算コード -->
     let board = [];
     let history = [];
     let currentTurn = 1; // 1: 黒, -1: 白
+　   let capturedWhite = 0; // 黒が取った白石の数
+    let capturedBlack = 0; // 白が取った黒石の数
 
-    // 碁盤の初期化
+        // 碁盤の初期化
     function initBoard() {
         board = [];
         for (let i = 0; i < size; i++) {
@@ -825,10 +832,22 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         }
         history = [];
         currentTurn = 1;
+        capturedWhite = 0;
+        capturedBlack = 0;
         cellSize = (canvas.width - padding * 2) / (size - 1);
         updateTurnDisplay();
+        updateCapturedDisplay(); // アゲハマ表示をリセット
         drawBoard();
     }
+
+    // アゲハマ表示を更新する関数
+    function updateCapturedDisplay() {
+        const whiteEl = document.getElementById('caps-white');
+        const blackEl = document.getElementById('caps-black');
+        if (whiteEl) whiteEl.textContent = capturedWhite;
+        if (blackEl) blackEl.textContent = capturedBlack;
+    }
+
 
     function updateTurnDisplay() {
         if (turnDisplay) {
@@ -910,27 +929,131 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     }
 
     // クリックで石を配置する処理
+    // --- 囲碁のルール（呼吸点・アタリの判定） ---
+    // 指定した石のグループの呼吸点（生きるための隙間）を探す関数
+    function getGroupInfo(startX, startY) {
+        const color = board[startX][startY];
+        if (color === 0) return null;
+
+        const stones = [];
+        const liberties = new Set();
+        const queue = [{ x: startX, y: startY }];
+        const visited = new Set();
+        visited.add(startX + ',' + startY);
+
+        while (queue.length > 0) {
+            const { x, y } = queue.shift();
+            stones.push({ x, y });
+
+            // 上下左右の4方向をチェック
+            const neighbors = [
+                { x: x - 1, y: y }, { x: x + 1, y: y },
+                { x: x, y: y - 1 }, { x: x, y: y + 1 }
+            ];
+
+            for (const n of neighbors) {
+                if (n.x >= 0 && n.x < size && n.y >= 0 && n.y < size) {
+                    if (board[n.x][n.y] === 0) {
+                        liberties.add(n.x + ',' + n.y); // 空き（呼吸点）を発見
+                    } else if (board[n.x][n.y] === color) {
+                        const key = n.x + ',' + n.y;
+                        if (!visited.has(key)) {
+                            visited.add(key);
+                            queue.push(n); // 同じ色のつながっている石
+                        }
+                    }
+                }
+            }
+        }
+        return { stones, libertyCount: liberties.size };
+    }
+
+    // 盤面全体の死に石（呼吸点0の石）をチェックして取り除く関数
+    function checkCaptures(placedX, placedY, placedColor) {
+        let stonesRemoved = 0;
+        const opponentColor = -placedColor;
+
+        // まず、新しく置いた石の「上下左右」にある相手の石が死んだかチェック
+        const dirs = [
+            { x: placedX - 1, y: placedY }, { x: placedX + 1, y: placedY },
+            { x: placedX, y: placedY - 1 }, { x: placedX, y: placedY + 1 }
+        ];
+
+        for (const d of dirs) {
+            if (d.x >= 0 && d.x < size && d.y >= 0 && d.y < size) {
+                if (board[d.x][d.y] === opponentColor) {
+                    const group = getGroupInfo(d.x, d.y);
+                    if (group && group.libertyCount === 0) {
+                        // 相手の石の呼吸点が0になったので、盤面から消す
+                        for (const s of group.stones) {
+                            if (board[s.x][s.y] !== 0) {
+                                board[s.x][s.y] = 0;
+                                stonesRemoved++;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // 取った石の数を加算
+        if (stonesRemoved > 0) {
+            if (placedColor === 1) {
+                capturedWhite += stonesRemoved; // 黒が白を取った
+            } else {
+                capturedBlack += stonesRemoved; // 白が黒を取った
+            }
+            updateCapturedDisplay();
+        }
+    }
+
+    // クリックで石を配置する処理（死活判定つき）
     canvas.addEventListener('click', function(e) {
         const rect = canvas.getBoundingClientRect();
         const mouseX = e.clientX - rect.left;
         const mouseY = e.clientY - rect.top;
         
-        // クリック位置から最も近い交点を計算
         const x = Math.round((mouseX - padding) / cellSize);
         const y = Math.round((mouseY - padding) / cellSize);
         
         if (x >= 0 && x < size && y >= 0 && y < size) {
             if (board[x][y] === 0) {
-                // 盤面を履歴に保存 (Undo用)
-                history.push(JSON.parse(JSON.stringify(board)));
+                // 1手前の状態を履歴に保存 (アゲハマの数も一緒に保存してUndoできるようにする)
+                history.push({
+                    board: JSON.parse(JSON.stringify(board)),
+                    capturedWhite: capturedWhite,
+                    capturedBlack: capturedBlack
+                });
                 
+                // 石を置く
                 board[x][y] = currentTurn;
+                
+                // 相手の石が取れるか判定（アタリの石を消す）
+                checkCaptures(x, y, currentTurn);
+                
+                // 次の手番へ
                 currentTurn = -currentTurn;
                 updateTurnDisplay();
                 drawBoard();
             }
         }
     });
+
+    // 1手戻る（Undo）ボタンもアゲハマ連動用に書き換え
+    window.undoMove = function() {
+        if (history.length > 0) {
+            const prevState = history.pop();
+            board = prevState.board;
+            capturedWhite = prevState.capturedWhite;
+            capturedBlack = prevState.capturedBlack;
+            currentTurn = -currentTurn;
+            updateTurnDisplay();
+            updateCapturedDisplay();
+            drawBoard();
+        }
+    };
+
+
 
     // グローバルに関数を公開（HTMLのボタンから呼べるようにする）
     window.changeBoardSize = function(newSize) {
@@ -979,7 +1102,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         while ((match = regex.exec(text)) !== null) {
             const color = match[1] === 'B' ? 1 : -1;
             const x = charToPos(match[2][0]);
-            const y = charToPos(match[2][1]);
+            const y = charToPos(match[2][1]);「石を取るルール（アタリになった石を消す死活判定）」の実装に進みますか？
             moves.push({ color, x, y });
         }
         return { sgfSize, moves };
