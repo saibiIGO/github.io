@@ -763,17 +763,18 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 
     <!-- 碁盤が表示される場所 -->
     <div class="goban-container" style="max-width: 450px; margin: 0 auto; text-align: center; font-family: sans-serif; background: #f7f5f0; padding: 15px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-         <div style="font-weight: bold; margin-bottom: 10px; color: #333; font-size: 1.2rem; background: #fff; padding: 5px; border-radius: 5px; border: 1px solid #ddd;" id="turn-display">手番: 黒 (Next: Black)</div>
+        <div style="font-weight: bold; margin-bottom: 10px; color: #333; font-size: 1.2rem; background: #fff; padding: 5px; border-radius: 5px; border: 1px solid #ddd;" id="turn-display">手番: 黒 (Next: Black)</div>
+        
         <!-- 取った石の数（アゲハマ）の表示エリア -->
-<div style="font-size: 0.95rem; margin-bottom: 10px; color: #555; background: #fff; padding: 5px; border-radius: 5px; border: 1px solid #ddd; display: flex; justify-content: space-around;" id="captured-display">
-    <span>⬛ 取った白石: <strong id="caps-white" style="color: #d9534f;">0</strong> 個</span>
-    <span>⬜ 取った黒石: <strong id="caps-black" style="color: #d9534f;">0</strong> 個</span>
-</div>
+        <div style="font-size: 0.95rem; margin-bottom: 10px; color: #555; background: #fff; padding: 5px; border-radius: 5px; border: 1px solid #ddd; display: flex; justify-content: space-around;" id="captured-display">
+            <span>⬛ 取った白石: <strong id="caps-white" style="color: #d9534f;">0</strong> 個</span>
+            <span>⬜ 取った黒石: <strong id="caps-black" style="color: #d9534f;">0</strong> 個</span>
+        </div>
 
         <!-- 碁盤キャンバス -->
         <canvas id="goBoard" width="380" height="380" style="background: #e1b773; border: 2px solid #b58943; cursor: pointer; box-shadow: inset 0 0 10px rgba(0,0,0,0.2); max-width: 100%; height: auto;"></canvas>
         
-        <!-- 对局・研究用の操作ボタン -->
+        <!-- 対局・研究用の操作ボタン -->
         <div style="margin-top: 15px; margin-bottom: 15px;">
             <button type="button" onclick="window.undoMove()" style="padding: 8px 18px; background: #666; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; margin-right: 10px; font-weight: bold;">1手戻る (Undo)</button>
             <button type="button" onclick="window.resetBoard()" style="padding: 8px 18px; background: #d9534f; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: bold;">盤面をクリア</button>
@@ -813,14 +814,17 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     let size = 19; 
     let padding = 20;
     let cellSize = (canvas.width - padding * 2) / (size - 1);
-    <!-- 死活判定・アゲハマ計算コード -->
+    
     let board = [];
     let history = [];
     let currentTurn = 1; // 1: 黒, -1: 白
-　   let capturedWhite = 0; // 黒が取った白石の数
+    let capturedWhite = 0; // 黒が取った白石の数
     let capturedBlack = 0; // 白が取った黒石の数
 
-        // 碁盤の初期化
+    let sgfMoves = [];
+    let currentSgfIndex = -1;
+
+    // 碁盤の初期化
     function initBoard() {
         board = [];
         for (let i = 0; i < size; i++) {
@@ -836,18 +840,9 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         capturedBlack = 0;
         cellSize = (canvas.width - padding * 2) / (size - 1);
         updateTurnDisplay();
-        updateCapturedDisplay(); // アゲハマ表示をリセット
+        updateCapturedDisplay();
         drawBoard();
     }
-
-    // アゲハマ表示を更新する関数
-    function updateCapturedDisplay() {
-        const whiteEl = document.getElementById('caps-white');
-        const blackEl = document.getElementById('caps-black');
-        if (whiteEl) whiteEl.textContent = capturedWhite;
-        if (blackEl) blackEl.textContent = capturedBlack;
-    }
-
 
     function updateTurnDisplay() {
         if (turnDisplay) {
@@ -855,16 +850,20 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         }
     }
 
-        // 碁盤の星（黒い点）のインデックス位置を正しく返す
-    function getStarPoints() {
-        if (size === 19) return Array.of(3, 9, 15); // 19路盤の星の位置
-        if (size === 13) return Array.of(3, 6, 9);  // 13路盤の星の位置
-        if (size === 1) return Array.of( 6);   // 9路盤の星の位置
-        return Array.of();
+    function updateCapturedDisplay() {
+        const whiteEl = document.getElementById('caps-white');
+        const blackEl = document.getElementById('caps-black');
+        if (whiteEl) whiteEl.textContent = capturedWhite;
+        if (blackEl) blackEl.textContent = capturedBlack;
     }
 
- 
-
+    // 碁盤の星（黒い点）のインデックス位置を正しく返す
+    function getStarPoints() {
+        if (size === 19) return Array.of(3, 9, 15);
+        if (size === 13) return Array.of(3, 6, 9);
+        if (size === 9) return Array.of(2, 4, 6);
+        return Array.of();
+    }
 
     // 碁盤と石の描画
     function drawBoard() {
@@ -892,7 +891,6 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
             for (let j = 0; j < starPoints.length; j++) {
                 let x = starPoints[i];
                 let y = starPoints[j];
-                // 13路盤の例外処理
                 if (size === 13 && ((x === 6 && y !== 6) || (y === 6 && x !== 6))) continue; 
                 ctx.beginPath();
                 ctx.arc(padding + x * cellSize, padding + y * cellSize, 3.5, 0, Math.PI * 2);
@@ -928,8 +926,8 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         }
     }
 
-    // クリックで石を配置する処理
     // --- 囲碁のルール（呼吸点・アタリの判定） ---
+     // --- 囲碁のルール（呼吸点・アタリの判定） ---
     // 指定した石のグループの呼吸点（生きるための隙間）を探す関数
     function getGroupInfo(startX, startY) {
         const color = board[startX][startY];
@@ -1053,46 +1051,17 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         }
     };
 
-
-
-    // グローバルに関数を公開（HTMLのボタンから呼べるようにする）
-    window.changeBoardSize = function(newSize) {
-        size = parseInt(newSize);
-        initBoard();
-    };
-
-    window.resetBoard = function() {
-        if(confirm("盤面をクリアしますか？")) {
-            initBoard();
-        }
-    };
-
-    window.undoMove = function() {
-        if (history.length > 0) {
-            board = history.pop();
-            currentTurn = -currentTurn;
-            updateTurnDisplay();
-            drawBoard();
-        }
-    };
-
-    // SGF用のダミー関数（エラー防止用）
-     // --- SGFファイル読み込み＆棋譜再生機能 ---
-    
-    // SGFの座標文字（a, b, c...）をインデックスの数字（0, 1, 2...）に変換
+    // --- SGFファイル読み込み＆棋譜再生機能 ---
     function charToPos(char) {
         if (!char) return -1;
         return char.charCodeAt(0) - 97;
     }
 
-    // SGFファイルのテキストを解析（パース）する関数
     function parseSgf(text) {
         const moves = [];
-        // [B[ab]] や [W[cd]] のようなパターンを抽出
         const regex = /;([BW])\[([a-z]{2})\]/g;
         let match;
-        
-        // 盤面サイズ（SZ）の指定があれば取得（デフォルトは19）
+
         const sizeMatch = text.match(/SZ\[(\d+)\]/);
         let sgfSize = 19;
         if (sizeMatch) {
@@ -1102,13 +1071,12 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         while ((match = regex.exec(text)) !== null) {
             const color = match[1] === 'B' ? 1 : -1;
             const x = charToPos(match[2][0]);
-            const y = charToPos(match[2][1]);「石を取るルール（アタリになった石を消す死活判定）」の実装に進みますか？
+            const y = charToPos(match[2][1]);
             moves.push({ color, x, y });
         }
         return { sgfSize, moves };
     }
 
-    // ファイルが選択されたときの処理
     if (fileInput) {
         fileInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
@@ -1120,15 +1088,14 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
             reader.onload = function(evt) {
                 const result = parseSgf(evt.target.result);
                 sgfMoves = result.moves;
-                currentSgfIndex = -1; // 再生位置を初期化
+                currentSgfIndex = -1;
 
-                // SGFのサイズに合わせて盤面を変更
                 if (window.changeBoardSize && (result.sgfSize === 19 || result.sgfSize === 13 || result.sgfSize === 9)) {
                     const selectEl = document.getElementById('boardSizeSelect');
                     if (selectEl) selectEl.value = result.sgfSize.toString();
                     size = result.sgfSize;
                 }
-                
+
                 initBoard();
                 alert("棋譜を読み込みました（全 " + sgfMoves.length + " 手）。「次の手」ボタンで再生できます！");
             };
@@ -1136,7 +1103,6 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         });
     }
 
-    // 次の手へ進むボタン
     window.nextSgfMove = function() {
         if (sgfMoves.length === 0) {
             alert("先にSGFファイルを読み込んでください。");
@@ -1149,21 +1115,23 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 
         currentSgfIndex++;
         const move = sgfMoves[currentSgfIndex];
-        
-        // 履歴を保存
-        history.push(JSON.parse(JSON.stringify(board)));
-        
-        // 石を配置
+
+        history.push({
+            board: JSON.parse(JSON.stringify(board)),
+            capturedWhite: capturedWhite,
+            capturedBlack: capturedBlack
+        });
+
         if (move.x >= 0 && move.x < size && move.y >= 0 && move.y < size) {
             board[move.x][move.y] = move.color;
+            checkCaptures(move.x, move.y, move.color);
         }
-        
-        currentTurn = -move.color; // 次の手番を入れ替え
+
+        currentTurn = -move.color;
         updateTurnDisplay();
         drawBoard();
     };
 
-    // 前の手へ戻るボタン
     window.prevSgfMove = function() {
         if (sgfMoves.length === 0) {
             alert("先にSGFファイルを読み込んでください。");
@@ -1174,22 +1142,28 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
             return;
         }
 
-        // 履歴から1手前の盤面を復元
         if (history.length > 0) {
-            board = history.pop();
+            const prevState = history.pop();
+            board = prevState.board;
+            capturedWhite = prevState.capturedWhite;
+            capturedBlack = prevState.capturedBlack;
             const prevMove = sgfMoves[currentSgfIndex];
-            currentTurn = prevMove.color; // 手番を戻す
+            currentTurn = prevMove.color;
             currentSgfIndex--;
             updateTurnDisplay();
+            updateCapturedDisplay();
             drawBoard();
         }
     };
-
 
     // 最初に起動した時の初期化
     initBoard();
 })();
 </script>
+
+    
+    
+
 
     
 
