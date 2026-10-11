@@ -737,7 +737,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 
 
 
-    ==================================================================================== 
+    ================================================================================
 
 <!-- ==========================================
      【本番・完全版】SGF対応・星の点付き多機能碁盤セクション
@@ -795,7 +795,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     <script src="goban.js"></script>
 </section>  
    
-==================================================================================== 
+================================================================================
     
     <!--javascript エリア -->
 <script>
@@ -838,14 +838,15 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
             turnDisplay.textContent = currentTurn === 1 ? "手番: 黒 (Next: Black)" : "手番: 白 (Next: White)";
         }
     }
-
-    // 碁盤の星（黒い点）のインデックス位置
+  
+      // 碁盤の星（黒い点）のインデックス位置
     function getStarPoints() {
-        if (size === 19) return;
-        if (size === 13) return;
-        if (size === 9) return;
+        if (size === 19) return; // 4隅、辺の中央、天元
+        if (size === 13) return;  // 4隅、辺の中央、天元
+        if (size === 9) return;   // 4隅、天元（または天元のみ）
         return [];
     }
+
 
     function drawBoard() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
