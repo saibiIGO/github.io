@@ -836,13 +836,15 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         }
     }
 
-    // 碁盤の星（黒い点）のインデックス位置を正しく返す
+     // 碁盤の星（黒い点）のインデックス位置を正しく返す
     function getStarPoints() {
-        if (size === 19) return; 
-        if (size === 13) return;  
-        if (size === 9) return;   
+        if (size === 19) return; // 19路盤の星の位置（4路、10路、16路のライン）
+        if (size === 13) return;  // 13路盤の星の位置（4路、7路、10路のライン）
+        if (size === 9) return;   // 9路盤の星の位置（3路、5路、7路のライン）
         return [];
     }
+ 
+
 
     // 碁盤と石の描画
     function drawBoard() {
