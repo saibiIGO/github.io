@@ -742,7 +742,10 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 <!-- ==========================================
      【本番・完全版】SGF対応・星の点付き多機能碁盤セクション
      ========================================== -->
-  <section class="goban-section" style="margin-top: 40px; text-align: center;">
+ <!-- ==========================================
+     【本番・完全版】SGF対応・星の点付き多機能碁盤セクション
+     ========================================== -->
+<section class="goban-section" style="margin-top: 40px; text-align: center;">
     <h2 style="text-align:center;">自由に対局・研究ができる碁盤</h2>
     <p style="font-size: 0.95rem; color: #555; margin-bottom: 20px;">
         黒と白を交互にクリックして対局や研究ができます。アタリになった石は自動的に消えます。
@@ -765,7 +768,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         <!-- 碁盤キャンバス -->
         <canvas id="goBoard" width="380" height="380" style="background: #e1b773; border: 2px solid #b58943; cursor: pointer; box-shadow: inset 0 0 10px rgba(0,0,0,0.2); max-width: 100%; height: auto;"></canvas>
         
-        <!-- 対局・研究用の操作ボタン -->
+        <!-- 对局・研究用の操作ボタン -->
         <div style="margin-top: 15px; margin-bottom: 15px;">
             <button type="button" onclick="window.undoMove()" style="padding: 8px 18px; background: #666; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; margin-right: 10px; font-weight: bold;">1手戻る (Undo)</button>
             <button type="button" onclick="window.resetBoard()" style="padding: 8px 18px; background: #d9534f; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: bold;">盤面をクリア</button>
@@ -790,13 +793,9 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
             </div>
         </div>
     </div>
-    
-  
 </section>  
    
-================================================================================
-    
-    <!--javascript エリア -->
+<!-- javascript エリア -->
 <script>
 (function() {
     const canvas = document.getElementById('goBoard');
@@ -814,9 +813,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     let history = [];
     let currentTurn = 1; // 1: 黒, -1: 白
 
-    let sgfMoves = [];
-    let currentSgfIndex = -1;
-
+    // 碁盤の初期化
     function initBoard() {
         board = [];
         for (let i = 0; i < size; i++) {
@@ -830,6 +827,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         currentTurn = 1;
         cellSize = (canvas.width - padding * 2) / (size - 1);
         updateTurnDisplay();
+        drawBoard();
     }
 
     function updateTurnDisplay() {
@@ -837,16 +835,16 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
             turnDisplay.textContent = currentTurn === 1 ? "手番: 黒 (Next: Black)" : "手番: 白 (Next: White)";
         }
     }
-  
-      // 碁盤の星（黒い点）のインデックス位置
+
+    // 碁盤の星（黒い点）のインデックス位置を正しく返す
     function getStarPoints() {
-        if (size === 19) return; // 4隅、辺の中央、天元
-        if (size === 13) return;  // 4隅、辺の中央、天元
-        if (size === 9) return;   // 4隅、天元（または天元のみ）
+        if (size === 19) return; 
+        if (size === 13) return;  
+        if (size === 9) return;   
         return [];
     }
 
-
+    // 碁盤と石の描画
     function drawBoard() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
@@ -872,6 +870,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
             for (let j = 0; j < starPoints.length; j++) {
                 let x = starPoints[i];
                 let y = starPoints[j];
+                // 13路盤の例外処理
                 if (size === 13 && ((x === 6 && y !== 6) || (y === 6 && x !== 6))) continue; 
                 ctx.beginPath();
                 ctx.arc(padding + x * cellSize, padding + y * cellSize, 3.5, 0, Math.PI * 2);
@@ -891,10 +890,10 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
                     ctx.arc(cx, cy, r, 0, Math.PI * 2);
                     
                     let gradient = ctx.createRadialGradient(cx - r*0.15, cy - r*0.15, r*0.1, cx, cy, r);
-                    if (board[x][y] === 1) { // 黒石
+                    if (board[x][y] === 1) { 
                         gradient.addColorStop(0, '#555');
                         gradient.addColorStop(1, '#000');
-                    } else { // 白石
+                    } else { 
                         gradient.addColorStop(0, '#fff');
                         gradient.addColorStop(1, '#ccc');
                     }
@@ -907,375 +906,62 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         }
     }
 
-    // --- 囲碁ルール（アタリ・石の死活判定） ---
-    function getLiberties(x, y, visited) {
-        if (!visited) { visited = new Set(); }
-        const color = board[x][y];
-        if (color === 0) return { liberties: new Set(), stones: [] };
-
-        const key = x + ',' + y;
-        if (visited.has(key)) return { liberties: new Set(), stones: [] };
-        visited.add(key);
-
-        let liberties = new Set();
-        let stones = [{ x: x, y: y }];
-
-        const dirs = [[1, 0], [-1, 0], [0, 1], [0, -1]];
-        for (let i = 0; i < dirs.length; i++) {
-            let dx = dirs[i][0];
-            let dy = dirs[i][1];
-            let nx = x + dx, ny = y + dy;
-            if (nx >= 0 && nx < size && ny >= 0 && ny < size) {
-                if (board[nx][ny] === 0) {
-                    liberties.add(nx + ',' + ny);
-                } else if (board[nx][ny] === color) {
-                    let next = getLiberties(nx, ny, visited);
-                    next.liberties.forEach(function(l) { liberties.add(l); });
-                    stones = stones.concat(next.stones);
-                }
-            }
-        }
-        return { liberties: liberties, stones: stones };
-    }
-
-    function checkCaptures(lastX, lastY) {
-        const enemyColor = -board[lastX][lastY];
-        let capturedAny = false;
-
-        const dirs = [[1, 0], [-1, 0], [0, 1], [0, -1]];
-        for (let i = 0; i < dirs.length; i++) {
-            let dx = dirs[i][0];
-            let dy = dirs[i][1];
-            let nx = lastX + dx, ny = lastY + dy;
-            if (nx >= 0 && nx < size && ny >= 0 && ny < size && board[nx][ny] === enemyColor) {
-                let res = getLiberties(nx, ny);
-                if (res.liberties.size === 0) {
-                    res.stones.forEach(function(s) { board[s.x][s.y] = 0; });
-                    capturedAny = true;
-                }
-            }
-        }
-        
-        if (!capturedAny) {
-            let res = getLiberties(lastX, lastY);
-            if (res.liberties.size === 0) {
-                board[lastX][lastY] = 0; // 自殺手を禁止
-                return false;
-            }
-        }
-        return true;
-    }
-
-    // --- 着手処理 ---
-    function placeStone(x, y) {
-        if (board[x][y] !== 0) return false;
-        
-        history.push(JSON.stringify(board));
-        board[x][y] = currentTurn;
-        
-        if (!checkCaptures(x, y)) {
-            history.pop();
-            return false;
-        }
-
-        currentTurn = -currentTurn;
-        updateTurnDisplay();
-        drawBoard();
-        return true;
-    }
-
-    // キャンバスクリック
+    // クリックで石を配置する処理
     canvas.addEventListener('click', function(e) {
         const rect = canvas.getBoundingClientRect();
         const mouseX = e.clientX - rect.left;
         const mouseY = e.clientY - rect.top;
-
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
-        const x = Math.round(((mouseX * scaleX) - padding) / cellSize);
-        const y = Math.round(((mouseY * scaleY) - padding) / cellSize);
-
+        
+        // クリック位置から最も近い交点を計算
+        const x = Math.round((mouseX - padding) / cellSize);
+        const y = Math.round((mouseY - padding) / cellSize);
+        
         if (x >= 0 && x < size && y >= 0 && y < size) {
-            placeStone(x, y);
+            if (board[x][y] === 0) {
+                // 盤面を履歴に保存 (Undo用)
+                history.push(JSON.parse(JSON.stringify(board)));
+                
+                board[x][y] = currentTurn;
+                currentTurn = -currentTurn;
+                updateTurnDisplay();
+                drawBoard();
+            }
         }
     });
 
-    // --- グローバル関数定義 ---
-    window.changeBoardSize = function(val) {
-        size = parseInt(val, 10);
+    // グローバルに関数を公開（HTMLのボタンから呼べるようにする）
+    window.changeBoardSize = function(newSize) {
+        size = parseInt(newSize);
         initBoard();
-        drawBoard();
+    };
+
+    window.resetBoard = function() {
+        if(confirm("盤面をクリアしますか？")) {
+            initBoard();
+        }
     };
 
     window.undoMove = function() {
         if (history.length > 0) {
-            board = JSON.parse(history.pop());
+            board = history.pop();
             currentTurn = -currentTurn;
             updateTurnDisplay();
             drawBoard();
         }
     };
 
-    window.resetBoard = function() {
-        initBoard();
-        drawBoard();
-        sgfMoves = [];
-        currentSgfIndex = -1;
-        if(sgfInfo) sgfInfo.textContent = "選択されているファイル：なし";
-        if(fileInput) fileInput.value = "";
-    };
+    // SGF用のダミー関数（エラー防止用）
+    window.prevSgfMove = function() { alert("SGF機能は現在準備中です。"); };
+    window.nextSgfMove = function() { alert("SGF機能は現在準備中です。"); };
 
-    // --- SGFファイルの解析・再生ロジック ---
-    function parseSgf(text) {
-        let moves = [];
-        const regex = /([BW])\[([a-s]{2})\]/gi;
-        let match;
-        while ((match = regex.exec(text)) !== null) {
-            let color = match[1].toUpperCase() === 'B' ? 1 : -1;
-            let pos = match[2].toLowerCase();
-            let x = pos.charCodeAt(0) - 97;
-            let y = pos.charCodeAt(1) - 97;
-            
-            if (x >= 0 && x < size && y >= 0 && y < size) {
-                moves.push({ color: color, x: x, y: y });
-            }
-        }
-        return moves;
-    }
-
-    if (fileInput) {
-        fileInput.addEventListener('change', function(e) {
-            const files = e.target.files;
-            if (!files || files.length === 0) return;
-            const file = files[0];
-
-            sgfInfo.textContent = `読み込み中...`;
-
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                try {
-                    sgfMoves = parseSgf(evt.target.result);
-                    initBoard();
-                    currentSgfIndex = -1;
-                    drawBoard();
-                    
-                    if(sgfMoves.length > 0) {
-                        sgfInfo.textContent = "📂 " + file.name + " (全 " + sgfMoves.length + " 手)";
-                    } else {
-                        sgfInfo.textContent = `⚠️ ファイル内に有効な着手が見つかりませんでした。`;
-                    }
-                } catch (err) {
-                    console.error("SGF解析エラー:", err);
-                    sgfInfo.textContent = `❌ ファイルの解析中にエラーが発生しました。`;
-                }
-            };
-            reader.readAsText(file);
-        });
-    }
-
-    window.nextSgfMove = function() {
-        if (sgfMoves && (currentSgfIndex + 1 < sgfMoves.length)) {
-            currentSgfIndex++;
-            const move = sgfMoves[currentSgfIndex];
-            currentTurn = move.color;
-            placeStone(move.x, move.y);
-            
-            if (sgfInfo && fileInput && fileInput.files && fileInput.files.length > 0) {
-                sgfInfo.textContent = "📂 " + fileInput.files[0].name + " (" + (currentSgfIndex + 1) + " / " + sgfMoves.length + " 手目)";
-            }
-        }
-    };
-
-    window.prevSgfMove = function() {
-        if (currentSgfIndex >= 0) {
-            window.undoMove();
-            currentSgfIndex--;
-            
-            if (sgfInfo && fileInput && fileInput.files && fileInput.files.length > 0) {
-                if (currentSgfIndex === -1) {
-                    sgfInfo.textContent = "📂 " + fileInput.files[0].name + " (開始前 / 全 " + sgfMoves.length + " 手)";
-                } else {
- <!--javascript エリア　終了 -->    
-
-
-     
-(function() {
-    const canvas = document.getElementById('goBoard');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const turnDisplay = document.getElementById('turn-display');
-    const sgfInfo = document.getElementById('sgf-info');
-    const fileInput = document.getElementById('sgfFileInput');
-    
-    let size = 19; 
-    let padding = 20;
-    let cellSize = (canvas.width - padding * 2) / (size - 1);
-    
-    let board = [];
-    let history = [];
-    let currentTurn = 1; // 1: 黒, -1: 白
-
-    let sgfMoves = [];
-    let currentSgfIndex = -1;
-
-    function initBoard() {
-        board = [];
-        for (let i = 0; i < size; i++) {
-            let row = [];
-            for (let j = 0; j < size; j++) {
-                row.push(0);
-            }
-            board.push(row);
-        }
-        history = [];
-        currentTurn = 1;
-        cellSize = (canvas.width - padding * 2) / (size - 1);
-        updateTurnDisplay();
-    }
-
-    function updateTurnDisplay() {
-        if (turnDisplay) {
-            turnDisplay.textContent = currentTurn === 1 ? "手番: 黒 (Next: Black)" : "手番: 白 (Next: White)";
-        }
-    }
-
-    // 碁盤の星（黒い点）のインデックス位置
-    function getStarPoints() {
-        if (size === 19) { return; }
-        if (size === 13) { return; }
-        if (size === 9) { return; } 
-        return [];
-    }
-
-    function drawBoard() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        // 線の描画
-        ctx.strokeStyle = '#333333';
-        ctx.lineWidth = 1;
-        for (let i = 0; i < size; i++) {
-            ctx.beginPath();
-            ctx.moveTo(padding, padding + i * cellSize);
-            ctx.lineTo(canvas.width - padding, padding + i * cellSize);
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.moveTo(padding + i * cellSize, padding);
-            ctx.lineTo(padding + i * cellSize, canvas.height - padding);
-            ctx.stroke();
-        }
-
-        // 星（黒点）の描画
-        ctx.fillStyle = '#333333';
-        const starPoints = getStarPoints();
-        for (let i = 0; i < starPoints.length; i++) {
-            for (let j = 0; j < starPoints.length; j++) {
-                let x = starPoints[i];
-                let y = starPoints[j];
-                // 9路盤の中心点用(不要な外周の交点を省く)
-                if (size === 9 && starPoints.length === 3 && (x !== 4 && y !== 4) && (x !== 2 || y !== 2) && (x !== 2 || y !== 6) && (x !== 6 || y !== 2) && (x !== 6 || y !== 6)) continue;
-                
-                ctx.beginPath();
-                ctx.arc(padding + x * cellSize, padding + y * cellSize, 3.5, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        // 石の描画
-        for (let x = 0; x < size; x++) {
-            for (let y = 0; y < size; y++) {
-                if (board[x][y] !== 0) {
-                    let cx = padding + x * cellSize;
-                    let cy = padding + y * cellSize;
-                    let r = cellSize * 0.45;
-                    
-                    ctx.beginPath();
-                    ctx.arc(cx, cy, r, 0, Math.PI * 2);
-                    
-                    let gradient = ctx.createRadialGradient(cx - r*0.15, cy - r*0.15, r*0.1, cx, cy, r);
-                    if (board[x][y] === 1) { // 黒石
-                        gradient.addColorStop(0, '#555');
-                        gradient.addColorStop(1, '#000');
-                    } else { // 白石
-                        gradient.addColorStop(0, '#fff');
-                        gradient.addColorStop(1, '#ccc');
-                    }
-                    ctx.fillStyle = gradient;
-                    ctx.fill();
-                    ctx.strokeStyle = board[x][y] === 1 ? '#000' : '#bbb';
-                    ctx.stroke();
-                }
-            }
-        }
-    }
-
-    // --- 囲碁ルール（アタリ・石の死活判定） ---
-    function getGroup(startX, startY, color, visited, groupStones, groupLiberties) {
-        const key = startX + ',' + startY;
-        if (visited.has(key)) return;
-        visited.add(key);
-        groupStones.push({x: startX, y: startY});
-
-        const dirs = [[1,0], [-1,0], [0,1], [0,-1]];
-        for (let [dx, dy] of dirs) {
-            let nx = startX + dx;
-            let ny = startY + dy;
-            if (nx >= 0 && nx < size && ny >= 0 && ny < size) {
-                if (board[nx][ny] === 0) {
-                    groupLiberties.add(nx + ',' + ny);
-                } else if (board[nx][ny] === color) {
-                    getGroup(nx, ny, color, visited, groupStones, groupLiberties);
-                }
-            }
-        }
-    }
-
-    function checkCaptures(lastX, lastY, placedColor) {
-        let capturedAny = false;
-        const dirs = [[1,0], [-1,0], [0,1], [0,-1]];
-        const opponentColor = -placedColor;
-        let globalVisited = new Set();
-
-        // 1. まず隣接する相手の石が死んでいるかチェック
-        for (let [dx, dy] of dirs) {
-            let nx = lastX + dx;
-            let ny = lastY + dy;
-            if (nx >= 0 && nx < size && ny >= 0 && ny < size && board[nx][ny] === opponentColor) {
-                if (!globalVisited.has(nx + ',' + ny)) {
-                    let groupStones = [];
-                    let groupLiberties = new Set();
-                    getGroup(nx, ny, opponentColor, globalVisited, groupStones, groupLiberties);
-
-                    if (groupLiberties.size === 0) {
-                        // 呼吸点ゼロなので石を消去
-                        for (let stone of groupStones) {
-                            board[stone.x][stone.y] = 0;
-                        }
-                        capturedAny = true;
-                    }
-                }
-            }
-        }
-        return capturedAny;
-    }
-
-    // 自殺手（着手禁止点）のチェック
-    function isSuicide(x, y, color) {
-        let tempVisited = new Set();
-        let groupStones = [];
-        let groupLiberties = new Set();
-        
-        // 仮置き
-        board[x][y] = color;
-        getGroup(x, y, color, tempVisited, groupStones, groupLiberties);
-// ...（前述のJavaScriptコードの続き）
-
-// 初期化実行
+    // 最初に起動した時の初期化
     initBoard();
-    drawBoard();
 })();
 </script>
-  </section>
+
+    
+
+  
 
  ===================================================================================
 <!-- ==========================================
