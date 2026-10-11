@@ -954,8 +954,114 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     };
 
     // SGF用のダミー関数（エラー防止用）
-    window.prevSgfMove = function() { alert("SGF機能は現在準備中です。"); };
-    window.nextSgfMove = function() { alert("SGF機能は現在準備中です。"); };
+     // --- SGFファイル読み込み＆棋譜再生機能 ---
+    
+    // SGFの座標文字（a, b, c...）をインデックスの数字（0, 1, 2...）に変換
+    function charToPos(char) {
+        if (!char) return -1;
+        return char.charCodeAt(0) - 97;
+    }
+
+    // SGFファイルのテキストを解析（パース）する関数
+    function parseSgf(text) {
+        const moves = [];
+        // [B[ab]] や [W[cd]] のようなパターンを抽出
+        const regex = /;([BW])\[([a-z]{2})\]/g;
+        let match;
+        
+        // 盤面サイズ（SZ）の指定があれば取得（デフォルトは19）
+        const sizeMatch = text.match(/SZ\[(\d+)\]/);
+        let sgfSize = 19;
+        if (sizeMatch) {
+            sgfSize = parseInt(sizeMatch[1]);
+        }
+
+        while ((match = regex.exec(text)) !== null) {
+            const color = match[1] === 'B' ? 1 : -1;
+            const x = charToPos(match[2][0]);
+            const y = charToPos(match[2][1]);
+            moves.push({ color, x, y });
+        }
+        return { sgfSize, moves };
+    }
+
+    // ファイルが選択されたときの処理
+    if (fileInput) {
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (sgfInfo) sgfInfo.textContent = "選択されているファイル：" + file.name;
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const result = parseSgf(evt.target.result);
+                sgfMoves = result.moves;
+                currentSgfIndex = -1; // 再生位置を初期化
+
+                // SGFのサイズに合わせて盤面を変更
+                if (window.changeBoardSize && (result.sgfSize === 19 || result.sgfSize === 13 || result.sgfSize === 9)) {
+                    const selectEl = document.getElementById('boardSizeSelect');
+                    if (selectEl) selectEl.value = result.sgfSize.toString();
+                    size = result.sgfSize;
+                }
+                
+                initBoard();
+                alert("棋譜を読み込みました（全 " + sgfMoves.length + " 手）。「次の手」ボタンで再生できます！");
+            };
+            reader.readAsText(file);
+        });
+    }
+
+    // 次の手へ進むボタン
+    window.nextSgfMove = function() {
+        if (sgfMoves.length === 0) {
+            alert("先にSGFファイルを読み込んでください。");
+            return;
+        }
+        if (currentSgfIndex >= sgfMoves.length - 1) {
+            alert("これが最後のページ（最終手）です。");
+            return;
+        }
+
+        currentSgfIndex++;
+        const move = sgfMoves[currentSgfIndex];
+        
+        // 履歴を保存
+        history.push(JSON.parse(JSON.stringify(board)));
+        
+        // 石を配置
+        if (move.x >= 0 && move.x < size && move.y >= 0 && move.y < size) {
+            board[move.x][move.y] = move.color;
+        }
+        
+        currentTurn = -move.color; // 次の手番を入れ替え
+        updateTurnDisplay();
+        drawBoard();
+    };
+
+    // 前の手へ戻るボタン
+    window.prevSgfMove = function() {
+        if (sgfMoves.length === 0) {
+            alert("先にSGFファイルを読み込んでください。");
+            return;
+        }
+        if (currentSgfIndex < 0) {
+            alert("これが最初の状態（初期盤面）です。");
+            return;
+        }
+
+        // 履歴から1手前の盤面を復元
+        if (history.length > 0) {
+            board = history.pop();
+            const prevMove = sgfMoves[currentSgfIndex];
+            currentTurn = prevMove.color; // 手番を戻す
+            currentSgfIndex--;
+            updateTurnDisplay();
+            drawBoard();
+        }
+    };
+
 
     // 最初に起動した時の初期化
     initBoard();
