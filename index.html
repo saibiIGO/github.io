@@ -435,16 +435,15 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   </div>
     </div>
   </div>
-
 <!-- ==========================================
-<!-- 👉【右側】：4コマスライドショウ　写真（碁盤）ギャラリー（操作マニュアル＆補助ボタン内蔵・タグ修正版）
+<!-- 👉【右側】：4コマスライドショウ　写真（碁盤）ギャラリー（操作マニュアル＆補助ボタン内蔵・完成版）
      ========================================== -->
 <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; text-align: center; position: relative;">
   <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; height: 100%;">
     
     <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px; user-select: none;">📸 写真ギャラリー</h3>
 
-    <!-- 💡 先生用の操作状態・一時通知ポップアップ（1秒で消えます） -->
+    <!-- 💡 先生用の操作状態・一時通知ポップアップ -->
     <div id="controlNotify" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0, 51, 102, 0.85); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 14px; font-weight: bold; z-index: 999; display: none; pointer-events: none;"></div>
 
     <!-- 🛠️ 先生用：設定エリア -->
@@ -457,7 +456,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
           <li><strong style="color: #0f172a;">[スペース] キー</strong> ： 一時停止 ／ 自動再生の再開</li>
           <li><strong style="color: #0f172a;">[ ▶ ] (右矢印)</strong> ： 手動で次の写真に進む</li>
           <li><strong style="color: #0f172a;">[ ◀ ] (左矢印)</strong> ： 手動で前の写真に戻る</li>
-          <li><strong style="color: #0f172a;">[ Ｓ ] キー</strong> ： この設定画面を閉じる（生徒から隠す）</li>
+          <li><strong style="color: #0f172a;">[ Ｓ ] キー</strong> ： この設定画面を開閉する（生徒から隠す）</li>
         </ul>
         
         <!-- 🖱️ 補助リモコンボタン -->
@@ -554,21 +553,19 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         text-align: center;
         line-height: 1.3;
       }
-   
- 
-        </style>
-  <!-- ===============================================================-->
+    </style>
+    
+    <!-- ===============================================================-->
     <div class="slide-container" id="goSlideContainer">
       <!-- 💡 ここにあった画像タグは、下のJavaScriptがデータから自動で生成・表示します -->
     </div>
   </div>
 </div>
-  <!-- ===============================================================-->
+<!-- ===============================================================-->
 
 <!-- 💡 各コマの時間管理 ＆ 進行セレクト ＆ キーボード操作JavaScript -->
 <script>
   /* 📂 【ここを書き換えるだけで、フォルダと文字が一度に切り替わります！】 ------------ */
-  // 2回目に変えたいときは、下の「vol1/」を「vol2/」に書き換えてください。
   const FOLDER_NAME = "vol1/"; 
 
   const SLIDE_DATA = [
@@ -598,197 +595,91 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   let currentSlideIndex = 0;
   let slideTimeoutId = null;
   let isPaused = false; 
-  let slideTimes = [];
+  let slideTimes =; // デフォルトの秒数
 
-  // HTMLの表示と設定欄を自動で組み立てる関数
+  // HTMLの表示を自動で組み立てる関数
   function initSlideHTML() {
     const container = document.getElementById('goSlideContainer');
-    const inputContainer = document.getElementById('adminTimeInputsContainer');
+    if (!container) return;
     
-    if (container) {
-      container.innerHTML = "";
-      SLIDE_DATA.forEach((slide, index) => {
-        const itemDiv = document.createElement('div');
-        itemDiv.className = `slide-item ${index === 0 ? 'active' : ''}`;
-        
-        const imgTag = document.createElement('img');
-        imgTag.src = slide.img;
-        imgTag.alt = slide.label;
-        imgTag.className = 'slide-img';
+    container.innerHTML = "";
+    SLIDE_DATA.forEach((slide, index) => {
+      const itemDiv = document.createElement('div');
+      itemDiv.className = `slide-item ${index === 0 ? 'active' : ''}`;
+      
+      const imgTag = document.createElement('img');
+      imgTag.src = slide.img;
+      imgTag.alt = slide.label;
+      imgTag.className = 'slide-img';
 
-        const pTag = document.createElement('p');
-        pTag.className = 'slide-text';
-        pTag.innerText = slide.text;
+      const pTag = document.createElement('p');
+      pTag.className = 'slide-text';
+      pTag.textContent = slide.text;
 
-        itemDiv.appendChild(imgTag);
-        itemDiv.appendChild(pTag);
-        container.appendChild(itemDiv);
-      });
-    }
-
-    if (inputContainer) {
-      inputContainer.innerHTML = "";
-      SLIDE_DATA.forEach((slide, index) => {
-        const rowDiv = document.createElement('div');
-        rowDiv.style.display = 'flex';
-        rowDiv.style.justifyContent = 'space-between';
-        rowDiv.style.alignItems = 'center';
-
-        const labelTag = document.createElement('label');
-        labelTag.innerText = slide.label + "：";
-
-        const inputWrap = document.createElement('div');
-        inputWrap.innerHTML = `<input type="number" id="timeInput${index + 1}" value="5" min="1" style="width: 50px; padding: 2px 5px; text-align: center; border: 1px solid #ccc; border-radius: 4px;"> 秒`;
-
-        rowDiv.appendChild(labelTag);
-        rowDiv.appendChild(inputWrap);
-        inputContainer.appendChild(rowDiv);
-      });
-    }
+      itemDiv.appendChild(imgTag);
+      itemDiv.appendChild(pTag);
+      container.appendChild(itemDiv);
+    });
   }
 
-  function getCurrentDelayTime() {
-    return slideTimes[currentSlideIndex] || 5000;
-  }
+  // スライドを切り替えるメイン処理
+  function showSlide(index) {
+    const items = document.querySelectorAll('.slide-item');
+    if (items.length === 0) return;
 
-  function applyThemePreset() {
-    const selectedTheme = document.getElementById('goThemeSelect').value;
-    if (selectedTheme === 'custom') return;
+    // 範囲外のインデックスをループさせる
+    if (index >= items.length) currentSlideIndex = 0;
+    else if (index < 0) currentSlideIndex = items.length - 1;
+    else currentSlideIndex = index;
 
-    if (selectedTheme === 'study') {
-      document.getElementById('timeInput1').value = 10;
-      document.getElementById('timeInput2').value = 5;
-      document.getElementById('timeInput3').value = 5;
-      document.getElementById('timeInput4').value = 5;
-    } else if (selectedTheme === 'quiz') {
-      document.getElementById('timeInput1').value = 15;
-      document.getElementById('timeInput2').value = 3;
-      document.getElementById('timeInput3').value = 5;
-      document.getElementById('timeInput4').value = 5;
-    } else if (selectedTheme === 'flash') {
-      document.getElementById('timeInput1').value = 4;
-      document.getElementById('timeInput2').value = 4;
-      document.getElementById('timeInput3').value = 4;
-      document.getElementById('timeInput4').value = 4;
-    }
-    applyNewTimes();
-  }
-
-  function showNotification(text) {
-    const notifyBox = document.getElementById('controlNotify');
-    if (!notifyBox) return;
-    notifyBox.innerText = text;
-    notifyBox.style.display = 'block';
-    setTimeout(() => {
-      notifyBox.style.display = 'none';
-    }, 1000);
-  }
-
-  function changeSlide(nextIndex) {
-    const slides = document.querySelectorAll('#goSlideContainer .slide-item');
-    if (slides.length === 0) return;
-
-    slides[currentSlideIndex].classList.remove('active');
-    currentSlideIndex = (nextIndex + slides.length) % slides.length;
-    slides[currentSlideIndex].classList.add('active');
-
-    startAutoPlay();
-  }
-
-  function startAutoPlay() {
-    if (slideTimeoutId) clearTimeout(slideTimeoutId);
-    if (isPaused) return;
-
-    const delay = getCurrentDelayTime();
-    slideTimeoutId = setTimeout(() => {
-      changeSlide(currentSlideIndex + 1);
-    }, delay);
-  }
-
-  function applyNewTimes() {
-    for (let i = 0; i < SLIDE_DATA.length; i++) {
-      const inputEl = document.getElementById(`timeInput${i + 1}`);
-      const sec = inputEl ? parseInt(inputEl.value, 10) : 5;
-      slideTimes[i] = (sec || 5) * 1000;
-    }
-    
-    isPaused = false;
-    const btnPause = document.getElementById('btnRemotePause');
-    if (btnPause) btnPause.innerText = "⏸ 一時停止";
-    
-    showNotification("🚀 設定を反映して再生開始");
-    changeSlide(0);
-  }
-
-  function remoteLeft() {
-    isPaused = true;
-    const btnPause = document.getElementById('btnRemotePause');
-    if (btnPause) btnPause.innerText = "▶ 再開";
-    showNotification("◀ 前のコマへ");
-    changeSlide(currentSlideIndex - 1);
-  }
-
-  function remoteRight() {
-    isPaused = true;
-    const btnPause = document.getElementById('btnRemotePause');
-    if (btnPause) btnPause.innerText = "次のコマへ ▶";
-    changeSlide(currentSlideIndex + 1);
-  }
-
-  function remoteSpace() {
-    const btnPause = document.getElementById('btnRemotePause');
-    if (isPaused) {
-      isPaused = false;
-      if (btnPause) btnPause.innerText = "⏸ 一時停止";
-      showNotification("▶ 自動再生を再開");
-      startAutoPlay();
-    } else {
-      isPaused = true;
-      if (btnPause) btnPause.innerText = "▶ 再開";
-      showNotification("⏸ 一時停止中");
-      if (slideTimeoutId) clearTimeout(slideTimeoutId);
-    }
-  }
-
-  document.addEventListener('keydown', (e) => {
-    const adminBox = document.getElementById('adminTimeBox');
-
-    if (e.key === 's' || e.key === 'S') {
-      if (adminBox) {
-        if (adminBox.style.display === 'none') {
-          adminBox.style.display = 'flex';
-          showNotification("⚙️ 設定画面を表示");
-        } else {
-          adminBox.style.display = 'none';
-          showNotification("🔒 設定画面を非表示");
-        }
+    // クラスの付け替え（フェードイン・アウト）
+    items.forEach((item, i) => {
+      if (i === currentSlideIndex) {
+        item.classList.add('active');
+      } else {
+        item.classList.remove('active');
       }
-      return;
-    }
+    });
 
-    if (e.code === 'Space') {
-      e.preventDefault();
-      remoteSpace();
+    // 自動再生タイマーの再設定
+    clearTimeout(slideTimeoutId);
+    if (!isPaused) {
+      const currentSeconds = slideTimes[currentSlideIndex] || 5;
+      slideTimeoutId = setTimeout(() => {
+        showSlide(currentSlideIndex + 1);
+      }, currentSeconds * 1000);
     }
-    else if (e.key === 'ArrowRight') {
-      remoteRight();
-    }
-    else if (e.key === 'ArrowLeft') {
-      remoteLeft();
-    }
-  });
+  }
 
-  window.addEventListener('DOMContentLoaded', () => {
-    initSlideHTML();
-    applyNewTimes();
-  });
-</script>
-   
-    
-    <!-- 💡 各コマの時間管理 ＆ 局面セレクト ＆ キーボード操作JavaScript　おわり -->
+  // フォームから新しい時間を取得して反映する
+  function applyNewTimes() {
+    slideTimes = [
+      parseFloat(document.getElementById('timeInput1').value) || 5,
+      parseFloat(document.getElementById('timeInput2').value) || 5,
+      parseFloat(document.getElementById('timeInput3').value) || 5,
+      parseFloat(document.getElementById('timeInput4').value) || 5
+    ];
+    isPaused = false;
+    updatePauseButtonText();
+    showNotification("⏱ 秒数を反映して再生します");
+    showSlide(currentSlideIndex);
+  }
+
+  // プリセット（布石・詰碁など）の選択を反映
+  function applyThemePreset() {
+    const select = document.getElementById('goThemeSelect');
+    const val = select.value;
+
+    if (val === 'fuseki') { setInputs(10, 5, 5, 5); }
+    else if (val === 'tsumego') { setInputs(15, 3, 5, 5); }
+    else if (val === 'tesuji') { setInputs(8, 4, 6, 4); }
+    else if (val === 'yose') { setInputs(4, 4, 4, 4); }
+  }
+
+  function setInputs(t1, t2, t3, t4) {
+    document.getElementById('timeInput1').value = t1;
 
 
-   <!-- ===============================================================-->
  <!-- ==========================================
      【本番・完全版】SGF対応・星の点付き多機能碁盤セクション
      ========================================== -->
