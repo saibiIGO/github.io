@@ -439,351 +439,59 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 <!-- 👉【右側】：4コマスライドショウ　写真（碁盤）ギャラリー（操作マニュアル＆補助ボタン内蔵・完成版）
      ========================================== -->
 <!-- ==========================================
-<!-- 👉【右側】：4コマスライドショウ　写真（碁盤）ギャラリー（操作マニュアル＆補助ボタン内蔵・タグ修正版）
-     ========================================== -->
-<div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; text-align: center; position: relative;">
-  <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; height: 100%;">
-    
-    <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px; user-select: none;">📸 写真ギャラリー</h3>
-
-    <!-- 💡 先生用の操作状態・一時通知ポップアップ（1秒で消えます） -->
-    <div id="controlNotify" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0, 51, 102, 0.85); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 14px; font-weight: bold; z-index: 999; display: none; pointer-events: none;"></div>
-
-    <!-- 🛠️ 先生用：設定エリア -->
-    <div id="adminTimeBox" style="display: none; flex-direction: column; gap: 10px; margin-bottom: 15px; padding: 12px; background-color: #f0f4f8; border: 1px dashed #003366; border-radius: 6px; text-align: left; font-size: 12px; color: #333;">
+  <!-- 👉【右側】：写真ギャラリー（4コマ漫画風スライドショー） -->
+  <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 20px; text-align: center;">
+    <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px;">
+      <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📸 写真ギャラリー</h3>
       
-      <!-- 📖 先生専用：操作マニュアル -->
-      <div style="background-color: #fff; padding: 8px; border-radius: 4px; border: 1px solid #cbd5e1; margin-bottom: 5px;">
-        <div style="font-weight: bold; color: #b91c1c; margin-bottom: 4px;">📖 授業中のリモコンキー操作手順</div>
-        <ul style="margin: 0; padding-left: 18px; line-height: 1.5; color: #475569;">
-          <li><strong style="color: #0f172a;">[スペース] キー</strong> ： 一時停止 ／ 自動再生の再開</li>
-          <li><strong style="color: #0f172a;">[ ▶ ] (右矢印)</strong> ： 手動で次の写真に進む</li>
-          <li><strong style="color: #0f172a;">[ ◀ ] (左矢印)</strong> ： 手動で前の写真に戻る</li>
-          <li><strong style="color: #0f172a;">[ Ｓ ] キー</strong> ： この設定画面を閉じる（生徒から隠す）</li>
-        </ul>
-        
-        <!-- 🖱️ 補助リモコンボタン -->
-        <div style="margin-top: 8px; display: flex; gap: 4px; justify-content: center;">
-          <button onclick="remoteLeft()" style="flex: 1; padding: 4px; font-size: 11px; background: #e2e8f0; border: 1px solid #cbd5e1; border-radius: 4px; cursor: pointer; font-weight: bold;">◀ 戻る</button>
-          <button onclick="remoteSpace()" id="btnRemotePause" style="flex: 1; padding: 4px; font-size: 11px; background: #e2e8f0; border: 1px solid #cbd5e1; border-radius: 4px; cursor: pointer; font-weight: bold;">⏸ 一時停止</button>
-          <button onclick="remoteRight()" style="flex: 1; padding: 4px; font-size: 11px; background: #e2e8f0; border: 1px solid #cbd5e1; border-radius: 4px; cursor: pointer; font-weight: bold;">進む ▶</button>
+      <div style="width: 100%; max-width: 100%; height: 240px; overflow: hidden; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; background-color: #fff;">
+        <div style="display: flex; flex-direction: column; width: 100%; height: 400%; animation: slideShowVertical4 20s infinite;">
+          
+          <!-- 1コマ目 -->
+          <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between;">
+            <img src="photo1.jpg" alt="photo1" style="width: 100%; height: 180px; object-fit: cover; flex-shrink: 0;">
+            <p style="margin: 0; padding: 8px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff;">① どこに打てばいいんだろう…？（じっくり考える時間）</p>
+          </div>
+
+          <!-- 2コマ目 -->
+          <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between;">
+            <img src="photo2.jpg" alt="photo2" style="width: 100%; height: 180px; object-fit: cover; flex-shrink: 0;">
+            <p style="margin: 0; padding: 8px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff;">② 先生が優しくヒントを教えてくれるよ！</p>
+          </div>
+
+          <!-- 3コマ目 -->
+          <div style="width: 100%; height: 25%; display: flex; flex-direction: column; justify-content: space-between;">
+            <img src="photo3.jpg" alt="photo3" style="width: 100%; height: 180px; object-fit: cover; flex-shrink: 0;">
+            <p style="margin: 0; padding: 8px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff;">③ わかった！ここに打ってみよう！</p>
+          </div>
+          
         </div>
       </div>
-
-      <!-- 🔄 局面セレクトスイッチ -->
-      <div style="display: flex; flex-direction: column; gap: 4px;">
-        <label style="font-weight: bold; color: #003366;">🎯 局面プリセット選択：</label>
-        <select id="goThemeSelect" onchange="applyThemePreset()" style="width: 100%; padding: 4px; border: 1px solid #003366; border-radius: 4px; font-weight: bold; background-color: #fff;">
-          <option value="custom">-- 自由に入力する --</option>
-          <option value="fuseki">布石モード（構想をじっくり：10秒-5秒-5秒-5秒）</option>
-          <option value="tsumego">詰碁モード（正解を考える：15秒-3秒-5秒-5秒）</option>
-          <option value="tesuji">手筋モード（ひらめき重視：8秒-4秒-6秒-4秒）</option>
-          <option value="yose">ヨセモード（テンポよく確認：4秒-4秒-4秒-4秒）</option>
-        </select>
-      </div>
-
-      <div style="font-weight: bold; color: #003366; border-bottom: 1px solid #ccc; padding-bottom: 3px; margin: 5px 0 2px 0;">⚙️ 各コマの表示時間（秒）</div>
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <label>① どこに打てば…：</label>
-        <div><input type="number" id="timeInput1" value="5" min="1" style="width: 50px; padding: 2px 5px; text-align: center; border: 1px solid #ccc; border-radius: 4px;"> 秒</div>
-      </div>
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <label>② 先生がヒント…：</label>
-        <div><input type="number" id="timeInput2" value="5" min="1" style="width: 50px; padding: 2px 5px; text-align: center; border: 1px solid #ccc; border-radius: 4px;"> 秒</div>
-      </div>
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <label>③ あ、そうか！…：</label>
-        <div><input type="number" id="timeInput3" value="5" min="1" style="width: 50px; padding: 2px 5px; text-align: center; border: 1px solid #ccc; border-radius: 4px;"> 秒</div>
-      </div>
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <label>④ 勝てた！…：</label>
-        <div><input type="number" id="timeInput4" value="5" min="1" style="width: 50px; padding: 2px 5px; text-align: center; border: 1px solid #ccc; border-radius: 4px;"> 秒</div>
-      </div>
-      
-      <button onclick="applyNewTimes()" style="margin-top: 5px; width: 100%; padding: 6px; background-color: #003366; color: #fff; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">設定を反映して自動再生スタート</button>
-    </div>
-
-    <style>
-      .slide-container {
-        width: 100%;
-        max-width: 100%;
-        height: 240px;
-        overflow: hidden;
-        border-radius: 4px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        position: relative;
-        background-color: #fff;
-        box-sizing: border-box;
-      }
-
-      .slide-item {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        box-sizing: border-box;
-        background-color: #fff;
-        opacity: 0;
-        z-index: 1;
-        transition: opacity 0.6s ease-in-out;
-      }
-
-      .slide-item.active {
-        opacity: 1;
-        z-index: 4;
-      }
-
-      .slide-img {
-        width: 100%;
-        height: 170px;
-        object-fit: contain;
-        background-color: #f8f9fa;
-        flex-shrink: 0;
-        display: block;
-      }
-
-      .slide-text {
-        margin: 0;
-        padding: 10px 5px;
-        font-size: 13px;
-        color: #333;
-        font-weight: bold;
-        background-color: #fff;
-        text-align: center;
-        line-height: 1.3;
-      }
-   
- 
-        </style>
-  <!-- ===============================================================-->
-    <div class="slide-container" id="goSlideContainer">
-      <!-- 💡 ここにあった画像タグは、下のJavaScriptがデータから自動で生成・表示します -->
     </div>
   </div>
+
 </div>
-  <!-- ===============================================================-->
 
-<!-- 💡 各コマの時間管理 ＆ 進行セレクト ＆ キーボード操作JavaScript -->
+<!-- ⚙️ 切り替え用JavaScriptスクリプト -->
 <script>
-  /* 📂 【ここを書き換えるだけで、フォルダと文字が一度に切り替わります！】 ------------ */
-  // 2回目に変えたいときは、下の「vol1/」を「vol2/」に書き換えてください。
-  const FOLDER_NAME = "vol1/"; 
-
-  const SLIDE_DATA = [
-    {
-      img: FOLDER_NAME + "photo1.jpg", 
-      text: "① まずは姿勢を正して、先生のお話をしっかり聞こう！",
-      label: "① 先生のお話を聞く"
-    },
-    {
-      img: FOLDER_NAME + "photo2.jpg", 
-      text: "② 出された問題をみんなでじっくり考える時間だよ。",
-      label: "② みんなで考える"
-    },
-    {
-      img: FOLDER_NAME + "photo3.jpg", 
-      text: "③ 「あ、そうか！」良いアイデアがひらめいた！",
-      label: "③ あ、そうか！ひらめき"
-    },
-    {
-      img: FOLDER_NAME + "photo4.jpg", 
-      text: "④ 「できた！」最後はみんな笑顔でハイタッチ！",
-      label: "④ できた！みんな笑顔"
-    }
-  ];
-  /* ------------------------------------------------------------------------- */
-
-  let currentSlideIndex = 0;
-  let slideTimeoutId = null;
-  let isPaused = false; 
-  let slideTimes = [];
-
-  // HTMLの表示と設定欄を自動で組み立てる関数
-  function initSlideHTML() {
-    const container = document.getElementById('goSlideContainer');
-    const inputContainer = document.getElementById('adminTimeInputsContainer');
+  function switchYouTube(buttonElement) {
+    const videoId = buttonElement.getAttribute('data-video-id');
+    const player = document.getElementById('saibijuku-player');
     
-    if (container) {
-      container.innerHTML = "";
-      SLIDE_DATA.forEach((slide, index) => {
-        const itemDiv = document.createElement('div');
-        itemDiv.className = `slide-item ${index === 0 ? 'active' : ''}`;
-        
-        const imgTag = document.createElement('img');
-        imgTag.src = slide.img;
-        imgTag.alt = slide.label;
-        imgTag.className = 'slide-img';
+    // 動画IDが初期値のままでなければ切り替える
+    if(videoId && !videoId.includes("入れてください")) {
+      player.src = `https://youtube.com{videoId}?rel=0&autoplay=1`;
 
-        const pTag = document.createElement('p');
-        pTag.className = 'slide-text';
-        pTag.innerText = slide.text;
-
-        itemDiv.appendChild(imgTag);
-        itemDiv.appendChild(pTag);
-        container.appendChild(itemDiv);
+      const buttons = document.querySelectorAll('.sb-btn');
+      buttons.forEach(btn => {
+        btn.style.backgroundColor = 'white';
+        btn.style.color = '#003366';
       });
-    }
-
-    if (inputContainer) {
-      inputContainer.innerHTML = "";
-      SLIDE_DATA.forEach((slide, index) => {
-        const rowDiv = document.createElement('div');
-        rowDiv.style.display = 'flex';
-        rowDiv.style.justifyContent = 'space-between';
-        rowDiv.style.alignItems = 'center';
-
-        const labelTag = document.createElement('label');
-        labelTag.innerText = slide.label + "：";
-
-        const inputWrap = document.createElement('div');
-        inputWrap.innerHTML = `<input type="number" id="timeInput${index + 1}" value="5" min="1" style="width: 50px; padding: 2px 5px; text-align: center; border: 1px solid #ccc; border-radius: 4px;"> 秒`;
-
-        rowDiv.appendChild(labelTag);
-        rowDiv.appendChild(inputWrap);
-        inputContainer.appendChild(rowDiv);
-      });
+      
+      buttonElement.style.backgroundColor = '#003366';
+      buttonElement.style.color = 'white';
     }
   }
-
-  function getCurrentDelayTime() {
-    return slideTimes[currentSlideIndex] || 5000;
-  }
-
-  function applyThemePreset() {
-    const selectedTheme = document.getElementById('goThemeSelect').value;
-    if (selectedTheme === 'custom') return;
-
-    if (selectedTheme === 'study') {
-      document.getElementById('timeInput1').value = 10;
-      document.getElementById('timeInput2').value = 5;
-      document.getElementById('timeInput3').value = 5;
-      document.getElementById('timeInput4').value = 5;
-    } else if (selectedTheme === 'quiz') {
-      document.getElementById('timeInput1').value = 15;
-      document.getElementById('timeInput2').value = 3;
-      document.getElementById('timeInput3').value = 5;
-      document.getElementById('timeInput4').value = 5;
-    } else if (selectedTheme === 'flash') {
-      document.getElementById('timeInput1').value = 4;
-      document.getElementById('timeInput2').value = 4;
-      document.getElementById('timeInput3').value = 4;
-      document.getElementById('timeInput4').value = 4;
-    }
-    applyNewTimes();
-  }
-
-  function showNotification(text) {
-    const notifyBox = document.getElementById('controlNotify');
-    if (!notifyBox) return;
-    notifyBox.innerText = text;
-    notifyBox.style.display = 'block';
-    setTimeout(() => {
-      notifyBox.style.display = 'none';
-    }, 1000);
-  }
-
-  function changeSlide(nextIndex) {
-    const slides = document.querySelectorAll('#goSlideContainer .slide-item');
-    if (slides.length === 0) return;
-
-    slides[currentSlideIndex].classList.remove('active');
-    currentSlideIndex = (nextIndex + slides.length) % slides.length;
-    slides[currentSlideIndex].classList.add('active');
-
-    startAutoPlay();
-  }
-
-  function startAutoPlay() {
-    if (slideTimeoutId) clearTimeout(slideTimeoutId);
-    if (isPaused) return;
-
-    const delay = getCurrentDelayTime();
-    slideTimeoutId = setTimeout(() => {
-      changeSlide(currentSlideIndex + 1);
-    }, delay);
-  }
-
-  function applyNewTimes() {
-    for (let i = 0; i < SLIDE_DATA.length; i++) {
-      const inputEl = document.getElementById(`timeInput${i + 1}`);
-      const sec = inputEl ? parseInt(inputEl.value, 10) : 5;
-      slideTimes[i] = (sec || 5) * 1000;
-    }
-    
-    isPaused = false;
-    const btnPause = document.getElementById('btnRemotePause');
-    if (btnPause) btnPause.innerText = "⏸ 一時停止";
-    
-    showNotification("🚀 設定を反映して再生開始");
-    changeSlide(0);
-  }
-
-  function remoteLeft() {
-    isPaused = true;
-    const btnPause = document.getElementById('btnRemotePause');
-    if (btnPause) btnPause.innerText = "▶ 再開";
-    showNotification("◀ 前のコマへ");
-    changeSlide(currentSlideIndex - 1);
-  }
-
-  function remoteRight() {
-    isPaused = true;
-    const btnPause = document.getElementById('btnRemotePause');
-    if (btnPause) btnPause.innerText = "次のコマへ ▶";
-    changeSlide(currentSlideIndex + 1);
-  }
-
-  function remoteSpace() {
-    const btnPause = document.getElementById('btnRemotePause');
-    if (isPaused) {
-      isPaused = false;
-      if (btnPause) btnPause.innerText = "⏸ 一時停止";
-      showNotification("▶ 自動再生を再開");
-      startAutoPlay();
-    } else {
-      isPaused = true;
-      if (btnPause) btnPause.innerText = "▶ 再開";
-      showNotification("⏸ 一時停止中");
-      if (slideTimeoutId) clearTimeout(slideTimeoutId);
-    }
-  }
-
-  document.addEventListener('keydown', (e) => {
-    const adminBox = document.getElementById('adminTimeBox');
-
-    if (e.key === 's' || e.key === 'S') {
-      if (adminBox) {
-        if (adminBox.style.display === 'none') {
-          adminBox.style.display = 'flex';
-          showNotification("⚙️ 設定画面を表示");
-        } else {
-          adminBox.style.display = 'none';
-          showNotification("🔒 設定画面を非表示");
-        }
-      }
-      return;
-    }
-
-    if (e.code === 'Space') {
-      e.preventDefault();
-      remoteSpace();
-    }
-    else if (e.key === 'ArrowRight') {
-      remoteRight();
-    }
-    else if (e.key === 'ArrowLeft') {
-      remoteLeft();
-    }
-  });
-
-  window.addEventListener('DOMContentLoaded', () => {
-    initSlideHTML();
-    applyNewTimes();
-  });
 </script>
    
     
