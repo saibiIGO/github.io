@@ -443,16 +443,19 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 
    <!-- ========================================== -->
 <!-- 👉【右側】：写真ギャラリー（クリックでポップアップ連動 ＆ 4コマ・5コマ縦スクロール自動対応版） -->
+
+<!-- ========================================== -->
+<!-- 👉【右側】：写真ギャラリー（クリックでポップアップ連動 ＆ 4コマ・5コマ縦スクロール完全版） -->
 <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 20px; text-align: center;">
-  <!-- スライドショー外枠（クリックするとポップアップが開くように cursor: pointer を追加） -->
+  <!-- スライドショー外枠 -->
   <div onclick="openGalleryModal()" style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.01)'" onmouseout="this.style.transform='scale(1)'" title="クリックして問題を切り替え">
     <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📸 碁盤ギャラリー（クリックで変更）</h3>
     
-    <!-- スライド表示エリア -->
+    <!-- スライド表示エリア（ここを 240px に固定し、はみ出た分を非表示にします） -->
     <div style="width: 100%; max-width: 100%; height: 240px; overflow: hidden; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; background-color: #fff;">
-      <!-- JavaScriptでアニメーションと中身を動的に書き換えるコンテナ -->
-      <div id="saibi-slideshow-container" style="display: flex; flex-direction: column; width: 100%;">
-        <!-- ここに選択された問題セットの碁盤画像（4枚または5枚）が生成されます -->
+      <!-- 縦に動く本体コンテナ -->
+      <div id="saibi-slideshow-container" style="display: flex; flex-direction: column; width: 100%; height: auto; transform: translateY(0); transition: none;">
+        <!-- JavaScriptでここに画像とテキストが生成されます -->
       </div>
     </div>
   </div>
@@ -461,12 +464,8 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 <!-- 👁️ 画面中央に浮き出る切り替えポップアップ（モーダルウィンドウ） -->
 <div id="saibi-gallery-modal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); align-items: center; justify-content: center;">
   <div style="background-color: #fff; padding: 25px; border-radius: 8px; width: 90%; max-width: 400px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); text-align: center; position: relative;">
-    <!-- 閉じるボタン -->
     <span onclick="closeGalleryModal(event)" style="position: absolute; right: 15px; top: 10px; font-size: 24px; font-weight: bold; color: #aaa; cursor: pointer;" onmouseover="this.style.color='#000'" onmouseout="this.style.color='#aaa'">&times;</span>
-    
     <h3 style="margin: 0 0 20px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 5px;">🧩 表示する局面・問題の選択</h3>
-    
-    <!-- 切り替えボタン群（YouTube切り替えボタンに近いネイビー基調のデザイン） -->
     <div style="display: flex; flex-direction: column; gap: 10px;">
       <button onclick="selectGallerySet('set1', event)" class="gallery-select-btn" style="width: 100%; padding: 12px; background-color: #003366; color: white; border: 1px solid #003366; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.2s;">基本問題（4枚完結）</button>
       <button onclick="selectGallerySet('set2', event)" class="gallery-select-btn" style="width: 100%; padding: 12px; background-color: white; color: #003366; border: 1px solid #003366; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.2s;">応用問題（5枚完結）</button>
@@ -474,16 +473,8 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   </div>
 </div>
 
-<!-- 💡 動的縦スクロール ＆ ポップアップ制御用CSS・JavaScript -->
-<style>
-  /* 縦スクロール用のアニメーションを動的に作成するためのベースCSS */
-  @keyframes slideShowVerticalDynamic {
-    0%, 15% { transform: translateY(0); }
-  }
-</style>
-
 <script>
-  // 💾 碁盤データ管理（セットごとに4枚でも5枚でも自由に設定可能です）
+  // 💾 碁盤・写真データ（ダミー画像が入っています。ここをご自身のファイル名に書き換えてください）
   const saibiGalleryData = {
     set1: [
       { img: "photo1.jpg", text: "① どこに打てばいいんだろう…？（じっくり考える時間）" },
@@ -500,115 +491,107 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     ]
   };
 
-  // ポップアップを開く
   function openGalleryModal() {
     document.getElementById('saibi-gallery-modal').style.display = 'flex';
   }
 
-  // ポップアップを閉じる（親要素へのクリック伝播を防ぐ）
   function closeGalleryModal(event) {
     if(event) event.stopPropagation();
     document.getElementById('saibi-gallery-modal').style.display = 'none';
   }
 
-  // ポップアップ内のボタンでセットを切り替える処理
   function selectGallerySet(setKey, event) {
-    if(event) event.stopPropagation(); // スライド開閉の連動を防ぐ
-    
+    if(event) event.stopPropagation();
     renderVerticalSlideshow(setKey);
     
-    // ボタンの選択状態（色）を切り替える
     const buttons = document.querySelectorAll('.gallery-select-btn');
     buttons.forEach(btn => {
       btn.style.backgroundColor = 'white';
       btn.style.color = '#003366';
     });
     
-    // クリックされたボタンをアクティブカラーに
     if (event && event.target) {
       event.target.style.backgroundColor = '#003366';
       event.target.style.color = 'white';
     }
-
-    // 選択したら自動でポップアップを閉じる
     setTimeout(closeGalleryModal, 300);
   }
 
-  // 4枚・5枚の縦スクロールを完全に制御して生成する関数
+  // 🔄 縦スクロールを完全に制御する関数
   function renderVerticalSlideshow(setKey) {
     const container = document.getElementById('saibi-slideshow-container');
     const items = saibiGalleryData[setKey];
     if (!items || items.length === 0) return;
 
-    const len = items.length; // 4 または 5
+    const len = items.length;
+
+    // 💡 以前作成された古いCSSアニメーションタグがあれば完全に削除（競合排除）
+    const oldStyle = document.getElementById('dynamic-slideshow-style');
+    if (oldStyle) oldStyle.remove();
+
+    // 1. 枚数に応じた新しい縦スクロールのCSSアニメーションをゼロから作成
+    const animationName = `slideShowVerticalCustom${len}_${Date.now()}`; // 毎回固有の名前を作成してキャッシュを回避
+    let keyframesRule = `@keyframes ${animationName} {`;
     
-    // 1. コンテナの高さとアニメーションを枚数に応じて計算
-    container.style.height = `${len * 100}%`;
-    
-    // 2. 枚数に合わせた新しいCSSアニメーション（キーフレーム）を動的に生成
-    let keyframesRule = `@keyframes slideShowVerticalDynamic {`;
     const step = 100 / len; // 4枚なら25%, 5枚なら20%
-    const displayPercent = 18; // 1枚が静止して表示される時間枠
+    const stayPercent = step * 0.8; // 各コマが静止している時間（8割静止、2割でスクロール）
 
     for (let i = 0; i < len; i++) {
-      const startLog = i * step;
-      const endLog = startLog + displayPercent;
-      const moveY = -(i * (100 / len));
-      
+      const startStay = i * step;
+      const endStay = startStay + stayPercent;
+      const moveY = -(i * 240); // 1コマの高さが240px固定なので、240pxずつ上にずらす
+
       keyframesRule += `
-        ${startLog}%, ${Math.min(endLog, 95)}% { transform: translateY(${moveY}%); }
+        ${startStay}%, ${Math.min(endStay, 98)}% { transform: translateY(${moveY}px); }
       `;
     }
-    // ループの最後を綺麗に0%（最初）に戻す処理
-    keyframesRule += `100% { transform: translateY(0); } }`;
+    // 最後に滑らかに0px（最初）に戻る処理
+    keyframesRule += `100% { transform: translateY(0px); } }`;
 
-    // 古い動的スタイルがあれば削除して、新しいアニメーションを適用
-    let dynamicStyle = document.getElementById('dynamic-slideshow-style');
-    if (dynamicStyle) dynamicStyle.remove();
-    
-    dynamicStyle = document.createElement('style');
+    // 新しいスタイルを適用
+    const dynamicStyle = document.createElement('style');
     dynamicStyle.id = 'dynamic-slideshow-style';
     dynamicStyle.innerHTML = keyframesRule;
     document.head.appendChild(dynamicStyle);
 
-    // 総アニメーション時間は1枚あたり5秒（4枚なら20s、5枚なら25s）
-    container.style.animation = `slideShowVerticalDynamic ${len * 5}s infinite`;
-
-    // 3. HTMLの中身（各コマ）を組み立て
+    // 2. HTMLの生成（1コマの枠をきっちり横100%、縦240pxに固定）
     let htmlContent = '';
-    const itemHeightPercent = 100 / len; // 4枚なら25%, 5枚なら20%
-
     items.forEach((item) => {
       htmlContent += `
-        <div style="width: 100%; height: ${itemHeightPercent}%; display: flex; flex-direction: column; justify-content: space-between;">
-          <img src="${item.img}" alt="碁盤局面" style="width: 100%; height: 180px; object-fit: cover; flex-shrink: 0;">
-          <p style="margin: 0; padding: 8px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff;">${item.text}</p>
+        <div style="width: 100%; height: 240px; display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0; box-sizing: border-box;">
+          <img src="${item.img}" alt="碁盤局面" style="width: 100%; height: 180px; object-fit: cover; flex-shrink: 0; display: block;">
+          <p style="margin: 0; padding: 8px 0; font-size: 13px; color: #333; font-weight: bold; background-color: #fff; height: 60px; line-height: 1.4; display: flex; align-items: center; justify-content: center; box-sizing: border-box;">${item.text}</p>
         </div>
       `;
     });
 
+    // アニメーションを停止させてから中身を入れ替え
+    container.style.animation = 'none';
     container.innerHTML = htmlContent;
+
+    // 3. アニメーションを再スタート（1枚あたり4秒計算。4枚なら16秒、5枚なら20秒で1周）
+    setTimeout(() => {
+      container.style.animation = `${animationName} ${len * 4}s infinite ease-in-out`;
+    }, 50);
   }
 
-  // 最初（画面読み込み時）はset1（4枚）を表示させておく
+  // 初期表示（画面を開いた時は自動でset1を動かす）
   window.addEventListener('DOMContentLoaded', () => {
     renderVerticalSlideshow('set1');
   });
 
-  // 既存のYouTube切り替え関数（干渉しないようそのまま残しています）
+  // 既存のYouTube切り替え関数（干渉防止のためそのまま配置）
   function switchYouTube(buttonElement) {
     const videoId = buttonElement.getAttribute('data-video-id');
     const player = document.getElementById('saibijuku-player');
     
     if(videoId && !videoId.includes("入れてください")) {
       player.src = `https://youtube.com{videoId}?rel=0&autoplay=1`;
-
       const buttons = document.querySelectorAll('.sb-btn');
       buttons.forEach(btn => {
         btn.style.backgroundColor = 'white';
         btn.style.color = '#003366';
       });
-      
       buttonElement.style.backgroundColor = '#003366';
       buttonElement.style.color = 'white';
     }
