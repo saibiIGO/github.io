@@ -8,88 +8,76 @@
     <meta name="description" content="尾道市因島の『さいび塾（才美塾）囲碁教室』の公式ホームページです。無学年でじっくり楽しめるネット囲碁対局や、生徒同士のオンライン交流を行っています。">
     <meta name="keywords" content="さいび,才美塾,さいびじゅく,囲碁教室,因島,尾道">
    <!-- ===============================================================-->
-    <style>
-   <!-- 🎛️ ボタンメニュー群（すっきりした見た目を維持し、消えたボタンをすべて復活！） -->
-<div style="display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 250px;">
-
-  <!-- ① 古文書ボタン -->
-  <a href="komonjo.pdf" target="_blank" style="display: block; background-color: #8B4513; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
-    📜 古文書の案内 (PDF)
-  </a>
-
-  <!-- ② ハーモニカボタン -->
-  <audio id="harmonica-sound" src="harmonica.mp3" preload="auto"></audio>
-  <button id="harmonica-btn" onclick="toggleHarmonica()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #20B2AA; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
-    🎵 ハーモニカの演奏
-  </button>
-
-  <!-- ③ ピアノボタン（音を鳴らしつつ、別タブでPDFを開くように改良） -->
-  <audio id="piano-sound" src="piano.mp3" preload="auto"></audio>
-  <button id="piano-btn" onclick="togglePiano(); window.open('piano_score.pdf', '_blank');" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #333333; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
-    🎹 ピアノの演奏 (PDFも開く)
-  </button>
-
-  <!-- 📐 ④ 手割り 動画ボタン -->
-  <button class="sb-btn" data-video-id="23BP-eTUiEU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #4a5568; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
-    📐 「手割り」講義動画
-  </button>
-
-  <!-- 🎯 ⑤ 筋・筋場 動画ボタン -->
-  <button class="sb-btn" data-video-id="ここにYouTubeのID" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #003366; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
-    🎯 「筋・筋場」講義動画
-  </button>
-
-  <!-- ✨ ⑥ 予備 動画ボタン -->
-  <button class="sb-btn" data-video-id="https://www.kansai-u.ac.jp/ja/?stt_lang=ja" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #718096; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
-    ✨ 予備の動画
-  </button>
-
-</div>
-</div>
-
-<!-- 👉【右半分】：関連資料・PDFダウンロードコーナー -->
-<div style="flex: 1; min-width: 280px; padding: 15px; background-color: white; border-radius: 6px; border: 1px solid #ddd; box-sizing: border-box; display: flex; flex-direction: column; gap: 15px;">
-<h3 style="margin: 0 0 5px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📚 講義の関連資料 (PDF)</h3>
-
-<!-- ① 手割りPDF -->
-<div style="padding: 5px 0; border-bottom: 1px dashed #ddd;">
-  <a href="tewari.pdf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
-    ➔ 「手割り」解説テキストはこちら (PDF)
-  </a>
-</div>
-
-<!-- ② 筋・筋場PDF -->
-<div style="padding: 5px 0; border-bottom: 1px dashed #ddd;">
-  <a href="tesuji_sujiba.pdf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
-    ➔ 「筋・筋場」解説テキストはこちら (PDF)
-  </a>
-</div>
-
-<!-- ③ 予備PDF -->
-<div style="padding: 5px 0; border-bottom: 1px dashed #ddd;">
-  <a href="yobi.pdf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
-    ➔ 予備の関連資料ダウンロード (PDF)
-  </a>
-</div>
-
-<!-- 📺 YouTube動画が表示されるエリア -->
-<div id="video-container" style="display: none; width: 100%; max-width: 250px; margin-top: 10px; position: relative; padding-top: 56.25%;">
-  <iframe id="youtube-player" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></iframe>
-</div>
-
-        body { font-family: sans-serif; line-height: 1.8; color: #333; background-color: #f4f6f8; margin: 0; padding: 0; }
-        .container { max-width: 800px; margin: 30px auto; padding: 30px; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        /* 使用しなくなったheaderのスタイルは削除または無視して大丈夫です */
-        h2 { color: #2c3e50; border-left: 5px solid #ff9f43; padding-left: 15px; margin-top: 40px; margin-bottom: 20px; font-size: 1.5rem; }
-        h3 { color: #34495e; font-size: 1.2rem; margin-top: 25px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
-        .btn-box { text-align: center; margin: 30px 0; }
-        .btn-contact { display: inline-block; background-color: #ff9f43; color: #fff; padding: 15px 35px; text-decoration: none; font-weight: bold; border-radius: 30px; }
-        .btn-homework { display: inline-block; background-color: #27ae60; color: #fff; padding: 15px 35px; text-decoration: none; font-weight: bold; border-radius: 30px; }
-        ul { padding-left: 20px; } li { margin-bottom: 8px; } a { color: #2980b9; text-decoration: none; }
-</style>
+  <!-- ===============================================================-->
 </head>
 <body>
-<div class="container">
+
+<div style="display: flex; flex-direction: column; gap: 20px; width: 100%; max-width: 560px; margin: 20px auto; padding: 0 10px;">
+
+  <!-- 📺 １．ホームページの中に埋め込む用のテレビ画面 -->
+  <div style="position: relative; width: 100%; padding-top: 56.25%;">
+    <iframe id="main-youtube" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" src="https://youtube.com" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+  </div>
+
+  <!-- 🎛️ ボタンメニュー群 -->
+  <div style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
+
+    <!-- ① 古文書ボタン -->
+    <a href="komonjo.pdf" target="_blank" style="display: block; background-color: #8B4513; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
+      📜 古文書の案内 (PDF)
+    </a>
+
+    <!-- ② ハーモニカボタン -->
+    <audio id="harmonica-sound" src="harmonica.mp3" preload="auto"></audio>
+    <button id="harmonica-btn" onclick="toggleHarmonica()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #20B2AA; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
+      🎵 ハーモニカの演奏
+    </button>
+
+    <!-- ③ ピアノボタン -->
+    <audio id="piano-sound" src="piano.mp3" preload="auto"></audio>
+    <button id="piano-btn" onclick="togglePiano(); window.open('piano_score.pdf', '_blank');" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #333333; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
+      🎹 ピアノの演奏 (PDFも開く)
+    </button>
+
+    <hr style="border: 0; border-top: 1px dashed #ccc; margin: 10px 0;">
+    <p style="margin: 0; font-size: 13px; color: #666; font-weight: bold;">👇 ボタンを押すと上の画面が切り替わります</p>
+
+    <!-- 📐 ④ 手割り 動画ボタン -->
+    <button class="sb-btn" data-video-id="23BP-eTUiEU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #4a5568; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
+      📐 「手割り」講義動画を見る
+    </button>
+
+    <!-- 🎯 ⑤ 筋・筋場 動画ボタン -->
+    <button class="sb-btn" data-video-id="ここにYouTubeのIDを入れる" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #003366; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
+      🎯 「筋・筋場」講義動画を見る
+    </button>
+
+    <hr style="border: 0; border-top: 1px dashed #ccc; margin: 10px 0;">
+    <p style="margin: 0; font-size: 13px; color: #666; font-weight: bold;">👇 ２．別画面（新しいタブ）で大きく開く場合</p>
+
+    <!-- 🌟 大きく見せるための別タブリンクボタン（例として手割り動画を設定しています） -->
+    <a href="https://youtube.com" target="_blank" style="display: block; background-color: #2b6cb0; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
+      🖥️ 動画を別画面で大きく見る（YouTubeへ）
+    </a>
+
+  </div>
+</div>
+
+<!-- 💡 動画を切り替えるためのJavaScriptプログラム -->
+<script>
+function switchYouTube(button) {
+  var videoId = button.getAttribute('data-video-id');
+  if (videoId === "ここにYouTubeのIDを入れる") {
+    alert("動画IDがまだ設定されていません。");
+    return;
+  }
+  var iframe = document.getElementById('main-youtube');
+  iframe.src = "https://youtube.com" + videoId;
+}
+</script>
+
+</body>
+
 
 <!-- ===============================================================--
 <!-- 全体を包む見やすい薄い背景のボックス -->
