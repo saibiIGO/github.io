@@ -86,40 +86,7 @@
         .btn-contact { display: inline-block; background-color: #ff9f43; color: #fff; padding: 15px 35px; text-decoration: none; font-weight: bold; border-radius: 30px; }
         .btn-homework { display: inline-block; background-color: #27ae60; color: #fff; padding: 15px 35px; text-decoration: none; font-weight: bold; border-radius: 30px; }
         ul { padding-left: 20px; } li { margin-bottom: 8px; } a { color: #2980b9; text-decoration: none; }
-  /* 元々あった色々なデザインのコードが */
-  /* ここにたくさん並んでいます... */
-  /* ... */
-
-  /* ======= 💡 ここに貼り付けるのが一番安全です！ ======= */
-body { 
-    counter-reset: sponsor-counter; 
-}
-.sponsor-card h3 { 
-    display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 0; 
-}
-.sponsor-card h3::before {
-    /* 1. 自動で番号を増やす */
-    counter-increment: sponsor-counter;
-    content: counter(sponsor-counter) "."; 
-    
-    /* 2. 見た目の並びを整える */
-    display: inline-flex; align-items: center; justify-content: center;
-    font-size: 1.2rem; font-weight: bold; color: #28a745;
-    
-    /* 3. 網を持ったオゾンくんが綺麗に収まるサイズ設定 */
-    padding-left: 42px; /* 隙間 */
-    height: 36px;       /* 高さ */
-    background-image: url("ozon.png"); /* 👈 ozon.png（eなし）に完全対応しました！ */
-    background-size: contain; /* 画像を潰さず自動収縮 */
-    background-repeat: no-repeat; 
-    background-position: left center; 
-    flex-shrink: 0;
-}
-
-  /* =================================================== */
-
-</style>  <!-- 👈 この終わりのタグのすぐ上に置くと間違いがありません -->
-
+</style>
 </head>
 <body>
 <div class="container">
@@ -968,20 +935,13 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     <h2>🏆 才美塾を応援してくださる協賛企業・法人リンク</h2>
     <div class="link-grid">
 
-
-<!-- スポンサー1：東西電工株式会社 -->
-<a href="https://tozaidenko.co.jp" target="_blank" rel="noopener noreferrer" class="link-card sponsor-card">
-  <div class="card-content">
-    <h3 style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
-      <!-- 👇 alt属性を分かりやすい名前にし、画像読み込みエラー時の表示崩れを防ぐ設定を追加 -->
-      <img src="ozon.png" alt="東西電工公式キャラクター オゾン" style="width: 32px; height: 32px; object-fit: contain; flex-shrink: 0;">
-      <span>東西電工株式会社 ➔</span>
-    </h3>
-    <p>当教室を応援してくださっているオフィシャルスポンサーで、電灯用安定器からLED照明まで幅広く対応できる数少ないメーカーです。</p>
-  </div>
-</a>
-
-    
+      <!-- スポンサー1：東西電工株式会社 -->
+      <a href="http://www.tozaidenko.co.jp/" target="_blank" rel="noopener" class="link-card sponsor-card">
+        <div class="card-content">
+         <h3>💡 東西電工株式会社 ➔</h3>
+          <p>当教室を応援してくださっているオフィシャルスポンサーで,電灯用安定器からＬＥＤ照明まで幅広く対応できる数少ないメーカーです。</p>
+        </div>
+      </a>
 
       <!-- スポンサー2：社会福祉法人 若葉 -->
       <a href="https://wakaba-innoshima.com/" target="_blank" rel="noopener" class="link-card sponsor-card">
@@ -1276,31 +1236,7 @@ function switchYouTube(button) {
   player.src = "https://youtube.com" + videoId + "?autoplay=1";
   container.style.display = "block";
 }
-
-   <!-- ===============================================================-->   
-
-
- </script>
-// プレイヤーにYouTubeのURLをセットしてエリアを表示
-  player.src = "https://youtube.com" + videoId + "?autoplay=1";
-  container.style.display = "block";
-}
-
-   <!-- ===============================================================-->   
-
-
- </script>
-
- <!-- 👇 ここからボタンのコードを貼り付けます -->
- <p style="text-align: center; margin-top: 40px; margin-bottom: 40px;">
-     <a href="morgancity.html" style="display: inline-block; padding: 12px 24px; background-color: #0056b3; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-family: sans-serif;">
-         明治32年の記憶：モーガン・シティ号の奇跡を見る
-     </a>
- </p>
- <!-- 👆 ここまで -->
-
-</body>
-</html>
+</script>
 
 </body>
 </html>
