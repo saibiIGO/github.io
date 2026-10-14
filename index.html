@@ -86,7 +86,40 @@
         .btn-contact { display: inline-block; background-color: #ff9f43; color: #fff; padding: 15px 35px; text-decoration: none; font-weight: bold; border-radius: 30px; }
         .btn-homework { display: inline-block; background-color: #27ae60; color: #fff; padding: 15px 35px; text-decoration: none; font-weight: bold; border-radius: 30px; }
         ul { padding-left: 20px; } li { margin-bottom: 8px; } a { color: #2980b9; text-decoration: none; }
-</style>
+  /* 元々あった色々なデザインのコードが */
+  /* ここにたくさん並んでいます... */
+  /* ... */
+
+  /* ======= 💡 ここに貼り付けるのが一番安全です！ ======= */
+body { 
+    counter-reset: sponsor-counter; 
+}
+.sponsor-card h3 { 
+    display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 0; 
+}
+.sponsor-card h3::before {
+    /* 1. 自動で番号を増やす */
+    counter-increment: sponsor-counter;
+    content: counter(sponsor-counter) "."; 
+    
+    /* 2. 見た目の並びを整える */
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; font-weight: bold; color: #28a745;
+    
+    /* 3. 網を持ったオゾンくんが綺麗に収まるサイズ設定 */
+    padding-left: 42px; /* 隙間 */
+    height: 36px;       /* 高さ */
+    background-image: url("ozon.png"); /* 👈 ozon.png（eなし）に完全対応しました！ */
+    background-size: contain; /* 画像を潰さず自動収縮 */
+    background-repeat: no-repeat; 
+    background-position: left center; 
+    flex-shrink: 0;
+}
+
+  /* =================================================== */
+
+</style>  <!-- 👈 この終わりのタグのすぐ上に置くと間違いがありません -->
+
 </head>
 <body>
 <div class="container">
@@ -1243,7 +1276,11 @@ function switchYouTube(button) {
   player.src = "https://youtube.com" + videoId + "?autoplay=1";
   container.style.display = "block";
 }
-</script>
+
+   <!-- ===============================================================-->   
+
+
+ </script>
 
 </body>
 </html>
