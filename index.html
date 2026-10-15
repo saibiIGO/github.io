@@ -12,9 +12,10 @@
    <!-- 🎛️ ボタンメニュー群（すっきりした見た目を維持し、消えたボタンをすべて復活！） -->
 <div style="display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 250px;">
 
+
   <!-- ① 古文書ボタン -->
-  <a href="komonjo.pdf" target="_blank" style="display: block; background-color: #8B4513; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
-    📜 古文書の案内 (PDF)
+  <a href="history.html" style="display: block; background-color: #8B4513; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
+    📜 古文書・因島の歴史
   </a>
 
   <!-- ② ハーモニカボタン -->
@@ -86,7 +87,32 @@
         .btn-contact { display: inline-block; background-color: #ff9f43; color: #fff; padding: 15px 35px; text-decoration: none; font-weight: bold; border-radius: 30px; }
         .btn-homework { display: inline-block; background-color: #27ae60; color: #fff; padding: 15px 35px; text-decoration: none; font-weight: bold; border-radius: 30px; }
         ul { padding-left: 20px; } li { margin-bottom: 8px; } a { color: #2980b9; text-decoration: none; }
-</style>
+  /* 元々あった色々なデザインのコードが */
+  /* ここにたくさん並んでいます... */
+  /* ... */
+
+  /* ======= 💡 ここに貼り付けるのが一番安全です！ ======= */
+.sponsor-card h3 { 
+    display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 0; 
+}
+.sponsor-card h3::before {
+    /* 👇 数字のカウントを消して、空っぽにしました */
+    content: ""; 
+    
+    display: inline-flex; align-items: center; justify-content: center;
+    padding-left: 42px; 
+    height: 36px;       
+    background-image: url("ozon.png"); 
+    background-size: contain; 
+    background-repeat: no-repeat; 
+    background-position: left center; 
+    flex-shrink: 0;
+}
+
+  /* =================================================== */
+
+</style>  <!-- 👈 この終わりのタグのすぐ上に置くと間違いがありません -->
+
 </head>
 <body>
 <div class="container">
@@ -924,7 +950,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 
 
    <!-- ===============================================================-->
-    
+ 
 <!-- ==========================================
      【新設】スポンサー・地域関連リンク セクション
      ========================================== -->
@@ -932,37 +958,48 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 
   <!-- 🏆 スポンサーエリア（今後増えたらここに追加） -->
   <div class="link-group">
-    <h2>🏆 才美塾を応援してくださる協賛企業・法人リンク</h2>
+    <h2 style="color: #333; border-left: 5px solid #28a745; padding-left: 10px; margin-top: 0; margin-bottom: 20px;">
+      🏆 才美塾を応援してくださる協賛企業・法人リンク
+    </h2>
+    <!-- 💡 style属性を取り除き、元々あった2列用の link-grid の動きに戻しました -->
     <div class="link-grid">
 
       <!-- スポンサー1：東西電工株式会社 -->
-      <a href="http://www.tozaidenko.co.jp/" target="_blank" rel="noopener" class="link-card sponsor-card">
+      <a href="https://tozaidenko.co.jp" target="_blank" rel="noopener noreferrer" class="link-card sponsor-card">
         <div class="card-content">
-         <h3>💡 東西電工株式会社 ➔</h3>
-          <p>当教室を応援してくださっているオフィシャルスポンサーで,電灯用安定器からＬＥＤ照明まで幅広く対応できる数少ないメーカーです。</p>
+          <h3><span>東西電工株式会社 ➔</span></h3>
+          <p>当教室を応援してくださっているオフィシャルスポンサーで、電灯用安定器からLED照明まで幅広く対応できる数少ないメーカーです。</p>
         </div>
       </a>
 
       <!-- スポンサー2：社会福祉法人 若葉 -->
-      <a href="https://wakaba-innoshima.com/" target="_blank" rel="noopener" class="link-card sponsor-card">
+      <a href="https://wakaba-innoshima.com" target="_blank" rel="noopener noreferrer" class="link-card sponsor-card">
         <div class="card-content">
-        <h3>🌱 社会福祉法人　若葉 ➔</h3>
+          <h3><span>社会福祉法人 若葉 ➔</span></h3>
           <p>「すべての人が地域社会で普通の生活をする」そんな地域づくりをめざす福祉法人です。</p>
         </div>
       </a>
-
-   <!-- スポンサー3：とんぼ草 -->
-      <a href="http://blog.livedoor.jp/tombosou/archives/cat_10053162.html" target="_blank" rel="noopener" class="link-card sponsor-card">
+      
+      <!-- スポンサー3：松愛堂 -->
+      <a href="https://shoaido.jp" target="_blank" rel="noopener noreferrer" class="link-card sponsor-card">
         <div class="card-content">
-        <h3>🌱 とんぼ草 ➔</h3>
-          <p>因島の歴史、特に村上水軍など詳しく知ることができます。</p>
+          <h3><span>御菓子司 松愛堂 ➔</span></h3>
+          <p>尾道・因島の囲碁大会で「微笑みを届けてくださる」和菓子・洋菓子・季節菓子の老舗です。</p>
         </div>
       </a>
 
+      <!-- スポンサー4：とんぼ草 -->
+      <a href="http://livedoor.jp" target="_blank" rel="noopener noreferrer" class="link-card sponsor-card">
+        <div class="card-content">
+          <h3><span>とんぼ草 ➔</span></h3>
+          <p>因島の歴史、特に村上水軍など詳しく知ることができます。</p>
+        </div>
+      </a>
       <!-- 💡 今後スポンサーが増えたら、このすぐ下に同じ形式で追加してください -->
-
     </div>
   </div>
+</section>
+ 
 
    <!-- ===============================================================-->
   <!-- 🏛️ 尾道市・地域施設エリア -->
@@ -1236,7 +1273,12 @@ function switchYouTube(button) {
   player.src = "https://youtube.com" + videoId + "?autoplay=1";
   container.style.display = "block";
 }
-</script>
+
+   <!-- ===============================================================-->   
+
+
+ </script>
+
 
 </body>
 </html>
