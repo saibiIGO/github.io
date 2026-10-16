@@ -1288,7 +1288,8 @@ function switchYouTube(button) {
 
  </script>
    <!-- ===============================================================-->   
-   <!-- 🚨 ここから追加：動的ポップアップ（より確実な完全版） -->
+
+<!-- 🚨 ここから追加：動的ポップアップ（どんな名前でも探せる超・確実版） -->
 <div id="dynamic-popup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); z-index: 10000; justify-content: center; align-items: center;">
   <div style="background: #fff; padding: 30px; border-radius: 8px; max-width: 500px; width: 90%; box-shadow: 0 4px 20px rgba(0,0,0,0.3); position: relative; border-top: 5px solid #003366;">
     <button id="close-popup-btn" style="position: absolute; top: 12px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: #999; font-weight: bold;">&times;</button>
@@ -1299,15 +1300,18 @@ function switchYouTube(button) {
 
 <script>
   window.addEventListener('DOMContentLoaded', () => {
-    // 💡 置き場所のズレを防ぐため、同じ部屋のファイルをより確実に読み込む命令に変えました
-    fetch('notice.json?' + new Date().getTime())
-      .then(response => {
-        if (!response.ok) throw new Error('No notice file');
-        return response.json();
-      })
+    // 💡 万が一「.txt」などが後ろについてしまっていても、どちらでも読み込めるように2段階で優しく探します
+    const tryFetch = (fileName) => {
+      return fetch(fileName + '?' + new Date().getTime())
+        .then(res => { if (!res.ok) throw new Error(); return res.json(); });
+    };
+
+    // まずは普通に探し、ダメなら「.txt」付きや大文字も試します
+    tryFetch('notice.json')
+      .catch(() => tryFetch('notice.json.txt'))
+      .catch(() => tryFetch('notice.JSON'))
       .then(data => {
         if (data && data.show === true) {
-          // テスト中は一度閉じても毎回必ず表示されるように、一時的に記憶のチェックを外しました
           document.getElementById('popup-title').innerHTML = data.title;
           document.getElementById('popup-content').innerHTML = data.content;
           document.getElementById('dynamic-popup').style.display = 'flex';
@@ -1317,12 +1321,13 @@ function switchYouTube(button) {
           };
         }
       })
-      .catch(error => {
-        console.log('エラーが発生しました:', error);
+      .catch(() => {
+        console.log('お知らせファイルがまだ読み込めません。');
       });
   });
 </script>
 <!-- 🚨 ここまで追加 -->
+
 
 
 </body>
