@@ -86,6 +86,27 @@
         .btn-contact { display: inline-block; background-color: #ff9f43; color: #fff; padding: 15px 35px; text-decoration: none; font-weight: bold; border-radius: 30px; }
         .btn-homework { display: inline-block; background-color: #27ae60; color: #fff; padding: 15px 35px; text-decoration: none; font-weight: bold; border-radius: 30px; }
         ul { padding-left: 20px; } li { margin-bottom: 8px; } a { color: #2980b9; text-decoration: none; }
+  /* ======= 💡 ここに貼り付けるのが一番安全です！ ======= */
+.sponsor-card h3 { 
+    display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 0; 
+}
+.sponsor-card h3::before {
+    /* 👇 数字のカウントを消して、空っぽにしました */
+    content: ""; 
+    
+    display: inline-flex; align-items: center; justify-content: center;
+    padding-left: 42px; 
+    height: 36px;       
+    background-image: url("ozon.png"); 
+    background-size: contain; 
+    background-repeat: no-repeat; 
+    background-position: left center; 
+    flex-shrink: 0;
+}
+
+
+
+<!-- 👈 この終わりのタグのすぐ上に置くと間違いがありません -->
 </style>
 </head>
 <body>
@@ -96,23 +117,29 @@
 <div style="background-color: #fcf8f2; padding: 25px; border-radius: 8px; border: 1px solid #e0d0b0; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); box-sizing: border-box; font-family: sans-serif; text-align: left;">
 
     <!-- 💡 【最上部：横いっぱいに配置】メッセージを洗練された和モダンなロゴ枠に刷新 -->
-<div style="width: 100%; text-align: center; margin-bottom: 30px; padding: 25px 20px; background-color: #ffffff; border-top: 4px solid #b35900; border-bottom: 4px solid #b35900; box-shadow: 0 4px 12px rgba(0,0,0,0.02); box-sizing: border-box; position: relative;">
-
-  <!-- 装飾用の小さな四角（和風のアクセント） -->
-  <div style="position: absolute; top: -7px; left: 50%; transform: translateX(-50%); background-color: #b35900; color: #fff; font-size: 10px; padding: 1px 8px; border-radius: 3px; letter-spacing: 0.1em;">CONCEPT</div>
-
-  <!-- サブコピー -->
-  <p style="margin: 0 0 10px 0; font-size: 15px; color: #666; font-weight: bold; letter-spacing: 0.10em; font-family: 'Georgia', serif;">
-     知頭に加え、本当に必要な考える力を
-  </p>
-
-  <!-- メインコピーと英語ボタンを横並びにするエリア -->
-  <div style="display: flex; justify-content: center; align-items: center; position: relative; max-width: 650px; margin: 0 auto;">
-    
-    <!-- メインコピー -->
-    <p style="margin: 0; font-size: 24px; color: #b35900; font-weight: bold; letter-spacing: 0.15em; line-height: 1.4; text-shadow: 1px 1px 1px rgba(0,0,0,0.05); padding-right: 20px;">
-      囲碁で磨く、全世代の地頭力
-    </p>
+    <!-- 💡 【最上部】メッセージロゴ枠（画像大きめ・高さ極小版） -->
+    <div style="width: 100%; text-align: center; margin-bottom: 35px; padding: 12px 20px; background-color: #ffffff; border-top: 4px solid #b35900; border-bottom: 4px solid #b35900; box-shadow: 0 4px 12px rgba(0,0,0,0.02); box-sizing: border-box; position: relative;">
+        
+        <!-- ① コンセプトタグ -->
+        <div style="position: absolute; top: -9px; left: 50%; transform: translateX(-50%); background-color: #b35900; color: #fff; font-size: 11px; padding: 2px 12px; border-radius: 3px; letter-spacing: 0.15em; font-weight: bold;">CONCEPT</div>
+        
+        <!-- ② メインエリア：要素をすべて横並びに集約して高さを抑える -->
+        <div style="display: flex; justify-content: center; align-items: center; gap: 25px; max-width: 100%; margin: 10px auto 0 auto; flex-wrap: wrap;">
+            
+            <!-- 📸 左側の写真 -->
+            <img src="innoshima-bridge.jpg" alt="タイトル画像" style="max-height: 100px; max-width: 100%; width: auto; height: auto; object-fit: contain; display: block;">
+            
+            <!-- ✍️ 文字エリア -->
+            <div style="text-align: left; display: flex; flex-direction: column; justify-content: center; gap: 4px;">
+                <!-- サブコピー -->
+                <p style="margin: 0; font-size: 13px; color: #666; font-weight: bold; letter-spacing: 0.1em;">
+                     知頭に加え、本当に必要な考える力を
+                </p>
+                <!-- タイトル -->
+                <p style="margin: 0; font-size: 24px; color: #b35900; font-weight: bold; letter-spacing: 0.12em; line-height: 1.2; text-shadow: 1px 1px 1px rgba(0,0,0,0.03);">
+                  囲碁で磨く、全世代の地頭力
+                </p>
+            </div>
 
     <!-- 🌐 英語版への切り替えリンク（地頭力のすぐ右側に配置） -->
     <a href="en.html" style="font-size: 13px; color: #b35900; text-decoration: none; font-weight: bold; border: 1px solid #b35900; padding: 3px 8px; border-radius: 4px; background-color: #ffffff; white-space: nowrap;">
@@ -211,7 +238,7 @@
   <div id="video-container" style="display: none; width: 100%; max-width: 250px; margin-top: 10px; position: relative; padding-top: 56.25%;">
     <iframe id="youtube-player" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></iframe>
   </div>
-
+/* ======= 💡 ここに貼り付けるのが一番安全です！ ======= */
 
 <!-- ⚙️ 動画を動かすための最終プログラム（完成版） -->
 <script>
