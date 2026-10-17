@@ -527,6 +527,10 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     </div>
   </div>
 </div>
+
+
+
+
 <!--javascript-->
 <script>
   const ADMIN_PASSWORD = "saibi"; 
@@ -554,9 +558,12 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     }
   };
 
-  // 以前の古い壊れた記憶をリセットするため、最新バージョン(v10)に完全固定
-  let saibiGalleryData = JSON.parse(localStorage.getItem('saibi_g_v10')) || defaultGalleryData;
-  let currentSetKey = Object.keys(saibiGalleryData) || 'set1';
+  // 以前の古い記憶を完全に断ち切るため、最新バージョン(v11)に固定
+  let saibiGalleryData = JSON.parse(localStorage.getItem('saibi_g_v11')) || defaultGalleryData;
+  
+  // ✨ 【完全修正】後ろに [0] を確実に指定し、Chromiumやスマホでのエラーを根絶します
+  let currentSetKey = Object.keys(saibiGalleryData)[0] || 'set1';
+  
   let currentSlideIndex = 0;
   let slideshowTimeout = null;
 
@@ -692,7 +699,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       slides: [{ img: "photo1.png", text: "① 新しいスライド", duration: 4 }]
     };
     nameInput.value = '';
-    localStorage.setItem('saibi_g_v10', JSON.stringify(saibiGalleryData));
+    localStorage.setItem('saibi_g_v11', JSON.stringify(saibiGalleryData));
     currentSetKey = newKey;
     
     buildAdminSetSelect();
@@ -705,9 +712,10 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     if (!confirm("本当にこのギャラリーセットを削除しますか？")) return;
     
     delete saibiGalleryData[currentSetKey];
-    localStorage.setItem('saibi_g_v10', JSON.stringify(saibiGalleryData));
+    localStorage.setItem('saibi_g_v11', JSON.stringify(saibiGalleryData));
     
-    currentSetKey = Object.keys(saibiGalleryData);
+    // ✨ ここも [0] を補完してバグを防ぎます
+    currentSetKey = Object.keys(saibiGalleryData)[0];
     
     buildAdminSetSelect();
     loadSetToEditor(currentSetKey);
@@ -734,7 +742,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     if(newSlides.length === 0) { alert("最低1コマは作成してください。"); return; }
 
     saibiGalleryData[currentSetKey].slides = newSlides;
-    localStorage.setItem('saibi_g_v10', JSON.stringify(saibiGalleryData));
+    localStorage.setItem('saibi_g_v11', JSON.stringify(saibiGalleryData));
     
     alert("⚙️ 変更を保存しました！");
     closeAdminModal();
