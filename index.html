@@ -480,7 +480,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   <!-- ユーザー用切り替えメニュー -->
   <div style="margin-bottom: 15px; text-align: left;">
     <label for="saibi-gallery-select" style="font-size: 13px; font-weight: bold; color: #003366; margin-right: 5px;">表示するギャラリー:</label>
-    <select id="saibi-gallery-select" onchange="switchGallerySet(this.value)" style="padding: 6px 10px; border: 1px solid #003366; border-radius: 4px; color: #003366; font-weight: bold; background-color: #fff; cursor: pointer; font-size: 13px;">
+    <select id="saibi-gallery-select" onchange="switchGallerySet(this.value)" oninput="switchGallerySet(this.value)" style="padding: 6px 10px; border: 1px solid #003366; border-radius: 4px; color: #003366; font-weight: bold; background-color: #fff; cursor: pointer; font-size: 13px;">
       <!-- JavaScriptで自動生成されます -->
     </select>
   </div>
