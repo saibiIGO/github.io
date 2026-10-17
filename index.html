@@ -520,6 +520,10 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     </div>
   </div>
 </div>
+
+<!-- ==========================================
+     👉【右側】：4コマスライドショウ　　　　 javascript欄
+     ========================================== -->
 <!--javascript-->
 <script>
   const ADMIN_PASSWORD = "saibi"; 
@@ -549,7 +553,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 
   // 以前の古いデータ記憶と混ざらないよう、最新バージョン(v8)に完全固定
   let saibiGalleryData = JSON.parse(localStorage.getItem('saibi_g_v8')) || defaultGalleryData;
-  let currentSetKey = Object.keys(saibiGalleryData) || 'set1';
+  let currentSetKey = Object.keys(saibiGalleryData)[0] || 'set1';
   let currentSlideIndex = 0;
   let slideshowTimeout = null;
 
@@ -678,7 +682,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     delete saibiGalleryData[currentSetKey];
     localStorage.setItem('saibi_g_v8', JSON.stringify(saibiGalleryData));
     
-    currentSetKey = Object.keys(saibiGalleryData);
+    currentSetKey = Object.keys(saibiGalleryData)[0];
     
     buildAdminSetSelect();
     loadSetToEditor(currentSetKey);
@@ -758,9 +762,10 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     }, slide.duration * 1000);
   }
 </script>
-</div> <!-- 💡 最初の大きな囲み（flex: 1）を閉じるためのdivです -->
 
-<!-- 各コマの時間管理 ＆ 局面セレクト ＆ キーボード操作JavaScript おわり -->
+</div><!-- 💡 最初の大きな囲み（flex: 1）を閉じるためのdivです -->
+
+<!-- ４コマの時間管理 ＆ 局面セレクト ＆ キーボード操作JavaScript おわり -->
 
  <!-- ==========================================
      【本番・完全版】SGF対応・星の点付き多機能碁盤セクション
@@ -865,7 +870,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     function getStarPoints() {
         if (size === 19) return Array.of(3, 9, 15);
         if (size === 13) return Array.of(3, 6, 9);
-        if (size === 9) return Array.of(0, 5, 0);
+        if (size === 9) return Array.of(1, 5, 1);
         return Array.of();
     }
 
