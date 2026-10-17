@@ -662,21 +662,65 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     updateUserSelectOptions();
   }
 
+
   // 削除処理
   function deleteCurrentSet() {
     if (Object.keys(saibiGalleryData).length <= 1) { alert("最後の1つは削除できません。"); return; }
     if (!confirm("本当にこのギャラリーセットを削除しますか？")) return;
     delete saibiGalleryData[currentSetKey];
     localStorage.setItem('saibi_g_v3', JSON.stringify(saibiGalleryData));
+    
+    // 👉 【修正】配列の[0]番目（最初のセット）を正しく指定します
     currentSetKey = Object.keys(saibiGalleryData)[0];
+    
     buildAdminSetSelect();
     loadSetToEditor(currentSetKey);
     updateUserSelectOptions();
+    startSlideshow();
+  }
 
+  // スライドショーの再生制御
+  function startSlideshow() {
+    clearTimeout(slideshowTimeout);
+    currentSlideIndex = 0;
+    
+    const set = saibiGalleryData[currentSetKey];
+    if (!set) return;
+
+    document.getElementById('saibi-gallery-title').textContent = `📸 ${set.name}`;
+    renderSlide();
+  }
+
+  function renderSlide() {
+    const container = document.getElementById('saibi-slideshow-container');
+    const set = saibiGalleryData[currentSetKey];
+    if (!set || !set.slides || set.slides.length === 0) return;
+
+    if (currentSlideIndex >= set.slides.length) {
+      currentSlideIndex = 0;
+    }
+
+    const slide = set.slides[currentSlideIndex];
+
+    container.innerHTML = `
+      <div style="width:100%; height:100%; position:absolute; top:0; left:0; display:flex; flex-direction:column; justify-content:space-between;">
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; background:#f0f0f0; overflow:hidden;">
+          <img src="${slide.img}" alt="Slide Image" style="max-width:100%; max-height:100%; object-fit:contain;">
+        </div>
+        <div style="background:rgba(0,51,102,0.85); color:#fff; padding:10px; font-size:14px; font-weight:bold; text-align:center;">
+          ${slide.text}
+        </div>
+      </div>
+    `;
+
+    slideshowTimeout = setTimeout(() => {
+      currentSlideIndex++;
+      renderSlide();
+    }, slide.duration);
+  }
 </script>
 
-
-  </div>
+</div> <!-- 💡 最初の大きな囲み（flex: 1）を閉じるためのdivです -->
 
 <!-- 各コマの時間管理 ＆ 局面セレクト ＆ キーボード操作JavaScript おわり -->
 
