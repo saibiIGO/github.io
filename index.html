@@ -470,29 +470,33 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 <!-- ==========================================
      👉【右側】：修正版・ユーザー用切り替えメニュー ＆ スライド表示エリア
      ========================================== -->
-<div style="width: 100%; max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; text-align: center;">
-  <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px;">
-    
-    <!-- ユーザー用切り替えメニュー -->
-    <div style="margin-bottom: 15px; text-align: left;">
-      <label for="saibi-gallery-select" style="font-size: 13px; font-weight: bold; color: #003366; margin-right: 5px;">表示するギャラリー:</label>
-      <select id="saibi-gallery-select" onchange="switchGallerySet(this.value)" style="padding: 6px 10px; border: 1px solid #003366; border-radius: 4px; color: #003366; font-weight: bold; background-color: #fff; cursor: pointer; font-size: 13px;">
-        <!-- JavaScriptで自動生成されます -->
-      </select>
-    </div>
+     <!-- ==========================================
+     👉【右側】：才美塾専用・マルチスライドショウ（画面崩れ完全対策版）
+     ========================================== --> 
 
-    <h3 id="saibi-gallery-title" style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📸 碁盤ギャラリー</h3>
-    
-    <!-- ✨ 高さ（height: 350px）を確実に確保し、中の画像が潰れないように完全固定しました -->
-    <div style="width: 100%; height: 350px; overflow: hidden; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; background-color: #f0f0f0;">
-      <div id="saibi-slideshow-container" style="width: 100%; height: 100%; position: relative;">
-        <!-- ここに画像とテキストが自動生成されます -->
-      </div>
+<!-- 💡 周囲のデザインとぶつからないよう、独立した安全な外枠（ボックス）で全体を包みます -->
+<div style="width: 100%; max-width: 500px; margin: 20px auto; padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; text-align: center;">
+  
+  <!-- ユーザー用切り替えメニュー -->
+  <div style="margin-bottom: 15px; text-align: left;">
+    <label for="saibi-gallery-select" style="font-size: 13px; font-weight: bold; color: #003366; margin-right: 5px;">表示するギャラリー:</label>
+    <select id="saibi-gallery-select" onchange="switchGallerySet(this.value)" style="padding: 6px 10px; border: 1px solid #003366; border-radius: 4px; color: #003366; font-weight: bold; background-color: #fff; cursor: pointer; font-size: 13px;">
+      <!-- JavaScriptで自動生成されます -->
+    </select>
+  </div>
+
+  <h3 id="saibi-gallery-title" style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📸 碁盤ギャラリー</h3>
+  
+  <!-- スライド表示エリア（高さを350pxに完全固定） -->
+  <div style="width: 100%; height: 350px; overflow: hidden; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; background-color: #f0f0f0;">
+    <div id="saibi-slideshow-container" style="width: 100%; height: 100%; position: relative;">
+      <!-- ここに画像とテキストが自動生成されます -->
     </div>
   </div>
-</div>
 
-<!-- 👁️ キーボードの「S」で開く管理用ポップアップ -->
+</div> <!-- 安全外枠の閉じタグ -->
+
+     <!-- 👁️ キーボードの「S」で開く管理用ポップアップ -->
 <div id="saibi-admin-modal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); align-items: center; justify-content: center;">
   <div style="background-color: #fff; padding: 25px; border-radius: 8px; width: 95%; max-width: 500px; max-height: 85vh; overflow-y: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.3); text-align: left; position: relative;">
     <span onclick="closeAdminModal()" style="position: absolute; right: 15px; top: 10px; font-size: 24px; font-weight: bold; color: #aaa; cursor: pointer;">&times;</span>
@@ -523,31 +527,6 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     </div>
   </div>
 </div>
-
-<!-- ==========================================
-     👉【右側】：4コマスライドショウ　　　　 javascript欄
-     分割 1/3：【設定・初期データと状態管理】
-     ========================================== --> 
-<!--javascript-->
-<script>
-  const ADMIN_PASSWORD = "saibi"; 
-const defaultGalleryData = {
-  set1: {
-    name: "因島北認定こども園教室",
-    slides: [
-      { img: "photo1.jpg", text: "① どこに打てばいいんだろう…？", duration: 5 },
-      { img: "photo2.jpg", text: "② 先生が優しくヒントを教えてくれるよ！", duration: 4 },
-      { img: "photo3.jpg", text: "③ わかった！ここに打ってみよう！", duration: 4 },
-      { img: "photo4.jpg", text: "④ やったー！見事正解です！", duration: 6 }
-    ]
-  },
-  set2: {
-    name: "応用問題（新セット）",<!-- ==========================================
-     👉【右側】：才美塾専用・マルチスライドショウ（完全一本化・完成版プログラム）
-     ========================================== --> 
-<!-- ==========================================
-     👉【右側】：才美塾専用・マルチスライドショウ（完全一本化・完成版プログラム）
-     ========================================== --> 
 <!--javascript-->
 <script>
   const ADMIN_PASSWORD = "saibi"; 
@@ -556,28 +535,28 @@ const defaultGalleryData = {
     set1: {
       name: "因島北認定こども園教室",
       slides: [
-        { img: "photo1.jpg", text: "① どこに打てばいいんだろう…？", duration: 5 },
-        { img: "photo2.jpg", text: "② 先生が優しくヒントを教えてくれるよ！", duration: 4 },
-        { img: "photo3.jpg", text: "③ わかった！ここに打ってみよう！", duration: 4 },
-        { img: "photo4.jpg", text: "④ やったー！見事正解です！", duration: 6 }
+        { img: "photo1.png", text: "① どこに打てばいいんだろう…？", duration: 5 },
+        { img: "photo2.png", text: "② 先生が優しくヒントを教えてくれるよ！", duration: 4 },
+        { img: "photo3.png", text: "③ わかった！ここに打ってみよう！", duration: 4 },
+        { img: "photo4.png", text: "④ やったー！見事正解です！", duration: 6 }
       ]
     },
     set2: {
       name: "応用問題（新セット）",
       slides: [
-        { img: "photo1.jpg", text: "① 応用問題に挑戦してみよう！", duration: 4 },
-        { img: "photo5.jpg", text: "② 次の１手はどこかな？", duration: 4 },
-        { img: "photo6.jpg", text: "③ じっくり考えてみよう！", duration: 4 },
-        { img: "photo7.jpg", text: "④ ここに打つとどうなるかな？", duration: 4 },
-        { img: "photo8.jpg", text: "⑤ あと少しで正解だよ！", duration: 4 },
-        { img: "photo9.jpg", text: "⑥ 大正解！よくできました！", duration: 5 }
+        { img: "photo1.png", text: "① 応用問題に挑戦してみよう！", duration: 4 },
+        { img: "photo5.png", text: "② 次の１手はどこかな？", duration: 4 },
+        { img: "photo6.png", text: "③ じっくり考えてみよう！", duration: 4 },
+        { img: "photo7.png", text: "④ ここに打つとどうなるかな？", duration: 4 },
+        { img: "photo8.png", text: "⑤ あと少しで正解だよ！", duration: 4 },
+        { img: "photo9.png", text: "⑥ 大正解！よくできました！", duration: 5 }
       ]
     }
   };
 
-  // ✨ 10枚追加時のエラーを完全リセットするためバージョンを v9 にアップ
-  let saibiGalleryData = JSON.parse(localStorage.getItem('saibi_g_v9')) || defaultGalleryData;
-  let currentSetKey = Object.keys(saibiGalleryData)[0] || 'set1';
+  // 以前の古い壊れた記憶をリセットするため、最新バージョン(v10)に完全固定
+  let saibiGalleryData = JSON.parse(localStorage.getItem('saibi_g_v10')) || defaultGalleryData;
+  let currentSetKey = Object.keys(saibiGalleryData) || 'set1';
   let currentSlideIndex = 0;
   let slideshowTimeout = null;
 
@@ -661,7 +640,7 @@ const defaultGalleryData = {
     div.innerHTML = `
       <div style="font-weight:bold; font-size:12px; color:#003366; margin-bottom:5px;">📷 コマ ${idx + 1}</div>
       <div style="display:flex; flex-direction:column; gap:5px;">
-        <input type="text" class="edit-img" value="${img}" placeholder="画像ファイル名 (例: photo1.jpg)" style="width:100%; padding:4px; box-sizing:border-box;">
+        <input type="text" class="edit-img" value="${img}" placeholder="画像ファイル名 (例: photo1.png)" style="width:100%; padding:4px; box-sizing:border-box;">
         <input type="text" class="edit-text" value="${text}" placeholder="解説テキスト" style="width:100%; padding:4px; box-sizing:border-box;">
         <div style="display:flex; align-items:center; gap:5px; font-size:12px;">
           <span>秒数:</span><input type="number" class="edit-duration" value="${duration}" style="width:70px; padding:4px;"><span>秒</span>
@@ -681,7 +660,7 @@ const defaultGalleryData = {
     const len = document.querySelectorAll('.admin-slide-row').length;
     if (len < 10) { 
       const nextNum = len + 1;
-      createSlideRowHTML(`photo${nextNum}.jpg`, `新しい解説文`, 4, len); 
+      createSlideRowHTML(`photo${nextNum}.png`, `新しい解説文`, 4, len); 
       toggleAddButtonVisibility(); 
     }
   }
@@ -710,10 +689,10 @@ const defaultGalleryData = {
     const newKey = 'set_' + Date.now();
     saibiGalleryData[newKey] = {
       name: name,
-      slides: [{ img: "photo1.jpg", text: "① 新しいスライド", duration: 4 }]
+      slides: [{ img: "photo1.png", text: "① 新しいスライド", duration: 4 }]
     };
     nameInput.value = '';
-    localStorage.setItem('saibi_g_v9', JSON.stringify(saibiGalleryData));
+    localStorage.setItem('saibi_g_v10', JSON.stringify(saibiGalleryData));
     currentSetKey = newKey;
     
     buildAdminSetSelect();
@@ -726,9 +705,9 @@ const defaultGalleryData = {
     if (!confirm("本当にこのギャラリーセットを削除しますか？")) return;
     
     delete saibiGalleryData[currentSetKey];
-    localStorage.setItem('saibi_g_v9', JSON.stringify(saibiGalleryData));
+    localStorage.setItem('saibi_g_v10', JSON.stringify(saibiGalleryData));
     
-    currentSetKey = Object.keys(saibiGalleryData)[0];
+    currentSetKey = Object.keys(saibiGalleryData);
     
     buildAdminSetSelect();
     loadSetToEditor(currentSetKey);
@@ -755,7 +734,7 @@ const defaultGalleryData = {
     if(newSlides.length === 0) { alert("最低1コマは作成してください。"); return; }
 
     saibiGalleryData[currentSetKey].slides = newSlides;
-    localStorage.setItem('saibi_g_v9', JSON.stringify(saibiGalleryData));
+    localStorage.setItem('saibi_g_v10', JSON.stringify(saibiGalleryData));
     
     alert("⚙️ 変更を保存しました！");
     closeAdminModal();
@@ -781,7 +760,6 @@ const defaultGalleryData = {
     renderSlide();
   }
 
-  // ✨ 切れていた大事な描画処理を完全に修復しました
   function renderSlide() {
     const container = document.getElementById('saibi-slideshow-container');
     if (!container) return;
