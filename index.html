@@ -538,7 +538,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     }
   };
 
-  let saibiGalleryData = JSON.parse(localStorage.getItem('saibi_g_v3')) || defaultGalleryData;
+  let saibiGalleryData = JSON.parse(localStorage.getItem('saibi_g_v4')) || defaultGalleryData;
   let currentSetKey = Object.keys(saibiGalleryData)[0] || 'set1';
   let currentSlideIndex = 0;
   let slideshowTimeout = null;
@@ -655,7 +655,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       slides: [{ img: "photo1.jpg", text: "① 新しいスライド", duration: 4000 }]
     };
     nameInput.value = '';
-    localStorage.setItem('saibi_g_v3', JSON.stringify(saibiGalleryData));
+    localStorage.setItem('saibi_g_v4', JSON.stringify(saibiGalleryData));
     currentSetKey = newKey;
     buildAdminSetSelect();
     loadSetToEditor(newKey);
@@ -668,7 +668,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     if (Object.keys(saibiGalleryData).length <= 1) { alert("最後の1つは削除できません。"); return; }
     if (!confirm("本当にこのギャラリーセットを削除しますか？")) return;
     delete saibiGalleryData[currentSetKey];
-    localStorage.setItem('saibi_g_v3', JSON.stringify(saibiGalleryData));
+    localStorage.setItem('saibi_g_v4', JSON.stringify(saibiGalleryData));
     
     // 👉 【修正】配列の[0]番目（最初のセット）を正しく指定します
     currentSetKey = Object.keys(saibiGalleryData)[0];
