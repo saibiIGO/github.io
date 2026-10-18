@@ -502,6 +502,9 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 
 <!-- javascript エリア はじまり-->
 <script>
+  // 🧹 【重要】ブラウザの壊れた記憶を一度綺麗に消去し、元のデータを強制復活させます
+  localStorage.removeItem('saibi_gallery_v2026_final');
+
   const ADMIN_PASSWORD = "saibi"; 
   const defaultGalleryData = {
     set1: {
@@ -517,7 +520,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       name: "令和８年虎ちゃん囲碁まつり", folder: "image2",
       slides: [
         { img: "image2/photo1.jpg", text: "① 応援の方々もハラハラ、次の一手はどこかな！", duration: 5 },
-        { img: "image2/photo2.jpg", text: "② 虎ちゃんの大会に出場する努力と勇気に敬意を表し全員に奨励賞を贈ります。", duration: 5},
+        { img: "image2/photo2.jpg", text: "② 虎ちゃんの大会に出場する努力と勇기에 敬意を表し全員に奨励賞を贈ります。", duration: 5},
         { img: "image2/photo3.jpg", text: "③ あと少しだよ、じっくり考えてみよう！", duration: 4 },
         { img: "image2/photo4.jpg", text: "④ ここに打つとどうなるかな？考えてごらん", duration: 4 },
         { img: "image2/photo5.jpg", text: "⑤ 三々があるよ。あと少しで正解だよ！", duration: 4 },
@@ -531,10 +534,10 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   };
 
   const STORAGE_KEY = 'saibi_gallery_v2026_final';
-  let saibiGalleryData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultGalleryData;
+  let saibiGalleryData = defaultGalleryData; // 強制的に初期データをセット
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(saibiGalleryData));
   
-  let currentSetKey = Object.keys(saibiGalleryData)[0] || 'set1';
-  
+  let currentSetKey = Object.keys(saibiGalleryData)[0] || 'set1'; // 確実なインデックス指定
   let currentSlideIndex = 0; let slideshowTimeout = null; let validSlides = [];
 
   window.addEventListener('DOMContentLoaded', () => { updateUserSelectOptions(); startSlideshow(); });
