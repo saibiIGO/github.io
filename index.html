@@ -528,9 +528,6 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   </div>
 </div>
 
-
-
-
 <!--javascript-->
 <script>
   const ADMIN_PASSWORD = "saibi"; 
@@ -558,12 +555,11 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     }
   };
 
-  // 以前の古い記憶を完全に断ち切るため、最新バージョン(v11)に固定
-  let saibiGalleryData = JSON.parse(localStorage.getItem('saibi_g_v11')) || defaultGalleryData;
+  // ✨ 【重要】古い記憶を100%遮断するため、保存庫の名前を完全に新しくしました
+  const STORAGE_KEY = 'saibi_gallery_final';
   
-  // ✨ 【完全修正】後ろに [0] を確実に指定し、Chromiumやスマホでのエラーを根絶します
+  let saibiGalleryData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultGalleryData;
   let currentSetKey = Object.keys(saibiGalleryData)[0] || 'set1';
-  
   let currentSlideIndex = 0;
   let slideshowTimeout = null;
 
@@ -699,7 +695,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       slides: [{ img: "photo1.png", text: "① 新しいスライド", duration: 4 }]
     };
     nameInput.value = '';
-    localStorage.setItem('saibi_g_v11', JSON.stringify(saibiGalleryData));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(saibiGalleryData));
     currentSetKey = newKey;
     
     buildAdminSetSelect();
@@ -712,9 +708,8 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     if (!confirm("本当にこのギャラリーセットを削除しますか？")) return;
     
     delete saibiGalleryData[currentSetKey];
-    localStorage.setItem('saibi_g_v11', JSON.stringify(saibiGalleryData));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(saibiGalleryData));
     
-    // ✨ ここも [0] を補完してバグを防ぎます
     currentSetKey = Object.keys(saibiGalleryData)[0];
     
     buildAdminSetSelect();
@@ -742,7 +737,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     if(newSlides.length === 0) { alert("最低1コマは作成してください。"); return; }
 
     saibiGalleryData[currentSetKey].slides = newSlides;
-    localStorage.setItem('saibi_g_v11', JSON.stringify(saibiGalleryData));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(saibiGalleryData));
     
     alert("⚙️ 変更を保存しました！");
     closeAdminModal();
@@ -798,6 +793,10 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     }, slide.duration * 1000);
   }
 </script>
+
+
+
+
 
 <!-- javascript エリア おわり-->    
 
