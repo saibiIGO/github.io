@@ -648,9 +648,12 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     toggleAddButtonVisibility();
   }
 
+
+
+
   // ─── ここで前半終了 ───
 
-  function createSlideRowHTML(img, text, duration, idx) {
+v  function createSlideRowHTML(img, text, duration, idx) {
     const slidesList = document.getElementById('admin-slides-list');
     if (!slidesList) return;
 
@@ -729,7 +732,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     delete saibiGalleryData[currentSetKey];
     localStorage.setItem(STORAGE_KEY, JSON.stringify(saibiGalleryData));
     
-    currentSetKey = Object.keys(saibiGalleryData);
+    currentSetKey = Object.keys(saibiGalleryData)[0];
     
     buildAdminSetSelect();
     loadSetToEditor(currentSetKey);
@@ -747,10 +750,13 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     const rows = document.querySelectorAll('.admin-slide-row');
     const newSlides = [];
     rows.forEach(row => {
-      const img = row.querySelector('.edit-img').value;
+      const img = row.querySelector('.edit-img').value.trim();
       const text = row.querySelector('.edit-text').value;
       const duration = parseInt(row.querySelector('.edit-duration').value, 10) || 4; 
-      newSlides.push({ img, text, duration });
+      // 空白の行は無視して保存します
+      if (img !== "") {
+        newSlides.push({ img, text, duration });
+      }
     });
 
     if(newSlides.length === 0) { alert("最低1コマは作成してください。"); return; }
@@ -780,36 +786,22 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     const titleEl = document.getElementById('saibi-gallery-title');
     if (titleEl) titleEl.textContent = `📸 ${set.name}`;
 
-    // ✨ 実際にフォルダ内に存在する写真だけを1枚ずつ自動チェックして選別します
+    // ✨ 【確実な方法に変更】ネットの通信遅延に影響されない、テキストベースの枚数判定に改良しました
     validSlides = [];
-    let checkedCount = 0;
-
     if (!set.slides || set.slides.length === 0) return;
 
     set.slides.forEach((slide) => {
-      const tempImg = new Image();
-      tempImg.onload = function() {
-        validSlides.push(slide); // 写真が存在すればリストに入れる
-        checkedCount++;
-        if (checkedCount === set.slides.length) { filterAndRender(); }
-      };
-      tempImg.onerror = function() {
-        checkedCount++; // 写真がなければスキップ
-        if (checkedCount === set.slides.length) { filterAndRender(); }
-      };
-      tempImg.src = slide.img;
+      // 最初からお品書きに「新しい解説文」と入っているだけの未着手なコマ（写真がないコマ）を自動で弾きます
+      if (slide.text && !slide.text.includes("新しい解説文（都度更新可能）")) {
+        validSlides.push(slide);
+      }
     });
-  }
 
-  function filterAndRender() {
-    // スライドの番号順（photo1, photo2…）に綺麗に並べ替えます
-    validSlides.sort((a, b) => a.img.localeCompare(b.img, undefined, {numeric: true, sensitivity: 'base'}));
-    
-    // 万が一すべて読み込めなかった場合の安全ガード
-    if (validSlides.length === 0 && saibiGalleryData[currentSetKey].slides.length > 0) {
-      validSlides = [saibiGalleryData[currentSetKey].slides[0]];
+    // 万が一すべて弾かれてしまった場合の安全ガード
+    if (validSlides.length === 0) {
+      validSlides = set.slides.slice(0, 4);
     }
-    
+
     renderSlide();
   }
 
