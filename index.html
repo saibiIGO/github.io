@@ -529,6 +529,8 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     </div>
   </div>
 </div>
+
+<!--ここからjavascript-ここから->
 <!--javascript-->
 <script>
   const ADMIN_PASSWORD = "saibi"; 
@@ -574,6 +576,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   let currentSetKey = Object.keys(saibiGalleryData) || 'set1';
   let currentSlideIndex = 0;
   let slideshowTimeout = null;
+  let validSlides = []; // 実際に写真が存在するコマだけを入れる新しいリスト
 
   // 初期化起動
   window.addEventListener('DOMContentLoaded', () => {
@@ -644,6 +647,8 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     }
     toggleAddButtonVisibility();
   }
+
+  // ─── ここで前半終了 ───
 
   function createSlideRowHTML(img, text, duration, idx) {
     const slidesList = document.getElementById('admin-slides-list');
@@ -774,6 +779,37 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 
     const titleEl = document.getElementById('saibi-gallery-title');
     if (titleEl) titleEl.textContent = `📸 ${set.name}`;
+
+    // ✨ 実際にフォルダ内に存在する写真だけを1枚ずつ自動チェックして選別します
+    validSlides = [];
+    let checkedCount = 0;
+
+    if (!set.slides || set.slides.length === 0) return;
+
+    set.slides.forEach((slide) => {
+      const tempImg = new Image();
+      tempImg.onload = function() {
+        validSlides.push(slide); // 写真が存在すればリストに入れる
+        checkedCount++;
+        if (checkedCount === set.slides.length) { filterAndRender(); }
+      };
+      tempImg.onerror = function() {
+        checkedCount++; // 写真がなければスキップ
+        if (checkedCount === set.slides.length) { filterAndRender(); }
+      };
+      tempImg.src = slide.img;
+    });
+  }
+
+  function filterAndRender() {
+    // スライドの番号順（photo1, photo2…）に綺麗に並べ替えます
+    validSlides.sort((a, b) => a.img.localeCompare(b.img, undefined, {numeric: true, sensitivity: 'base'}));
+    
+    // 万が一すべて読み込めなかった場合の安全ガード
+    if (validSlides.length === 0 && saibiGalleryData[currentSetKey].slides.length > 0) {
+      validSlides = [saibiGalleryData[currentSetKey].slides[0]];
+    }
+    
     renderSlide();
   }
 
@@ -781,21 +817,19 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     const container = document.getElementById('saibi-slideshow-container');
     if (!container) return;
     
-    const set = saibiGalleryData[currentSetKey];
-    if (!set || !set.slides || set.slides.length === 0) return;
+    if (validSlides.length === 0) return;
 
-    if (currentSlideIndex >= set.slides.length) {
+    if (currentSlideIndex >= validSlides.length) {
       currentSlideIndex = 0;
     }
 
-    const slide = set.slides[currentSlideIndex];
+    const slide = validSlides[currentSlideIndex];
 
     container.innerHTML = `
       <div style="width:100%; height:100%; position:absolute; top:0; left:0; display:flex; flex-direction:column; justify-content:space-between;">
         <div style="flex:1; display:flex; align-items:center; justify-content:center; background:#f0f0f0; overflow:hidden;">
           <img src="${slide.img}" alt="Slide Image" style="max-width:100%; max-height:100%; object-fit:contain;">
         </div>
-
         <div style="background:rgba(0,51,102,0.85); color:#fff; padding:10px; font-size:14px; font-weight:bold; text-align:center;">
           ${slide.text}
         </div>
@@ -808,10 +842,6 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     }, slide.duration * 1000);
   }
 </script>
-
-</div>
-
-<!-- javascript エリア おわり-->
 
 
 
