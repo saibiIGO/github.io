@@ -473,14 +473,66 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
      <!-- ==========================================
      👉【右側】：才美塾専用・マルチスライドショウ（画面崩れ完全対策版）
      ========================================== --> 
+<!-- ==========================================
+     👉【右側】：才美塾専用・マルチスライドショウ（完全修復・スマホ ＆ 都度更新対応 決定版）
+     ========================================== --> 
 
-<!-- 💡 周囲のデザインとぶつからないよう、独立した安全な外枠（ボックス）で全体を包みます -->
+<!-- 周囲のデザインとぶつからないよう、独立した安全な外枠（ボックス） -->
+<div style="width: 100%; max-width: 500px; margin: 20px auto; padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; text-align: center;">
+  
+  <!-- ユーザー用切り替えメニュー -->
+  <div style="margin-bottom: 15px; text-align: left;">
+    <label for="saibi-gallery-select" style="font-size: 13px; font-weight: bold; color: #003366; margin-right: 5px;">表示するギャラリー:</label>
+    <select id="saibi-gallery-select" onchange="switchGallerySet(this.value)" oninput="switchGallerySet(this.value)" style="padding: 6px 10px; border: 1px solid #003366; border-radius: 4px; color: #003366; font-weight: bold; background-color: #fff; cursor: pointer; font-size: 13px;">
+      <!-- JavaScriptで自動生成されます -->
+    </select>
+  </div>
 
+  <h3 id="saibi-gallery-title" style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📸 碁盤ギャラリー</h3>
+  
+  <!-- スライド表示エリア（高さを350pxに完全固定） -->
+  <div style="width: 100%; height: 350px; overflow: hidden; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; background-color: #f0f0f0;">
+    <div id="saibi-slideshow-container" style="width: 100%; height: 100%; position: relative;">
+      <!-- ここに画像とテキストが自動生成されます -->
+    </div>
+  </div>
+
+</div>
+<!-- 👁️ キーボードの「S」で開く管理用ポップアップ -->
+<div id="saibi-admin-modal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); align-items: center; justify-content: center;">
+  <div style="background-color: #fff; padding: 25px; border-radius: 8px; width: 95%; max-width: 500px; max-height: 85vh; overflow-y: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.3); text-align: left; position: relative;">
+    <span onclick="closeAdminModal()" style="position: absolute; right: 15px; top: 10px; font-size: 24px; font-weight: bold; color: #aaa; cursor: pointer;">&times;</span>
+    <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 5px;">🛠️ 才美塾・ギャラリー管理人室</h3>
+    
+    <div style="margin-bottom: 15px;">
+      <label style="font-size: 13px; font-weight: bold;">変更するセットを選択:</label>
+      <select id="admin-set-select" onchange="loadSetToEditor(this.value)" style="width: 100%; padding: 5px; margin-top: 5px;"></select>
+    </div>
+
+    <!-- ギャラリーの名前を変更する欄 -->
+    <div style="margin-bottom: 15px;">
+      <label style="font-size: 13px; font-weight: bold;">ギャラリー名の変更:</label>
+      <input type="text" id="edit-set-name" style="width: 100%; padding: 5px; margin-top: 5px; box-sizing: border-box;">
+    </div>
+
+    <div style="margin-bottom: 15px; display: flex; gap: 5px;">
+      <input type="text" id="new-set-name" placeholder="新しいセット名を入力" style="flex: 1; padding: 5px;">
+      <button onclick="createNewSet()" style="padding: 5px 10px; background-color: #003366; color: white; border: none; cursor: pointer;">新規セット追加</button>
+    </div>
+    <hr style="border: 0; border-top: 1px solid #ddd; margin: 15px 0;">
+    <h4 style="margin: 0 0 10px 0; font-size: 14px; color: #333;">🖼️ コマの編集 (最大10枚)</h4>
+    <div id="admin-slides-list" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px;"></div>
+    <button onclick="addBlankSlideRow()" id="add-slide-row-btn" style="width: 100%; padding: 8px; background-color: #f0f0f0; border: 1px dashed #aaa; cursor: pointer; font-weight: bold; margin-bottom: 20px;">＋ コマ（写真）を追加する</button>
+    <div style="display: flex; gap: 10px;">
+      <button onclick="saveAdminData()" style="flex: 1; padding: 12px; background-color: #28a745; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; text-align: center;">変更を保存して適用</button>
+      <button onclick="deleteCurrentSet()" style="padding: 12px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">セット削除</button>
+    </div>
+  </div>
+</div>
 <!--javascript-->
 <script>
   const ADMIN_PASSWORD = "saibi"; 
   
-  // 各フォルダ（image1, image2）の初期データ（お品書き）
   const defaultGalleryData = {
     set1: {
       name: "因島北認定こども園教室",
@@ -516,12 +568,10 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     }
   };
 
-  // ✨ Chromiumやスマホのバグを根絶するため、完全クリーンな新領域に保存します
   const STORAGE_KEY = 'saibi_gallery_v2026';
   let saibiGalleryData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultGalleryData;
   
-  // 各ギャラリーのキーを確実に取得 ([]抜けを完全防止)
-  let currentSetKey = Object.keys(saibiGalleryData)[0] || 'set1';
+  let currentSetKey = Object.keys(saibiGalleryData) || 'set1';
   let currentSlideIndex = 0;
   let slideshowTimeout = null;
 
@@ -531,7 +581,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     startSlideshow();
   });
 
-  // キーボードの「S」キーで管理人室起動
+  // キーボードの「S」キー
   window.addEventListener('keydown', (e) => {
     if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
     if (e.key === 's' || e.key === 'S') {
@@ -590,7 +640,6 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     const slidesList = document.getElementById('admin-slides-list');
     if (slidesList) {
       slidesList.innerHTML = '';
-      // 初めから最大10枚分の編集枠をずらりと並べます
       set.slides.forEach((slide, idx) => createSlideRowHTML(slide.img, slide.text, slide.duration, idx));
     }
     toggleAddButtonVisibility();
@@ -607,7 +656,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       <div style="font-weight:bold; font-size:12px; color:#003366; margin-bottom:5px;">📷 コマ ${idx + 1}</div>
       <div style="display:flex; flex-direction:column; gap:5px;">
         <input type="text" class="edit-img" value="${img}" placeholder="画像パス (例: image1/photo1.png)" style="width:100%; padding:4px; box-sizing:border-box;">
-        <input type="text" class="edit-text" value="${text}" placeholder="定型・否定形・解説メッセージを都度入力" style="width:100%; padding:4px; box-sizing:border-box;">
+        <input type="text" class="edit-text" value="${text}" placeholder="解説テキストを入力" style="width:100%; padding:4px; box-sizing:border-box;">
         <div style="display:flex; align-items:center; gap:5px; font-size:12px;">
           <span>秒数:</span><input type="number" class="edit-duration" value="${duration}" style="width:70px; padding:4px;"><span>秒</span>
           <button type="button" class="delete-row-btn" style="margin-left:auto; background:#dc3545; color:white; border:none; padding:3px 8px; cursor:pointer;">削除</button>
@@ -675,7 +724,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     delete saibiGalleryData[currentSetKey];
     localStorage.setItem(STORAGE_KEY, JSON.stringify(saibiGalleryData));
     
-    currentSetKey = Object.keys(saibiGalleryData)[0];
+    currentSetKey = Object.keys(saibiGalleryData);
     
     buildAdminSetSelect();
     loadSetToEditor(currentSetKey);
@@ -683,7 +732,6 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     startSlideshow();
   }
 
-  // Sボタンから「都度更新」したメッセージや写真を確定・上書き保存する処理
   function saveAdminData() {
     if (!saibiGalleryData[currentSetKey]) return;
 
@@ -705,7 +753,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     saibiGalleryData[currentSetKey].slides = newSlides;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(saibiGalleryData));
     
-    alert("⚙️ メッセージと写真を都度更新しました！");
+    alert("⚙️ メッセージと写真を更新しました！");
     closeAdminModal();
     
     updateUserSelectOptions();
@@ -741,11 +789,13 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     }
 
     const slide = set.slides[currentSlideIndex];
+
     container.innerHTML = `
       <div style="width:100%; height:100%; position:absolute; top:0; left:0; display:flex; flex-direction:column; justify-content:space-between;">
         <div style="flex:1; display:flex; align-items:center; justify-content:center; background:#f0f0f0; overflow:hidden;">
           <img src="${slide.img}" alt="Slide Image" style="max-width:100%; max-height:100%; object-fit:contain;">
         </div>
+
         <div style="background:rgba(0,51,102,0.85); color:#fff; padding:10px; font-size:14px; font-weight:bold; text-align:center;">
           ${slide.text}
         </div>
@@ -760,6 +810,11 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 </script>
 
 </div>
+
+<!-- javascript エリア おわり-->
+
+
+
 
 <!-- javascript エリア おわり-->
 
