@@ -476,13 +476,6 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 <!-- ==========================================
      👉【右側】：才美塾専用・マルチスライドショウ（完全修復・スマホ ＆ 都度更新対応 決定版）
      ========================================== --> 
-
-
-
-
-
-
-
 <!-- ==========================================
      📸 才美塾専用・マルチスライドショウ（完全修復版・これ一本で復活します）
      ========================================== --> 
@@ -519,7 +512,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     set1: {
       name: "因島北認定こども園教室", folder: "image1",
       slides: [
-        { img: "image1/photo1.jpg", text: "① どこに打てばいいんだろう…？", duration: 5 }, // ✨ すべて本物の .jpg に統一
+        { img: "image1/photo1.jpg", text: "① どこに打てばいいんだろう…？", duration: 5 },
         { img: "image1/photo2.jpg", text: "② 先生が優しくヒントを教えてくれるよ！", duration: 4 },
         { img: "image1/photo3.jpg", text: "③ わかった！ここに打ってみよう！", duration: 4 },
         { img: "image1/photo4.jpg", text: "④ やったー！見事正解です！", duration: 6 }
@@ -528,7 +521,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     set2: {
       name: "応用問題（新セット）", folder: "image2",
       slides: [
-        { img: "image2/photo1.jpg", text: "① 応用問題に挑戦してみよう！", duration: 4 }, // ✨ 最初から10枚の .jpg で登録
+        { img: "image2/photo1.jpg", text: "① 応用問題に挑戦してみよう！", duration: 4 },
         { img: "image2/photo2.jpg", text: "② 次の１手はどこかな？", duration: 4 },
         { img: "image2/photo3.jpg", text: "③ じっくり考えてみよう！", duration: 4 },
         { img: "image2/photo4.jpg", text: "④ ここに打つとどうなるかな？", duration: 4 },
@@ -542,10 +535,12 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     }
   };
 
-  // ✨ Firefoxに残った古いバグ記憶と完全に縁を切るため、保存領域を v30 に一気に引き上げます！
-  const STORAGE_KEY = 'saibi_gallery_v30';
+  const STORAGE_KEY = 'saibi_gallery_v2026_final';
   let saibiGalleryData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultGalleryData;
-  let currentSetKey = Object.keys(saibiGalleryData) || 'set1';
+  
+  // ✨ 【完全修正】後ろに [0] を確実に指定し、Chromium系のフリーズエラーを根絶しました！
+  let currentSetKey = Object.keys(saibiGalleryData)[0] || 'set1';
+  
   let currentSlideIndex = 0; let slideshowTimeout = null; let validSlides = [];
 
   window.addEventListener('DOMContentLoaded', () => { updateUserSelectOptions(); startSlideshow(); });
@@ -614,7 +609,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 
   function deleteCurrentSet() {
     if (Object.keys(saibiGalleryData).length <= 1) { alert("最後の1つは削除できません。"); return; } if (!confirm("本当にこのギャラリーセットを削除しますか？")) return;
-    delete saibiGalleryData[currentSetKey]; localStorage.setItem(STORAGE_KEY, JSON.stringify(saibiGalleryData)); currentSetKey = Object.keys(saibiGalleryData); buildAdminSetSelect(); loadSetToEditor(currentSetKey); updateUserSelectOptions(); startSlideshow();
+    delete saibiGalleryData[currentSetKey]; localStorage.setItem(STORAGE_KEY, JSON.stringify(saibiGalleryData)); currentSetKey = Object.keys(saibiGalleryData)[0]; buildAdminSetSelect(); loadSetToEditor(currentSetKey); updateUserSelectOptions(); startSlideshow();
   }
 
   function saveAdminData() {
@@ -636,8 +631,6 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     clearTimeout(slideshowTimeout); currentSlideIndex = 0; const set = saibiGalleryData[currentSetKey]; if (!set) return;
     const titleEl = document.getElementById('saibi-gallery-title'); if (titleEl) titleEl.textContent = `📸 ${set.name}`;
     validSlides = []; if (!set.slides || set.slides.length === 0) return;
-    
-    // ✨ 「新しい解説文」という仮の文字のままのコマ（＝写真がない未着手のコマ）を、ネット遅延に関係なく自動で綺麗に弾く処理です！
     set.slides.forEach((slide) => { if (slide.text && !slide.text.includes("新しい解説文")) { validSlides.push(slide); } });
     if (validSlides.length === 0) { validSlides = set.slides; }
     renderSlide();
@@ -657,6 +650,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     slideshowTimeout = setTimeout(() => { currentSlideIndex++; renderSlide(); }, slide.duration * 1000);
   }
 </script>
+
 
 <!-- javascript エリア おわり-->
 
