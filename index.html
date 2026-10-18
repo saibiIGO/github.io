@@ -497,14 +497,8 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   </div>
 </div>
 
-
-<!-- javascript エリア はじまり-->
-
 <!-- javascript エリア はじまり-->
 <script>
-  // 🧹 【重要】ブラウザの壊れた記憶を一度綺麗に消去し、元のデータを強制復活させます
-  localStorage.removeItem('saibi_gallery_v2026_final');
-
   const ADMIN_PASSWORD = "saibi"; 
   const defaultGalleryData = {
     set1: {
@@ -520,7 +514,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       name: "令和８年虎ちゃん囲碁まつり", folder: "image2",
       slides: [
         { img: "image2/photo1.jpg", text: "① 応援の方々もハラハラ、次の一手はどこかな！", duration: 5 },
-        { img: "image2/photo2.jpg", text: "② 虎ちゃんの大会に出場する努力と勇기에 敬意を表し全員に奨励賞を贈ります。", duration: 5},
+        { img: "image2/photo2.jpg", text: "② 虎ちゃんの大会に出場する努力と勇気に敬意を表し全員に奨励賞を贈ります。", duration: 5},
         { img: "image2/photo3.jpg", text: "③ あと少しだよ、じっくり考えてみよう！", duration: 4 },
         { img: "image2/photo4.jpg", text: "④ ここに打つとどうなるかな？考えてごらん", duration: 4 },
         { img: "image2/photo5.jpg", text: "⑤ 三々があるよ。あと少しで正解だよ！", duration: 4 },
@@ -534,10 +528,11 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   };
 
   const STORAGE_KEY = 'saibi_gallery_v2026_final';
-  let saibiGalleryData = defaultGalleryData; // 強制的に初期データをセット
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(saibiGalleryData));
+  let saibiGalleryData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultGalleryData;
   
-  let currentSetKey = Object.keys(saibiGalleryData)[0] || 'set1'; // 確実なインデックス指定
+  // ✨ 【完全修正】後ろに [0] を確実に指定し、Chromium系のフリーズエラーを根絶しました！
+  let currentSetKey = Object.keys(saibiGalleryData)[0] || 'set1';
+  
   let currentSlideIndex = 0; let slideshowTimeout = null; let validSlides = [];
 
   window.addEventListener('DOMContentLoaded', () => { updateUserSelectOptions(); startSlideshow(); });
@@ -629,12 +624,24 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     const titleEl = document.getElementById('saibi-gallery-title'); if (titleEl) titleEl.textContent = `📸 ${set.name}`;
     validSlides = []; if (!set.slides || set.slides.length === 0) return;
     set.slides.forEach((slide) => { if (slide.text && !slide.text.includes("新しい解説文")) { validSlides.push(slide); } });
-    if (validSlides.length > 0 && typeof showSlide === 'function') { showSlide(); }
+    if (validSlides.length === 0) { validSlides = set.slides; }
+    renderSlide();
+  }
+
+  function renderSlide() {
+    const container = document.getElementById('saibi-slideshow-container'); if (!container || validSlides.length === 0) return;
+    if (currentSlideIndex >= validSlides.length) { currentSlideIndex = 0; }
+    const slide = validSlides[currentSlideIndex];
+    container.innerHTML = `
+      <div style="width:100%; height:100%; position:absolute; top:0; left:0; display:flex; flex-direction:column; justify-content:space-between;">
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; background:#f0f0f0; overflow:hidden;">
+          <img src="${slide.img}" alt="Slide Image" style="max-width:100%; max-height:100%; object-fit:contain;">
+        </div>
+        <div style="background:rgba(0,51,102,0.85); color:#fff; padding:10px; font-size:14px; font-weight:bold; text-align:center;">${slide.text}</div>
+      </div>`;
+    slideshowTimeout = setTimeout(() => { currentSlideIndex++; renderSlide(); }, slide.duration * 1000);
   }
 </script>
-
-
-
 
 
 <!-- javascript エリア おわり-->
@@ -677,14 +684,14 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         </div>
       </a>
             <!-- スポンサー４：田中組 -->
-      <a href="https://tanaka-kk.net" target="_blank" rel="noopener noreferrer" class="link-card sponsor-card">
+      <a href="https://shoaido.jp" target="_blank" rel="noopener noreferrer" class="link-card sponsor-card">
         <div class="card-content">
           <h3><span>株式会社　  田中組 ➔</span></h3>
           <p>私達を災害から守ってくださり住みよい町づくりに貢献されています。</p>
         </div>
       </a>
       <!-- スポンサー５：松愛堂 -->
-      <a href="https://shoaido.jp" target="_blank" rel="noopener noreferrer" class="link-card sponsor-card">
+      <a href="https://tanaka-kk.net" target="_blank" rel="noopener noreferrer" class="link-card sponsor-card">
         <div class="card-content">
           <h3><span>御菓子司　  松愛堂 ➔</span></h3>
           <p>尾道・因島の囲碁大会で「微笑みを届けてくださる」和菓子・洋菓子・季節菓子の老舗です。</p>
