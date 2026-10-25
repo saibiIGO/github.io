@@ -151,19 +151,16 @@
    <!-- ===============================================================-->
 
   <!-- 【下部：左右2段組 of エリア】 -->
-  <div style="display: flex; flex-wrap: wrap; gap: 30px; box-sizing: border-box;">
 
-    <!-- 👈【左半分】：タイトル、主題歌、ボタンメニュー列 -->
 <!-- タイトルと音声プレイヤー -->
 <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
   <h1 style="margin: 0; font-size: 32px; color: #003366; font-weight: bold; line-height: 1.2;">
     才美塾囲碁教室
   </h1>
-  <!-- 🎵 タイトル下の主題歌プレイヤー -->
-  <div style="display: flex; align-items: center; gap: 8px;">
-    <span style="font-size: 22px; color: #003366; font-weight: bold; white-space: nowrap;">🎵 塾歌:</span>      
-    <!-- heightを40px、max-widthを240pxに広げて折り返しを防止 -->
-    <audio controls src="song.mp3" style="height: 40px; width: 100%; max-width: 240px; background-color: #f1f3f4; border-radius: 30px;">
+  <!-- 🎵 タイトル下の主題歌プレイヤー（flex-direction: column で縦並びに変更） -->
+  <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px;">
+    <span style="font-size: 18px; color: #003366; font-weight: bold; white-space: nowrap;">🎵 塾歌:</span>      
+    <audio controls src="song.mp3" style="height: 32px; width: 100%; max-width: 200px; background-color: #f1f3f4; border-radius: 30px;">
       お使いのブラウザは音声再生に対応していません。
     </audio>
   </div>
