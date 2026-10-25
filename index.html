@@ -105,12 +105,31 @@
 }
 
 
-
 <!-- 👈 この終わりのタグのすぐ上に置くと間違いがありません -->
 </style>
 </head>
 <body>
 <div class="container">
+
+<!-- 👇 ここから：目的の場所へすぐに移動できるボタン（追加分） -->
+<div style="background: #f0f7ff; padding: 15px; border-radius: 8px; margin: 0 auto 25px auto; max-width: 100%; border: 1px solid #b3d7ff; text-align: center; box-sizing: border-box;">
+    <p style="margin-top: 0; font-weight: bold; color: #004085; font-size: 1.1rem; margin-bottom: 12px;">👇 目的の場所へすぐに移動できます</p>
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+        <a href="#welcome" style="display: block; background: #28a745; color: white; padding: 12px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            🔰 初めての方（教室の概要・スケジュール）
+        </a>
+        <a href="#online-tools" style="display: block; background: #007bff; color: white; padding: 12px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            🌐 生徒向け（Discord・ネット対局・AIツール）
+        </a>
+    </div>
+</div>
+<!-- 👆 ここまで：追加分 -->
+
+<!-- =============================================================== -->
+<!-- 全体を包む見やすい薄い背景のボックス -->
+
+
+
 
 <!-- ===============================================================--
 <!-- 全体を包む見やすい薄い背景のボックス -->
@@ -283,7 +302,7 @@ function switchYouTube(button) {
 
   <!-- ① 教室スケジュール ➔ この後に元の記述が安全に続きます -->
   <div>
-    <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px; border-bottom: none; padding-bottom: 0;">📅 教室スケジュール</h3>
+    <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px; border-bottom: none; padding-bottom: 0;"id="welcome">📅 教室スケジュール</h3>
     <a href="schedule.pdf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
       ➔ 教室スケジュールはこちら (PDF)
     </a>
@@ -372,7 +391,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   <!-- ① 囲碁対局「INGO」（小学生向け・わくわく碁盤デザイン） -->
   <div style="flex: 1; min-width: 290px; border: 3px solid #d7a15c; padding: 20px; border-radius: 12px; background-color: #fdf8f1; display: flex; flex-direction: column; justify-content: space-between; text-align: center; box-sizing: border-box;">
     <div>
-      <h3 style="color: #b26f1a; margin-top: 0; font-size: 1.4rem; margin-bottom: 5px;">ネット対局碁「INGO」</h3>
+      <h3 style="color: #b26f1a; margin-top: 0; font-size: 1.4rem; margin-bottom: 5px;" id="online-tools">ネット対局碁「INGO」</h3>
       <p style="color: #666; font-size: 0.9rem; margin-top: 0; margin-bottom: 15px;">〜だれでも無料の対局場！〜</p>
 
       <!-- かわいい碁石キャラクターのイラスト -->
