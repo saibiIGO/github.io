@@ -151,12 +151,13 @@
    <!-- ===============================================================-->
 
   <!-- 【下部：左右2段組 of エリア】 -->
-
+<!-- =================================================== -->
 <!-- 【下部：左右2段組エリア全体の始まり】 -->
-<div style="display: flex; flex-wrap: wrap; gap: 20px; width: 100%; align-items: flex-start;">
+<!-- =================================================== -->
+<div style="display: flex; flex-wrap: wrap; gap: 24px; width: 100%; align-items: flex-start; box-sizing: border-box; margin-bottom: 30px;">
 
   <!-- 👈【左半分】：タイトル・プレイヤー・ボタンメニュー群 -->
-  <div style="flex: 1; min-width: 250px; max-width: 350px;">
+  <div style="flex: 1; min-width: 250px; max-width: 320px; box-sizing: border-box;">
     
     <!-- タイトルと音声プレイヤー -->
     <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
@@ -174,6 +175,7 @@
 
     <!-- 🎛️ ボタンメニュー群 -->
     <div style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
+
       <!-- ① 古文書ボタン -->
       <a href="komonjo.pdf" target="_blank" style="display: block; background-color: #8B4513; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
         📜 古文書の案内 (PDF)
@@ -205,9 +207,10 @@
       <button class="sb-btn" data-video-id="23BP-eTUiEU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #718096; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
         ✨ 予備の動画
       </button>
-    </div>
 
-  </div> <!-- 【左半分】の閉じタグ -->
+    </div>
+  </div> <!-- 👈【左半分】の閉じタグ（正しい位置に移動しました） -->
+
 
   <!-- 👉【右半分】：関連資料・PDFダウンロードコーナー -->
   <div style="flex: 1; min-width: 280px; padding: 15px; background-color: white; border-radius: 6px; border: 1px solid #ddd; box-sizing: border-box; display: flex; flex-direction: column; gap: 15px;">
@@ -238,23 +241,25 @@
     <div id="video-container" style="display: none; width: 100%; max-width: 100%; margin-top: 10px; position: relative; padding-top: 56.25%;">
       <iframe id="youtube-player" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></iframe>
     </div>
-  </div> <!-- 【右半分】の閉じタグ -->
+  </div> <!-- 👉【右半分】の閉じタグ -->
 
-</div> <!-- 【下部：左右2段組エリア全体】の閉じタグ -->
+</div> <!-- 📦【下部：左右2段組エリア全体】の閉じタグ -->
 
-<!-- ⚙️ 動画を動かすための最終プログラム -->
+
+<!-- ⚙️ 動画を動かすための最終プログラム（完成版） -->
 <script>
 function switchYouTube(button) {
   var videoId = button.getAttribute('data-video-id');
   var container = document.getElementById('video-container');
   var player = document.getElementById('youtube-player');
 
-  player.src = "https://www.youtube.com/embed/" + videoId;
+  player.src = "https://youtube.com" + videoId;
   container.style.display = 'block';
 
   container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 </script>
+
 
 
 
