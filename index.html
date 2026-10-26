@@ -112,6 +112,7 @@
 <div class="container">
 
 <!-- 👇 ここから：目的の場所へすぐに移動できるボタン（追加分） -->
+<!-- 👇 ここから：目的の場所へすぐに移動できるボタン（5ボタン版） -->
 <div style="background: #f0f7ff; padding: 15px; border-radius: 8px; margin: 0 auto 25px auto; max-width: 100%; border: 1px solid #b3d7ff; text-align: center; box-sizing: border-box;">
     <p style="margin-top: 0; font-weight: bold; color: #004085; font-size: 1.1rem; margin-bottom: 12px;">👇 目的の場所へすぐに移動できます</p>
     <div style="display: flex; flex-direction: column; gap: 10px;">
@@ -119,16 +120,20 @@
             🔰 初めての方（教室の概要・スケジュール）
         </a>
         <a href="#online-tools" style="display: block; background: #007bff; color: white; padding: 12px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            🌐 生徒向け（Discord・ネット対局・AIツール）
+            🌐 生徒向け（Discord・ネット対局）
+        </a>
+        <a href="#go-ai" style="display: block; background: #17a2b8; color: white; padding: 12px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            🤖 囲碁AI・検討ツール（COSUMI・AI先生など）
+        </a>
+        <a href="#lectures" style="display: block; background: #6c757d; color: white; padding: 12px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            📚 講義の関連資料・動画（手割り・筋など）
+        </a>
+        <a href="#sponsors" style="display: block; background: #e83e8c; color: white; padding: 12px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            🏆 協賛企業・周辺施設リンク
         </a>
     </div>
 </div>
 <!-- 👆 ここまで：追加分 -->
-
-<!-- =============================================================== -->
-<!-- 全体を包む見やすい薄い背景のボックス -->
-
-
 
 
 <!-- ===============================================================--
@@ -231,7 +236,7 @@
 
 <!-- 👉【右半分】：関連資料・PDFダウンロードコーナー -->
 <div style="flex: 1; min-width: 280px; padding: 15px; background-color: white; border-radius: 6px; border: 1px solid #ddd; box-sizing: border-box; display: flex; flex-direction: column; gap: 15px;">
-  <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📚 講義の関連資料 (PDF)</h3>
+  <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;" id="lectures">📚 講義の関連資料 (PDF)</h3>
 
   <!-- ① 手割りPDF -->
   <div style="padding: 5px 0; border-bottom: 1px dashed #ddd;">
@@ -701,9 +706,8 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 
   <!-- 🏆 スポンサーエリア（今後増えたらここに追加） -->
   <div class="link-group">
-    <h2 style="color: #333; border-left: 5px solid #28a745; padding-left: 10px; margin-top: 0; margin-bottom: 20px;">
-      🏆 才美塾を応援してくださる協賛企業・法人リンク
-    </h2>
+    <h2 style="color: #333; border-left: 5px solid #28a745; padding-left: 10px; margin-top: 0; margin-bottom: 20px;" id="sponsors">🏆 才美塾を応援してくださる協賛企業・法人リンク</h2>
+
     <!-- 💡 style属性を取り除き、元々あった2列用の link-grid の動きに戻しました -->
     <div class="link-grid">
 
@@ -885,7 +889,10 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 <!-- 🎁 教室おすすめの囲碁AI＆お役立ちツールコーナー（完全版・色調整済み） -->
 <div style="max-width: 600px; margin: 25px auto; font-family: sans-serif; text-align: left; background-color: #f7f9fa; border: 2px solid #20b2aa; border-radius: 8px; padding: 20px;">
 
-  <h2 style="color: #008080; margin-top: 0; border-bottom: 2px solid #20b2aa; padding-bottom: 8px; font-size: 16px; font-weight: bold; text-align: center;">
+  <h2 style="color: #008080; margin-top: 0; border-bottom: 2px solid #20b2aa; padding-bottom: 8px; font-size: 16px; font-weight: bold; text-align: center;" id="go-ai">
+    🎁 教室おすすめの囲碁AI・棋院エディタ
+</h2>
+
     🎁 教室おすすめの囲碁AI・棋院エディタ
   </h2>
   <p style="color: #555; font-size: 13px; line-height: 1.5; margin-bottom: 20px; text-align: center;">
