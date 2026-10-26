@@ -127,13 +127,15 @@
         </p>
     </div>
     
-    <!-- 塾歌の演奏（音声プレイヤー） -->
+    
+        <!-- 🎵 タイトル下の主題歌プレイヤー（song.mp3に修正＆エラー修復） -->
     <div style="background: #ffffff; padding: 15px; border-radius: 6px; border: 1px dashed #ccc; text-align: center; margin-top: 15px;">
-        <p style="margin: 0 0 10px 0; font-weight: bold; color: #333; font-size: 1rem;">🎵 才美塾 塾歌の演奏</p>
-        <audio id="jukka-sound" src="jukka.mp3" preload="auto" controls style="width: 100%; max-width: 350px;"></audio>
+        <p style="margin: 0 0 10px 0; font-weight: bold; color: #003366; font-size: 1rem;">🎵 才美塾 塾歌の演奏</p>
+        <audio controls src="song.mp3" style="height: 32px; width: 100%; max-width: 300px; display: block; margin: 0 auto;"></audio>
     </div>
 
 </div>
+
 
 <!-- 🎛️ ②【すぐ下】目的の場所へすぐに移動できるボタン（5ボタン生徒専用版） -->
 <div style="background: #f0f7ff; padding: 15px; border-radius: 8px; margin: 0 auto 25px auto; max-width: 100%; border: 1px solid #b3d7ff; text-align: center; box-sizing: border-box;">
@@ -231,17 +233,19 @@
       📜 古文書の案内 (PDF)
     </a>
 
-    <!-- ② ハーモニカボタン -->
-    <audio id="harmonica-sound" src="harmonica.mp3" preload="auto"></audio>
-    <button id="harmonica-btn" onclick="toggleHarmonica()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #20B2AA; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
-      🎵 ハーモニカの演奏
-    </button>
+<!-- ② ハーモニカボタン -->
+  <audio id="harmonica-sound" src="harmonica.mp3" preload="auto"></audio>
+  <button id="harmonica-btn" onclick="document.getElementById('harmonica-sound').paused ? document.getElementById('harmonica-sound').play() : document.getElementById('harmonica-sound').pause()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #20B2AA; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
+    🎵 ハーモニカの演奏
+  </button>
 
-    <!-- ③ ピアノボタン -->
-    <audio id="piano-sound" src="piano.mp3" preload="auto"></audio>
-    <button id="piano-btn" onclick="togglePiano()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #333333; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
-      🎹 ピアノの演奏 (PDFも開く)
-    </button>
+  <!-- ③ ピアノボタン（音を鳴らし、別タブで楽譜PDFを開く） -->
+  <audio id="piano-sound" src="piano.mp3" preload="auto"></audio>
+  <button id="piano-btn" onclick="document.getElementById('piano-sound').paused ? document.getElementById('piano-sound').play() : document.getElementById('piano-sound').pause(); window.open('piano_score.pdf', '_blank');" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #333333; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
+    🎹 ピアノの演奏 (PDFも開く)
+  </button>
+
+
 
     <!-- 📐 ④ 手割り 動画ボタン -->
     <button class="sb-btn" data-video-id="23BP-eTUiEU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #4a5568; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
