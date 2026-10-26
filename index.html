@@ -103,16 +103,39 @@
     background-position: left center; 
     flex-shrink: 0;
 }
-
-
 <!-- 👈 この終わりのタグのすぐ上に置くと間違いがありません -->
 </style>
 </head>
 <body>
 <div class="container">
 
-<!-- 👇 ここから：目的の場所へすぐに移動できるボタン（追加分） -->
-<!-- 👇 ここから：目的の場所へすぐに移動できるボタン（5ボタン版） -->
+<!-- 🌟 ①【最上部】才美塾囲碁教室の顔（看板・CONCEPT・塾歌） -->
+<div style="background-color: #fcf8f2; padding: 25px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #e6dfd3;" id="welcome">
+    
+    <!-- 才美塾囲碁教室の看板 -->
+        <!-- 才美塾囲碁教室の看板（四角い枠線で囲むデザイン） -->
+    <h1 style="text-align: center; color: #003366; margin-top: 0; font-size: 1.8rem; font-weight: bold; border: 3px double #003366; padding: 15px 10px; border-radius: 6px; background-color: #ffffff;">
+        才美塾囲碁教室
+    </h1>
+   
+    <!-- CONCEPT（教室の理念や概要） -->
+    <div style="margin: 20px 0; line-height: 1.8; color: #444;">
+        <p style="font-weight: bold; color: #b26f1a; font-size: 1.1rem; margin-bottom: 8px;">📌 CONCEPT（教室の概要）</p>
+        <p style="margin: 0;">
+            尾道市因島の『さいび塾（才美塾）囲碁教室』です。はじめて囲碁にふれる子どもたちから、じっくり楽しみたい生徒まで、みんなで楽しく囲碁を学んでいます。ルールを知らなくても大丈夫！遊びながら自然と集中力や地頭力が身につきます。
+        </p>
+    </div>
+    
+    <!-- 塾歌の演奏（音声プレイヤー） -->
+    <div style="background: #ffffff; padding: 15px; border-radius: 6px; border: 1px dashed #ccc; text-align: center; margin-top: 15px;">
+        <p style="margin: 0 0 10px 0; font-weight: bold; color: #333; font-size: 1rem;">🎵 才美塾 塾歌の演奏</p>
+        <audio id="jukka-sound" src="jukka.mp3" preload="auto" controls style="width: 100%; max-width: 350px;"></audio>
+    </div>
+
+</div>
+
+
+<!-- 🎛️ ②【すぐ下】目的の場所へすぐに移動できるボタン（5ボタン完全版） -->
 <div style="background: #f0f7ff; padding: 15px; border-radius: 8px; margin: 0 auto 25px auto; max-width: 100%; border: 1px solid #b3d7ff; text-align: center; box-sizing: border-box;">
     <p style="margin-top: 0; font-weight: bold; color: #004085; font-size: 1.1rem; margin-bottom: 12px;">👇 目的の場所へすぐに移動できます</p>
     <div style="display: flex; flex-direction: column; gap: 10px;">
@@ -133,10 +156,13 @@
         </a>
     </div>
 </div>
-<!-- 👆 ここまで：追加分 -->
+<!-- 👆 ここまで：5ボタン版 -->
+
+<!-- =============================================================== -->
+<!-- ここから下に、元々あった「動画・関連資料ボタンの左右２分割エリア」が続きます -->
 
 
-<!-- ===============================================================--
+<!-- ======================CONCEPT===================================--
 <!-- 全体を包む見やすい薄い背景のボックス -->
 <div style="background-color: #fcf8f2; padding: 25px; border-radius: 8px; border: 1px solid #e0d0b0; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); box-sizing: border-box; font-family: sans-serif; text-align: left;">
 
@@ -195,7 +221,7 @@
         </div>
       </div>
 
-
+ <!-- ===============================================================-->
       <!-- 🎛️ ボタンメニュー群（すっきりした見た目を維持し、消えたボタンをすべて復活！） -->
   <div style="display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 250px;">
 
@@ -706,7 +732,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 
   <!-- 🏆 スポンサーエリア（今後増えたらここに追加） -->
   <div class="link-group">
-    <h2 style="color: #333; border-left: 5px solid #28a745; padding-left: 10px; margin-top: 0; margin-bottom: 20px;" id="sponsors">🏆 才美塾を応援してくださる協賛企業・法人リンク</h2>
+    <h2 style="color: #333; border-left: 5px solid #28a745; padding-left: 10px; margin-top: 0; margin-bottom: 20px;" id="sponsors">🏆 才美塾を応援してくださる協賛サポーター（企業・団体)リンク</h2>
 
     <!-- 💡 style属性を取り除き、元々あった2列用の link-grid の動きに戻しました -->
     <div class="link-grid">
@@ -763,7 +789,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
    <!-- ===============================================================-->
   <!-- 🏛️ 尾道市・地域施設エリア -->
 <div class="link-group">
-  <h2>🗺️ 尾道市・因島周辺施設リンク</h2>
+  <h2>🗺️ 尾道市・因島周辺の囲碁なかま・応援リンク</h2>
   <div class="link-grid">
      <!-- 施設1：尾道市文化振興課（名前の前に赤色2本線マーク） -->
     <a href="https://www.city.onomichi.hiroshima.jp/soshiki/7/" target="_blank" rel="noopener" class="link-card sponsor-card">
@@ -815,13 +841,14 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       <a href="https://in-no-shima.jp//" target="_blank" rel="noopener" class="link-card sponsor-card">
         <div class="card-content">
          <h3> 因島商工会議所 ➔</h3>
-          <p>因島で創業・起業を目指す方へワンストップ創業相談窓口です。</p>        </div>
+          <p>因島の産業や元気を支え、子どもたちの囲碁活動や地域のまちなかイベントもあたたかくバックアップして戴いてています。</p>
+              </div>
       </a>
        <!-- 施設5：因島観光協会 -->
       <a href="https://kanko-innoshima.jp" target="_blank" rel="noopener" class="link-card sponsor-card">
         <div class="card-content">
             <h3> 因島観光協会 ➔</h3>
-          <p>電動アシスト自転車で巡ろう！アップダウンの多い因島！。</p> 
+          <p>囲碁のふるさと・因島の魅力を発信！島めぐりや、子どもたちの「虎ちゃん囲碁まつり」などのイベントを一緒に盛り上げています。</p> 
         </div>
       </a>
 
