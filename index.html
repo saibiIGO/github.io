@@ -250,10 +250,16 @@
     <div style="flex: 1; min-width: 280px; padding: 15px; background-color: white; border-radius: 6px; border: 1px solid #ddd; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px;">
       <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #b26f1a; font-weight: bold; border-bottom: 2px solid #b26f1a; padding-bottom: 3px;">🧭 目的の場所へすぐに移動できます</h3>
       
-      <a href="#welcome" style="display: block; background: #28a745; color: white; padding: 10px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-        🔰 初めての方（塾生の様子・ギャラリー）
-      </a>
-      
+      <!-- 💡 ボタンの中に、少し下に自動スクロールする命令（onclick）を仕込みました -->
+      <!-- 💡 hrefを「#」だけにして、クリック時にページ内の「塾生の様子」という文字を自動検索してスクロールする仕組みにしました -->
+<a href="#" onclick="event.preventDefault(); const target = document.getElementById('saibi-gallery-title') || document.getElementById('saibi-slideshow-container'); if(target){ target.scrollIntoView({behavior: 'smooth', block: 'start'}); }else{ alert('ギャラリーの部品が見つかりませんでした'); }" style="display: block; background: #28a745; color: white; padding: 10px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+  🔰 初めての方（塾生の様子・ギャラリー）
+</a>
+
+
+
+
+
       <a href="member.html" style="display: block; background: #007bff; color: white; padding: 10px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
         🌐 生徒向け（Discord・ネット対局）
       </a>
@@ -435,9 +441,17 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 </script>
    <!-- ===============================================================-->
 <!-- ■ ネット対局とオンライン交流（メインエリア） ■ -->
-<div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 20px; margin-bottom: 30px; width: 100%; box-sizing: border-box;">
+<!-- 💡 全体を左右2列に分けるための親要素 -->
+<!-- 💡 上の「container」の幅に100%ぴったり収まるように配置します -->
+<!-- ===============================================================-->
+<!-- ■ ネット対局とオンライン交流（メインエリア） ■ -->
+<!-- 💡 上の「container」の幅に100%ぴったり収まり、左右2列に分ける親要素 -->
+<div style="display: flex; gap: 20px; align-items: stretch; flex-wrap: wrap; width: 100%; margin: 20px 0; box-sizing: border-box;">
 
-  <!-- ① 囲碁対局「INGO」（小学生向け・わくわく碁盤デザイン） -->
+  <!-- ==========================================
+       左側：ネット対局碁「INGO」（1つの大きな塊）
+       ========================================== -->
+  <!-- 🌟 小学生向け・わくわく碁盤デザイン（緑ボタン）をそのまま活かしています -->
   <div style="flex: 1; min-width: 290px; border: 3px solid #d7a15c; padding: 20px; border-radius: 12px; background-color: #fdf8f1; display: flex; flex-direction: column; justify-content: space-between; text-align: center; box-sizing: border-box;">
     <div>
       <h3 style="color: #b26f1a; margin-top: 0; font-size: 1.4rem; margin-bottom: 5px;" id="online-tools">ネット対局碁「INGO」</h3>
@@ -445,11 +459,11 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 
       <!-- かわいい碁石キャラクターのイラスト -->
       <div style="margin: 15px 0;">
-        <img src="ingo.png" alt="ingo.png" style="width: 250px; height: auto;">
+        <img src="ingo.png" alt="ingo.png" style="width: 250px; height: auto; aspect-ratio: 1 / 1;">
       </div>
 
       <p style="font-size: 1.05rem; color: #333; line-height: 1.6; text-align: left;">
-        INGOは時差、言葉の壁を超えて囲碁を楽しむ場です。時間制限がなく、囲碁が好きな人なら子供から大人まで**無学年**でじっくり自分のペースで楽しむことができます！
+        INGOは時差、言葉の壁を超えて囲碁を楽しむ場です。時間制限がなく、囲碁が好きな人なら子供から大人まで<strong>無学年</strong>でじっくり自分のペースで楽しむことができます！
       </p>
     </div>
 
@@ -459,57 +473,70 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       </a>
     </p>
   </div>
-<!-- ② オンライン交流「Discord」（小学生向け・わくわくメイン拠点デザイン） -->
-<div style="flex: 1; min-width: 290px; border: 3px solid #5865F2; padding: 20px; border-radius: 12px; background-color: #f2f3ff; display: flex; flex-direction: column; justify-content: space-between; text-align: center; box-sizing: border-box;">
-  <div>
-    <h3 style="color: #5865F2; margin-top: 0; font-size: 1.4rem; margin-bottom: 5px;">みんなのひろば「Discord」</h3>
-    <p style="color: #666; font-size: 0.9rem; margin-top: 0; margin-bottom: 15px;">〜Saibi塾の新しいメインの場所だよ！〜</p>
 
-    <!-- コミュニティをイメージしたかわいい学校・ひろばのイラスト -->
-    <div style="margin: 15px 0;">
-      <img src="discord.png" alt="discord.png" style="width: 250px; height: auto;">
+  <!-- ==========================================
+       右側：縦に2段並べるためのコンテナ
+       ========================================== -->
+  <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box;">
+
+    <!-- ----------------------------------------
+         右側・上段：みんなの ネットいごひろば
+         ---------------------------------------- -->
+    <!-- 🌟 アプリ不要・クリックで繋がるかんたん囲碁ひろば（オレンジ枠・オレンジボタン） -->
+    <div style="flex: 1; border: 3px solid #FF9800; padding: 20px; border-radius: 12px; background-color: #fff9e6; display: flex; flex-direction: column; justify-content: space-between; text-align: center; box-sizing: border-box;">
+      <div>
+        <h3 style="color: #E65100; margin-top: 0; font-size: 1.4rem; margin-bottom: 5px;">みんなの ネットいごひろば</h3>
+        <p style="color: #666; font-size: 0.9rem; margin-top: 0; margin-bottom: 15px;">〜アプリなしで すぐに つながる場所だよ！〜</p>
+
+        <!-- 案内用のかわいい画像 -->
+        <div style="margin: 15px 0;">
+          <img src="discord.png" alt="Spatialchat" style="width: 200px; height: auto; aspect-ratio: 1 / 1;">
+        </div>
+
+        <p style="font-size: 1.05rem; color: #333; line-height: 1.6; text-align: left;">
+          Discord（ディスコード）の設定がむずかしい人や、今日すぐにおしゃべりしたい人はこちら！<br>
+          <strong>アプリのインストールやアカウント登録はいっさい必要ありません。</strong>ボタンをおすだけで、すぐに入れます！
+        </p>
+      </div>
+
+      <p style="margin-top: 25px; margin-bottom: 0;">
+        <a href="https://spatial.chat/s/Ut4AQTnckGzHJZB7wQdZ" class="btn" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 12px 25px; background-color: #FF9800; color: white; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 1.1rem; border-bottom: 4px solid #ef6c00; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+          👉 わくわく囲碁ひろば に入る！（すぐ繋がるよ）
+        </a>
+      </p>
+    </div>
+    
+    <!-- ----------------------------------------
+         右側・下段：みんなのひろば「Discord」
+         ---------------------------------------- -->
+    <!-- 🌟 Discord公式をイメージしたスタイリッシュデザイン（青枠・青ボタン） -->
+    <div style="flex: 1; border: 3px solid #5865F2; padding: 20px; border-radius: 12px; background-color: #f2f3ff; display: flex; flex-direction: column; justify-content: space-between; text-align: center; box-sizing: border-box;">
+      <div>
+        <h3 style="color: #5865F2; margin-top: 0; font-size: 1.4rem; margin-bottom: 5px;">みんなのひろば「Discord」</h3>
+        <p style="color: #666; font-size: 0.9rem; margin-top: 0; margin-bottom: 15px;">〜Saibi塾の新しいメインの場所だよ！〜</p>
+
+        <!-- コミュニティをイメージしたかわいいイラスト -->
+        <div style="margin: 15px 0;">
+          <img src="discord.png" alt="discord.png" style="width: 200px; height: auto; aspect-ratio: 1 / 1;">
+        </div>
+
+        <p style="font-size: 1.05rem; color: #333; line-height: 1.6; text-align: left;">
+          <strong>無学年</strong>で、音声やチャットでリアルタイムにお話しできるよ。先生とのレッスンなどにたくさん使っていきます！
+        </p>
+      </div>
+
+      <p style="margin-top: 25px; margin-bottom: 0;">
+        <a href="https://discord.gg" class="btn" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 12px 25px; background-color: #5865F2; color: white; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 1.1rem; border-bottom: 4px solid #3843b2; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+          💬 Discord囲碁コミュニケーション広場に入る！
+        </a>
+      </p>
     </div>
 
-    <p style="font-size: 1.05rem; color: #333; line-height: 1.6; text-align: left;">
-      **無学年（むがくねん）**でみんながあつまるオンラインのひろばです！声（こえ）やチャットでリアルタイムにお話しできるよ。毎日のざつだん、いごの待ち合わせ、先生とのレッスンなどにたくさん使っていきます！
-    </p>
-  </div>
+  </div> <!-- 右側コンテナの閉じタグ -->
 
-  <p style="margin-top: 25px; margin-bottom: 0;">
-    <a href="https://discord.gg" class="btn" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 12px 25px; background-color: #5865F2; color: white; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 1.1rem; border-bottom: 4px solid #3843b2; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-      💬 Discord囲碁コミュニケーション広場に入る！
-    </a>
-  </p>
-</div>
+</div> <!-- 全体を囲むFlexボックスの閉じタグ -->
+<!-- ===============================================================-->
 
-<!-- 【追加ここから】②-2 アプリ不要・クリックで繋がる「かんたん囲碁ひろば」（SpatialChat等用） -->
-<div style="flex: 1; min-width: 290px; border: 3px solid #FF9800; padding: 20px; border-radius: 12px; background-color: #fff9e6; display: flex; flex-direction: column; justify-content: space-between; text-align: center; box-sizing: border-box; margin-top: 10px;">
-  <div>
-    <h3 style="color: #E65100; margin-top: 0; font-size: 1.4rem; margin-bottom: 5px;">みんなの ネットいごひろば</h3>
-    <p style="color: #666; font-size: 0.9rem; margin-top: 0; margin-bottom: 15px;">〜アプリなしで すぐに つながる場所だよ！〜</p>
-
-    <!-- 案内用のかわいい画像（お好みの画像名に変更してください） -->
-    <div style="margin: 15px 0;">
-      <img src="discord.png" alt="discord.png" style="width: 250px; height: auto;">
-    </div>
-
-    <p style="font-size: 1.05rem; color: #333; line-height: 1.6; text-align: left;">
-      Discord（ディスコード）の設定がむずかしい人や、今日すぐにおしゃべりしたい人はこちら！<br>
-      <b>アプリのインストールやアカウント登録はいっさい必要ありません。</b>ボタンをおすだけで、すぐに入れます！
-    </p>
-  </div>
-
-  <p style="margin-top: 25px; margin-bottom: 0;">
-    <!-- href=" https://app.spatial.chat/s/Ut4AQTnckGzHJZB7wQdZ" の中身に、新しく作成したSpatialChatなどのURLを入れてください -->
-    <a href="https://spatial.chat/s/Ut4AQTnckGzHJZB7wQdZ" class="btn" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 12px 25px; background-color: #FF9800; color: white; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 1.1rem; border-bottom: 4px solid #ef6c00; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-      👉 わくわく囲碁ひろば に入る！（すぐ繋がるよ）
-    </a>
-  </p>
-</div>
-<!-- 【追加ここまで】 -->
-
- 
-</div>
    <!-- ===============================================================-->
 <!-- ■ お知らせ・写真・動画コーナー（下部エリア） ■ -->
 <div style="margin-top: 30px; padding-top: 25px; border-top: 1px solid #e0d0b0; display: flex; flex-wrap: wrap; gap: 25px;">
@@ -568,14 +595,24 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
      ========================================== --> 
 <!-- 才美塾スライドショウ・前半枠組み -->
 <div style="width: 100%; max-width: 500px; margin: 20px auto; padding: 15px; background: #fff; border: 1px solid #ddd; border-radius: 6px; text-align: center; box-sizing: border-box;">
-  <div style="margin-bottom: 15px; text-align: left;">
+
+<div style="margin-bottom: 15px; text-align: left;">
     <label for="saibi-gallery-select" style="font-size: 13px; font-weight: bold; color: #003366; margin-right: 5px;">表示するギャラリー:</label>
     <select id="saibi-gallery-select" onchange="switchGallerySet(this.value)" oninput="switchGallerySet(this.value)" style="padding: 6px 10px; border: 1px solid #003366; border-radius: 4px; color: #003366; font-weight: bold; background: #fff; cursor: pointer; font-size: 13px;"></select>
   </div>
-  <h3 id="saibi-gallery-title" style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;" id="welcome">📸 塾生の様子（碁盤ギャラリー）</h3>
+  
+  <h3 style="margin: 20px 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📸 塾生の様子（碁盤ギャラリー）</h3>
+
+  <!-- 💡 idを正しい「welcome」に修正しました -->
+  <h3 id="welcome" style="display: none;"></h3>
+  
   <div style="width: 100%; height: 350px; overflow: hidden; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; background: #f0f0f0;">
     <div id="saibi-slideshow-container" style="width: 100%; height: 100%; position: relative;"></div>
   </div>
+
+
+
+
 </div>
 
 <div id="saibi-admin-modal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center;">
