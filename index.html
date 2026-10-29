@@ -109,47 +109,6 @@
 <body>
 <div class="container">
 
-<!-- 🌟 ①【最上部】才美塾囲碁教室の顔（看板・CONCEPT・塾歌） -->
-<div style="background-color: #fcf8f2; padding: 25px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #e6dfd3;" id="welcome">
-    
-    <!-- 才美塾囲碁教室の看板 -->
-        <!-- 才美塾囲碁教室の看板（四角い枠線で囲むデザイン） -->
-    <h1 style="text-align: center; color: #003366; margin-top: 0; font-size: 1.8rem; font-weight: bold; border: 3px double #003366; padding: 15px 10px; border-radius: 6px; background-color: #ffffff;">
-        才美塾囲碁教室
-    </h1>
-   
-    <!-- CONCEPT（教室の理念や概要） -->
-    <div style="margin: 20px 0; line-height: 1.8; color: #444;">
-        <p style="font-weight: bold; color: #b26f1a; font-size: 1.1rem; margin-bottom: 8px;">📌 CONCEPT（教室の概要）</p>
-        <p style="margin: 0;">
-            尾道市因島の『さいび塾（才美塾）囲碁教室』です。はじめて囲碁にふれる子どもたちから、じっくり楽しみたい生徒まで、みんなで楽しく囲碁を学んでいます。ルールを知らなくても大丈夫！遊びながら自然と集中力や地頭力が身につきます。
-        </p>
-    </div>
-    
-    <!-- =============================================================== -->
-    <!-- 塾歌の演奏（音声プレイヤー） -->
-        <!-- 🎵 タイトル下の主題歌プレイヤー（song.mp3に修正＆エラー修復） -->
-    <div style="background: #ffffff; padding: 15px; border-radius: 6px; border: 1px dashed #ccc; text-align: center; margin-top: 15px;">
-        <p style="margin: 0 0 10px 0; font-weight: bold; color: #003366; font-size: 1rem;">🎵 才美塾 塾歌の演奏</p>
-        <audio controls src="song.mp3" style="height: 32px; width: 100%; max-width: 300px; display: block; margin: 0 auto;"></audio>
-    </div>
-
-</div>
-
-<!-- =============================================================== -->
-
-<!-- 🎛️ ②ここから：5ボタン版【すぐ下】目的の場所へすぐに移動できるボタン（5ボタン完全版） -->
-
-<!-- 👆 ここまで：5ボタン版 -->
-
-<!-- 💡 左右並列のメインエリア（左右で綺麗に高さが揃うデザイン） -->
-
-<!-- =============================================================== -->
-
-<!-- =============================================================== -->
-
-<!-- =============================================================== -->
-<!-- ここから下に、元々あった「動画・関連資料ボタンの左右２分割エリア」が続きます -->
 
 
 <!-- ======================CONCEPT===================================--
@@ -189,7 +148,13 @@
   </div>
  </div>
    <!-- ===============================================================-->
-
+    <!-- CONCEPT（教室の理念や概要） -->
+    <div style="margin: 20px 0; line-height: 1.8; color: #444;">
+        <p style="font-weight: bold; color: #b26f1a; font-size: 1.1rem; margin-bottom: 8px;">📌 CONCEPT（教室の概要）</p>
+        <p style="margin: 0;">
+            尾道市因島の『さいび塾（才美塾）囲碁教室』です。はじめて囲碁にふれる子どもたちから、見守る先輩たちまで楽しく囲碁を学んでいます。無意識のうちに自然と集中力や考える力が身につきます。
+        </p>
+    </div>
   <!-- 【下部：左右2段組 of エリア】 -->
   <!-- ===============================================================-->
   <!-- 💡 【上部セクション】：左右２段組のメインエリア -->
@@ -250,16 +215,10 @@
     <div style="flex: 1; min-width: 280px; padding: 15px; background-color: white; border-radius: 6px; border: 1px solid #ddd; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px;">
       <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #b26f1a; font-weight: bold; border-bottom: 2px solid #b26f1a; padding-bottom: 3px;">🧭 目的の場所へすぐに移動できます</h3>
       
-      <!-- 💡 ボタンの中に、少し下に自動スクロールする命令（onclick）を仕込みました -->
-      <!-- 💡 hrefを「#」だけにして、クリック時にページ内の「塾生の様子」という文字を自動検索してスクロールする仕組みにしました -->
-<a href="#" onclick="event.preventDefault(); const target = document.getElementById('saibi-gallery-title') || document.getElementById('saibi-slideshow-container'); if(target){ target.scrollIntoView({behavior: 'smooth', block: 'start'}); }else{ alert('ギャラリーの部品が見つかりませんでした'); }" style="display: block; background: #28a745; color: white; padding: 10px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-  🔰 初めての方（塾生の様子・ギャラリー）
-</a>
-
-
-
-
-
+      <a href="#welcome" style="display: block; background: #28a745; color: white; padding: 10px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        🔰 初めての方（塾生の様子・ギャラリー）
+      </a>
+      
       <a href="member.html" style="display: block; background: #007bff; color: white; padding: 10px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
         🌐 生徒向け（Discord・ネット対局）
       </a>
@@ -310,7 +269,7 @@
       <iframe id="youtube-player" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></iframe>
     </div>
   </div>
-
+    </div>
  <!-- ===============================================================-->
 
 <!-- ======= 💡 ここに貼り付けるのが一番安全です！ ======= -->
@@ -595,24 +554,14 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
      ========================================== --> 
 <!-- 才美塾スライドショウ・前半枠組み -->
 <div style="width: 100%; max-width: 500px; margin: 20px auto; padding: 15px; background: #fff; border: 1px solid #ddd; border-radius: 6px; text-align: center; box-sizing: border-box;">
-
-<div style="margin-bottom: 15px; text-align: left;">
-    <label for="saibi-gallery-select" style="font-size: 13px; font-weight: bold; color: #003366; margin-right: 5px;">表示するギャラリー:</label>
+  <div style="margin-bottom: 15px; text-align: left;">
+    <label for="saibi-gallery-select" style="font-size: 13px; font-weight: bold; color: #003366; margin-right: 5px;" id="welcome">表示するギャラリー:</label>
     <select id="saibi-gallery-select" onchange="switchGallerySet(this.value)" oninput="switchGallerySet(this.value)" style="padding: 6px 10px; border: 1px solid #003366; border-radius: 4px; color: #003366; font-weight: bold; background: #fff; cursor: pointer; font-size: 13px;"></select>
   </div>
-  
-  <h3 style="margin: 20px 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📸 塾生の様子（碁盤ギャラリー）</h3>
-
-  <!-- 💡 idを正しい「welcome」に修正しました -->
-  <h3 id="welcome" style="display: none;"></h3>
-  
+  <h3 id="saibi-gallery-title" style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📸 塾生の様子（碁盤ギャラリー）</h3>
   <div style="width: 100%; height: 350px; overflow: hidden; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; background: #f0f0f0;">
     <div id="saibi-slideshow-container" style="width: 100%; height: 100%; position: relative;"></div>
   </div>
-
-
-
-
 </div>
 
 <div id="saibi-admin-modal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center;">
