@@ -555,7 +555,6 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 <!-- ==========================================
      👉【右側】：4コマスライドショウ　写真（碁盤）ギャラリー（操作マニュアル＆補助ボタン内蔵・完成版）
      ========================================== -->
-
 <!-- 👉【右側】：写真ギャラリー（Sキーで管理人室起動 ＆ 枚数・時間自由設定版） -->
 
 <!-- ==========================================
@@ -564,10 +563,10 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 <!-- 才美塾スライドショウ・前半枠組み -->
 <div style="width: 100%; max-width: 500px; margin: 20px auto; padding: 15px; background: #fff; border: 1px solid #ddd; border-radius: 6px; text-align: center; box-sizing: border-box;">
   <div style="margin-bottom: 15px; text-align: left;">
-    <label for="saibi-gallery-select" style="font-size: 13px; font-weight: bold; color: #003366; margin-right: 5px;" id="welcome">表示するギャラリー:</label>
+    <label for="saibi-gallery-select" style="font-size: 13px; font-weight: bold; color: #003366; margin-right: 5px;" id="welcome">ギャラリー選択窓:</label>
     <select id="saibi-gallery-select" onchange="switchGallerySet(this.value)" oninput="switchGallerySet(this.value)" style="padding: 6px 10px; border: 1px solid #003366; border-radius: 4px; color: #003366; font-weight: bold; background: #fff; cursor: pointer; font-size: 13px;"></select>
   </div>
-  <h3 id="saibi-gallery-title" style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📸 塾生の様子（碁盤ギャラリー）</h3>
+  <h3 id="saibi-gallery-title" style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📸 碁盤ギャラリー</h3>
   <div style="width: 100%; height: 350px; overflow: hidden; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; background: #f0f0f0;">
     <div id="saibi-slideshow-container" style="width: 100%; height: 100%; position: relative;"></div>
   </div>
@@ -604,7 +603,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       name: "令和８年虎ちゃん囲碁まつり", folder: "image2",
       slides: [
         { img: "image2/photo1.jpg", text: "① 応援の方々もハラハラ、次の一手はどこかな！", duration: 5 },
-        { img: "image2/photo2.jpg", text: "②この大会に出場する勇気と努力を讃え全員に奨励賞を授与します。", duration: 5},
+        { img: "image2/photo2.jpg", text: "②この大会に出場する勇気と努力に敬意を表し全員に奨励賞を贈ります。", duration: 5},
         { img: "image2/photo3.jpg", text: "③ あと少しだよ、じっくり考えてみよう！", duration: 4 },
         { img: "image2/photo4.jpg", text: "④ ここに打つとどうなるかな？考えてごらん", duration: 4 },
         { img: "image2/photo5.jpg", text: "⑤ 三々があるよ。あと少しで正解だよ！", duration: 4 },
@@ -616,22 +615,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       ]
     }
   };
-    set3: {
-      name: "令和の虎ちゃん熱き初手合", folder: "image3",
-      slides: [
-        { img: "image3/photo1.jpg", text: "①第18回尾道市民囲碁大会Aクラスで全勝優勝の様子。 ！", duration: 5 },
-        { img: "image3/photo2.jpg", text: "②2子でお願いします。", duration: 5},
-        { img: "image3/photo3.jpg", text: "③大切な局の棋譜担当を！お姉さんも緊張です。", duration: 4 },
-        { img: "image3/photo4.jpg", text: "④ 大福先生もお父さんも目が離せません。", duration: 4 },
-        { img: "image3/photo5.jpg", text: "⑤この一団をシノげば。。。 ！", duration: 4 },
-        { img: "image3/photo6.jpg", text: "⑥ 迎賓館女性囲碁教室代表！", duration: 5 },
-        { img: "image3/photo7.jpg", text: "⑦ 局碁の検討はプロでも挑難解のAI定石のワカレまで。", duration: 4 },
-        { img: "image3/photo8.jpg", text: "⑧序盤の極め、中盤以後の戦いを、、と大福先生！", duration: 4 },
-        { img: "image3/photo9.jpg", text: "⑨ 本日の対局実現の裏方もパチリ。", duration: 5 },
-        { img: "image3/photo10.jpg", text: "⑩ここまで支えてくださったご両親を交えての一枚、これからも勉学とともに囲碁に励んでください。 。", duration: 5 }
-      ]
-    }
-  };
+
   const STORAGE_KEY = 'saibi_gallery_v2026_final';
   let saibiGalleryData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultGalleryData;
   
@@ -747,6 +731,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     slideshowTimeout = setTimeout(() => { currentSlideIndex++; renderSlide(); }, slide.duration * 1000);
   }
 </script>
+
 
 
 <!-- javascript エリア おわり-->
