@@ -7,109 +7,9 @@
     <title>さいび塾（才美塾）囲碁教室 - 尾道市因島の囲碁教室</title>
     <meta name="description" content="尾道市因島の『さいび塾（才美塾）囲碁教室』の公式ホームページです。無学年でじっくり楽しめるネット囲碁対局や、生徒同士のオンライン交流を行っています。">
     <meta name="keywords" content="さいび,才美塾,さいびじゅく,囲碁教室,因島,尾道">
-   <!-- ===============================================================-->
-    <style>
-   <!-- 🎛️ ボタンメニュー群（すっきりした見た目を維持し、消えたボタンをすべて復活！） -->
-<div style="display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 250px;">
-
-  <!-- ① 古文書ボタン -->
-  <a href="komonjo.pdf" target="_blank" style="display: block; background-color: #8B4513; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
-    📜 古文書の案内 (PDF)
-  </a>
-
-  <!-- ② ハーモニカボタン -->
-  <audio id="harmonica-sound" src="harmonica.mp3" preload="auto"></audio>
-  <button id="harmonica-btn" onclick="toggleHarmonica()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #20B2AA; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
-    🎵 ハーモニカの演奏
-  </button>
-
-  <!-- ③ ピアノボタン（音を鳴らしつつ、別タブでPDFを開くように改良） -->
-  <audio id="piano-sound" src="piano.mp3" preload="auto"></audio>
-  <button id="piano-btn" onclick="togglePiano(); window.open('piano_score.pdf', '_blank');" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #333333; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
-    🎹 ピアノの演奏 (PDFも開く)
-  </button>
-
-  <!-- 📐 ④ 手割り 動画ボタン -->
-  <button class="sb-btn" data-video-id="23BP-eTUiEU" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #4a5568; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
-    📐 「手割り」講義動画
-  </button>
-
-  <!-- 🎯 ⑤ 筋・筋場 動画ボタン -->
-  <button class="sb-btn" data-video-id="ここにYouTubeのID" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #003366; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
-    🎯 「筋・筋場」講義動画
-  </button>
-
-  <!-- ✨ ⑥ 予備 動画ボタン -->
-  <button class="sb-btn" data-video-id="https://www.kansai-u.ac.jp/ja/?stt_lang=ja" onclick="switchYouTube(this)" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #718096; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
-    ✨ 予備の動画
-  </button>
-
-</div>
-</div>
-
-<!-- 👉【右半分】：関連資料・PDFダウンロードコーナー -->
-<div style="flex: 1; min-width: 280px; padding: 15px; background-color: white; border-radius: 6px; border: 1px solid #ddd; box-sizing: border-box; display: flex; flex-direction: column; gap: 15px;">
-<h3 style="margin: 0 0 5px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📚 講義の関連資料 (PDF)</h3>
-
-<!-- ① 手割りPDF -->
-<div style="padding: 5px 0; border-bottom: 1px dashed #ddd;">
-  <a href="tewari.pdf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
-    ➔ 「手割り」解説テキストはこちら (PDF)
-  </a>
-</div>
-
-<!-- ② 筋・筋場PDF -->
-<div style="padding: 5px 0; border-bottom: 1px dashed #ddd;">
-  <a href="tesuji_sujiba.pdf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
-    ➔ 「筋・筋場」解説テキストはこちら (PDF)
-  </a>
-</div>
-
-<!-- ③ 予備PDF -->
-<div style="padding: 5px 0; border-bottom: 1px dashed #ddd;">
-  <a href="yobi.pdf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
-    ➔ 予備の関連資料ダウンロード (PDF)
-  </a>
-</div>
-
-<!-- 📺 YouTube動画が表示されるエリア -->
-<div id="video-container" style="display: none; width: 100%; max-width: 250px; margin-top: 10px; position: relative; padding-top: 56.25%;">
-  <iframe id="youtube-player" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></iframe>
-</div>
-
-        body { font-family: sans-serif; line-height: 1.8; color: #333; background-color: #f4f6f8; margin: 0; padding: 0; }
-        .container { max-width: 800px; margin: 30px auto; padding: 30px; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        /* 使用しなくなったheaderのスタイルは削除または無視して大丈夫です */
-        h2 { color: #2c3e50; border-left: 5px solid #ff9f43; padding-left: 15px; margin-top: 40px; margin-bottom: 20px; font-size: 1.5rem; }
-        h3 { color: #34495e; font-size: 1.2rem; margin-top: 25px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
-        .btn-box { text-align: center; margin: 30px 0; }
-        .btn-contact { display: inline-block; background-color: #ff9f43; color: #fff; padding: 15px 35px; text-decoration: none; font-weight: bold; border-radius: 30px; }
-        .btn-homework { display: inline-block; background-color: #27ae60; color: #fff; padding: 15px 35px; text-decoration: none; font-weight: bold; border-radius: 30px; }
-        ul { padding-left: 20px; } li { margin-bottom: 8px; } a { color: #2980b9; text-decoration: none; }
-  /* ======= 💡 ここに貼り付けるのが一番安全です！ ======= */
-.sponsor-card h3 { 
-    display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 0; 
-}
-.sponsor-card h3::before {
-    /* 👇 数字のカウントを消して、空っぽにしました */
-    content: ""; 
-    
-    display: inline-flex; align-items: center; justify-content: center;
-    padding-left: 42px; 
-    height: 36px;       
-    background-image: url("ozon.png"); 
-    background-size: contain; 
-    background-repeat: no-repeat; 
-    background-position: left center; 
-    flex-shrink: 0;
-}
-<!-- 👈 この終わりのタグのすぐ上に置くと間違いがありません -->
-</style>
 </head>
 <body>
 <div class="container">
-
-
 
 <!-- ======================CONCEPT===================================--
 <!-- 全体を包む見やすい薄い背景のボックス -->
@@ -147,6 +47,21 @@
 
   </div>
  </div>
+   <!-- ===============================================================-->
+      <!-- ===============================================================-->
+
+
+    <!-- 🗒 お知らせ -->
+    <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 6px;">
+      <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">🗒 お知らせ</h3>
+      <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #444; line-height: 1.7;">
+        <li style="margin-bottom: 8px;"><strong>2026年10月30日：</strong> 移動ボタンの設置。目的の教室へすぐに移動できます。</li>
+        <li style="margin-bottom: 8px;"><strong>2026年10月13日：</strong> 碁盤ギャラリーで因島北認定こども園の元気な園児さんです。考える力が良くなるよ。</li> 
+        <li style="margin-bottom: 8px;"><strong>2026年9月29日：</strong> <a href="https://0845.boo.jp/doso/archives/1940" target="_blank" rel="noopener" style="color: #003366; font-weight: bold; text-decoration: underline;">🎬 映画『初恋芸人』プロデューサー 峯松里香さんの寄稿記事（因島高校同窓会）</a>へのリンクを追加しました。ぜひご覧ください！</li>
+        <li><strong>2026年9月27日：</strong> 才美塾のホームページを新しくリニューアルし、主題歌（塾歌）の再生機能や動画・写真コーナーを追加しました！</li>
+      </ul>
+    </div>
+
    <!-- ===============================================================-->
     <!-- CONCEPT（教室の理念や概要） -->
     <div style="margin: 20px 0; line-height: 1.8; color: #444;">
@@ -534,7 +449,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       <!-- 動画選択用のボタングループ -->
     <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 10px;">
 
-   <!-- 動画1：アキラの碁「【実戦で即応用✨】2間ビラキトビにノゾキを打たれた際の対処方法！」へジャンプ -->
+   <!-- 動画1：地球星歌〜笑顔のために〜へジャンプ -->
 <a href="https://www.youtube.com/watch?v=dmPALlJuysM" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
   <button style="padding: 10px 20px; font-size: 14px; cursor: pointer; border: 1px solid #003366; background-color: #003366; color: white; border-radius: 4px; font-weight: bold; transition: 0.2s;">
     🎬 地球星歌〜笑顔のために〜 ↗
@@ -603,7 +518,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       name: "令和８年虎ちゃん囲碁まつり", folder: "image2",
       slides: [
         { img: "image2/photo1.jpg", text: "① 応援の方々もハラハラ、次の一手はどこかな！", duration: 5 },
-        { img: "image2/photo2.jpg", text: "②この大会に出場する勇気と努力に敬意を表し全員に奨励賞を贈ります。", duration: 5},
+        { img: "image2/photo2.jpg", text: "②この大会に出場する勇気と努力を讃え全員に奨励賞を贈ります。", duration: 5},
         { img: "image2/photo3.jpg", text: "③ あと少しだよ、じっくり考えてみよう！", duration: 4 },
         { img: "image2/photo4.jpg", text: "④ ここに打つとどうなるかな？考えてごらん", duration: 4 },
         { img: "image2/photo5.jpg", text: "⑤ 三々があるよ。あと少しで正解だよ！", duration: 4 },
@@ -619,10 +534,8 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   const STORAGE_KEY = 'saibi_gallery_v2026_final';
   let saibiGalleryData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultGalleryData;
   
-  // ✨ 【完全修正】後ろに [0] を確実に指定し、Chromium系のフリーズエラーを根絶しました！
   let currentSetKey = Object.keys(saibiGalleryData)[0] || 'set1';
-  
-  let currentSlideIndex = 0; let slideshowTimeout = null; let validSlides = [];
+  let currentSlideIndex = 0; let slideshowTimeout = null;
 
   window.addEventListener('DOMContentLoaded', () => { updateUserSelectOptions(); startSlideshow(); });
   window.addEventListener('keydown', (e) => {
@@ -662,81 +575,56 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   }
 
   function createSlideRowHTML(img, text, duration, idx) {
+    const slidesList = document.getElementById('admin-slides-list');
     const div = document.createElement('div'); div.className = 'admin-slide-row'; div.style = 'padding: 10px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px; margin-bottom:10px; text-align:left;';
-    div.innerHTML = `<div style="font-weight:bold; font-size:12px; color:#003366; margin-bottom:5px;">📷 コマ ${idx + 1}</div>
+    div.innerHTML = `
+      <div style="font-weight:bold; font-size:12px; color:#003366; margin-bottom:5px;">📷 コマ ${idx + 1}</div>
       <div style="display:flex; flex-direction:column; gap:5px;">
-        <input type="text" class="edit-img" value="${img}" style="width:100%; padding:4px;">
-        <input type="text" class="edit-text" value="${text}" style="width:100%; padding:4px;">
-        <div style="display:flex; align-items:center; gap:5px; font-size:12px;"><span>秒数:</span><input type="number" class="edit-duration" value="${duration}" style="width:70px; padding:4px;"><span>秒</span>
-          <button type="button" class="delete-row-btn" style="margin-left:auto; background:#dc3545; color:white; border:none; padding:3px 8px; cursor:pointer;">削除</button>
-        </div></div>`;
-    div.querySelector('.delete-row-btn').addEventListener('click', () => { div.remove(); renumRows(); });
-    document.getElementById('admin-slides-list').appendChild(div);
+        <input type="text" class="slide-img" value="${img}" placeholder="画像のパス" style="width:100%; padding:4px;">
+        <input type="text" class="slide-text" value="${text}" placeholder="文字（キャプション）" style="width:100%; padding:4px;">
+        <input type="number" class="slide-duration" value="${duration}" placeholder="秒数" style="width:60px; padding:4px;"> 秒間表示
+      </div>
+    `;
+    slidesList.appendChild(div);
+  }
+
+  function toggleAddButtonVisibility() {
+    const set = saibiGalleryData[currentSetKey];
+    const btn = document.getElementById('add-slide-row-btn');
+    if(set && set.slides.length >= 10) { btn.style.display = 'none'; } else { btn.style.display = 'block'; }
   }
 
   function addBlankSlideRow() {
-    const len = document.querySelectorAll('.admin-slide-row').length;
-    if (len < 10) { createSlideRowHTML(`${saibiGalleryData[currentSetKey].folder || 'image1'}/photo${len + 1}.jpg`, `新しい解説文`, 4, len); toggleAddButtonVisibility(); }
+    const set = saibiGalleryData[currentSetKey];
+    if(set && set.slides.length < 10) {
+      set.slides.push({ img: "", text: "", duration: 5 });
+      loadSetToEditor(currentSetKey);
+    }
   }
 
-  function renumRows() { document.querySelectorAll('.admin-slide-row').forEach((row, i) => { const l = row.querySelector('div'); if (l) l.textContent = `📷 コマ ${i+1}`; }); toggleAddButtonVisibility(); }
-  function toggleAddButtonVisibility() { const btn = document.getElementById('add-slide-row-btn'); if (btn) btn.style.display = (document.querySelectorAll('.admin-slide-row').length >= 10) ? 'none' : 'block'; }
-
-  function createNewSet() {
-    const nameInput = document.getElementById('new-set-name'); if (!nameInput) return; const name = nameInput.value.trim(); if (!name) { alert("セット名を入力してください。"); return; }
-    const newKey = 'set_' + Date.now(); saibiGalleryData[newKey] = { name: name, folder: "image1", slides: [{ img: "image1/photo1.jpg", text: "① 新しいスライド", duration: 4 }] };
-    nameInput.value = ''; localStorage.setItem(STORAGE_KEY, JSON.stringify(saibiGalleryData)); currentSetKey = newKey; buildAdminSetSelect(); loadSetToEditor(newKey); updateUserSelectOptions();
+  function switchGallerySet(setKey) {
+    currentSetKey = setKey;
+    currentSlideIndex = 0;
+    const set = saibiGalleryData[setKey];
+    if (set) document.getElementById('saibi-gallery-title').textContent = "📸 " + set.name;
+    startSlideshow();
   }
-
-  function deleteCurrentSet() {
-    if (Object.keys(saibiGalleryData).length <= 1) { alert("最後の1つは削除できません。"); return; } if (!confirm("本当にこのギャラリーセットを削除しますか？")) return;
-    delete saibiGalleryData[currentSetKey]; localStorage.setItem(STORAGE_KEY, JSON.stringify(saibiGalleryData)); currentSetKey = Object.keys(saibiGalleryData)[0]; buildAdminSetSelect(); loadSetToEditor(currentSetKey); updateUserSelectOptions(); startSlideshow();
-  }
-
-  function saveAdminData() {
-    if (!saibiGalleryData[currentSetKey]) return;
-    const updatedName = document.getElementById('edit-set-name').value.trim(); if (!updatedName) { alert("ギャラリー名を入力してください。"); return; }
-    saibiGalleryData[currentSetKey].name = updatedName; const newSlides = [];
-    document.querySelectorAll('.admin-slide-row').forEach(row => {
-      const img = row.querySelector('.edit-img').value.trim(); const text = row.querySelector('.edit-text').value; const duration = parseInt(row.querySelector('.edit-duration').value, 10) || 4;
-      if (img !== "") newSlides.push({ img, text, duration });
-    });
-    if(newSlides.length === 0) { alert("最低1コマは作成してください。"); return; }
-    saibiGalleryData[currentSetKey].slides = newSlides; localStorage.setItem(STORAGE_KEY, JSON.stringify(saibiGalleryData));
-    alert("⚙️ メッセージと写真を更新しました！"); closeAdminModal(); updateUserSelectOptions(); startSlideshow();
-  }
-
-  function switchGallerySet(key) { currentSetKey = key; startSlideshow(); }
 
   function startSlideshow() {
-    clearTimeout(slideshowTimeout); currentSlideIndex = 0; const set = saibiGalleryData[currentSetKey]; if (!set) return;
-    const titleEl = document.getElementById('saibi-gallery-title'); if (titleEl) titleEl.textContent = `📸 ${set.name}`;
-    validSlides = []; if (!set.slides || set.slides.length === 0) return;
-    set.slides.forEach((slide) => { if (slide.text && !slide.text.includes("新しい解説文")) { validSlides.push(slide); } });
-    if (validSlides.length === 0) { validSlides = set.slides; }
-    renderSlide();
-  }
+    if (slideshowTimeout) clearTimeout(slideshowTimeout);
+    const set = saibiGalleryData[currentSetKey];
+    if (!set || !set.slides || set.slides.length === 0) return;
+    
+    // タイトル更新
+    document.getElementById('saibi-gallery-title').textContent = "📸 " + set.name;
+    
+    function showSlide() {
+      if (currentSlideIndex >= set.slides.length) currentSlideIndex = 0;
+      const slide = set.slides[currentSlideIndex];
+      const container = document.getElementById('saibi-slideshow-container');
+      
+      container.innerHTML = `
 
-  function renderSlide() {
-    const container = document.getElementById('saibi-slideshow-container'); if (!container || validSlides.length === 0) return;
-    if (currentSlideIndex >= validSlides.length) { currentSlideIndex = 0; }
-    const slide = validSlides[currentSlideIndex];
-    container.innerHTML = `
-      <div style="width:100%; height:100%; position:absolute; top:0; left:0; display:flex; flex-direction:column; justify-content:space-between;">
-        <div style="flex:1; display:flex; align-items:center; justify-content:center; background:#f0f0f0; overflow:hidden;">
-          <img src="${slide.img}" alt="Slide Image" style="max-width:100%; max-height:100%; object-fit:contain;">
-        </div>
-        <div style="background:rgba(0,51,102,0.85); color:#fff; padding:10px; font-size:14px; font-weight:bold; text-align:center;">${slide.text}</div>
-      </div>`;
-    slideshowTimeout = setTimeout(() => { currentSlideIndex++; renderSlide(); }, slide.duration * 1000);
-  }
-</script>
-
-
-
-<!-- javascript エリア おわり-->
-
-   <!-- ===============================================================-->
     
 <!-- ==========================================
      【新設】スポンサー・地域関連リンク セクション
@@ -1074,7 +962,7 @@ function switchYouTube(button) {
   container.style.display = "block";
 }
 </script>
-
+</div>
 </body>
 </html>
 
