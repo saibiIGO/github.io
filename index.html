@@ -331,71 +331,79 @@
   </div>
 <!-- ネット対局とオンライン交流エリア（コンパクト・タイトル文字拡大版） -->
 
-  <!-- 左側：INGO -->
-  <div style="flex: 1; min-width: 280px; border: 3px solid #d7a15c; padding: 10px 14px; border-radius: 12px; background-color: #fdf8f1; display: flex; flex-direction: column; justify-content: space-between; text-align: center; box-sizing: border-box;">
-    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
-      <img src="ingo.png" alt="INGO" style="width: 35px; height: 35px; object-fit: contain;">
-      <div style="text-align: left;">
-        <!-- 💡 font-sizeを 1.25rem に大きくしました -->
-        <h3 style="color: #b26f1a; margin: 0; font-size: 1.25rem; font-weight: bold;" id="online-tools">ネット対局碁「INGO」</h3>
-        <p style="color: #666; font-size: 0.75rem; margin: 0;">〜だれでも無料の対局場！〜</p>
-      </div>
-    </div>
-    <p style="font-size: 0.85rem; color: #333; line-height: 1.4; text-align: left; margin: 4px 0 8px 0;">
-      時差や言葉の壁を超えて楽しめる無学年の対局場。時間制限がなく、自分のペースでじっくり打てます！
-    </p>
-    <p style="margin: 0;">
-      <a href="https://ingo-web.com" class="btn" target="_blank" rel="noopener noreferrer" style="display: inline-block; width: 100%; padding: 6px 0; background-color: #28a745; color: white; text-decoration: none; border-radius: 20px; font-weight: bold; font-size: 0.85rem; border-bottom: 3px solid #1e7e34; box-shadow: 0 2px 4px rgba(0,0,0,0.1); box-sizing: border-box;">
-        ⚔️ 囲碁をはじめよう！
-      </a>
-    </p>
-  </div>
-
-  <!-- 右側：上段（ネットいごひろば）と下段（Discord） -->
-  <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 12px; box-sizing: border-box;">
+<!-- ■ ネット対局とオンライン交流（メインエリア：700pxデザイン同期版） ■ -->
+<!-- ■ ネット対局とオンライン交流（メインエリア：800pxデザイン同期版） ■ -->
+<!-- 💡 widthを100%、max-widthを800pxに変更しました -->
+<div style="width: 100%; max-width: 800px; margin: 20px auto; padding: 15px; background: #fff; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;">
+  
+  <!-- 💡 内部の左右2列を制御する見えないコンテナ -->
+  <div style="display: flex; gap: 15px; align-items: stretch; flex-wrap: wrap; width: 100%; box-sizing: border-box;">
     
-    <!-- 右側・上段：ネットいごひろば -->
-    <div style="flex: 1; border: 3px solid #FF9800; padding: 10px 14px; border-radius: 12px; background-color: #fff9e6; display: flex; flex-direction: column; justify-content: space-between; text-align: center; box-sizing: border-box;">
+    <!-- 左側：INGO -->
+    <div style="flex: 1; min-width: 280px; border: 3px solid #d7a15c; padding: 10px 14px; border-radius: 12px; background-color: #fdf8f1; display: flex; flex-direction: column; justify-content: space-between; text-align: center; box-sizing: border-box;">
       <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
-        <img src="discord.png" alt="Spatialchat" style="width: 35px; height: 35px; object-fit: contain;">
+        <img src="ingo.png" alt="INGO" style="width: 35px; height: 35px; object-fit: contain;">
         <div style="text-align: left;">
-          <!-- 💡 font-sizeを 1.25rem に大きくしました -->
-          <h3 style="color: #E65100; margin: 0; font-size: 1.25rem; font-weight: bold;">みんなの ネットいごひろば</h3>
-          <p style="color: #666; font-size: 0.75rem; margin: 0;">〜アプリなしですぐ繋がる！〜</p>
+          <h3 style="color: #b26f1a; margin: 0; font-size: 1.25rem; font-weight: bold;" id="online-tools">ネット対局碁「INGO」</h3>
+          <p style="color: #666; font-size: 0.75rem; margin: 0;">〜だれでも無料の対局場！〜</p>
         </div>
       </div>
       <p style="font-size: 0.85rem; color: #333; line-height: 1.4; text-align: left; margin: 4px 0 8px 0;">
-        登録不要、ボタンひとつでおしゃべりできる広場。Discordが難しい方や今すぐ話したい時に！
+        時差や言葉の壁を超えて楽しめる無学年の対局場。時間制限がなく、自分のペースでじっくり打てます！
       </p>
       <p style="margin: 0;">
-        <a href="https://spatial.chat" class="btn" target="_blank" rel="noopener noreferrer" style="display: inline-block; width: 100%; padding: 6px 0; background-color: #FF9800; color: white; text-decoration: none; border-radius: 20px; font-weight: bold; font-size: 0.85rem; border-bottom: 3px solid #ef6c00; box-shadow: 0 2px 4px rgba(0,0,0,0.1); box-sizing: border-box;">
-          👉 わくわく囲碁ひろばに入る
-        </a>
-      </p>
-    </div>
-    
-    <!-- 右側・下段：Discord -->
-    <div style="flex: 1; border: 3px solid #5865F2; padding: 10px 14px; border-radius: 12px; background-color: #f2f3ff; display: flex; flex-direction: column; justify-content: space-between; text-align: center; box-sizing: border-box;">
-      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
-        <img src="discord.png" alt="Discord" style="width: 35px; height: 35px; object-fit: contain;">
-        <div style="text-align: left;">
-          <!-- 💡 font-sizeを 1.25rem に大きくしました -->
-          <h3 style="color: #5865F2; margin: 0; font-size: 1.25rem; font-weight: bold;">みんなのひろば「Discord」</h3>
-          <p style="color: #666; font-size: 0.75rem; margin: 0;">〜Saibi塾のメイン交流場！〜</p>
-        </div>
-      </div>
-      <p style="font-size: 0.85rem; color: #333; line-height: 1.4; text-align: left; margin: 4px 0 8px 0;">
-        ボイスチャットや対局の約束など、生徒の皆さん同士でより深く交流できる公式ひろばです。
-      </p>
-      <p style="margin: 0;">
-        <a href="#" class="btn" target="_blank" rel="noopener noreferrer" style="display: inline-block; width: 100%; padding: 6px 0; background-color: #5865F2; color: white; text-decoration: none; border-radius: 20px; font-weight: bold; font-size: 0.85rem; border-bottom: 3px solid #404eed; box-shadow: 0 2px 4px rgba(0,0,0,0.1); box-sizing: border-box;">
-          💬 Discordひろばに参加する
+        <a href="https://ingo-web.com" class="btn" target="_blank" rel="noopener noreferrer" style="display: inline-block; width: 100%; padding: 6px 0; background-color: #28a745; color: white; text-decoration: none; border-radius: 20px; font-weight: bold; font-size: 0.85rem; border-bottom: 3px solid #1e7e34; box-shadow: 0 2px 4px rgba(0,0,0,0.1); box-sizing: border-box;">
+          ⚔️ 囲碁をはじめよう！
         </a>
       </p>
     </div>
 
+    <!-- 右側：上段（ネットいごひろば）と下段（Discord） -->
+    <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 12px; box-sizing: border-box;">
+      
+      <!-- 右側・上段：ネットいごひろば -->
+      <div style="flex: 1; border: 3px solid #FF9800; padding: 10px 14px; border-radius: 12px; background-color: #fff9e6; display: flex; flex-direction: column; justify-content: space-between; text-align: center; box-sizing: border-box;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+          <img src="discord.png" alt="Spatialchat" style="width: 35px; height: 35px; object-fit: contain;">
+          <div style="text-align: left;">
+            <h3 style="color: #E65100; margin: 0; font-size: 1.25rem; font-weight: bold;">みんなの ネットいごひろば</h3>
+            <p style="color: #666; font-size: 0.75rem; margin: 0;">〜アプリなしですぐ繋がる！〜</p>
+          </div>
+        </div>
+        <p style="font-size: 0.85rem; color: #333; line-height: 1.4; text-align: left; margin: 4px 0 8px 0;">
+          登録不要、ボタンひとつでおしゃべりできる広場。Discordが難しい方や今すぐ話したい時に！
+        </p>
+        <p style="margin: 0;">
+          <a href="https://spatial.chat" class="btn" target="_blank" rel="noopener noreferrer" style="display: inline-block; width: 100%; padding: 6px 0; background-color: #FF9800; color: white; text-decoration: none; border-radius: 20px; font-weight: bold; font-size: 0.85rem; border-bottom: 3px solid #ef6c00; box-shadow: 0 2px 4px rgba(0,0,0,0.1); box-sizing: border-box;">
+            👉 わくわく囲碁ひろばに入る
+          </a>
+        </p>
+      </div>
+      
+      <!-- 右側・下段：Discord -->
+      <div style="flex: 1; border: 3px solid #5865F2; padding: 10px 14px; border-radius: 12px; background-color: #f2f3ff; display: flex; flex-direction: column; justify-content: space-between; text-align: center; box-sizing: border-box;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+          <img src="discord.png" alt="Discord" style="width: 35px; height: 35px; object-fit: contain;">
+          <div style="text-align: left;">
+            <h3 style="color: #5865F2; margin: 0; font-size: 1.25rem; font-weight: bold;">みんなのひろば「Discord」</h3>
+            <p style="color: #666; font-size: 0.75rem; margin: 0;">〜Saibi塾のメイン交流場！〜</p>
+          </div>
+        </div>
+        <p style="font-size: 0.85rem; color: #333; line-height: 1.4; text-align: left; margin: 4px 0 8px 0;">
+          ボイスチャットや対局の約束など、生徒の皆さん同士でより深く交流できる公式ひろばです。
+        </p>
+        <p style="margin: 0;">
+          <a href="#" class="btn" target="_blank" rel="noopener noreferrer" style="display: inline-block; width: 100%; padding: 6px 0; background-color: #5865F2; color: white; text-decoration: none; border-radius: 20px; font-weight: bold; font-size: 0.85rem; border-bottom: 3px solid #404eed; box-shadow: 0 2px 4px rgba(0,0,0,0.1); box-sizing: border-box;">
+            💬 Discordひろばに参加する
+          </a>
+        </p>
+      </div>
+
+    </div>
   </div>
 </div>
+
+
     <!-- 📺 YouTube動画が表示されるエリア -->
     <div id="video-container" style="display: none; width: 100%; max-width: 480px; margin-top: 10px; position: relative; padding-top: 56.25%;">
       <iframe id="youtube-player" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></iframe>
@@ -528,7 +536,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
      📸 才美塾専用・マルチスライドショウ（完全修復版・これ一本で復活します）
      ========================================== --> 
 <!-- 才美塾スライドショウ・前半枠組み -->
-<div style="width: 100%; max-width: 700px; margin: 20px auto; padding: 15px; background: #fff; border: 1px solid #ddd; border-radius: 6px; text-align: center; box-sizing: border-box;">
+<div style="width: 100%; max-width: ６５0px; margin: 20px auto; padding: 15px; background: #fff; border: 1px solid #ddd; border-radius: 6px; text-align: center; box-sizing: border-box;">
   <div style="margin-bottom: 15px; text-align: left;">
     <label for="saibi-gallery-select" style="font-size: 13px; font-weight: bold; color: #003366; margin-right: 5px;" id="welcome">ギャラリー選択窓:</label>
     <select id="saibi-gallery-select" onchange="switchGallerySet(this.value)" oninput="switchGallerySet(this.value)" style="padding: 6px 10px; border: 1px solid #003366; border-radius: 4px; color: #003366; font-weight: bold; background: #fff; cursor: pointer; font-size: 13px;"></select>
