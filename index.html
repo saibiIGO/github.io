@@ -561,6 +561,9 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 <!-- ==========================================
      📸 才美塾専用・マルチスライドショウ（完全修復版・これ一本で復活します）
      ========================================== --> 
+<!-- ==========================================
+     📸 才美塾専用・マルチスライドショウ（完全修復版・これ一本で復活します）
+     ========================================== --> 
 <!-- 才美塾スライドショウ・前半枠組み -->
 <div style="width: 100%; max-width: 500px; margin: 20px auto; padding: 15px; background: #fff; border: 1px solid #ddd; border-radius: 6px; text-align: center; box-sizing: border-box;">
   <div style="margin-bottom: 15px; text-align: left;">
@@ -587,9 +590,15 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   </div>
 </div>
 
+
+<!-- javascript エリア はじまり-->
 <!-- javascript エリア はじまり-->
 <script>
   const ADMIN_PASSWORD = "\u0073\u0061\u0069\u0062\u0069"; 
+  
+  // =================================================================
+  // 📝 【初期データ設定エリア】
+  // =================================================================
   const defaultGalleryData = {
     set1: {
       name: "因島北認定こども園教室", folder: "image1",
@@ -614,16 +623,43 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         { img: "image2/photo9.jpg", text: "⑨ 今回で自信もついた。次はシニアデビューだよ。", duration: 5 },
         { img: "image2/photo10.jpg", text: "⑩ 秀策がもらった免状です。秀策囲碁記念館に本物があるよ。", duration: 5 }
       ]
+    },
+    set3: {
+      name: "囲碁プロを目指す少年", folder: "image3",
+      slides: [
+        { img: "image3/photo1.jpg", text: "① 初めてのシニアに挑戦。", duration: 5 },
+        { img: "image3/photo2.jpg", text: "② 御初手合、緊張のスタートです。", duration: 5 },
+        { img: "image3/photo3.jpg", text: "③ お姉さんが棋譜をとっています。", duration: 5 },
+        { img: "image3/photo4.jpg", text: "④ 隣の教室では、後輩たちが勉強中です。", duration: 5 },
+        { img: "image3/photo5.jpg", text: "⑤ こちらでも真剣な眼差しです。", duration: 5 },
+        { img: "image3/photo6.jpg", text: "⑥ どうやらシノギ勝負となって考慮中！", duration: 5 },
+        { img: "image3/photo7.jpg", text: "⑦ 局後の難解定石だったところの復習。", duration: 5 },
+        { img: "image3/photo8.jpg", text: "⑧ 攻める前に、まず守り。これが秘伝だよ！", duration: 5 },
+        { img: "image3/photo9.jpg", text: "⑨ 御初手合の浦丸社長を囲んで一同パチリ！", duration: 5 },
+        { img: "image3/photo10.jpg", text: "⑩ 翌週の中国こども本因坊戦では第２位でした。次回に向けて頑張ります。", duration: 6 }
+      ]
     }
   };
 
   const STORAGE_KEY = 'saibi_gallery_v2026_final';
+  
   let saibiGalleryData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultGalleryData;
   
-  let currentSetKey = Object.keys(saibiGalleryData)[0] || 'set1';
-  let currentSlideIndex = 0; let slideshowTimeout = null;
+  Object.keys(defaultGalleryData).forEach(key => {
+    saibiGalleryData[key] = defaultGalleryData[key];
+  });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(saibiGalleryData));
 
-  window.addEventListener('DOMContentLoaded', () => { updateUserSelectOptions(); startSlideshow(); });
+  let currentSetKey = Object.keys(saibiGalleryData)[0] || 'set1';
+  let currentSlideIndex = 0; 
+  let slideshowTimeout = null;
+  let isPaused = false; 
+
+  window.addEventListener('DOMContentLoaded', () => { 
+    updateUserSelectOptions(); 
+    startSlideshow(); 
+  });
+
   window.addEventListener('keydown', (e) => {
     if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
     if (e.key === 's' || e.key === 'S') {
@@ -633,42 +669,67 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     }
   });
 
-  function openAdminModal() { document.getElementById('saibi-admin-modal').style.display = 'flex'; buildAdminSetSelect(); loadSetToEditor(currentSetKey); }
-  function closeAdminModal() { document.getElementById('saibi-admin-modal').style.display = 'none'; }
-
-  function updateUserSelectOptions() {
-    const select = document.getElementById('saibi-gallery-select'); if(!select) return; select.innerHTML = '';
-    Object.keys(saibiGalleryData).forEach(key => {
-      const opt = document.createElement('option'); opt.value = key; opt.textContent = saibiGalleryData[key].name;
-      if (key === currentSetKey) opt.selected = true; select.appendChild(opt);
-    });
+  function openAdminModal() { 
+    document.getElementById('saibi-admin-modal').style.display = 'flex'; 
+    buildAdminSetSelect(); 
+    loadSetToEditor(currentSetKey); 
   }
 
-  function buildAdminSetSelect() {
-    const select = document.getElementById('admin-set-select'); if(!select) return; select.innerHTML = '';
+  function closeAdminModal() { 
+    document.getElementById('saibi-admin-modal').style.display = 'none'; 
+  }
+
+  function updateUserSelectOptions() {
+    const select = document.getElementById('saibi-gallery-select'); 
+    if(!select) return; 
+    select.innerHTML = '';
     Object.keys(saibiGalleryData).forEach(key => {
-      const opt = document.createElement('option'); opt.value = key; opt.textContent = saibiGalleryData[key].name;
-      if (key === currentSetKey) opt.selected = true; select.appendChild(opt);
+      const opt = document.createElement('option'); 
+      opt.value = key; 
+      opt.textContent = saibiGalleryData[key].name;
+      if (key === currentSetKey) opt.selected = true; 
+      select.appendChild(opt);
+    });
+  }
+<!-- javascript後半 エリア はじまり-->
+  function buildAdminSetSelect() {
+    const select = document.getElementById('admin-set-select'); 
+    if(!select) return; 
+    select.innerHTML = '';
+    Object.keys(saibiGalleryData).forEach(key => {
+      const opt = document.createElement('option'); 
+      opt.value = key; 
+      opt.textContent = saibiGalleryData[key].name;
+      if (key === currentSetKey) opt.selected = true; 
+      select.appendChild(opt);
     });
   }
 
   function loadSetToEditor(setKey) {
-    currentSetKey = setKey; const set = saibiGalleryData[setKey]; if (!set) return;
+    currentSetKey = setKey; 
+    const set = saibiGalleryData[setKey]; 
+    if (!set) return;
     document.getElementById('edit-set-name').value = set.name;
-    const slidesList = document.getElementById('admin-slides-list'); if (!slidesList) return; slidesList.innerHTML = '';
+    const slidesList = document.getElementById('admin-slides-list'); 
+    if (!slidesList) return; 
+    slidesList.innerHTML = '';
     set.slides.forEach((slide, idx) => createSlideRowHTML(slide.img, slide.text, slide.duration, idx));
     toggleAddButtonVisibility();
   }
 
   function createSlideRowHTML(img, text, duration, idx) {
     const slidesList = document.getElementById('admin-slides-list');
-    const div = document.createElement('div'); div.className = 'admin-slide-row'; div.style = 'padding: 10px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px; margin-bottom:10px; text-align:left;';
+    const div = document.createElement('div'); 
+    div.className = 'admin-slide-row'; 
+    div.style = 'padding: 10px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px; margin-bottom:10px; text-align:left;';
     div.innerHTML = `
       <div style="font-weight:bold; font-size:12px; color:#003366; margin-bottom:5px;">📷 コマ ${idx + 1}</div>
       <div style="display:flex; flex-direction:column; gap:5px;">
         <input type="text" class="slide-img" value="${img}" placeholder="画像のパス" style="width:100%; padding:4px;">
-        <input type="text" class="slide-text" value="${text}" placeholder="文字（キャプション）" style="width:100%; padding:4px;">
-        <input type="number" class="slide-duration" value="${duration}" placeholder="秒数" style="width:60px; padding:4px;"> 秒間表示
+        <input type="text" class="slide-text" value="${text}" placeholder="字幕テキスト" style="width:100%; padding:4px;">
+        <label style="font-size:11px;">表示時間（秒）: 
+          <input type="number" class="slide-duration" value="${duration}" min="1" style="width:50px; padding:4px;">
+        </label>
       </div>
     `;
     slidesList.appendChild(div);
@@ -677,41 +738,159 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   function toggleAddButtonVisibility() {
     const set = saibiGalleryData[currentSetKey];
     const btn = document.getElementById('add-slide-row-btn');
-    if(set && set.slides.length >= 10) { btn.style.display = 'none'; } else { btn.style.display = 'block'; }
+    if (!set || !btn) return;
+    const currentRows = document.querySelectorAll('.admin-slide-row').length;
+    btn.style.display = currentRows >= 10 ? 'none' : 'block';
   }
 
   function addBlankSlideRow() {
-    const set = saibiGalleryData[currentSetKey];
-    if(set && set.slides.length < 10) {
-      set.slides.push({ img: "", text: "", duration: 5 });
-      loadSetToEditor(currentSetKey);
-    }
-  }
-
-  function switchGallerySet(setKey) {
-    currentSetKey = setKey;
-    currentSlideIndex = 0;
-    const set = saibiGalleryData[setKey];
-    if (set) document.getElementById('saibi-gallery-title').textContent = "📸 " + set.name;
-    startSlideshow();
+    const currentRows = document.querySelectorAll('.admin-slide-row').length;
+    if (currentRows >= 10) return;
+    const folder = saibiGalleryData[currentSetKey]?.folder || 'image';
+    createSlideRowHTML(`${folder}/photo${currentRows + 1}.jpg`, `新コマのテキスト`, 5, currentRows);
+    toggleAddButtonVisibility();
   }
 
   function startSlideshow() {
     if (slideshowTimeout) clearTimeout(slideshowTimeout);
-    const set = saibiGalleryData[currentSetKey];
-    if (!set || !set.slides || set.slides.length === 0) return;
-    
-    // タイトル更新
-    document.getElementById('saibi-gallery-title').textContent = "📸 " + set.name;
-    
-    function showSlide() {
-      if (currentSlideIndex >= set.slides.length) currentSlideIndex = 0;
-      const slide = set.slides[currentSlideIndex];
-      const container = document.getElementById('saibi-slideshow-container');
-      
-      container.innerHTML = `
+    currentSlideIndex = 0;
+    isPaused = false; 
+    showSlide();
+  }
 
+  function togglePause() {
+    const badge = document.getElementById('saibi-pause-badge');
+    if (isPaused) {
+      isPaused = false;
+      if (badge) badge.style.display = 'none';
+      
+      const set = saibiGalleryData[currentSetKey];
+      const slide = set.slides[currentSlideIndex];
+      const duration = (slide.duration || 5) * 1000;
+      slideshowTimeout = setTimeout(() => {
+        currentSlideIndex++;
+        showSlide();
+      }, duration);
+    } else {
+      isPaused = true;
+      if (slideshowTimeout) clearTimeout(slideshowTimeout); 
+      if (badge) badge.style.display = 'block';
+    }
+  }
+
+  function showSlide() {
+    const set = saibiGalleryData[currentSetKey];
+    const container = document.getElementById('saibi-slideshow-container');
+    if (!set || !container || !set.slides || set.slides.length === 0) {
+      container.innerHTML = '<div style="padding:20px; text-align:center;">画像が登録されていません</div>';
+      return;
+    }
+
+    if (currentSlideIndex >= set.slides.length) currentSlideIndex = 0;
+    const slide = set.slides[currentSlideIndex];
+
+    const titleEl = document.getElementById('saibi-gallery-title');
+    if (titleEl) titleEl.textContent = `📸 ${set.name}`;
+
+    container.innerHTML = `
+      <div onclick="togglePause()" style="width:100%; height:100%; cursor:pointer; position:relative;">
+        <img src="${slide.img}" alt="Slide" style="width:100%; height:100%; object-fit:cover; display:block;">
+        <div id="saibi-pause-badge" style="display:${isPaused ? 'block' : 'none'}; position:absolute; top:10px; right:10px; background:rgba(220,53,69,0.9); color:white; padding:4px 8px; font-size:11px; font-weight:bold; border-radius:4px; z-index:10;">
+          ⏸ 一時停止中（クリックで再開）
+        </div>
+        <div style="position:absolute; bottom:0; left:0; width:100%; background:rgba(0,0,0,0.6); color:#fff; padding:8px 10px; font-size:14px; text-align:left; box-sizing:border-box; font-weight:bold;">
+          ${slide.text}
+        </div>
+      </div>
+    `;
+
+    if (!isPaused) {
+      const duration = (slide.duration || 5) * 1000;
+      slideshowTimeout = setTimeout(() => {
+        currentSlideIndex++;
+        showSlide();
+      }, duration);
+    }
+  }
+
+  function switchGallerySet(setKey) {
+    if (!saibiGalleryData[setKey]) return;
+    currentSetKey = setKey;
+    startSlideshow();
+  }
+
+  function createNewSet() {
+    const input = document.getElementById('new-set-name');
+    const name = input ? input.value.trim() : '';
+    if (!name) { alert("新しいセット名を入力してください。"); return; }
     
+    const newKey = 'set_' + Date.now();
+    saibiGalleryData[newKey] = {
+      name: name,
+      folder: 'image',
+      slides: [
+        { img: "image/photo1.jpg", text: "① 新しいセットが作成されました", duration: 5 }
+      ]
+    };
+    
+    input.value = '';
+    buildAdminSetSelect();
+    loadSetToEditor(newKey);
+    alert("✨ 新規セットを作成しました。コマを編集して保存してください。");
+  }
+
+  function deleteCurrentSet() {
+    if (Object.keys(saibiGalleryData).length <= 1) {
+      alert("❌ 最後の1つのセットは削除できません。");
+      return;
+    }
+    if (!confirm("⚠️ 本当にこのスライドショーセットを削除しますか？")) return;
+    
+    delete saibiGalleryData[currentSetKey];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(saibiGalleryData));
+    
+    currentSetKey = Object.keys(saibiGalleryData)[0] || 'set1';
+    updateUserSelectOptions();
+    buildAdminSetSelect();
+    loadSetToEditor(currentSetKey);
+    startSlideshow();
+    alert("削除しました。");
+  }
+
+  function saveAdminData() {
+    const set = saibiGalleryData[currentSetKey];
+    if (!set) return;
+
+    const nameInput = document.getElementById('edit-set-name');
+    if (nameInput) set.name = nameInput.value.trim() || set.name;
+
+    const rows = document.querySelectorAll('.admin-slide-row');
+    const newSlides = [];
+    rows.forEach(row => {
+      const img = row.querySelector('.slide-img').value.trim();
+      const text = row.querySelector('.slide-text').value.trim();
+      const duration = parseInt(row.querySelector('.slide-duration').value, 10) || 5;
+      if (img) {
+        newSlides.push({ img, text, duration });
+      }
+    });
+
+    set.slides = newSlides;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(saibiGalleryData));
+    
+    updateUserSelectOptions();
+    closeAdminModal();
+    startSlideshow();
+    alert("💾 変更を保存して適用しました！");
+  }
+</script>
+<!-- javascript エリア おわり-->
+
+
+
+
+
+
 <!-- ==========================================
      【新設】スポンサー・地域関連リンク セクション
      ========================================== -->
