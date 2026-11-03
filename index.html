@@ -109,6 +109,9 @@
 <div class="container">
 
 <!-- ======================CONCEPT===================================--
+<!-- 💡 ここから下のコンテンツすべてを横幅800pxで中央寄せにする大元の箱 -->
+<div style="max-width: 800px; margin: 0 auto; padding: 0 15px; box-sizing: border-box;">
+
 <!-- 全体を包む見やすい薄い背景のボックス -->
 <div style="background-color: #fcf8f2; padding: 25px; border-radius: 8px; border: 1px solid #e0d0b0; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); box-sizing: border-box; font-family: sans-serif; text-align: left;">
 
@@ -162,7 +165,7 @@
    <!-- ===============================================================-->
     <!-- CONCEPT（教室の理念や概要） -->
     <div style="margin: 20px 0; line-height: 1.8; color: #444;">
-        <p style="font-weight: bold; color: #b26f1a; font-size: 1.1rem; margin-bottom: 8px;">📌 CONCEPT（教室の概要）</p>
+        <p style="font-weight: bold; color: #b26f1a; font-size: 1.1rem; margin-bottom: 8px;">📌 CONCEPT（📖 教室の概要）</p>
         <p style="margin: 0;">
             尾道市因島の『さいび塾（才美塾）囲碁教室』です。はじめて囲碁にふれる子どもたちから、見守る先輩たちまで楽しく囲碁を学んでいます。無意識のうちに自然と集中力や考える力が身につきます。
         </p>
@@ -290,20 +293,12 @@
     </div>
       <!-- ① 教室スケジュール ➔ この後に元の記述が安全に続きます -->
   <div>
-    <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px; border-bottom: none; padding-bottom: 0;">📅 教室スケジュール</h3>
+    <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px; border-bottom: none; padding-bottom: 0;"> 📅 教室スケジュール</h3>
     <a href="schedule.pdf" target="_blank" style="font-size: 14px; color: #0066cc; text-decoration: underline; font-weight: bold;">
       ➔ 教室スケジュールはこちら (PDF)
     </a>
   </div>
 
-
-  <!-- ③ 教室の概要・趣旨 -->
-  <div>
-    <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333; border-left: 4px solid #003366; padding-left: 8px; border-bottom: none; padding-bottom: 0;">📖 教室の概要</h3>
-    <p style="margin: 0; font-size: 13px; color: #666; line-height: 1.5;">
-      子どもから大人まで、自分のペースでじっくり楽しむ無学年の囲碁教室です。オンライン広場（Discord）なども活用し、全世代の考える力を育みます。
-    </p>
-  </div>
 
     <!-- 📺 YouTube動画が表示されるエリア -->
     <div id="video-container" style="display: none; width: 100%; max-width: 480px; margin-top: 10px; position: relative; padding-top: 56.25%;">
@@ -417,93 +412,79 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 </script>
 <!-- ===============================================================-->
 <!-- ■ ネット対局とオンライン交流（メインエリア） ■ -->
-<!-- 💡 全体を左右2列に分けるための親要素 -->
-<div style="display: flex; gap: 20px; align-items: stretch; flex-wrap: wrap; width: 100%; margin: 20px 0; box-sizing: border-box;">
 
-  <!-- ==========================================
-       左側：ネット対局碁「INGO」（1つの大きな塊）
-       ========================================== -->
-  <div style="flex: 1; min-width: 280px; border: 3px solid #d7a15c; padding: 16px; border-radius: 12px; background-color: #fdf8f1; display: flex; flex-direction: column; justify-content: space-between; text-align: center; box-sizing: border-box;">
-    <div>
-      <h3 style="color: #b26f1a; margin-top: 0; font-size: 1.2rem; margin-bottom: 2px;" id="online-tools">ネット対局碁「INGO」</h3>
-      <p style="color: #666; font-size: 0.85rem; margin-top: 0; margin-bottom: 8px;">〜だれでも無料の対局場！〜</p>
+<!-- ===============================================================-->
+<!-- ネット対局とオンライン交流エリア（左右2列構成・Discordボタン復活版） -->
+<!-- ネット対局とオンライン交流エリア（高さを約半分に凝縮したスリム版） -->
+<!-- ネット対局とオンライン交流エリア（コンパクト・タイトル文字拡大版） -->
 
-      <!-- 💡 画像サイズと余白を統一 -->
-      <div style="margin: 10px 0; display: flex; justify-content: center; align-items: center; height: 60px;">
-        <img src="ingo.png" alt="ingo.png" style="width: 60px; height: auto; aspect-ratio: 1 / 1; object-fit: contain;">
+  <!-- 左側：INGO -->
+  <div style="flex: 1; min-width: 280px; border: 3px solid #d7a15c; padding: 10px 14px; border-radius: 12px; background-color: #fdf8f1; display: flex; flex-direction: column; justify-content: space-between; text-align: center; box-sizing: border-box;">
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+      <img src="ingo.png" alt="INGO" style="width: 35px; height: 35px; object-fit: contain;">
+      <div style="text-align: left;">
+        <!-- 💡 font-sizeを 1.25rem に大きくしました -->
+        <h3 style="color: #b26f1a; margin: 0; font-size: 1.25rem; font-weight: bold;" id="online-tools">ネット対局碁「INGO」</h3>
+        <p style="color: #666; font-size: 0.75rem; margin: 0;">〜だれでも無料の対局場！〜</p>
       </div>
-
-      <p style="font-size: 0.95rem; color: #333; line-height: 1.5; text-align: left; margin-bottom: 0;">
-        INGOは時差、言葉の壁を超えて囲碁を楽しむ場です。時間制限がなく、囲碁が好きな人なら子供から大人まで<strong>無学年</strong>でじっくり自分のペースで楽しむことができます！
-      </p>
     </div>
-
-    <p style="margin-top: 15px; margin-bottom: 0;">
-      <a href="https://ingo-web.com/" class="btn" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 10px 22px; background-color: #28a745; color: white; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 1rem; border-bottom: 4px solid #1e7e34; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-        ⚔️ここから 囲碁をはじめよう！
+    <p style="font-size: 0.85rem; color: #333; line-height: 1.4; text-align: left; margin: 4px 0 8px 0;">
+      時差や言葉の壁を超えて楽しめる無学年の対局場。時間制限がなく、自分のペースでじっくり打てます！
+    </p>
+    <p style="margin: 0;">
+      <a href="https://ingo-web.com" class="btn" target="_blank" rel="noopener noreferrer" style="display: inline-block; width: 100%; padding: 6px 0; background-color: #28a745; color: white; text-decoration: none; border-radius: 20px; font-weight: bold; font-size: 0.85rem; border-bottom: 3px solid #1e7e34; box-shadow: 0 2px 4px rgba(0,0,0,0.1); box-sizing: border-box;">
+        ⚔️ 囲碁をはじめよう！
       </a>
     </p>
   </div>
 
-  <!-- ==========================================
-       右側：縦に2段並べるためのコンテナ
-       ========================================== -->
-  <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box;">
-
-    <!-- ----------------------------------------
-         右側・上段：みんなの ネットいごひろば
-         ---------------------------------------- -->
-    <div style="flex: 1; border: 3px solid #FF9800; padding: 16px; border-radius: 12px; background-color: #fff9e6; display: flex; flex-direction: column; justify-content: space-between; text-align: center; box-sizing: border-box;">
-      <div>
-        <h3 style="color: #E65100; margin-top: 0; font-size: 1.2rem; margin-bottom: 2px;">みんなの ネットいごひろば</h3>
-        <p style="color: #666; font-size: 0.85rem; margin-top: 0; margin-bottom: 8px;">〜アプリなしで すぐに つながる場所だよ！〜</p>
-
-        <!-- 💡 画像の高さを統一し、中央に綺麗に収めています（※画像パスは必要に応じて修正してください） -->
-        <div style="margin: 10px 0; display: flex; justify-content: center; align-items: center; height: 60px;">
-          <img src="discord.png" alt="Spatialchat" style="width: 60px; height: auto; aspect-ratio: 1 / 1; object-fit: contain;">
+  <!-- 右側：上段（ネットいごひろば）と下段（Discord） -->
+  <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 12px; box-sizing: border-box;">
+    
+    <!-- 右側・上段：ネットいごひろば -->
+    <div style="flex: 1; border: 3px solid #FF9800; padding: 10px 14px; border-radius: 12px; background-color: #fff9e6; display: flex; flex-direction: column; justify-content: space-between; text-align: center; box-sizing: border-box;">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+        <img src="discord.png" alt="Spatialchat" style="width: 35px; height: 35px; object-fit: contain;">
+        <div style="text-align: left;">
+          <!-- 💡 font-sizeを 1.25rem に大きくしました -->
+          <h3 style="color: #E65100; margin: 0; font-size: 1.25rem; font-weight: bold;">みんなの ネットいごひろば</h3>
+          <p style="color: #666; font-size: 0.75rem; margin: 0;">〜アプリなしですぐ繋がる！〜</p>
         </div>
-
-        <p style="font-size: 0.95rem; color: #333; line-height: 1.5; text-align: left; margin-bottom: 0;">
-          Discord（ディスコード）の設定がむずかしい人や、今日すぐにおしゃべりしたい人はこちら！<br>
-          <strong>アプリ不要・登録なし</strong>で、ボタンをおすだけで入れます！
-        </p>
       </div>
-
-      <p style="margin-top: 15px; margin-bottom: 0;">
-        <a href="https://spatial.chat/s/Ut4AQTnckGzHJZB7wQdZ" class="btn" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 10px 22px; background-color: #FF9800; color: white; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 1rem; border-bottom: 4px solid #ef6c00; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-          👉 わくわく囲碁ひろば に入る！
+      <p style="font-size: 0.85rem; color: #333; line-height: 1.4; text-align: left; margin: 4px 0 8px 0;">
+        登録不要、ボタンひとつでおしゃべりできる広場。Discordが難しい方や今すぐ話したい時に！
+      </p>
+      <p style="margin: 0;">
+        <a href="https://spatial.chat" class="btn" target="_blank" rel="noopener noreferrer" style="display: inline-block; width: 100%; padding: 6px 0; background-color: #FF9800; color: white; text-decoration: none; border-radius: 20px; font-weight: bold; font-size: 0.85rem; border-bottom: 3px solid #ef6c00; box-shadow: 0 2px 4px rgba(0,0,0,0.1); box-sizing: border-box;">
+          👉 わくわく囲碁ひろばに入る
         </a>
       </p>
     </div>
     
-    <!-- ----------------------------------------
-         右側・下段：みんなのひろば「Discord」
-         ---------------------------------------- -->
-    <div style="flex: 1; border: 3px solid #5865F2; padding: 16px; border-radius: 12px; background-color: #f2f3ff; display: flex; flex-direction: column; justify-content: space-between; text-align: center; box-sizing: border-box;">
-      <div>
-        <h3 style="color: #5865F2; margin-top: 0; font-size: 1.2rem; margin-bottom: 2px;">みんなのひろば「Discord」</h3>
-        <p style="color: #666; font-size: 0.85rem; margin-top: 0; margin-bottom: 8px;">〜Saibi塾の新しいメインの場所だよ！〜</p>
-
-        <!-- 💡 画像の高さ・幅を他の2つと完全に揃えました -->
-        <div style="margin: 10px 0; display: flex; justify-content: center; align-items: center; height: 60px;">
-          <img src="discord.png" alt="discord.png" style="width: 60px; height: auto; aspect-ratio: 1 / 1; object-fit: contain;">
+    <!-- 右側・下段：Discord -->
+    <div style="flex: 1; border: 3px solid #5865F2; padding: 10px 14px; border-radius: 12px; background-color: #f2f3ff; display: flex; flex-direction: column; justify-content: space-between; text-align: center; box-sizing: border-box;">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+        <img src="discord.png" alt="Discord" style="width: 35px; height: 35px; object-fit: contain;">
+        <div style="text-align: left;">
+          <!-- 💡 font-sizeを 1.25rem に大きくしました -->
+          <h3 style="color: #5865F2; margin: 0; font-size: 1.25rem; font-weight: bold;">みんなのひろば「Discord」</h3>
+          <p style="color: #666; font-size: 0.75rem; margin: 0;">〜Saibi塾のメイン交流場！〜</p>
         </div>
-
-        <p style="font-size: 0.95rem; color: #333; line-height: 1.5; text-align: left; margin-bottom: 0;">
-          <strong>Discord（ディスコード）では、ボイスチャットや対局の約束など、もっと深く交流できます！</strong>
-        </p>
       </div>
-      
-      <!-- 💡 左右のバランスを美しく保つため、下段にも「Discordに参加する」などのダミーボタン用の枠（非表示、またはボタン設置用）を想定した適切な余白を調整、あるいは必要ならここにDiscordのリンクボタンを設置するとさらに完璧になります -->
-      <div style="margin-top: 15px; height: 45px; display: flex; align-items: center; justify-content: center;">
-        <!-- ※もしDiscordの招待リンクボタンを設置したくなったら、ここに<a>タグを入れてください。空の状態でも高さのバランスが崩れないようにしています -->
-      </div>
+      <p style="font-size: 0.85rem; color: #333; line-height: 1.4; text-align: left; margin: 4px 0 8px 0;">
+        ボイスチャットや対局の約束など、生徒の皆さん同士でより深く交流できる公式ひろばです。
+      </p>
+      <p style="margin: 0;">
+        <a href="#" class="btn" target="_blank" rel="noopener noreferrer" style="display: inline-block; width: 100%; padding: 6px 0; background-color: #5865F2; color: white; text-decoration: none; border-radius: 20px; font-weight: bold; font-size: 0.85rem; border-bottom: 3px solid #404eed; box-shadow: 0 2px 4px rgba(0,0,0,0.1); box-sizing: border-box;">
+          💬 Discordひろばに参加する
+        </a>
+      </p>
     </div>
 
   </div>
 </div>
-<!-- ===============================================================-->
 
+   <!-- ===============================================================-->
 <!-- ■ お知らせ・写真・動画コーナー（下部エリア） ■ -->
 <div style="margin-top: 30px; padding-top: 25px; border-top: 1px solid #e0d0b0; display: flex; flex-wrap: wrap; gap: 25px;">
 
@@ -555,10 +536,6 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
      👉【右側】：4コマスライドショウ　写真（碁盤）ギャラリー（操作マニュアル＆補助ボタン内蔵・完成版）
      ========================================== -->
 <!-- 👉【右側】：写真ギャラリー（Sキーで管理人室起動 ＆ 枚数・時間自由設定版） -->
-
-<!-- ==========================================
-     📸 才美塾専用・マルチスライドショウ（完全修復版・これ一本で復活します）
-     ========================================== --> 
 <!-- ==========================================
      📸 才美塾専用・マルチスライドショウ（完全修復版・これ一本で復活します）
      ========================================== --> 
@@ -627,16 +604,16 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     set3: {
       name: "囲碁プロを目指す少年", folder: "", // 👈 フォルダを探さず、大元の場所から直接読み込みます
       slides: [
-        { img: "photo1.png", text: "① 初めてのシニアに挑戦。", duration: 5 }, // 👈 実際に届いている「photo1.png」を読み込みます
-        { img: "photo2.png", text: "② 御初手合、緊張のスタートです。", duration: 5 },
-        { img: "photo3.png", text: "③ お姉さんが棋譜をとっています。", duration: 5 },
-        { img: "photo4.png", text: "④ 隣の教室では、後輩たちが勉強中です。", duration: 5 },
-        { img: "image1/photo5.jpg", text: "⑤ こちらでも真剣な眼差しです。", duration: 5 },
-        { img: "image1/photo6.jpg", text: "⑥ どうやらシノギ勝負となって考慮中！", duration: 5 },
-        { img: "image1/photo7.jpg", text: "⑦ 局後の難解定石だったところの復習。", duration: 5 },
-        { img: "image1/photo8.jpg", text: "⑧ 攻める前に、まず守り。これが秘伝だよ！", duration: 5 },
-        { img: "image1/photo9.jpg", text: "⑨ 御初手合の浦丸社長を囲んで一同パチリ！", duration: 6 },
-        { img: "photo10jpeg", text: "⑩ 翌週の中国こども本因坊戦では第２位でした。次回に向けて頑張ります。", duration: 6 } // 👈 ドットなしの「photo10jpeg」を直接読み込みます
+        { img: "image3/photo1.jpg", text: "① 初めてのシニアに挑戦。", duration: 5 }, 
+        { img: "image3/photo2.jpg", text: "② 御初手合、緊張のスタートです。", duration: 5 },
+        { img: "image3/photo3.jpg", text: "③ お姉さんが棋譜をとっています。", duration: 5 },
+        { img: "image3/photo4.jpg", text: "④ 隣の教室では、後輩たちが勉強中です。", duration: 5 },
+        { img: "image3/photo5.jpg", text: "⑤ こちらでも真剣な眼差しです。", duration: 5 },
+        { img: "image3/photo6.jpg", text: "⑥ どうやらシノギ勝負となって考慮中！", duration: 5 },
+        { img: "image3/photo7.jpg", text: "⑦ 局後の難解定石だったところの復習。", duration: 5 },
+        { img: "image3/photo8.jpg", text: "⑧ 攻める前に、まず守り。これが秘伝だよ！", duration: 5 },
+        { img: "image3/photo9.jpg", text: "⑨ 御初手合の浦丸社長を囲んで一同パチリ！", duration: 6 },
+        { img: "image3/photo10jpg", text: "⑩ 翌週の中国こども本因坊戦では第２位でした。次回に向けて頑張ります。", duration: 6 } // 👈 ドットなしの「photo10jpeg」を直接読み込みます
       ]
     }// 👈 データの途中なので、ここも「,」や「;」はつけずに波括弧を閉じます
   }; // 👈 ここでdefaultGalleryDataがすべて終わるので、最後に「};」を付けます！
@@ -1228,6 +1205,8 @@ function switchYouTube(button) {
 }
 </script>
 </div>
+</div> <!-- 💡 800pxの全体コンテナをここで閉じます -->
+
 </body>
 </html>
 
