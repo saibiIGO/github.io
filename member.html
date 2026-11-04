@@ -593,12 +593,12 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         { img: "image2/photo10.jpg", text: "⑩ 秀策がもらった免状です。秀策囲碁記念館に本物があるよ。", duration: 5 }
       ]
     }
-    },  
+    },
     // 🖼️ 【本命】囲碁プロを目指す少年（image3フォルダ版）
     set3: {
-      name: "尾道から囲碁プロを目指す少年少女", folder: "image3",
+      name: "囲碁プロを目指す少年", folder: "image3",
       slides: [
-        { img: "image3/photo1.jpg", text: "① 初めてのシニアに挑戦。", duration: 5 }, 
+        { img: "image3/photo1.jpg", text: "① 初めてのシニアに挑戦。", duration: 5 },
         { img: "image3/photo2.jpg", text: "② 御初手合、緊張のスタートです。", duration: 5 },
         { img: "image3/photo3.jpg", text: "③ お姉さんが棋譜をとっています。", duration: 5 },
         { img: "image3/photo4.jpg", text: "④ 隣の教室では、後輩たちが勉強中です。", duration: 5 },
@@ -607,10 +607,11 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         { img: "image3/photo7.jpg", text: "⑦ 局後の難解定石だったところの復習。", duration: 5 },
         { img: "image3/photo8.jpg", text: "⑧ 攻める前に、まず守り。これが秘伝だよ！", duration: 5 },
         { img: "image3/photo9.jpg", text: "⑨ 御初手合の浦丸社長を囲んで一同パチリ！", duration: 6 },
-        { img: "image3/photo10jpg", text: "⑩ 翌週の中国こども本因坊戦では第２位でした。次回に向けて頑張ります。", duration: 6 } // 👈 ドットなしの「photo10jpeg」を直接読み込みます
+        { img: "image3/photo10jpg", text: "⑩ 翌週の中国こども本因坊戦では第２位でした。次回に向けて頑張ります。", duration: 6 }
       ]
-    }// 👈 データの途中なので、ここも「,」や「;」はつけずに波括弧を閉じます
+    } // 👈 データの途中なので、ここも「,」や「;」はつけずに波括弧を閉じます
   }; // 👈 ここでdefaultGalleryDataがすべて終わるので、最後に「};」を付けます！
+
   const STORAGE_KEY = 'saibi_gallery_v2026_final';
   let saibiGalleryData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultGalleryData;
   
