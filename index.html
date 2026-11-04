@@ -402,7 +402,31 @@
     </div>
   </div>
 </div>
+<!-- 才美塾スライドショウ・枠組み -->
+<div style="width: 100%; max-width: 5０0px; margin: 20px auto; padding: 15px; background: #fff; border: 1px solid #ddd; border-radius: 6px; text-align: center; box-sizing: border-box;">
+  <div style="margin-bottom: 15px; text-align: left;">
+    <label for="saibi-gallery-select" style="font-size: 13px; font-weight: bold; color: #003366; margin-right: 5px;" id="welcome">ギャラリー選択窓:</label>
+    <select id="saibi-gallery-select" onchange="switchGallerySet(this.value)" oninput="switchGallerySet(this.value)" style="padding: 6px 10px; border: 1px solid #003366; border-radius: 4px; color: #003366; font-weight: bold; background: #fff; cursor: pointer; font-size: 13px;"></select>
+  </div>
+  <h3 id="saibi-gallery-title" style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📸 碁盤ギャラリー</h3>
+  <div style="width: 100%; height: 350px; overflow: hidden; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; background: #f0f0f0;">
+    <div id="saibi-slideshow-container" style="width: 100%; height: 100%; position: relative;"></div>
+  </div>
+</div>
 
+<div id="saibi-admin-modal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center;">
+  <div style="background: #fff; padding: 25px; border-radius: 8px; width: 95%; max-width: 500px; max-height: 85vh; overflow-y: auto; text-align: left; position: relative;">
+    <span onclick="closeAdminModal()" style="position: absolute; right: 15px; top: 10px; font-size: 24px; font-weight: bold; color: #aaa; cursor: pointer;">&times;</span>
+    <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 5px;">🛠️ 才美塾・ギャラリー管理人室</h3>
+    <div style="margin-bottom: 15px;"><label style="font-size: 13px; font-weight: bold;">変更するセットを選択:</label><select id="admin-set-select" onchange="loadSetToEditor(this.value)" style="width: 100%; padding: 5px; margin-top: 5px;"></select></div>
+    <div style="margin-bottom: 15px;"><label style="font-size: 13px; font-weight: bold;">ギャラリー名の変更:</label><input type="text" id="edit-set-name" style="width: 100%; padding: 5px; margin-top: 5px; box-sizing: border-box;"></div>
+    <div style="margin-bottom: 15px; display: flex; gap: 5px;"><input type="text" id="new-set-name" placeholder="新しいセット名を入力" style="flex: 1; padding: 5px;"><button onclick="createNewSet()" style="padding: 5px 10px; background: #003366; color: white; border: none; cursor: pointer;">新規セット追加</button></div>
+    <hr style="border: 0; border-top: 1px solid #ddd; margin: 15px 0;"><h4 style="margin: 0 0 10px 0; font-size: 14px; color: #333;">🖼️ コマの編集 (最大10枚)</h4>
+    <div id="admin-slides-list" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px;"></div>
+    <button onclick="addBlankSlideRow()" id="add-slide-row-btn" style="width: 100%; padding: 8px; background: #f0f0f0; border: 1px dashed #aaa; cursor: pointer; font-weight: bold; margin-bottom: 20px;">＋ コマ（写真）を追加する</button>
+    <div style="display: flex; gap: 10px;"><button onclick="saveAdminData()" style="flex: 1; padding: 12px; background: #28a745; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; text-align: center;">変更を保存して適用</button><button onclick="deleteCurrentSet()" style="padding: 12px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">セット削除</button></div>
+  </div>
+</div>
 
     <!-- 📺 YouTube動画が表示されるエリア -->
     <div id="video-container" style="display: none; width: 100%; max-width: 480px; margin-top: 10px; position: relative; padding-top: 56.25%;">
@@ -412,6 +436,13 @@
     </div>
     
  <!-- ===============================================================-->
+<!-- ==========================================
+     👉【右側】：4コマスライドショウ　写真（碁盤）ギャラリー（操作マニュアル＆補助ボタン内蔵・完成版）
+     ========================================== -->
+<!-- 👉【右側】：写真ギャラリー（Sキーで管理人室起動 ＆ 枚数・時間自由設定版） -->
+<!-- ==========================================
+     📸 才美塾専用・マルチスライドショウ（完全修復版・これ一本で復活します）
+     ========================================== --> 
 
 <!-- ======= 💡 ここに貼り付けるのが一番安全です！ ======= -->
 
@@ -528,38 +559,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 
 
 
-<!-- ==========================================
-     👉【右側】：4コマスライドショウ　写真（碁盤）ギャラリー（操作マニュアル＆補助ボタン内蔵・完成版）
-     ========================================== -->
-<!-- 👉【右側】：写真ギャラリー（Sキーで管理人室起動 ＆ 枚数・時間自由設定版） -->
-<!-- ==========================================
-     📸 才美塾専用・マルチスライドショウ（完全修復版・これ一本で復活します）
-     ========================================== --> 
-<!-- 才美塾スライドショウ・前半枠組み -->
-<div style="width: 100%; max-width: ６５0px; margin: 20px auto; padding: 15px; background: #fff; border: 1px solid #ddd; border-radius: 6px; text-align: center; box-sizing: border-box;">
-  <div style="margin-bottom: 15px; text-align: left;">
-    <label for="saibi-gallery-select" style="font-size: 13px; font-weight: bold; color: #003366; margin-right: 5px;" id="welcome">ギャラリー選択窓:</label>
-    <select id="saibi-gallery-select" onchange="switchGallerySet(this.value)" oninput="switchGallerySet(this.value)" style="padding: 6px 10px; border: 1px solid #003366; border-radius: 4px; color: #003366; font-weight: bold; background: #fff; cursor: pointer; font-size: 13px;"></select>
-  </div>
-  <h3 id="saibi-gallery-title" style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📸 碁盤ギャラリー</h3>
-  <div style="width: 100%; height: 350px; overflow: hidden; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; background: #f0f0f0;">
-    <div id="saibi-slideshow-container" style="width: 100%; height: 100%; position: relative;"></div>
-  </div>
-</div>
 
-<div id="saibi-admin-modal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center;">
-  <div style="background: #fff; padding: 25px; border-radius: 8px; width: 95%; max-width: 500px; max-height: 85vh; overflow-y: auto; text-align: left; position: relative;">
-    <span onclick="closeAdminModal()" style="position: absolute; right: 15px; top: 10px; font-size: 24px; font-weight: bold; color: #aaa; cursor: pointer;">&times;</span>
-    <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 5px;">🛠️ 才美塾・ギャラリー管理人室</h3>
-    <div style="margin-bottom: 15px;"><label style="font-size: 13px; font-weight: bold;">変更するセットを選択:</label><select id="admin-set-select" onchange="loadSetToEditor(this.value)" style="width: 100%; padding: 5px; margin-top: 5px;"></select></div>
-    <div style="margin-bottom: 15px;"><label style="font-size: 13px; font-weight: bold;">ギャラリー名の変更:</label><input type="text" id="edit-set-name" style="width: 100%; padding: 5px; margin-top: 5px; box-sizing: border-box;"></div>
-    <div style="margin-bottom: 15px; display: flex; gap: 5px;"><input type="text" id="new-set-name" placeholder="新しいセット名を入力" style="flex: 1; padding: 5px;"><button onclick="createNewSet()" style="padding: 5px 10px; background: #003366; color: white; border: none; cursor: pointer;">新規セット追加</button></div>
-    <hr style="border: 0; border-top: 1px solid #ddd; margin: 15px 0;"><h4 style="margin: 0 0 10px 0; font-size: 14px; color: #333;">🖼️ コマの編集 (最大10枚)</h4>
-    <div id="admin-slides-list" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px;"></div>
-    <button onclick="addBlankSlideRow()" id="add-slide-row-btn" style="width: 100%; padding: 8px; background: #f0f0f0; border: 1px dashed #aaa; cursor: pointer; font-weight: bold; margin-bottom: 20px;">＋ コマ（写真）を追加する</button>
-    <div style="display: flex; gap: 10px;"><button onclick="saveAdminData()" style="flex: 1; padding: 12px; background: #28a745; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; text-align: center;">変更を保存して適用</button><button onclick="deleteCurrentSet()" style="padding: 12px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">セット削除</button></div>
-  </div>
-</div>
 
 
 <!-- javascript エリア はじまり-->
