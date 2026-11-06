@@ -744,6 +744,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   }
 
   // 🚀 大文字・小文字のエラーを自動で回避して写真を読み込む修正版関数（完全版）
+  // 🚀 画像を350pxの枠内にぴったり収め、下部に字幕を重ねる正しい関数
   function showSlide() {
     const set = saibiGalleryData[currentSetKey];
     const container = document.getElementById('saibi-slideshow-container');
@@ -752,18 +753,39 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       return;
     }
 
-    // スライドのインデックスが範囲外になったら最初に戻す
     if (currentSlideIndex >= set.slides.length) {
       currentSlideIndex = 0;
     }
 
     const slide = set.slides[currentSlideIndex];
 
-    // ギャラリーのタイトルを表示する処理
     const titleEl = document.getElementById('saibi-gallery-title');
     if (titleEl) {
       titleEl.textContent = `📸 ${set.name}`;
     }
+
+    // 💡 枠（350px）の中に画像を絶対配置（absolute）でいっぱいに広げ、下部に字幕を重ねます
+    container.innerHTML = `
+      <div style="width: 100%; height: 100%; position: relative; background: #000;">
+        <!-- ① 写真を表示（縦横比を保ったまま350pxの枠いっぱいに広げて中央に配置） -->
+        <img src="${slide.img}" alt="スライド" style="width: 100%; height: 100%; object-fit: contain; display: block;" 
+             onerror="handleImageError(this);"/>
+        
+        <!-- ② 字幕パーツ（画像の下部に重なるように絶対配置します） -->
+        <div style="position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(0,51,102,0.85); color: #fff; padding: 10px; font-size: 14px; font-weight: bold; text-align: center; box-sizing: border-box; z-index: 10;">
+          ${slide.text}
+        </div>
+      </div>
+    `;
+
+    if (!isPaused) {
+      const duration = (slide.duration || 5) * 1000;
+      slideshowTimeout = setTimeout(() => {
+        currentSlideIndex++;
+        showSlide();
+      }, duration);
+    }
+  }
 
     // 💡 下に用意した最強の救済関数（handleImageError）を呼び出すように変更しました！
     container.innerHTML = `
