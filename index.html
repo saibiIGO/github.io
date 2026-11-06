@@ -607,8 +607,8 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     } // 👈 set4の終わり
   }; // 👈 【これ！】初期データ設定（defaultGalleryData）全体の終わり（フタ）
 
- 👈 すぐ下にこれが続きます
-const STORAGE_KEY = 'saibi_gallery_v2026_final_r1';
+
+const STORAGE_KEY = 'saibi_gallery_v2026_final_r1'; // 👈 👈 すぐ下にこれが続きます
   let saibiGalleryData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultGalleryData;
   
   Object.keys(defaultGalleryData).forEach(key => {
