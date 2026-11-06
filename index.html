@@ -724,6 +724,8 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     showSlide();
   }
 
+// 👈 ここで showSlide 関数を綺麗に閉じます（この後ろには残骸を残しません）
+
   function togglePause() {
     const badge = document.getElementById('saibi-pause-badge');
     if (isPaused) {
@@ -744,8 +746,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     }
   }
 
-  // 🚀 大文字・小文字のエラーを自動で回避して写真を読み込む修正版関数
-  // 🚀 大文字・小文字のエラーを自動で回避して写真を読み込む修正版関数
+  // 🚀 大文字・小文字のエラーを自動で回避して写真を読み込む修正版関数（完全版）
   function showSlide() {
     const set = saibiGalleryData[currentSetKey];
     const container = document.getElementById('saibi-slideshow-container');
@@ -761,11 +762,19 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
 
     const slide = set.slides[currentSlideIndex];
 
-    // 💡【ここを修正！】バッククォート記号「 ` 」を使って、画像と文字を正しく組み立てます
+    // ギャラリーのタイトルを表示する処理
+    const titleEl = document.getElementById('saibi-gallery-title');
+    if (titleEl) {
+      titleEl.textContent = `📸 ${set.name}`;
+    }
+
+    // 💡 万が一画像が出ない場合、自動で別パターン（大文字小文字）を試す仕掛けを含めたHTML組み立て
+    // エラーが起きたら大文字の .JPG を試すなどの処理が入るようにimgタグに onerror を設定しています
     container.innerHTML = `
       <div style="position:relative; width:100%; max-width:600px; margin:0 auto; overflow:hidden;">
-        <!-- ① 写真を表示 -->
-        <img src="${slide.img}" alt="スライド" style="width:100%; height:auto; display:block;" />
+        <!-- ① 写真を表示（エラー時は拡張子を大文字にして再試行する仕掛け付き） -->
+        <img src="${slide.img}" alt="スライド" style="width:100%; height:auto; display:block;" 
+             onerror="if(!this.dataset.tried){this.dataset.tried='1'; this.src=this.src.replace('.jpg','.JPG');}"/>
         
         <!-- ② あなたが提示してくれた字幕パーツ -->
         <div style="background:rgba(0,51,102,0.85); color:#fff; padding:10px; font-size:14px; font-weight:bold; text-align:center;">
@@ -782,36 +791,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         showSlide();
       }, duration);
     }
-  } // 👈 最後に showSlide の波カッコを閉じます
-
-
-    if (currentSlideIndex >= set.slides.length) currentSlideIndex = 0;
-    const slide = set.slides[currentSlideIndex];
-
-    const titleEl = document.getElementById('saibi-gallery-title');
-    if (titleEl) titleEl.textContent = `📸 ${set.name}`;
-
-    // 💡 万が一画像が出ない場合、自動で別パターン（大文字小文字）を試す仕掛けを組み込みました
-    container.innerHTML = `
-      <div onclick="togglePause()" style="width:100%; height:100%; cursor:pointer; position:relative;">
-        <img src="${slide.img}" alt="Slide" id="saibi-current-img" style="width:100%; height:100%; object-fit:cover; display:block;" onerror="handleImageError(this)">
-        <div id="saibi-pause-badge" style="display:${isPaused ? 'block' : 'none'}; position:absolute; top:10px; right:10px; background:rgba(220,53,69,0.9); color:white; padding:4px 8px; font-size:11px; font-weight:bold; border-radius:4px; z-index:10;">
-          ⏸ 一時停止中（クリックで再開）
-        </div>
-        <div style="position:absolute; bottom:0; left:0; width:100%; background:rgba(0,0,0,0.6); color:#fff; padding:8px 10px; font-size:14px; text-align:left; box-sizing:border-box; font-weight:bold;">
-          ${slide.text}
-        </div>
-      </div>
-    `;
-
-    if (!isPaused) {
-      const duration = (slide.duration || 5) * 1000;
-      slideshowTimeout = setTimeout(() => {
-        currentSlideIndex++;
-        showSlide();
-      }, duration);
-    }
-  }
+  } // 👈 ここで showSlide 関数を綺麗に閉じます（この後ろには残骸を残しません）
 
   // ✨ 大文字小文字のズレを裏側でこっそり救済する魔法の関数
   function handleImageError(imgElement) {
