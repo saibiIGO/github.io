@@ -582,7 +582,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       name: "囲碁プロを目指す少年少女", folder: "image3", 
       slides: [
         { img: "image3/photo1.jpg", text: "① 初めてのシニアに挑戦。", duration: 5 }, 
-        { img: "image3/photo2.jpg", text: "② 御初手合、緊張のスタートです。", duration: 5 }, // 👈 スラッシュと3を修正
+        { img: "image3/photo2.jpg", text: "② 御初手合、緊張のスタートです。", duration: 5 }, 
         { img: "image3/photo3.jpg", text: "③ お姉さんが棋譜をとっています。", duration: 3 },
         { img: "image3/photo4.jpg", text: "④ 隣の教室では、後輩たちが勉強中です。", duration: 3 },
         { img: "image3/photo5.jpg", text: "⑤ こちらでも真剣な眼差しです。", duration: 3 },
@@ -590,26 +590,25 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         { img: "image3/photo7.jpg", text: "⑦ 局後の難解定石だったところの復習。", duration: 3 },
         { img: "image3/photo8.jpg", text: "⑧ 攻める前に、まず守り。これが秘伝だよ！", duration: 3},
         { img: "image3/photo9.jpg", text: "⑨ 御初手合の浦丸社長を囲んで一同パチリ！", duration: 3 },
-        { img: "image3/photo10.jpg", text: "⑩ 翌週の中国こども本因坊戦では第２位でした。次回に向けて頑張ります。", duration: 3} // 👈 フォルダとドットを綺麗に修正
+        { img: "image3/photo10.jpg", text: "⑩ 翌週の中国こども本因坊戦では第２位でした。次回に向けて頑張ります。", duration: 3}
       ]
     }, 
     
-    // ✨ 【ダミー用セット4】 
+    // ✨ 【ダミー用セット4】（画像パスと仮のテキストを綺麗に補完しました！）
     set4: {
       name: "未来のタイトル（例：令和８年秋季昇段級大会）", folder: "image4", 
       slides: [
-        { img: "image4/photo1.jpg", text: "① ", duration: 5 }, 
-        { img: "image4/photo2.jpg", text: "② ", duration: 5 }, 
-        { img: "image4/photo3.jpg", text: "③ ", duration: 3 },
-        { img: "image4/photo4.jpg", text: "④ ", duration: 3 },
+        { img: "image4/photo1.jpg", text: "① 令和８年秋季昇段級大会、まもなく開幕です！", duration: 5 }, 
+        { img: "image4/photo2.jpg", text: "② 日頃の練習の成果を十分に発揮してくださいね。", duration: 5 }, 
+        { img: "image4/photo3.jpg", text: "③ 次の一手はどこかな？じっくり盤面を見つめています。", duration: 3 },
+    // ・・・省略（set3やset4の中身）・・・
+        { img: "image4/photo4.jpg", text: "④ 対局終了！お互いの健闘を讃え合いましょう。", duration: 3 }
       ]
-    }
-  }; // 👈 ここでdefaultGalleryDataを完全に閉じます（セミコロンを忘れずに！）
+    } // 👈 set4の終わり
+  }; // 👈 【これ！】初期データ設定（defaultGalleryData）全体の終わり（フタ）
 
+  const STORAGE_KEY = 'saibi_gallery_v2026_final'; // 👈 すぐ下にこれが続きます
 
-
-  const STORAGE_KEY = 'saibi_gallery_v2026_final';
-  
   let saibiGalleryData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultGalleryData;
   
   Object.keys(defaultGalleryData).forEach(key => {
