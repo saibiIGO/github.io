@@ -790,11 +790,11 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     }
   }
 
-  // ✨ 大文字小文字のズレを裏側でこっそり救済する魔法の関数（カッコ閉じ完了版）
+  // ✨ 大文字小文字のズレを裏側でこっそり救済する魔法の関数（完全版に一本化）
   function handleImageError(imgElement) {
     if (!imgElement.dataset.tried) {
       imgElement.dataset.tried = "1";
-      // .jpg だったら .JPG に、.JPG だったら .jpg に変換してもう一度読み込んでみる
+      // 拡張子のマテリアル（大文字・小文字）を入れ替えて再読み込みを試みます
       if (imgElement.src.endsWith('.jpg')) {
         imgElement.src = imgElement.src.replace(/\.jpg$/, '.JPG');
       } else if (imgElement.src.endsWith('.JPG')) {
@@ -803,22 +803,6 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         imgElement.src = imgElement.src.replace(/\.png$/, '.PNG');
       } else if (imgElement.src.endsWith('.PNG')) {
         imgElement.src = imgElement.src.replace(/\.PNG$/, '.png');
-      }
-    }
-  } // 👈 途切れていた関数の波カッコを綺麗に閉じました！
-
-
-  // ✨ 大文字小文字のズレを裏側でこっそり救済する魔法の関数
-  function handleImageError(imgElement) {
-    if (!imgElement.dataset.tried) {
-      imgElement.dataset.tried = "1";
-      // .jpg だったら .JPG に、.JPG だったら .jpg に変換してもう一度読み込んでみる
-      if (imgElement.src.endsWith('.jpg')) {
-        imgElement.src = imgElement.src.replace(/\.jpg$/, '.JPG');
-      } else if (imgElement.src.endsWith('.JPG')) {
-        imgElement.src = imgElement.src.replace(/\.JPG$/, '.jpg');
-      } else if (imgElement.src.endsWith('.png')) {
-        imgElement.src = imgElement.src.replace(/\.png$/, '.PNG');
       }
     }
   }
@@ -893,6 +877,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     startSlideshow();
     alert("💾 変更を保存して適用しました！");
   }
+
 </script>
 <!-- javascript エリア おわり-->
 
