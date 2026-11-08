@@ -606,16 +606,20 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   // =================================================================
   // ⚙️ 【システム処理エリア】
   // =================================================================
-  const STORAGE_KEY = 'saibi_gallery_v2026_final_v5_perfect';
+  // 🚀 合言葉（名前）の最後に _reset_all_data をつけて完全に新しい記憶の箱を作ります
+  const STORAGE_KEY = 'saibi_gallery_v2026_final_v5_perfect_reset_all_data';
   
-  let saibiGalleryData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultGalleryData;
-  
+  // 過去の記憶を完全に無視して、コードに書いた最新データを強制的にセットします！
+  let saibiGalleryData = defaultGalleryData;
+  localStorage.clear(); // ブラウザに残っている古いゴミ箱データを一度きれいに大掃除します
+
+  // 🚀 ブラウザの古い記憶を完全にリセットし、コードに書いた文字を強制採用します！
   Object.keys(defaultGalleryData).forEach(key => {
-    saibiGalleryData[key] = {
-      ...defaultGalleryData[key],
-      slides: defaultGalleryData[key].slides
-    };
+    saibiGalleryData[key] = defaultGalleryData[key];
   });
+  // さらに、管理人室のデータ（過去の記憶）を一度完全にクリアします
+  saibiGalleryData = defaultGalleryData;
+
   localStorage.setItem(STORAGE_KEY, JSON.stringify(saibiGalleryData));
 
   let currentSetKey = Object.keys(saibiGalleryData)[0] || 'set1';
