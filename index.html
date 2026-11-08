@@ -202,14 +202,11 @@
   <a href="komonjo.html" style="display: block; background-color: #2e8b57; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); margin-top: 10px;">
     ✨ 三浦村の歴史！
   </a>
-
-
       <!-- ② ハーモニカボタン -->
       <audio id="harmonica-sound" src="harmonica.mp3" preload="auto"></audio>
       <button id="harmonica-btn" onclick="document.getElementById('harmonica-sound').paused ? document.getElementById('harmonica-sound').play() : document.getElementById('harmonica-sound').pause()" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #20B2AA; color: white; padding: 10px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
         🎵 ハーモニカの演奏
       </button>
-
       <!-- ③ ピアノボタン（音を鳴らし、別タブで楽譜PDFを開く） -->
       <audio id="piano-sound" src="piano.mp3" preload="auto"></audio>
       <button id="piano-btn" onclick="document.getElementById('piano-sound').paused ? document.getElementById('piano-sound').play() : document.getElementById('piano-sound').pause(); window.open('piano_score.pdf', '_blank');" style="display: block; width: 100%; border: none; cursor: pointer; background-color: #333333; color: white; padding: 10px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-family: inherit;">
