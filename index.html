@@ -606,13 +606,16 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   }; // 👈 ここでdefaultGalleryDataを完全に閉じます（セミコロンを忘れずに！）
 
 
-
-  const STORAGE_KEY = 'saibi_gallery_v2026_final';
+  const STORAGE_KEY = 'saibi_gallery_v2026_final_v3_fixed'; // 🚀 記憶を完全にリフレッシュ
   
   let saibiGalleryData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultGalleryData;
   
+  // コード側の最新データ（slidesのテキストなど）を常に最優先で強制上書きします！
   Object.keys(defaultGalleryData).forEach(key => {
-    saibiGalleryData[key] = defaultGalleryData[key];
+    saibiGalleryData[key] = {
+      ...defaultGalleryData[key],
+      slides: defaultGalleryData[key].slides
+    };
   });
   localStorage.setItem(STORAGE_KEY, JSON.stringify(saibiGalleryData));
 
@@ -630,7 +633,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
     if (e.key === 's' || e.key === 'S') {
       const pass = prompt("🔑 パスワードを入力してください（管理人専用）:");
-      if (pass === ADMIN_PASSWORD) openAdminModal();
+      if (typeof ADMIN_PASSWORD !== 'undefined' && pass === ADMIN_PASSWORD) openAdminModal();
       else if (pass !== null) alert("❌ パスワードが違います。");
     }
   });
@@ -657,6 +660,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       select.appendChild(opt);
     });
   }
+
   function buildAdminSetSelect() {
     const select = document.getElementById('admin-set-select'); 
     if(!select) return; 
@@ -732,6 +736,8 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       const set = saibiGalleryData[currentSetKey];
       const slide = set.slides[currentSlideIndex];
       const duration = (slide.duration || 5) * 1000;
+      
+      if (slideshowTimeout) clearTimeout(slideshowTimeout); // 💡 安全のためにタイマーをクリア
       slideshowTimeout = setTimeout(() => {
         currentSlideIndex++;
         showSlide();
@@ -743,8 +749,14 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     }
   }
 
-  // 🚀 大文字・小文字のエラーを自動で回避して写真を読み込む修正版関数（完全版）
+  // 🚀 タイマーの重複バグを完全に修正した表示関数
   function showSlide() {
+    // 🔥 次のタイマーを入れる前に、古いタイマーの残り香を「絶対に」完全に消去する
+    if (slideshowTimeout) {
+      clearTimeout(slideshowTimeout);
+      slideshowTimeout = null;
+    }
+
     const set = saibiGalleryData[currentSetKey];
     const container = document.getElementById('saibi-slideshow-container');
     if (!set || !container || !set.slides || set.slides.length === 0) {
@@ -752,34 +764,29 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       return;
     }
 
-    // スライドのインデックスが範囲外になったら最初に戻す
     if (currentSlideIndex >= set.slides.length) {
       currentSlideIndex = 0;
     }
 
     const slide = set.slides[currentSlideIndex];
 
-    // ギャラリーのタイトルを表示する処理
     const titleEl = document.getElementById('saibi-gallery-title');
     if (titleEl) {
       titleEl.textContent = `📸 ${set.name}`;
     }
 
-    // 💡 下に用意した最強の救済関数（handleImageError）を呼び出すように変更しました！
+    // 画面の書き換え
     container.innerHTML = `
       <div style="position:relative; width:100%; max-width:600px; margin:0 auto; overflow:hidden;">
-        <!-- ① 写真を表示（エラー時は下の専用魔法関数を呼び出す） -->
         <img src="${slide.img}" alt="スライド" style="width:100%; height:auto; display:block;" 
              onerror="handleImageError(this);"/>
-        
-        <!-- ② あなたが提示してくれた字幕パーツ -->
         <div style="background:rgba(0,51,102,0.85); color:#fff; padding:10px; font-size:14px; font-weight:bold; text-align:center;">
           ${slide.text}
         </div>
       </div>
     `;
 
-    // 次のスライドに進むタイマーを設定（一時停止中でなければ）
+    // 💡 タイマーの重複を防ぐため、ここでもクリアを確認してから安全に次をセット
     if (!isPaused) {
       const duration = (slide.duration || 5) * 1000;
       slideshowTimeout = setTimeout(() => {
@@ -789,11 +796,10 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     }
   }
 
-  // ✨ 大文字小文字のズレを裏側でこっそり救済する魔法の関数（カッコ閉じ完了版）
+  // 重複していた記述を整理し、きれいに1つにまとめました
   function handleImageError(imgElement) {
     if (!imgElement.dataset.tried) {
       imgElement.dataset.tried = "1";
-      // .jpg だったら .JPG に、.JPG だったら .jpg に変換してもう一度読み込んでみる
       if (imgElement.src.endsWith('.jpg')) {
         imgElement.src = imgElement.src.replace(/\.jpg$/, '.JPG');
       } else if (imgElement.src.endsWith('.JPG')) {
@@ -802,22 +808,6 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         imgElement.src = imgElement.src.replace(/\.png$/, '.PNG');
       } else if (imgElement.src.endsWith('.PNG')) {
         imgElement.src = imgElement.src.replace(/\.PNG$/, '.png');
-      }
-    }
-  } // 👈 途切れていた関数の波カッコを綺麗に閉じました！
-
-
-  // ✨ 大文字小文字のズレを裏側でこっそり救済する魔法の関数
-  function handleImageError(imgElement) {
-    if (!imgElement.dataset.tried) {
-      imgElement.dataset.tried = "1";
-      // .jpg だったら .JPG に、.JPG だったら .jpg に変換してもう一度読み込んでみる
-      if (imgElement.src.endsWith('.jpg')) {
-        imgElement.src = imgElement.src.replace(/\.jpg$/, '.JPG');
-      } else if (imgElement.src.endsWith('.JPG')) {
-        imgElement.src = imgElement.src.replace(/\.JPG$/, '.jpg');
-      } else if (imgElement.src.endsWith('.png')) {
-        imgElement.src = imgElement.src.replace(/\.png$/, '.PNG');
       }
     }
   }
@@ -831,6 +821,12 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   function createNewSet() {
     const input = document.getElementById('new-set-name');
     const name = input ? input.value.trim() : '';
+    // 必要に応じてここに新規作成処理
+  }
+
+
+    
+    
     if (!name) { alert("新しいセット名を入力してください。"); return; }
     
     const newKey = 'set_' + Date.now();
