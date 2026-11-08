@@ -605,8 +605,6 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         { img: "image4/photo4.jpg", text: "④ 地合の計算も初めが肝心です。", duration: 3 },
           ]
     }, // 👈 1. 必ずここに「カンマ（ , ）」を新しく書き足します！
-       //    （※「set4 と、次のset5」という意味にするためです）
-    // 👇 2. ここに新しい set5 をまるごとコピペで挟み込みます！
         // 🖼️ 【新アルバム】セット5（ここに新しいデータを追加しました！）
     set5: {
       name: "（例：令和８年冬季大会など、イベント名をここに書く）", 
@@ -623,16 +621,25 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         { img: "image5/photo9.jpg", text: "⑨ ここに9枚目の説明文を書きます。", duration: 5 }, 
         { img: "image5/photo10.jpg", text: "⑩ ここに10枚目の説明文を書きます。", duration: 5 }
       ]
-    }, 
+    },
+       // 🖼️ セット6（自前チャレンジ版！）
     set6: {
-      name: "第5のイベント名（例：令和８年冬の囲碁大会）", folder: "image6", 
+      name: "令和９年春の新イベント（例）", folder: "image6", 
       slides: [
-        { img: "image6/photo1.jpg", text: "① 冬の大会が始まりました！", duration: 5 },
-        { img: "image6/photo2.jpg", text: "② 熱戦が繰り広げられています。", duration: 5 }
+        { img: "image6/photo1.jpg", text: "① 春の新しいイベントです！", duration: 5 }, 
+        { img: "image6/photo2.jpg", text: "② ここに2枚目の説明文を書きます。", duration: 5 }, 
+        { img: "image6/photo3.jpg", text: "③ ここに3枚目の説明文を書きます。", duration: 5 }, 
+        { img: "image6/photo4.jpg", text: "④ ここに4枚目の説明文を書きます。", duration: 5 }, 
+        { img: "image6/photo5.jpg", text: "⑤ ここに5枚目の説明文を書きます。", duration: 5 }, 
+        { img: "image6/photo6.jpg", text: "⑥ ここに6枚目の説明文を書きます。", duration: 5 }, 
+        { img: "image6/photo7.jpg", text: "⑦ ここに7枚目の説明文を書きます。", duration: 5 }, 
+        { img: "image6/photo8.jpg", text: "⑧ ここに8枚目の説明文を書きます。", duration: 5 }, 
+        { img: "image6/photo9.jpg", text: "⑨ ここに9枚目の説明文を書きます。", duration: 5 }, 
+        { img: "image6/photo10.jpg", text: "⑩ ここに10枚目の説明文を書きます。", duration: 5 }
       ]
-    } // 👈 3. set5 の後ろにはカンマは無くて大丈夫です（最後だから）
-  ]; // 👈 4. あなたが見つけてくれた「絶対に必要な裏表紙」がここで綺麗に閉じます！
-};
+    } // 👈 【超重要】最後なのでここにはカンマをつけません！
+  }; // 👈 あなたが見つけてくれた、動かしてはいけない裏表紙
+
 
 
   // =================================================================
