@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>囲碁・棋譜並べ＆解説作成ジェネレーター（完成版）</title>
+    <style>
+        :root {
+            --board-color: #dcbc7c;
+            --line-color: #000000;
+        }
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 { color: #1a1a1a; margin-bottom: 5px; font-size: 22px; }
+        p.subtitle { color: #666; margin: 0 0 20px 0; font-size: 13px; }
+        
+        .container {
+            display: flex;
+            gap: 25px;
+            max-width: 1100px;
+            width: 100%;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+        
+        .left-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        /* 碁盤の最も外側の木枠（茶色い縁） */
+        .board-container-outer {
+            width: 100%;
+            max-width: 520px;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            border: 4px solid #6e4e03;
+            border-radius: 4px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+            background-color: var(--board-color);
+        }
+        
+        .board-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background-color: var(--board-color);
+            transform-origin: top left;
+            transition: transform 0.3s ease;
+        }
+        
+        .view-all { transform: scale(1) translate(0, 0); }
+        .view-tr  { transform: scale(2.1) translate(-52.3%, 0); }
+        .view-tl  { transform: scale(2.1) translate(0, 0); }
+        .view-br  { transform: scale(2.1) translate(-52.3%, -52.3%); }
+        .view-bl  { transform: scale(2.1) translate(0, -52.3%); }
+
+        /* 碁盤の19路の線が走るエリア（周囲に均等な「外べり」を確保） */
+        .board-main {
+            position: absolute;
+            top: 6.5%; 
+            left: 6.5%; 
+            width: 87%; 
+            height: 87%;
+            box-sizing: border-box;
+        }
+
+        /* 18マス×18マスの格子状に並べ、セルの右側と下側に線を引きます */
+        .board-grid {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: grid;
+            grid-template-columns: repeat(18, 1fr);
+            grid-template-rows: repeat(18, 1fr);
+            border-top: 1px solid var(--line-color);    /* 1路（一番上の外周線） */
+            border-left: 1px solid var(--line-color);   /* 1路（一番左の外周線） */
+            box-sizing: border-box;
+        }
+        
+        /* 碁盤を構成するマス目の定義（右と下に線を引くことで綺麗な格子になります） */
+        .intersection {
+            position: relative;
+            border-right: 1px solid var(--line-color);  /* 縦線 */
+            border-bottom: 1px solid var(--line-color); /* 横線 */
+            box-sizing: border-box;
+        }
+
+        /* 碁石を「格子線の交差点」にジャストフィットさせるための、透明なクリック判定エリア */
+        .click-target {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            z-index: 5;
+        }
+        /* 交差点（マスの角）を中心にずらすための調整 */
+        .target-tl { top: -50%; left: -50%; }
+        .target-tr { top: -50%; left: 50%; }
+        .target-bl { top: 50%; left: -50%; }
+        .target-br { top: 50%; left: 50%; }
+        
+        /* 星（黒いドット）の位置固定 */
+        .hoshi-dot {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background-color: var(--line-color);
+            border-radius: 50%;
+            z-index: 2;
+            top: -3px;
+            left: -3px;
+            pointer-events: none;
+        }
+
+        /* 碁石のデザイン：交差点の真上に完璧に中心を合わせます */
+        .stone {
+            position: absolute; 
+            width: 92%; 
+            height: 92%;
+            border-radius: 50%; 
+            z-index: 10;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 11px; user-select: none;
+            box-shadow: 1px 2px 4px rgba(0,0,0,0.3);
+            top: -46%;
+            left: -46%;
+        }
+        .stone.black { background: radial-gradient(circle at 30% 30%, #444, #000); color: #ffffff; }
+        .stone.white { background: radial-gradient(circle at 30% 30%, #fff, #dbdbdb); color: #000000; border: 1px solid #999; }
+        
+        .stone.latest::after {
+            content: ''; width: 90%; height: 90%; border: 2px solid #ff3b30; border-radius: 50%; position: absolute;
+        }
+
+        /* 座標ラベルの位置を交差点と100%完全一致させます */
+        .labels-row {
+            position: absolute; 
+            left: 6.5%; 
+            width: 87%; 
+            height: 6.5%;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 11px; font-weight: bold; color: #444; user-select: none;
+        }
+        .labels-row.top { top: 0.5%; }
+        .labels-row.bottom { bottom: 0.5%; }
+
+        .labels-col {
+            position: absolute; 
+            top: 6.5%; 
+            height: 87%; 
+            width: 6.5%;
+            display: flex; flex-direction: column; justify-content: space-between; align-items: center;
+            font-size: 11px; font-weight: bold; color: #444; user-select: none;
+        }
+        .labels-col.left { left: 0.5%; }
+        .labels-col.right { right: 0.5%; }
+
+        .labels-row span, .labels-col span {
+            display: flex; align-items: center; justify-content: center; width: 24px; height: 24px;
+        }
+
+        .timer-bar {
+            width: 100%; max-width: 520px; height: 6px; background-color: #e5e5ea;
+            margin-top: 12px; border-radius: 3px; overflow: hidden;
+        }
+        .timer-progress { width: 0%; height: 100%; background-color: #34c759; transition: width 0.1s linear; }
+        
+        .controls { margin-top: 15px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+        button {
+            padding: 10px 18px; font-size: 14px; border: none; border-radius: 6px;
+            background-color: #007aff; color: white; cursor: pointer; font-weight: bold;
+            transition: background 0.2s;
+        }
+        button:hover { background-color: #0056b3; }
+        button:disabled { background-color: #d1d1d6; cursor: not-allowed; }
+        button.stop { background-color: #ff3b30; }
+        button.stop:hover { background-color: #c72c22; }
+
+        .right-panel { width: 380px; display: flex; flex-direction: column; gap: 18px; }
+        .status-info { font-size: 18px; font-weight: bold; color: #1c1c1e; background: #f2f2f7; padding: 10px; border-radius: 6px; text-align: center;}
+        
+        .panel-section { background: #fcfcfd; border: 1px solid #e5e5ea; padding: 12px; border-radius: 8px; }
+        .section-title { font-weight: bold; font-size: 13px; color: #666; margin-bottom: 8px; text-transform: uppercase; }
+        
+        .radio-group { display: flex; gap: 15px; }
+        .comment-box {
+            width: 100%; height: 110px; box-sizing: border-box; padding: 12px;
+            border: 1px solid #c7c7cc; border-radius: 6px; resize: none; font-size: 14px; line-height: 1.4;
+        }
+        .comment-box:focus { border-color: #007aff; outline: none; }
+        
+        select { padding: 6px 10px; font-size: 14px; border-radius: 4px; border: 1px solid #c7c7cc; width: 100%; }
+        
+        .file-buttons { display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
+        .file-row { display: flex; gap: 10px; width: 100%; }
+        .file-input-wrapper { position: relative; flex: 1; }
+        .file-input-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+
+        #printArea { display: none; }
+
+        @media print {
+            body { background-color: #fff; padding: 0; margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            h1, p.subtitle, .container, .timer-bar, .controls { display: none !important; }
+            #printArea { display: block !important; }
+            .print-layout {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 30px;
+                width: 100%;
+                padding: 20px;
+                box-sizing: border-box;
+            }
+            .print-item {
+                page-break-inside: avoid;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                background: #fff;
+            }
+            .print-title {
+                font-size: 16px;
+                font-weight: bold;
+                margin-bottom: 8px;
+                text-align: center;
+            }
+            .print-board-outer {
+                width: 320px;
+                height: 320px;
+                border: 2px solid #6e4e03;
+                background-color: var(--board-color);
+                position: relative;
+            }
+            .print-comment {
+                width: 320px;
+                font-size: 12px;
+                margin-top: 5px;
+                line-height: 1.4;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>囲碁・棋譜並べ＆解説作成ジェネレーター</h1>
+    <p class="subtitle">最新手番号のみ表示・アゲハマ対応・無限手数・両面分割印刷対応</p>
+
+    <div class="container">
+        <div class="left-panel">
+            <div class="board-container-outer">
+                <div class="board-wrapper view-all" id="boardWrapper">
+                    <div class="labels-row top" id="labelsTop"></div>
+                    <div class="labels-row bottom" id="labelsBottom"></div>
+                    <div class="labels-col left" id="labelsLeft"></div>
+
+                    <div class="labels-col right" id="labelsRight"></div>
+                    <div class="board-main">
+                        <div class="board-grid" id="boardGrid"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="timer-bar"><div class="timer-progress" id="timerProgress"></div></div>
+            <div class="controls">
+                <button id="btnPrev">← 前の手</button>
+                <button id="btnPlay">自動再生</button>
+                <button id="btnNext">次の手 →</button>
+                <button id="btnClear" style="background-color:#8e8e93;">全クリア</button>
+            </div>
+        </div>
+
+        <!-- 右パネル：各種設定と解説入力 -->
+        <div class="right-panel">
+            <div class="status-info" id="statusInfo">現在の手数: 0 手目</div>
+            
+            <div class="panel-section">
+                <div class="section-title">盤面の表示範囲</div>
+                <select id="selectView">
+                    <option value="view-all">盤面全体 (19路盤総譜用)</option>
+                    <option value="view-tr">右上隅</option>
+                    <option value="view-tl">左上隅</option>
+                    <option value="view-br">右下隅</option>
+                    <option value="view-bl">左下隅</option>
+                </select>
+            </div>
+
+            <div class="panel-section">
+                <div class="section-title">手番の設定</div>
+                <div class="radio-group">
+                    <label><input type="radio" id="colorBlack" name="stoneColor" value="B" checked> <b>黒番</b></label>
+                    <label><input type="radio" id="colorWhite" name="stoneColor" value="W"> <b>白番</b></label>
+                </div>
+            </div>
+
+            <div class="panel-section" style="flex: 1; display: flex; flex-direction: column;">
+                <div class="section-title">この局面（手数）の解説・メモ</div>
+                <textarea class="comment-box" id="commentBox" placeholder="ここに解説を入力してください..."></textarea>
+            </div>
+            
+            <div class="file-buttons">
+                <div class="file-row">
+                    <div class="file-input-wrapper">
+                        <button style="background-color:#34c759; width:100%;">SGF読込</button>
+                        <input type="file" id="fileImport" accept=".sgf">
+                    </div>
+                    <button id="btnExport" style="background-color:#5856d6; flex: 1;">SGF保存</button>
+                </div>
+                <button id="btnPrint" style="background-color:#e07a5f; width:100%;">🖨 棋譜の分割印刷</button>
+                <button id="btnHelpExport" style="background-color:#107c41; width:100%;">📄 説明書保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 印刷用テンポラリエリア -->
+    <div id="printArea"></div>
+    <script>
+        const AUTOPLAY_TIME = 10000;
+        const SGF_CHARS = "abcdefghijklmnopqrs";
+        const LETTER_LABELS = ["A","B","C","D","E","F","G","H","J","K","L","M","N","O","P","Q","R","S","T"];
+        
+        // 記号消失対策：命令文で星の座標（4, 10, 16路）を設定
+        const HOSHI_COORDS = Array.of(3, 9, 15);
+
+        let moves = new Array();
+        let currentHand = 0;
+        let isPlaying = false, timerId = null, timerStart = 0, progressIntervalId = null;
+
+        const boardWrapper = document.getElementById('boardWrapper'), boardGrid = document.getElementById('boardGrid');
+        const statusInfo = document.getElementById('statusInfo'), commentBox = document.getElementById('commentBox'), timerProgress = document.getElementById('timerProgress');
+        const btnPrev = document.getElementById('btnPrev'), btnNext = document.getElementById('btnNext'), btnPlay = document.getElementById('btnPlay'), btnClear = document.getElementById('btnClear');
+        const btnExport = document.getElementById('btnExport'), fileImport = document.getElementById('fileImport'), selectView = document.getElementById('selectView'), btnHelpExport = document.getElementById('btnHelpExport'), btnPrint = document.getElementById('btnPrint'), printArea = document.getElementById('printArea');
+        const labelsTop = document.getElementById('labelsTop'), labelsBottom = document.getElementById('labelsBottom'), labelsLeft = document.getElementById('labelsLeft'), labelsRight = document.getElementById('labelsRight');
+
+        function initBoard() {
+            boardGrid.innerHTML = '';
+            for (let y = 0; y < 19; y++) {
+                for (let x = 0; x < 19; x++) {
+                    const intersection = document.createElement('div');
+                    intersection.className = 'intersection';
+                    if (HOSHI_COORDS.includes(x) && HOSHI_COORDS.includes(y)) {
+                        const d = document.createElement('div'); d.className = 'hoshi-dot'; intersection.appendChild(d);
+                    }
+                    intersection.dataset.x = x; intersection.dataset.y = y;
+                    intersection.addEventListener('click', onIntersectionClick);
+                    boardGrid.appendChild(intersection);
+                }
+            }
+            labelsTop.innerHTML = ''; labelsBottom.innerHTML = ''; labelsLeft.innerHTML = ''; labelsRight.innerHTML = '';
+            for (let i = 0; i < 19; i++) {
+                let t = document.createElement('span'); t.textContent = LETTER_LABELS[i]; labelsTop.appendChild(t);
+                let b = document.createElement('span'); b.textContent = LETTER_LABELS[i]; labelsBottom.appendChild(b);
+                let l = document.createElement('span'); l.textContent = 19 - i; labelsLeft.appendChild(l);
+                let r = document.createElement('span'); r.textContent = 19 - i; labelsRight.appendChild(r);
+            }
+            render();
+        }
+
+        function onIntersectionClick() {
+            if (isPlaying) stopAutoPlay();
+            const x = parseInt(this.dataset.x), y = parseInt(this.dataset.y);
+            const currentBoardStones = getBoardStateAt(currentHand);
+            const existingStone = currentBoardStones.find(s => s.x === x && s.y === y);
+            if (currentHand < moves.length) { moves = moves.slice(0, currentHand); }
+
+            if (existingStone) {
+                moves.push({ x: x, y: y, color: existingStone.color, comment: "石の抜き跡", isRemove: true });
+            } else {
+                const color = document.querySelector('input[name="stoneColor"]:checked').value;
+                moves.push({ x: x, y: y, color: color, comment: "", isRemove: false });
+                if (color === 'B') { document.getElementById('colorWhite').checked = true; }
+                else { document.getElementById('colorBlack').checked = true; }
+            }
+            currentHand = moves.length; render();
+        }
+
+        function getBoardStateAt(hand) {
+            let activeStones = new Array();
+            for (let i = 0; i < hand; i++) {
+                const m = moves[i];
+                if (m.isRemove) { activeStones = activeStones.filter(s => !(s.x === m.x && s.y === m.y)); }
+                else { activeStones.push({ x: m.x, y: m.y, color: m.color, moveNumber: i + 1 }); }
+            }
+            return activeStones;
+        }
+
+        function render() {
+            boardGrid.querySelectorAll('.intersection').forEach(el => { const s = el.querySelector('.stone'); if (s) s.remove(); });
+            getBoardStateAt(currentHand).forEach((stone) => {
+                const el = boardGrid.querySelector('[data-x="' + stone.x + '"][data-y="' + stone.y + '"]');
+                if (el) {
+                    const d = document.createElement('div');
+                    const isLatest = (stone.moveNumber === currentHand);
+                    d.className = 'stone ' + (stone.color === 'B' ? 'black' : 'white') + (isLatest ? ' latest' : '');
+                    if (isLatest) d.textContent = stone.moveNumber;
+                    el.appendChild(d);
+                }
+            });
+            statusInfo.textContent = "現在の手数: " + currentHand + " 手目";
+            if (currentHand > 0) { commentBox.value = moves[currentHand - 1].comment || ""; commentBox.disabled = false; }
+            else { commentBox.value = ""; commentBox.disabled = true; }
+        }
+
+        commentBox.addEventListener('input', () => { if (currentHand > 0) moves[currentHand - 1].comment = commentBox.value; });
+        selectView.addEventListener('change', () => { boardWrapper.className = 'board-wrapper ' + selectView.value; });
+
+        btnPrev.addEventListener('click', () => { if (isPlaying) stopAutoPlay(); if (currentHand > 0) { currentHand--; render(); } });
+        btnNext.addEventListener('click', () => { if (isPlaying) stopAutoPlay(); if (currentHand < moves.length) { currentHand++; render(); } });
+        btnClear.addEventListener('click', () => { if (isPlaying) stopAutoPlay(); if (confirm("クリアしますか？")) { moves = new Array(); currentHand = 0; render(); } });
+
+        btnPlay.addEventListener('click', () => { if (isPlaying) stopAutoPlay(); else startAutoPlay(); });
+        function startAutoPlay() { if (currentHand >= moves.length) currentHand = 0; isPlaying = true; btnPlay.textContent = "再生停止"; timerStart = Date.now(); runAutoPlayStep(); }
+        function runAutoPlayStep() { if (!isPlaying) return; if (currentHand < moves.length) { currentHand++; render(); timerStart = Date.now(); updateProgressBar(); timerId = setTimeout(runAutoPlayStep, AUTOPLAY_TIME); } else { stopAutoPlay(); } }
+        function stopAutoPlay() { isPlaying = false; btnPlay.textContent = "自動再生"; clearTimeout(timerId); clearInterval(progressIntervalId); timerProgress.style.width = "0%"; }
+        function updateProgressBar() { clearInterval(progressIntervalId); progressIntervalId = setInterval(() => { if (!isPlaying) return; const p = Math.min(((Date.now() - timerStart) / AUTOPLAY_TIME) * 100, 100); timerProgress.style.width = p + "%"; }, 100); }
+
+        btnExport.addEventListener('click', () => {
+            if (moves.length === 0) return alert("データがありません。");
+            let txt = "(;GM[1]FF[4]CA[UTF-8]AP[GoBoardGenerator]SZ[19]\n";
+            moves.forEach(m => {
+                let x = SGF_CHARS[m.x], y = SGF_CHARS[m.y];
+                txt += m.isRemove ? ";AE["+x+y+"]" : ";"+m.color+"["+x+y+"]";
+                if (m.comment) txt += "C[" + m.comment.replace(/]/g, '\\]') + "]";
+                txt += "\n";
+            });
+            downloadFile(txt + ")", "kifu_" + Date.now() + ".sgf", "text/plain");
+        });
+
+        btnHelpExport.addEventListener('click', () => {
+            downloadFile("【使用説明書】\n1. 盤クリックで着手\n2. 石クリックでアゲハマ化\n3. 右欄で解説入力\n4. SGF保存可能\n5. 分割印刷可能", "readme.txt", "text/plain");
+        });
+
+        function downloadFile(c, f, t) { const a = document.createElement("a"); const b = new Blob([c], { type: t }); a.href = URL.createObjectURL(b); a.download = f; a.click(); URL.revokeObjectURL(a.href); }
+
+        fileImport.addEventListener('change', (e) => {
+            const f = e.target.files; if (!f || f.length === 0) return;
+            const r = new FileReader(); r.onload = function(evt) { parseSGF(evt.target.result); }; r.readAsText(f[0]);
+        });
+
+        // 🔍 SGF解析ロジックをより正確に修正
+        function parseSGF(sgf) {
+            moves = new Array(); currentHand = 0;
+            // 棋譜ファイルの着手形式 (例: ;B[pd] や ;W[dp]、;AE[cc]) を正確に切り出す正規表現
+            const reg = /;(B|W|AE)\[([a-s]{2})\](?:C\[([\s\S]*?)\])?/g; 
+            let m;
+            while ((m = reg.exec(sgf)) !== null) {
+                let type = m[1];
+                let coords = m[2];
+                let comment = m[3] || "";
+                let x = SGF_CHARS.indexOf(coords[0]), y = SGF_CHARS.indexOf(coords[1]);
+                if (x !== -1 && y !== -1) {
+                    moves.push({ x: x, y: y, color: type === 'AE' ? 'B' : type, comment: comment, isRemove: (type === 'AE') });
+                }
+            }
+            if (moves.length > 0) { 
+                currentHand = moves.length; render(); 
+                alert(moves.length + "手の棋譜を正常に読み込みました！"); 
+            } else { 
+                alert("SGFの読み込みに失敗しました。ファイル形式をご確認ください。"); 
+            }
+        }
+
+        btnPrint.addEventListener('click', () => {
+            if (moves.length === 0) return alert("データがありません。");
+            printArea.innerHTML = '';
+            const layout = document.createElement('div'); layout.className = 'print-layout';
+            const step = 50, total = moves.length;
+            for (let h = step; h <= total || h === step; h += step) {
+                const target = Math.min(h, total);
+                const item = document.createElement('div'); item.className = 'print-item';
+                const title = document.createElement('div'); title.className = 'print-title'; title.textContent = `${target - step + 1}手目 ～ ${target}手目`; item.appendChild(title);
+                title.textContent = `${target - step + 1}手目 ～ ${target}手目`;
+                item.appendChild(title);
+
+                const printBoardOuter = document.createElement('div');
+                printBoardOuter.className = 'print-board-outer';
+
+                const printBoardGrid = document.createElement('div');
+                printBoardGrid.className = 'board-grid';
+
+                for (let y = 0; y < 19; y++) {
+                    for (let x = 0; x < 19; x++) {
+                        const i = document.createElement('div');
+                        i.className = 'intersection';
+                        if (HOSHI_COORDS.includes(x) && HOSHI_COORDS.includes(y)) {
+                            const d = document.createElement('div');
+                            d.className = 'hoshi-dot';
+                            i.appendChild(d);
+                        }
+                        printBoardGrid.appendChild(i);
+                    }
+                }
+                printBoardOuter.appendChild(printBoardGrid);
+
+                const stonesAtHand = getBoardStateAt(target);
+                stonesAtHand.forEach(stone => {
+                    const idx = stone.y * 19 + stone.x;
+                    const cell = printBoardGrid.children[idx];
+                    if (cell) {
+                        const d = document.createElement('div');
+                        const isLatestInSegment = (stone.moveNumber === target);
+                        d.className = 'stone ' + (stone.color === 'B' ? 'black' : 'white') + (isLatestInSegment ? ' latest' : '');
+                        if (isLatestInSegment) {
+                            d.textContent = stone.moveNumber;
+                        }
+                        cell.appendChild(d);
+                    }
+                });
+                item.appendChild(printBoardOuter);
+
+                const printComment = document.createElement('div');
+                printComment.className = 'print-comment';
+                const lastMoveComment = moves[target - 1]?.comment || "なし";
+                printComment.innerHTML = `<strong>【解説】</strong><br>${lastMoveComment.replace(/\n/g, '<br>')}`;
+                item.appendChild(printComment);
+
+                layout.appendChild(item);
+                if (target === total) break;
+            }
+            printArea.appendChild(layout);
+            setTimeout(() => { window.print(); }, 300);
+        });
+
+        // 8. 初期起動イベント
+        window.addEventListener('DOMContentLoaded', initBoard);
+    </script>
+</body>
+</html>
+
