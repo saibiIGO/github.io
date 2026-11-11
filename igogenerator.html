@@ -208,7 +208,7 @@
         .file-input-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
 
         #printArea { display: none; }
-   <!-- ===============================================================-->
+
         /* 🖨 分割印刷モード用CSS設定 */
         @media print {
             body { 
@@ -508,21 +508,18 @@
         function render() {
             boardGrid.querySelectorAll('.stone').forEach(s => s.remove());
             
-            const currentStones = getBoardStateAt(currentHand);
+                        const currentStones = getBoardStateAt(currentHand);
             let latestMoveNumber = 0;
 
             currentStones.forEach((stone) => {
                 const target = boardGrid.querySelector('.click-target[data-x="' + stone.x + '"][data-y="' + stone.y + '"]');
                 if (target) {
                     const d = document.createElement('div');
-                    // 問題図（初期配置石）以外で、現在の手数に一致するものを最新手とする
                     const isLatest = (!stone.isSetup && stone.moveNumber > 0 && iIsLatestMove(stone, currentStones));
                     
                     d.className = 'stone ' + (stone.color === 'B' ? 'black' : 'white') + (isLatest ? ' latest' : '');
-                    // 交差点（targetの中心）に石の中心を合わせる
                     d.style.top = '50%';
                     d.style.left = '50%';
-
                     d.style.transform = 'translate(-50%, -50%)';
 
                     if (isLatest) {
@@ -535,6 +532,13 @@
 
             const actualMovesCount = currentStones.filter(s => !s.isSetup).length;
             statusInfo.textContent = "現在の手数: " + actualMovesCount + " 手目";
+
+            
+            
+            
+            
+            
+
 
             if (currentHand > 0) {
                 commentBox.value = moves.at(currentHand - 1).comment || "";
@@ -796,18 +800,42 @@
 
                 const stonesAtHand = getBoardStateAt(targetHandIndex);
                 stonesAtHand.forEach(stone => {
-                    const target = grid.querySelector('.click-target[data-x="' + stone.x + '"][data-y="' + stone.y + '"]');
+                    const target = grid.querySelector('[data-x="' + stone.x + '"][data-y="' + stone.y + '"]');
                     if (target) {
                         const d = document.createElement('div');
                         const isLatest = (!stone.isSetup && stone.moveNumber === targetMoveNum);
-                        d.className = 'stone ' + (stone.color === 'B' ? 'black' : 'white') + (isLatest ? ' latest' : '');
+                        
+                        d.style.position = 'absolute';
+                        d.style.width = '14px';
+                        d.style.height = '14px';
+                        d.style.borderRadius = '50%';
                         d.style.top = '50%';
                         d.style.left = '50%';
                         d.style.transform = 'translate(-50%, -50%)';
-                        if (isLatest) d.textContent = stone.moveNumber;
+                        d.style.zIndex = '20';
+                        d.style.display = 'flex';
+                        d.style.alignItems = 'center';
+                        d.style.justifyContent = 'center';
+                        d.style.fontSize = '9px';
+                        d.style.fontWeight = 'bold';
+
+                        if (stone.color === 'B') {
+                            d.style.backgroundColor = '#000000';
+                            d.style.color = '#ffffff';
+                        } else {
+                            d.style.backgroundColor = '#ffffff';
+                            d.style.color = '#000000';
+                            d.style.border = '1px solid #000000';
+                        }
+
+                        if (isLatest) {
+                            d.style.outline = '2px solid #ff3b30';
+                            d.textContent = stone.moveNumber;
+                        }
                         target.appendChild(d);
                     }
                 });
+
                 item.appendChild(outer);
 
                 const comm = document.createElement('div');
