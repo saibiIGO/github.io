@@ -208,46 +208,76 @@
         .file-input-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
 
         #printArea { display: none; }
-
+   <!-- ===============================================================-->
+        /* 🖨 分割印刷モード用CSS設定 */
         @media print {
-            body { background-color: #fff; padding: 0; margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            h1, p.subtitle, .container, .timer-bar, .controls { display: none !important; }
-            #printArea { display: block !important; }
+            body { 
+                background-color: #fff !important; 
+                padding: 0 !important; 
+                margin: 0 !important; 
+                -webkit-print-color-adjust: exact !important; 
+                print-color-adjust: exact !important; 
+            }
+
+            /* 画面のタイトル・盤面・右側の操作パネルをすべて確実に隠す */
+            h1, 
+            p.subtitle, 
+            .container, 
+            .left-panel, 
+            .right-panel { 
+                display: none !important; 
+            }
+
+            /* 印刷用エリア（50手ごとの棋譜）だけを表示する */
+            #printArea { 
+                display: block !important; 
+                visibility: visible !important;
+                position: static !important;
+                width: 100% !important;
+            }
+
             .print-layout {
-                display: grid;
+                display: grid !important;
                 grid-template-columns: repeat(2, 1fr);
-                gap: 30px;
+                gap: 25px;
                 width: 100%;
-                padding: 20px;
+                padding: 15px;
                 box-sizing: border-box;
             }
             .print-item {
+                break-inside: avoid;
                 page-break-inside: avoid;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                background: #fff;
+                border: 1px solid #ddd;
+                padding: 10px;
+                border-radius: 6px;
             }
             .print-title {
-                font-size: 16px;
+                font-size: 15px;
                 font-weight: bold;
                 margin-bottom: 8px;
-                text-align: center;
+                color: #000;
             }
             .print-board-outer {
-                width: 320px;
-                height: 320px;
-                border: 2px solid #6e4e03;
-                background-color: var(--board-color);
-                position: relative;
+                width: 300px !important;
+                height: 300px !important;
+                border: 2px solid #6e4e03 !important;
+                background-color: #dcbc7c !important;
+                position: relative !important;
+                display: block !important;
             }
             .print-comment {
-                width: 320px;
+                width: 300px;
                 font-size: 12px;
-                margin-top: 5px;
+                margin-top: 8px;
+                color: #000;
                 line-height: 1.4;
+                text-align: left;
             }
         }
+
     </style>
 </head>
 <body>
@@ -277,11 +307,12 @@
                 <button id="btnClear" style="background-color:#8e8e93;">全クリア</button>
             </div>
         </div>
-
-        <!-- 右パネル：各種設定と解説入力 -->
+   <!-- ===============================================================-->
+        <!-- 右パネル：各種設定と解説入力（機能拡張版） -->
         <div class="right-panel">
             <div class="status-info" id="statusInfo">現在の手数: 0 手目</div>
             
+            <!-- 👁️ 盤面範囲切り替え -->
             <div class="panel-section">
                 <div class="section-title">盤面の表示範囲</div>
                 <select id="selectView">
@@ -293,41 +324,51 @@
                 </select>
             </div>
 
+            <!-- ⏱️ 【新機能】自動再生の速度調節スライダー -->
+            <div class="panel-section">
+                <div class="section-title">自動再生の速度：<span id="speedDisplay">10</span> 秒 / 1手</div>
+                <input type="range" id="inputSpeed" min="1" max="10" value="10" style="width: 100%; cursor: pointer;">
+            </div>
+
+            <!-- ☖ 手番と新機能ボタン -->
             <div class="panel-section">
                 <div class="section-title">手番の設定</div>
-                <div class="radio-group">
+                <div class="radio-group" style="margin-bottom: 10px;">
                     <label><input type="radio" id="colorBlack" name="stoneColor" value="B" checked> <b>黒番</b></label>
                     <label><input type="radio" id="colorWhite" name="stoneColor" value="W"> <b>白番</b></label>
                 </div>
+                <!-- 💡 【新機能】ここからの手順を黒1からスタートさせるボタン -->
+                <button id="btnResetToFirst" style="background-color: #ff9500; width: 100%; font-size: 13px; padding: 6px 10px;">🔄 現在の局面から黒1番で並べる</button>
             </div>
 
+            <!-- 📝 解説入力 -->
             <div class="panel-section" style="flex: 1; display: flex; flex-direction: column;">
                 <div class="section-title">この局面（手数）の解説・メモ</div>
                 <textarea class="comment-box" id="commentBox" placeholder="ここに解説を入力してください..."></textarea>
             </div>
             
+            <!-- 💾 ファイル操作・印刷ボタン類 -->
             <div class="file-buttons">
                 <div class="file-row">
                     <div class="file-input-wrapper">
                         <button style="background-color:#34c759; width:100%;">SGF読込</button>
                         <input type="file" id="fileImport" accept=".sgf">
                     </div>
-                    <button id="btnExport" style="background-color:#5856d6; flex: 1;">SGF保存</button>
+                    <!-- 💡 【新機能】名前をつけて保存に変更 -->
+                    <button id="btnExport" style="background-color:#5856d6; flex: 1;">名前をつけて保存</button>
                 </div>
-                <button id="btnPrint" style="background-color:#e07a5f; width:100%;">🖨 棋譜の分割印刷</button>
+                <button id="btnPrint" style="background-color:#e07a5f; width:100%;">🖨 棋譜の分割印刷 (A4両面最適化)</button>
                 <button id="btnHelpExport" style="background-color:#107c41; width:100%;">📄 説明書保存</button>
             </div>
         </div>
-    </div>
 
+   <!-- ===============================================================-->
     <!-- 印刷用テンポラリエリア -->
     <div id="printArea"></div>
     <script>
-        const AUTOPLAY_TIME = 10000;
+        let autoplayTime = 10000; // 初期値：10秒（10000ミリ秒）
         const SGF_CHARS = "abcdefghijklmnopqrs";
-        const LETTER_LABELS = ["A","B","C","D","E","F","G","H","J","K","L","M","N","O","P","Q","R","S","T"];
-        
-        // 記号消失対策：命令文で星の座標（4, 10, 16路）を設定
+        const LETTER_LABELS = Array.of("A","B","C","D","E","F","G","H","J","K","L","M","N","O","P","Q","R","S","T");
         const HOSHI_COORDS = Array.of(3, 9, 15);
 
         let moves = new Array();
@@ -339,199 +380,479 @@
         const btnPrev = document.getElementById('btnPrev'), btnNext = document.getElementById('btnNext'), btnPlay = document.getElementById('btnPlay'), btnClear = document.getElementById('btnClear');
         const btnExport = document.getElementById('btnExport'), fileImport = document.getElementById('fileImport'), selectView = document.getElementById('selectView'), btnHelpExport = document.getElementById('btnHelpExport'), btnPrint = document.getElementById('btnPrint'), printArea = document.getElementById('printArea');
         const labelsTop = document.getElementById('labelsTop'), labelsBottom = document.getElementById('labelsBottom'), labelsLeft = document.getElementById('labelsLeft'), labelsRight = document.getElementById('labelsRight');
+        
+        // 新機能用の要素取得
+        const inputSpeed = document.getElementById('inputSpeed');
+        const speedDisplay = document.getElementById('speedDisplay');
+        const btnResetToFirst = document.getElementById('btnResetToFirst');
 
+        // 1. 碁盤（19路の交差点と星）の生成
         function initBoard() {
             boardGrid.innerHTML = '';
-            for (let y = 0; y < 19; y++) {
-                for (let x = 0; x < 19; x++) {
-                    const intersection = document.createElement('div');
-                    intersection.className = 'intersection';
-                    if (HOSHI_COORDS.includes(x) && HOSHI_COORDS.includes(y)) {
-                        const d = document.createElement('div'); d.className = 'hoshi-dot'; intersection.appendChild(d);
-                    }
-                    intersection.dataset.x = x; intersection.dataset.y = y;
-                    intersection.addEventListener('click', onIntersectionClick);
-                    boardGrid.appendChild(intersection);
+            // 18×18のグリッドセルを作り、四隅の交差点を19×19分制御します
+            for (let y = 0; y < 18; y++) {
+                for (let x = 0; x < 18; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'intersection';
+
+                    // 左上の交差点（0〜17, 0〜17）を作成
+                    createIntersectionTarget(cell, x, y, 'target-tl');
+                    // 一番右端の列の場合、右上の交差点（18, y）を追加
+                    if (x === 17) createIntersectionTarget(cell, 18, y, 'target-tr');
+                    // 一番下端の行の場合、左下の交差点（x, 18）を追加
+                    if (y === 17) createIntersectionTarget(cell, x, 18, 'target-bl');
+                    // 右下の隅（18, 18）を追加
+                    if (x === 17 && y === 17) createIntersectionTarget(cell, 18, 18, 'target-br');
+
+                    boardGrid.appendChild(cell);
                 }
             }
+
             labelsTop.innerHTML = ''; labelsBottom.innerHTML = ''; labelsLeft.innerHTML = ''; labelsRight.innerHTML = '';
             for (let i = 0; i < 19; i++) {
-                let t = document.createElement('span'); t.textContent = LETTER_LABELS[i]; labelsTop.appendChild(t);
-                let b = document.createElement('span'); b.textContent = LETTER_LABELS[i]; labelsBottom.appendChild(b);
+                let t = document.createElement('span'); t.textContent = LETTER_LABELS.at(i); labelsTop.appendChild(t);
+                let b = document.createElement('span'); b.textContent = LETTER_LABELS.at(i); labelsBottom.appendChild(b);
                 let l = document.createElement('span'); l.textContent = 19 - i; labelsLeft.appendChild(l);
                 let r = document.createElement('span'); r.textContent = 19 - i; labelsRight.appendChild(r);
             }
             render();
         }
 
-        function onIntersectionClick() {
+        // 各交差点のターゲット（クリック判定＋星マーク）を生成する補助関数
+        function createIntersectionTarget(parentCell, x, y, posClass) {
+            const target = document.createElement('div');
+            target.className = 'click-target ' + posClass;
+            target.dataset.x = x;
+            target.dataset.y = y;
+
+            if (HOSHI_COORDS.includes(x) && HOSHI_COORDS.includes(y)) {
+                const dot = document.createElement('div');
+                dot.className = 'hoshi-dot';
+                // targetの中心に星を合わせるため調整
+                dot.style.top = '50%';
+                dot.style.left = '50%';
+                dot.style.transform = 'translate(-50%, -50%)';
+                target.appendChild(dot);
+            }
+
+            target.addEventListener('click', onIntersectionClick);
+            parentCell.appendChild(target);
+        }
+
+        // 2. 着手および抜き跡（アゲハマ）処理
+        function onIntersectionClick(e) {
+            e.stopPropagation();
             if (isPlaying) stopAutoPlay();
             const x = parseInt(this.dataset.x), y = parseInt(this.dataset.y);
             const currentBoardStones = getBoardStateAt(currentHand);
             const existingStone = currentBoardStones.find(s => s.x === x && s.y === y);
+            
             if (currentHand < moves.length) { moves = moves.slice(0, currentHand); }
 
             if (existingStone) {
-                moves.push({ x: x, y: y, color: existingStone.color, comment: "石の抜き跡", isRemove: true });
+                moves.push({ x: x, y: y, color: existingStone.color, comment: "石の抜き跡", isRemove: true, isSetup: false });
             } else {
                 const color = document.querySelector('input[name="stoneColor"]:checked').value;
-                moves.push({ x: x, y: y, color: color, comment: "", isRemove: false });
+                moves.push({ x: x, y: y, color: color, comment: "", isRemove: false, isSetup: false });
+                
                 if (color === 'B') { document.getElementById('colorWhite').checked = true; }
                 else { document.getElementById('colorBlack').checked = true; }
             }
             currentHand = moves.length; render();
         }
 
+        // 【新機能】現在の盤面の石を「問題図（番号なし）」として固定し、次の手から黒番1手目としてスタートする
+        btnResetToFirst.addEventListener('click', () => {
+            if (isPlaying) stopAutoPlay();
+            const currentStones = getBoardStateAt(currentHand);
+            if (currentStones.length === 0) {
+                alert("盤面に石が置かれていません。先に問題図（配置）を作成してください。");
+                return;
+            }
+            if (!confirm("現在の盤面を『問題図（番号なし）』として固定し、次の一手から黒1番としてスタートしますか？")) return;
+
+            // 現在の石をすべて「初期配置石（isSetup: true）」として新しい履歴を作り直す
+            moves = new Array();
+            currentStones.forEach(s => {
+                moves.push({ x: s.x, y: s.y, color: s.color, comment: "", isRemove: false, isSetup: true });
+            });
+            currentHand = moves.length;
+            
+            // 手番を黒にリセット
+            document.getElementById('colorBlack').checked = true;
+            render();
+        });
+
+        // 指定手数時点の盤面計算（初期配置石の番号はカウントしない）
         function getBoardStateAt(hand) {
             let activeStones = new Array();
+            let moveCount = 0; // 実際の着手番号のカウント
+
             for (let i = 0; i < hand; i++) {
-                const m = moves[i];
-                if (m.isRemove) { activeStones = activeStones.filter(s => !(s.x === m.x && s.y === m.y)); }
-                else { activeStones.push({ x: m.x, y: m.y, color: m.color, moveNumber: i + 1 }); }
+                const m = moves.at(i);
+                if (m.isRemove) {
+                    activeStones = activeStones.filter(s => !(s.x === m.x && s.y === m.y));
+                } else {
+                    if (m.isSetup) {
+                        // 問題図の石（番号なし）
+                        activeStones.push({ x: m.x, y: m.y, color: m.color, moveNumber: 0, isSetup: true });
+                    } else {
+                        moveCount++;
+                        activeStones.push({ x: m.x, y: m.y, color: m.color, moveNumber: moveCount, isSetup: false });
+                    }
+                }
             }
             return activeStones;
         }
-
+        // 3. 画面の再描画（レンダリング）処理
         function render() {
-            boardGrid.querySelectorAll('.intersection').forEach(el => { const s = el.querySelector('.stone'); if (s) s.remove(); });
-            getBoardStateAt(currentHand).forEach((stone) => {
-                const el = boardGrid.querySelector('[data-x="' + stone.x + '"][data-y="' + stone.y + '"]');
-                if (el) {
+            boardGrid.querySelectorAll('.stone').forEach(s => s.remove());
+            
+            const currentStones = getBoardStateAt(currentHand);
+            let latestMoveNumber = 0;
+
+            currentStones.forEach((stone) => {
+                const target = boardGrid.querySelector('.click-target[data-x="' + stone.x + '"][data-y="' + stone.y + '"]');
+                if (target) {
                     const d = document.createElement('div');
-                    const isLatest = (stone.moveNumber === currentHand);
+                    // 問題図（初期配置石）以外で、現在の手数に一致するものを最新手とする
+                    const isLatest = (!stone.isSetup && stone.moveNumber > 0 && iIsLatestMove(stone, currentStones));
+                    
                     d.className = 'stone ' + (stone.color === 'B' ? 'black' : 'white') + (isLatest ? ' latest' : '');
-                    if (isLatest) d.textContent = stone.moveNumber;
-                    el.appendChild(d);
+                    // 交差点（targetの中心）に石の中心を合わせる
+                    d.style.top = '50%';
+                    d.style.left = '50%';
+
+                    d.style.transform = 'translate(-50%, -50%)';
+
+                    if (isLatest) {
+                        d.textContent = stone.moveNumber;
+                        latestMoveNumber = stone.moveNumber;
+                    }
+                    target.appendChild(d);
                 }
             });
-            statusInfo.textContent = "現在の手数: " + currentHand + " 手目";
-            if (currentHand > 0) { commentBox.value = moves[currentHand - 1].comment || ""; commentBox.disabled = false; }
-            else { commentBox.value = ""; commentBox.disabled = true; }
+
+            const actualMovesCount = currentStones.filter(s => !s.isSetup).length;
+            statusInfo.textContent = "現在の手数: " + actualMovesCount + " 手目";
+
+            if (currentHand > 0) {
+                commentBox.value = moves.at(currentHand - 1).comment || "";
+                commentBox.disabled = false;
+            } else {
+                commentBox.value = "";
+                commentBox.disabled = true;
+            }
         }
 
-        commentBox.addEventListener('input', () => { if (currentHand > 0) moves[currentHand - 1].comment = commentBox.value; });
-        selectView.addEventListener('change', () => { boardWrapper.className = 'board-wrapper ' + selectView.value; });
+        function iIsLatestMove(targetStone, allStones) {
+            let maxNum = 0;
+            allStones.forEach(s => {
+                if (!s.isSetup && s.moveNumber > maxNum) maxNum = s.moveNumber;
+            });
+            return targetStone.moveNumber === maxNum;
+        }
 
-        btnPrev.addEventListener('click', () => { if (isPlaying) stopAutoPlay(); if (currentHand > 0) { currentHand--; render(); } });
-        btnNext.addEventListener('click', () => { if (isPlaying) stopAutoPlay(); if (currentHand < moves.length) { currentHand++; render(); } });
-        btnClear.addEventListener('click', () => { if (isPlaying) stopAutoPlay(); if (confirm("クリアしますか？")) { moves = new Array(); currentHand = 0; render(); } });
+        commentBox.addEventListener('input', () => {
+            if (currentHand > 0) moves.at(currentHand - 1).comment = commentBox.value;
+        });
 
-        btnPlay.addEventListener('click', () => { if (isPlaying) stopAutoPlay(); else startAutoPlay(); });
-        function startAutoPlay() { if (currentHand >= moves.length) currentHand = 0; isPlaying = true; btnPlay.textContent = "再生停止"; timerStart = Date.now(); runAutoPlayStep(); }
-        function runAutoPlayStep() { if (!isPlaying) return; if (currentHand < moves.length) { currentHand++; render(); timerStart = Date.now(); updateProgressBar(); timerId = setTimeout(runAutoPlayStep, AUTOPLAY_TIME); } else { stopAutoPlay(); } }
-        function stopAutoPlay() { isPlaying = false; btnPlay.textContent = "自動再生"; clearTimeout(timerId); clearInterval(progressIntervalId); timerProgress.style.width = "0%"; }
-        function updateProgressBar() { clearInterval(progressIntervalId); progressIntervalId = setInterval(() => { if (!isPlaying) return; const p = Math.min(((Date.now() - timerStart) / AUTOPLAY_TIME) * 100, 100); timerProgress.style.width = p + "%"; }, 100); }
+        selectView.addEventListener('change', () => {
+            boardWrapper.className = 'board-wrapper ' + selectView.value;
+        });
 
+        // 4. 自動再生の速度調節スライダー連動
+        inputSpeed.addEventListener('input', () => {
+            const sec = parseInt(inputSpeed.value);
+            speedDisplay.textContent = sec;
+            autoplayTime = sec * 1000;
+        });
+
+        btnPrev.addEventListener('click', () => {
+            if (isPlaying) stopAutoPlay();
+            if (currentHand > 0) { currentHand--; render(); }
+        });
+
+        btnNext.addEventListener('click', () => {
+            if (isPlaying) stopAutoPlay();
+            if (currentHand < moves.length) { currentHand++; render(); }
+        });
+
+        btnClear.addEventListener('click', () => {
+            if (isPlaying) stopAutoPlay();
+            if (confirm("すべての棋譜データをクリアしますか？")) {
+                moves = new Array(); currentHand = 0; render();
+            }
+        });
+
+        // 5. 自動再生ロジック
+        btnPlay.addEventListener('click', () => {
+            if (isPlaying) stopAutoPlay(); else startAutoPlay();
+        });
+
+        function startAutoPlay() {
+            if (currentHand >= moves.length) currentHand = 0;
+            isPlaying = true;
+            btnPlay.textContent = "再生停止";
+            btnPlay.classList.add('stop');
+            timerStart = Date.now();
+            runAutoPlayStep();
+        }
+
+        function runAutoPlayStep() {
+            if (!isPlaying) return;
+            if (currentHand < moves.length) {
+                currentHand++;
+                render();
+                timerStart = Date.now();
+                updateProgressBar();
+                timerId = setTimeout(runAutoPlayStep, autoplayTime);
+            } else {
+                stopAutoPlay();
+            }
+        }
+
+        function stopAutoPlay() {
+            isPlaying = false;
+            btnPlay.textContent = "自動再生";
+            btnPlay.classList.remove('stop');
+            clearTimeout(timerId);
+            clearInterval(progressIntervalId);
+            timerProgress.style.width = "0%";
+        }
+
+        function updateProgressBar() {
+            clearInterval(progressIntervalId);
+            progressIntervalId = setInterval(() => {
+                if (!isPlaying) return;
+                const p = Math.min(((Date.now() - timerStart) / autoplayTime) * 100, 100);
+                timerProgress.style.width = p + "%";
+            }, 50);
+        }
+
+        // 6. 【新機能】名前をつけて保存（SGFエクスポート）
         btnExport.addEventListener('click', () => {
-            if (moves.length === 0) return alert("データがありません。");
+            if (moves.length === 0) return alert("保存する棋譜データがありません。");
+
+            const defaultName = "kifu_" + new Date().toISOString().slice(0, 10);
+            let fileName = prompt("保存するファイル名を入力してください（拡張子 .sgf は自動で付きます）：", defaultName);
+            
+            if (fileName === null) return;
+            fileName = fileName.trim() || defaultName;
+            if (!fileName.toLowerCase().endsWith(".sgf")) {
+                fileName += ".sgf";
+            }
+
             let txt = "(;GM[1]FF[4]CA[UTF-8]AP[GoBoardGenerator]SZ[19]\n";
             moves.forEach(m => {
-                let x = SGF_CHARS[m.x], y = SGF_CHARS[m.y];
-                txt += m.isRemove ? ";AE["+x+y+"]" : ";"+m.color+"["+x+y+"]";
-                if (m.comment) txt += "C[" + m.comment.replace(/]/g, '\\]') + "]";
+                let x = SGF_CHARS.charAt(m.x);
+                let y = SGF_CHARS.charAt(m.y);
+                if (m.isSetup) {
+                    txt += (m.color === 'B' ? "AB[" : "AW[") + x + y + "]";
+                } else if (m.isRemove) {
+                    txt += ";AE[" + x + y + "]";
+                } else {
+                    txt += ";" + m.color + "[" + x + y + "]";
+                }
+                if (m.comment) {
+                    txt += "C[" + m.comment.replace(/]/g, '\\]') + "]";
+                }
                 txt += "\n";
             });
-            downloadFile(txt + ")", "kifu_" + Date.now() + ".sgf", "text/plain");
+            downloadFile(txt + ")", fileName, "text/plain");
         });
 
         btnHelpExport.addEventListener('click', () => {
-            downloadFile("【使用説明書】\n1. 盤クリックで着手\n2. 石クリックでアゲハマ化\n3. 右欄で解説入力\n4. SGF保存可能\n5. 分割印刷可能", "readme.txt", "text/plain");
+            const helpText = "【囲碁・棋譜並べ＆解説作成ジェネレーター 使用説明書】\n\n" +
+                "1. 盤面の交差点をクリックすると石が置かれます。\n" +
+                "2. 「現在の局面から黒1番で並べる」を押すと、そこまでの石を問題図として固定し、次の1手から黒1番として番号を振れます。\n" +
+                "3. スライダーで自動再生の速度（1秒〜10秒）を自由に調節できます。\n" +
+                "4. 「名前をつけて保存」で好きなファイル名を指定してSGF形式で保存できます。\n" +
+                "5. 「棋譜の分割印刷」でA4両面印刷に対応したレイアウトで出力できます。";
+            downloadFile(helpText, "readme.txt", "text/plain");
         });
 
-        function downloadFile(c, f, t) { const a = document.createElement("a"); const b = new Blob([c], { type: t }); a.href = URL.createObjectURL(b); a.download = f; a.click(); URL.revokeObjectURL(a.href); }
+        function downloadFile(content, fileName, contentType) {
+            const a = document.createElement("a");
+            const blob = new Blob([content], { type: contentType });
+            a.href = URL.createObjectURL(blob);
+            a.download = fileName;
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
 
+        // 7. SGF読み込み（初期配置石 AB/AW にも対応）
         fileImport.addEventListener('change', (e) => {
-            const f = e.target.files; if (!f || f.length === 0) return;
-            const r = new FileReader(); r.onload = function(evt) { parseSGF(evt.target.result); }; r.readAsText(f[0]);
+            const files = e.target.files;
+            if (!files || files.length === 0) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) { parseSGF(evt.target.result); };
+            reader.readAsText(files.item(0));
         });
 
-        // 🔍 SGF解析ロジックをより正確に修正
         function parseSGF(sgf) {
-            moves = new Array(); currentHand = 0;
-            // 棋譜ファイルの着手形式 (例: ;B[pd] や ;W[dp]、;AE[cc]) を正確に切り出す正規表現
-            const reg = /;(B|W|AE)\[([a-s]{2})\](?:C\[([\s\S]*?)\])?/g; 
-            let m;
-            while ((m = reg.exec(sgf)) !== null) {
-                let type = m[1];
-                let coords = m[2];
-                let comment = m[3] || "";
-                let x = SGF_CHARS.indexOf(coords[0]), y = SGF_CHARS.indexOf(coords[1]);
-                if (x !== -1 && y !== -1) {
-                    moves.push({ x: x, y: y, color: type === 'AE' ? 'B' : type, comment: comment, isRemove: (type === 'AE') });
+            moves = new Array();
+            currentHand = 0;
+
+            const setupRegex = /(AB|AW)((?:\[[a-s]{2}\])+)/g;
+            let sMatch;
+            while ((sMatch = setupRegex.exec(sgf)) !== null) {
+                const color = (sMatch.at(1) === 'AB') ? 'B' : 'W';
+                const coordsBlock = sMatch.at(2);
+                const coordRegex = /\[([a-s]{2})\]/g;
+                let cMatch;
+                while ((cMatch = coordRegex.exec(coordsBlock)) !== null) {
+                    const c = cMatch.at(1);
+                    const x = SGF_CHARS.indexOf(c.charAt(0));
+                    const y = SGF_CHARS.indexOf(c.charAt(1));
+                    if (x !== -1 && y !== -1) {
+                        moves.push({ x: x, y: y, color: color, comment: "", isRemove: false, isSetup: true });
+                    }
                 }
             }
-            if (moves.length > 0) { 
-                currentHand = moves.length; render(); 
-                alert(moves.length + "手の棋譜を正常に読み込みました！"); 
-            } else { 
-                alert("SGFの読み込みに失敗しました。ファイル形式をご確認ください。"); 
+
+            const moveRegex = /;(B|W|AE)\[([a-s]{2})\](?:C\[([\s\S]*?)\])?/g;
+            let mMatch;
+            while ((mMatch = moveRegex.exec(sgf)) !== null) {
+                const type = mMatch.at(1);
+                const c = mMatch.at(2);
+                const comment = mMatch.at(3) || "";
+                const x = SGF_CHARS.indexOf(c.charAt(0));
+                const y = SGF_CHARS.indexOf(c.charAt(1));
+                if (x !== -1 && y !== -1) {
+                    moves.push({
+                        x: x, y: y,
+                        color: (type === 'AE') ? 'B' : type,
+                        comment: comment,
+                        isRemove: (type === 'AE'),
+                        isSetup: false
+                    });
+                }
+            }
+
+            if (moves.length > 0) {
+                currentHand = moves.length;
+                render();
+                alert(moves.length + "個の石データ（問題図・着手）を読み込みました！");
+            } else {
+                alert("SGFの読み込みに失敗しました。有効なデータが見つかりません。");
             }
         }
 
+        // 8. 🖨 分割印刷処理（A4サイズ両面・50手ごと出力）
         btnPrint.addEventListener('click', () => {
-            if (moves.length === 0) return alert("データがありません。");
+            if (moves.length === 0) return alert("印刷する棋譜データがありません。");
+            
+             // ★追加1：印刷する直前に、邪魔な操作パネルとタイトルを強制的に隠す
+            document.querySelector('.container').style.display = 'none';
+            document.querySelector('h1').style.display = 'none';
+            document.querySelector('.subtitle').style.display = 'none';
+            document.querySelector('.right-panel').style.display = 'none';
+
             printArea.innerHTML = '';
-            const layout = document.createElement('div'); layout.className = 'print-layout';
-            const step = 50, total = moves.length;
-            for (let h = step; h <= total || h === step; h += step) {
-                const target = Math.min(h, total);
-                const item = document.createElement('div'); item.className = 'print-item';
-                const title = document.createElement('div'); title.className = 'print-title'; title.textContent = `${target - step + 1}手目 ～ ${target}手目`; item.appendChild(title);
-                title.textContent = `${target - step + 1}手目 ～ ${target}手目`;
+            const layout = document.createElement('div');
+            layout.className = 'print-layout';
+
+            const setupCount = moves.filter(m => m.isSetup).length;
+            const actualTotalMoves = moves.length - setupCount;
+            const step = 50;
+            const loopMax = Math.max(actualTotalMoves, 1);
+
+            for (let mCount = step; mCount <= loopMax || mCount === step; mCount += step) {
+                const targetMoveNum = Math.min(mCount, actualTotalMoves);
+                const targetHandIndex = setupCount + targetMoveNum;
+
+                const item = document.createElement('div');
+                item.className = 'print-item';
+
+                const title = document.createElement('div');
+                title.className = 'print-title';
+                if (actualTotalMoves === 0) {
+                    title.textContent = "問題図（初期配置）";
+                } else {
+                    const startNum = Math.max(1, targetMoveNum - step + 1);
+                    title.textContent = `${startNum}手目 ～ ${targetMoveNum}手目`;
+                }
                 item.appendChild(title);
 
-                const printBoardOuter = document.createElement('div');
-                printBoardOuter.className = 'print-board-outer';
+                const outer = document.createElement('div');
+                outer.className = 'print-board-outer';
 
-                const printBoardGrid = document.createElement('div');
-                printBoardGrid.className = 'board-grid';
+                const grid = document.createElement('div');
+                grid.className = 'board-grid';
 
-                for (let y = 0; y < 19; y++) {
-                    for (let x = 0; x < 19; x++) {
-                        const i = document.createElement('div');
-                        i.className = 'intersection';
-                        if (HOSHI_COORDS.includes(x) && HOSHI_COORDS.includes(y)) {
-                            const d = document.createElement('div');
-                            d.className = 'hoshi-dot';
-                            i.appendChild(d);
-                        }
-                        printBoardGrid.appendChild(i);
+                for (let y = 0; y < 18; y++) {
+                    for (let x = 0; x < 18; x++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'intersection';
+                        createPrintTarget(cell, x, y, 'target-tl');
+                        if (x === 17) createPrintTarget(cell, 18, y, 'target-tr');
+                        if (y === 17) createPrintTarget(cell, x, 18, 'target-bl');
+                        if (x === 17 && y === 17) createPrintTarget(cell, 18, 18, 'target-br');
+                        grid.appendChild(cell);
                     }
                 }
-                printBoardOuter.appendChild(printBoardGrid);
+                outer.appendChild(grid);
 
-                const stonesAtHand = getBoardStateAt(target);
+                const stonesAtHand = getBoardStateAt(targetHandIndex);
                 stonesAtHand.forEach(stone => {
-                    const idx = stone.y * 19 + stone.x;
-                    const cell = printBoardGrid.children[idx];
-                    if (cell) {
+                    const target = grid.querySelector('.click-target[data-x="' + stone.x + '"][data-y="' + stone.y + '"]');
+                    if (target) {
                         const d = document.createElement('div');
-                        const isLatestInSegment = (stone.moveNumber === target);
-                        d.className = 'stone ' + (stone.color === 'B' ? 'black' : 'white') + (isLatestInSegment ? ' latest' : '');
-                        if (isLatestInSegment) {
-                            d.textContent = stone.moveNumber;
-                        }
-                        cell.appendChild(d);
+                        const isLatest = (!stone.isSetup && stone.moveNumber === targetMoveNum);
+                        d.className = 'stone ' + (stone.color === 'B' ? 'black' : 'white') + (isLatest ? ' latest' : '');
+                        d.style.top = '50%';
+                        d.style.left = '50%';
+                        d.style.transform = 'translate(-50%, -50%)';
+                        if (isLatest) d.textContent = stone.moveNumber;
+                        target.appendChild(d);
                     }
                 });
-                item.appendChild(printBoardOuter);
+                item.appendChild(outer);
 
-                const printComment = document.createElement('div');
-                printComment.className = 'print-comment';
-                const lastMoveComment = moves[target - 1]?.comment || "なし";
-                printComment.innerHTML = `<strong>【解説】</strong><br>${lastMoveComment.replace(/\n/g, '<br>')}`;
-                item.appendChild(printComment);
+                const comm = document.createElement('div');
+                comm.className = 'print-comment';
+                const lastComment = (targetHandIndex > 0 && moves.at(targetHandIndex - 1).comment) ? moves.at(targetHandIndex - 1).comment : "（解説なし）";
+                comm.innerHTML = `<strong>【解説】</strong><br>${lastComment.replace(/\n/g, '<br>')}`;
+                item.appendChild(comm);
 
                 layout.appendChild(item);
-                if (target === total) break;
+                if (targetMoveNum >= actualTotalMoves) break;
             }
+
             printArea.appendChild(layout);
-            setTimeout(() => { window.print(); }, 300);
+
+               setTimeout(() => { 
+                window.print(); 
+                // ★追加2：印刷ダイアログを閉じたあと、元の操作画面を元通りに表示し直す
+                document.querySelector('.container').style.display = 'flex';
+                document.querySelector('h1').style.display = 'block';
+                document.querySelector('.subtitle').style.display = 'block';
+                document.querySelector('.right-panel').style.display = 'flex';
+            }, 300);
         });
 
-        // 8. 初期起動イベント
+
+        function createPrintTarget(parentCell, x, y, posClass) {
+            const target = document.createElement('div');
+            target.className = 'click-target ' + posClass;
+            target.dataset.x = x;
+            target.dataset.y = y;
+            if (HOSHI_COORDS.includes(x) && HOSHI_COORDS.includes(y)) {
+                const dot = document.createElement('div');
+                dot.className = 'hoshi-dot';
+                dot.style.top = '50%';
+                dot.style.left = '50%';
+                dot.style.transform = 'translate(-50%, -50%)';
+                target.appendChild(dot);
+            }
+            parentCell.appendChild(target);
+        }
+
+        // 9. 初期起動イベント
         window.addEventListener('DOMContentLoaded', initBoard);
     </script>
 </body>
 </html>
+
 
