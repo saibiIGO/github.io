@@ -819,17 +819,22 @@
                 layout.appendChild(item);
                 if (targetMoveNum >= actualTotalMoves) break;
             }
+printArea.appendChild(layout);
+// ★追加：CSSの隠す設定を無視して、強制的に印刷用エリアを表示する
+printArea.style.display = 'block';
 
-            printArea.appendChild(layout);
+setTimeout(() => { 
+    window.print(); 
 
-               setTimeout(() => { 
-                window.print(); 
-                // ★追加2：印刷ダイアログを閉じたあと、元の操作画面を元通りに表示し直す
-                document.querySelector('.container').style.display = 'flex';
-                document.querySelector('h1').style.display = 'block';
-                document.querySelector('.subtitle').style.display = 'block';
-                document.querySelector('.right-panel').style.display = 'flex';
-            }, 300);
+    // ★追加：印刷が終わったら印刷用エリアを再び隠し、元の操作画面を戻す
+    printArea.style.display = 'none';
+    document.querySelector('.container').style.display = 'flex';
+    document.querySelector('h1').style.display = 'block';
+    document.querySelector('.subtitle').style.display = 'block';
+    document.querySelector('.right-panel').style.display = 'flex';
+}, 500);
+
+
         });
 
 
