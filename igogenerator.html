@@ -743,19 +743,36 @@
             }
         }
 
-        // 8. 🖨 分割印刷処理（A4サイズ両面・50手ごと出力）
+
+
+        // 8. 🖨 分割印刷処理（確実出力・自己完結版）
         btnPrint.addEventListener('click', () => {
             if (moves.length === 0) return alert("印刷する棋譜データがありません。");
-            
-             // ★追加1：印刷する直前に、邪魔な操作パネルとタイトルを強制的に隠す
-            document.querySelector('.container').style.display = 'none';
-            document.querySelector('h1').style.display = 'none';
-            document.querySelector('.subtitle').style.display = 'none';
-            document.querySelector('.right-panel').style.display = 'none';
 
-            printArea.innerHTML = '';
+            // 古い印刷エリアがあれば完全に削除して作り直す
+            const oldArea = document.getElementById('dynamicPrintArea');
+            if (oldArea) oldArea.remove();
+
+            // 既存の操作画面を一時的にすべて隠す
+            const container = document.querySelector('.container');
+            const h1 = document.querySelector('h1');
+            const subtitle = document.querySelector('.subtitle');
+            if (container) container.style.display = 'none';
+            if (h1) h1.style.display = 'none';
+            if (subtitle) subtitle.style.display = 'none';
+
+            // 新しい印刷専用エリアを body の直下に直接作成
+            const newPrintArea = document.createElement('div');
+            newPrintArea.id = 'dynamicPrintArea';
+            newPrintArea.style.width = '100%';
+            newPrintArea.style.backgroundColor = '#ffffff';
+            newPrintArea.style.padding = '20px';
+            newPrintArea.style.boxSizing = 'border-box';
+
             const layout = document.createElement('div');
-            layout.className = 'print-layout';
+            layout.style.display = 'grid';
+            layout.style.gridTemplateColumns = 'repeat(2, 1fr)';
+            layout.style.gap = '30px';
 
             const setupCount = moves.filter(m => m.isSetup).length;
             const actualTotalMoves = moves.length - setupCount;
@@ -767,10 +784,18 @@
                 const targetHandIndex = setupCount + targetMoveNum;
 
                 const item = document.createElement('div');
-                item.className = 'print-item';
+                item.style.pageBreakInside = 'avoid';
+                item.style.breakInside = 'avoid';
+                item.style.display = 'flex';
+                item.style.flexDirection = 'column';
+                item.style.alignItems = 'center';
+                item.style.border = '1px solid #ccc';
+                item.style.padding = '15px';
 
                 const title = document.createElement('div');
-                title.className = 'print-title';
+                title.style.fontSize = '16px';
+                title.style.fontWeight = 'bold';
+                title.style.marginBottom = '10px';
                 if (actualTotalMoves === 0) {
                     title.textContent = "問題図（初期配置）";
                 } else {
@@ -779,16 +804,33 @@
                 }
                 item.appendChild(title);
 
+                // 印刷用の碁盤外枠
                 const outer = document.createElement('div');
-                outer.className = 'print-board-outer';
+                outer.style.width = '300px';
+                outer.style.height = '300px';
+                outer.style.border = '2px solid #6e4e03';
+                outer.style.backgroundColor = '#dcbc7c';
+                outer.style.position = 'relative';
 
+                // 印刷用の18×18グリッド
                 const grid = document.createElement('div');
-                grid.className = 'board-grid';
+                grid.style.position = 'absolute';
+                grid.style.top = '15px';
+                grid.style.left = '15px';
+                grid.style.width = '270px';
+                grid.style.height = '270px';
+                grid.style.display = 'grid';
+                grid.style.gridTemplateColumns = 'repeat(18, 1fr)';
+                grid.style.gridTemplateRows = 'repeat(18, 1fr)';
+                grid.style.borderTop = '1px solid #000';
+                grid.style.borderLeft = '1px solid #000';
 
                 for (let y = 0; y < 18; y++) {
                     for (let x = 0; x < 18; x++) {
                         const cell = document.createElement('div');
-                        cell.className = 'intersection';
+                        cell.style.position = 'relative';
+                        cell.style.borderRight = '1px solid #000';
+                        cell.style.borderBottom = '1px solid #000';
                         createPrintTarget(cell, x, y, 'target-tl');
                         if (x === 17) createPrintTarget(cell, 18, y, 'target-tr');
                         if (y === 17) createPrintTarget(cell, x, 18, 'target-bl');
@@ -798,13 +840,13 @@
                 }
                 outer.appendChild(grid);
 
+                // 石の配置
                 const stonesAtHand = getBoardStateAt(targetHandIndex);
                 stonesAtHand.forEach(stone => {
                     const target = grid.querySelector('[data-x="' + stone.x + '"][data-y="' + stone.y + '"]');
                     if (target) {
                         const d = document.createElement('div');
                         const isLatest = (!stone.isSetup && stone.moveNumber === targetMoveNum);
-                        
                         d.style.position = 'absolute';
                         d.style.width = '14px';
                         d.style.height = '14px';
@@ -835,11 +877,12 @@
                         target.appendChild(d);
                     }
                 });
-
                 item.appendChild(outer);
 
                 const comm = document.createElement('div');
-                comm.className = 'print-comment';
+                comm.style.width = '300px';
+                comm.style.fontSize = '12px';
+                comm.style.marginTop = '10px';
                 const lastComment = (targetHandIndex > 0 && moves.at(targetHandIndex - 1).comment) ? moves.at(targetHandIndex - 1).comment : "（解説なし）";
                 comm.innerHTML = `<strong>【解説】</strong><br>${lastComment.replace(/\n/g, '<br>')}`;
                 item.appendChild(comm);
@@ -847,22 +890,19 @@
                 layout.appendChild(item);
                 if (targetMoveNum >= actualTotalMoves) break;
             }
-printArea.appendChild(layout);
-// ★追加：CSSの隠す設定を無視して、強制的に印刷用エリアを表示する
-printArea.style.display = 'block';
 
-setTimeout(() => { 
-    window.print(); 
+            newPrintArea.appendChild(layout);
+            document.body.appendChild(newPrintArea);
 
-    // ★追加：印刷が終わったら印刷用エリアを再び隠し、元の操作画面を戻す
-    printArea.style.display = 'none';
-    document.querySelector('.container').style.display = 'flex';
-    document.querySelector('h1').style.display = 'block';
-    document.querySelector('.subtitle').style.display = 'block';
-    document.querySelector('.right-panel').style.display = 'flex';
-}, 500);
-
-
+            // ブラウザが描画を終えるのを少し待ってから印刷画面を開く
+            setTimeout(() => {
+                window.print();
+                // 印刷ダイアログを閉じたあと、印刷用エリアを消して元の操作画面を復元
+                newPrintArea.remove();
+                if (container) container.style.display = 'flex';
+                if (h1) h1.style.display = 'block';
+                if (subtitle) subtitle.style.display = 'block';
+            }, 400);
         });
 
 
