@@ -619,8 +619,11 @@
                 }
             });
 
-            const actualMovesCount = currentStones.filter(s => !s.isSetup).length;
-            statusInfo.textContent = "現在の手数: " + actualMovesCount + " 手目";
+            // 現在の時点までに打たれた手数（抜き跡・問題図を除く）と、棋譜全体の総手数を計算
+            const currentMoveNum = moves.slice(0, currentHand).filter(m => !m.isSetup && !m.isRemove).length;
+            const totalMovesCount = moves.filter(m => !m.isSetup && !m.isRemove).length;
+            statusInfo.textContent = "現在の手数: " + currentMoveNum + " 手目 / 総手数: " + totalMovesCount + " 手";
+
 
             if (currentHand > 0) {
                 commentBox.value = moves.at(currentHand - 1).comment || "";
@@ -781,6 +784,7 @@
             reader.onload = function(evt) { parseSGF(evt.target.result); };
             reader.readAsText(files.item(0));
         });
+        
         function parseSGF(sgf) {
             moves = new Array();
             currentHand = 0;
@@ -856,11 +860,13 @@
             if (moves.length > 0) {
                 currentHand = moves.length;
                 render();
-                alert("棋譜の読み込みが完了しました！（アゲハマ自動処理済み）");
+                // 初期配置石とアゲハマ（抜き跡）を除いた「純粋な総手数」を計算
+                const totalMovesCount = moves.filter(m => !m.isSetup && !m.isRemove).length;
+                alert("総手数 " + totalMovesCount + " 手の棋譜を読み込みました！（アゲハマ自動処理済み）");
             } else {
                 alert("SGFの読み込みに失敗しました。有効なデータが見つかりません。");
             }
-        }
+
 
 
 
