@@ -440,6 +440,7 @@
         }
 
         // 2. 着手および抜き跡（アゲハマ）処理
+        // 2. 着手および自動取り上げ（アゲハマ）処理
         function onIntersectionClick(e) {
             e.stopPropagation();
             if (isPlaying) stopAutoPlay();
@@ -449,61 +450,89 @@
             
             if (currentHand < moves.length) { moves = moves.slice(0, currentHand); }
 
+            // すでに石がある場所をクリックした場合は、手動で取り除く（従来の機能も維持）
             if (existingStone) {
                 moves.push({ x: x, y: y, color: existingStone.color, comment: "石の抜き跡", isRemove: true, isSetup: false });
             } else {
                 const color = document.querySelector('input[name="stoneColor"]:checked').value;
+                const opponentColor = (color === 'B') ? 'W' : 'B';
+
+                // 1. まず新しい石を履歴に追加
                 moves.push({ x: x, y: y, color: color, comment: "", isRemove: false, isSetup: false });
-                
+
+                // 2. 最新の盤面状態を取得して、隣接する相手の石が取られるか判定
+                const updatedStones = getBoardStateAt(moves.length);
+                const neighbors = Array.of(
+                    { nx: x, ny: y - 1 },
+                    { nx: x, ny: y + 1 },
+                    { nx: x - 1, ny: y },
+                    { nx: x + 1, ny: y }
+                );
+
+                let capturedStones = new Array();
+                neighbors.forEach(n => {
+                    if (n.nx >= 0 && n.nx < 19 && n.ny >= 0 && n.ny < 19) {
+                        const target = updatedStones.find(s => s.x === n.nx && s.y === n.ny && s.color === opponentColor);
+                        if (target) {
+                            const groupInfo = checkGroupLiberties(n.nx, n.ny, opponentColor, updatedStones);
+                            if (groupInfo.liberties === 0) {
+                                groupInfo.group.forEach(gStone => {
+                                    if (!capturedStones.some(c => c.x === gStone.x && c.y === gStone.y)) {
+                                        capturedStones.push(gStone);
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
+
+                // 3. 呼吸点がゼロになった相手の石をすべて取り上げる（履歴に抜き跡を追加）
+                capturedStones.forEach(cStone => {
+                    moves.push({ x: cStone.x, y: cStone.y, color: cStone.color, comment: "", isRemove: true, isSetup: false });
+                });
+
+                // 手番を交代
                 if (color === 'B') { document.getElementById('colorWhite').checked = true; }
                 else { document.getElementById('colorBlack').checked = true; }
             }
-            currentHand = moves.length; render();
+            currentHand = moves.length;
+            render();
         }
 
-        // 【新機能】現在の盤面の石を「問題図（番号なし）」として固定し、次の手から黒番1手目としてスタートする
-        btnResetToFirst.addEventListener('click', () => {
-            if (isPlaying) stopAutoPlay();
-            const currentStones = getBoardStateAt(currentHand);
-            if (currentStones.length === 0) {
-                alert("盤面に石が置かれていません。先に問題図（配置）を作成してください。");
-                return;
-            }
-            if (!confirm("現在の盤面を『問題図（番号なし）』として固定し、次の一手から黒1番としてスタートしますか？")) return;
+        // 石の連（グループ）と呼吸点（ダメ）の数を調べる関数
+        function checkGroupLiberties(startX, startY, color, boardStones) {
+            let group = new Array();
+            let visited = new Set();
+            let liberties = new Set();
+            let queue = Array.of({ x: startX, y: startY });
 
-            // 現在の石をすべて「初期配置石（isSetup: true）」として新しい履歴を作り直す
-            moves = new Array();
-            currentStones.forEach(s => {
-                moves.push({ x: s.x, y: s.y, color: s.color, comment: "", isRemove: false, isSetup: true });
-            });
-            currentHand = moves.length;
-            
-            // 手番を黒にリセット
-            document.getElementById('colorBlack').checked = true;
-            render();
-        });
+            while (queue.length > 0) {
+                const curr = queue.shift();
+                const key = curr.x + "," + curr.y;
+                if (visited.has(key)) continue;
+                visited.add(key);
 
-        // 指定手数時点の盤面計算（初期配置石の番号はカウントしない）
-        function getBoardStateAt(hand) {
-            let activeStones = new Array();
-            let moveCount = 0; // 実際の着手番号のカウント
-
-            for (let i = 0; i < hand; i++) {
-                const m = moves.at(i);
-                if (m.isRemove) {
-                    activeStones = activeStones.filter(s => !(s.x === m.x && s.y === m.y));
-                } else {
-                    if (m.isSetup) {
-                        // 問題図の石（番号なし）
-                        activeStones.push({ x: m.x, y: m.y, color: m.color, moveNumber: 0, isSetup: true });
-                    } else {
-                        moveCount++;
-                        activeStones.push({ x: m.x, y: m.y, color: m.color, moveNumber: moveCount, isSetup: false });
-                    }
+                const stone = boardStones.find(s => s.x === curr.x && s.y === curr.y);
+                if (stone && stone.color === color) {
+                    group.push(stone);
+                    const dirs = Array.of({ dx: 0, dy: -1 }, { dx: 0, dy: 1 }, { dx: -1, dy: 0 }, { dx: 1, dy: 0 });
+                    dirs.forEach(d => {
+                        const nx = curr.x + d.dx;
+                        const ny = curr.y + d.dy;
+                        if (nx >= 0 && nx < 19 && ny >= 0 && ny < 19) {
+                            const neighborStone = boardStones.find(s => s.x === nx && s.y === ny);
+                            if (!neighborStone) {
+                                liberties.add(nx + "," + ny);
+                            } else if (neighborStone.color === color && !visited.has(nx + "," + ny)) {
+                                queue.push({ x: nx, y: ny });
+                            }
+                        }
+                    });
                 }
             }
-            return activeStones;
+            return { group: group, liberties: liberties.size };
         }
+
         // 3. 画面の再描画（レンダリング）処理
         function render() {
             boardGrid.querySelectorAll('.stone').forEach(s => s.remove());
