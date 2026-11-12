@@ -582,7 +582,7 @@
         }
 
         // 3. 画面の再描画（レンダリング）処理
-        // 3. 画面の再描画（レンダリング）処理
+
         function render() {
             boardGrid.querySelectorAll('.stone').forEach(s => s.remove());
             
@@ -644,15 +644,16 @@
         });
 
         selectView.addEventListener('change', () => {
-                const selectNumberMode = document.getElementById('selectNumberMode');
+            boardWrapper.className = 'board-wrapper ' + selectView.value;
+        });
+
+        const selectNumberMode = document.getElementById('selectNumberMode');
         if (selectNumberMode) {
             selectNumberMode.addEventListener('change', render);
         }
 
-            boardWrapper.className = 'board-wrapper ' + selectView.value;
-        });
-
         // 4. 自動再生の速度調節スライダー連動
+
         inputSpeed.addEventListener('input', () => {
             const sec = parseInt(inputSpeed.value);
             speedDisplay.textContent = sec;
@@ -780,7 +781,6 @@
             reader.onload = function(evt) { parseSGF(evt.target.result); };
             reader.readAsText(files.item(0));
         });
-
         function parseSGF(sgf) {
             moves = new Array();
             currentHand = 0;
@@ -803,7 +803,7 @@
                 }
             }
 
-            // 2. 着手および抜き跡（;B[xx], ;W[xx], ;AE[xx]）の抽出
+            // 2. 着手および抜き跡（;B[xx], ;W[xx], ;AE[xx]）の抽出＋アゲハマ自動判定
             const moveRegex = /;\s*(B|W|AE)\s*\[([a-s]{2})\](?:\s*C\[([\s\S]*?)\])?/gi;
             let mMatch;
             while ((mMatch = moveRegex.exec(sgf)) !== null) {
@@ -812,25 +812,56 @@
                 const comment = mMatch.at(3) || "";
                 const x = SGF_CHARS.indexOf(c.charAt(0));
                 const y = SGF_CHARS.indexOf(c.charAt(1));
+                
                 if (x !== -1 && y !== -1) {
-                    moves.push({
-                        x: x, y: y,
-                        color: (type === 'AE') ? 'B' : type,
-                        comment: comment,
-                        isRemove: (type === 'AE'),
-                        isSetup: false
-                    });
+                    if (type === 'AE') {
+                        moves.push({ x: x, y: y, color: 'B', comment: comment, isRemove: true, isSetup: false });
+                    } else {
+                        const opponentColor = (type === 'B') ? 'W' : 'B';
+                        moves.push({ x: x, y: y, color: type, comment: comment, isRemove: false, isSetup: false });
+
+                        // 1手置くごとに呼吸点（ダメ）がゼロになった相手の石を自動取り上げ
+                        const updatedStones = getBoardStateAt(moves.length);
+                        const neighbors = Array.of(
+                            { nx: x, ny: y - 1 },
+                            { nx: x, ny: y + 1 },
+                            { nx: x - 1, ny: y },
+                            { nx: x + 1, ny: y }
+                        );
+
+                        let capturedStones = new Array();
+                        neighbors.forEach(n => {
+                            if (n.nx >= 0 && n.nx < 19 && n.ny >= 0 && n.ny < 19) {
+                                const target = updatedStones.find(s => s.x === n.nx && s.y === n.ny && s.color === opponentColor);
+                                if (target) {
+                                    const groupInfo = checkGroupLiberties(n.nx, n.ny, opponentColor, updatedStones);
+                                    if (groupInfo.liberties === 0) {
+                                        groupInfo.group.forEach(gStone => {
+                                            if (!capturedStones.some(cStone => cStone.x === gStone.x && cStone.y === gStone.y)) {
+                                                capturedStones.push(gStone);
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                        });
+
+                        capturedStones.forEach(cStone => {
+                            moves.push({ x: cStone.x, y: cStone.y, color: cStone.color, comment: "", isRemove: true, isSetup: false });
+                        });
+                    }
                 }
             }
 
             if (moves.length > 0) {
                 currentHand = moves.length;
                 render();
-                alert(moves.length + "個の石データ（問題図・着手）を読み込みました！");
+                alert("棋譜の読み込みが完了しました！（アゲハマ自動処理済み）");
             } else {
                 alert("SGFの読み込みに失敗しました。有効なデータが見つかりません。");
             }
         }
+
 
 
 
