@@ -532,6 +532,45 @@
             }
             return { group: group, liberties: liberties.size };
         }
+        // 【復元】現在の盤面を問題図（番号なし）として固定し、次の手から黒1番でスタートする
+        btnResetToFirst.addEventListener('click', () => {
+            if (isPlaying) stopAutoPlay();
+            const currentStones = getBoardStateAt(currentHand);
+            if (currentStones.length === 0) {
+                alert("盤面に石が置かれていません。先に問題図（配置）を作成してください。");
+                return;
+            }
+            if (!confirm("現在の盤面を『問題図（番号なし）』として固定し、次の一手から黒1番としてスタートしますか？")) return;
+
+            moves = new Array();
+            currentStones.forEach(s => {
+                moves.push({ x: s.x, y: s.y, color: s.color, comment: "", isRemove: false, isSetup: true });
+            });
+            currentHand = moves.length;
+            document.getElementById('colorBlack').checked = true;
+            render();
+        });
+
+        // 【復元】指定手数時点での盤面の石の状態を計算する関数
+        function getBoardStateAt(hand) {
+            let activeStones = new Array();
+            let moveCount = 0;
+
+            for (let i = 0; i < hand; i++) {
+                const m = moves.at(i);
+                if (m.isRemove) {
+                    activeStones = activeStones.filter(s => !(s.x === m.x && s.y === m.y));
+                } else {
+                    if (m.isSetup) {
+                        activeStones.push({ x: m.x, y: m.y, color: m.color, moveNumber: 0, isSetup: true });
+                    } else {
+                        moveCount++;
+                        activeStones.push({ x: m.x, y: m.y, color: m.color, moveNumber: moveCount, isSetup: false });
+                    }
+                }
+            }
+            return activeStones;
+        }
 
         // 3. 画面の再描画（レンダリング）処理
         function render() {
@@ -727,15 +766,16 @@
             moves = new Array();
             currentHand = 0;
 
-            const setupRegex = /(AB|AW)((?:\[[a-s]{2}\])+)/g;
+            // 1. 初期配置石（AB[xx], AW[xx]）の抽出
+            const setupRegex = /(AB|AW)((?:\s*\[[a-s]{2}\])+)/gi;
             let sMatch;
             while ((sMatch = setupRegex.exec(sgf)) !== null) {
-                const color = (sMatch.at(1) === 'AB') ? 'B' : 'W';
+                const color = (sMatch.at(1).toUpperCase() === 'AB') ? 'B' : 'W';
                 const coordsBlock = sMatch.at(2);
-                const coordRegex = /\[([a-s]{2})\]/g;
+                const coordRegex = /\[([a-s]{2})\]/gi;
                 let cMatch;
                 while ((cMatch = coordRegex.exec(coordsBlock)) !== null) {
-                    const c = cMatch.at(1);
+                    const c = cMatch.at(1).toLowerCase();
                     const x = SGF_CHARS.indexOf(c.charAt(0));
                     const y = SGF_CHARS.indexOf(c.charAt(1));
                     if (x !== -1 && y !== -1) {
@@ -744,11 +784,12 @@
                 }
             }
 
-            const moveRegex = /;(B|W|AE)\[([a-s]{2})\](?:C\[([\s\S]*?)\])?/g;
+            // 2. 着手および抜き跡（;B[xx], ;W[xx], ;AE[xx]）の抽出
+            const moveRegex = /;\s*(B|W|AE)\s*\[([a-s]{2})\](?:\s*C\[([\s\S]*?)\])?/gi;
             let mMatch;
             while ((mMatch = moveRegex.exec(sgf)) !== null) {
-                const type = mMatch.at(1);
-                const c = mMatch.at(2);
+                const type = mMatch.at(1).toUpperCase();
+                const c = mMatch.at(2).toLowerCase();
                 const comment = mMatch.at(3) || "";
                 const x = SGF_CHARS.indexOf(c.charAt(0));
                 const y = SGF_CHARS.indexOf(c.charAt(1));
