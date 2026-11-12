@@ -166,10 +166,13 @@
         .labels-col.left { left: 0.5%; }
         .labels-col.right { right: 0.5%; }
 
-        .labels-row span, .labels-col span {
-            display: flex; align-items: center; justify-content: center; width: 24px; height: 24px;
+        .labels-row span {
+    display: flex; align-items: center; justify-content: center; width: 0; height: 24px; overflow: visible;
         }
-
+.labels-col span {
+    display: flex; align-items: center; justify-content: center; width: 24px; height: 0; overflow: visible;
+        }
+ 
         .timer-bar {
             width: 100%; max-width: 520px; height: 6px; background-color: #e5e5ea;
             margin-top: 12px; border-radius: 3px; overflow: hidden;
