@@ -330,6 +330,14 @@
                     <option value="none">数字を表示しない</option>
                 </select>
             </div>
+            <div style="margin-top: 8px;">
+                <label style="font-size: 13px; font-weight: bold; color: #333;">盤面サイズ：</label>
+                <select id="selectBoardSize" style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #ccc; margin-top: 4px;">
+                    <option value="19" selected>19路盤（標準）</option>
+                    <option value="13">13路盤（中盤・詰碁用）</option>
+                    <option value="9">9路盤（入門・詰碁用）</option>
+                </select>
+            </div>
 
             </div>
 
@@ -375,10 +383,10 @@
     <!-- 印刷用テンポラリエリア -->
     <div id="printArea"></div>
     <script>
-        let autoplayTime = 10000; // 初期値：10秒（10000ミリ秒）
+            let autoplayTime = 10000; // 初期値：10秒（10000ミリ秒）
+        let boardSize = 19;       // 現在の盤面サイズ（19, 13, 9）
         const SGF_CHARS = "abcdefghijklmnopqrs";
-        const LETTER_LABELS = Array.of("A","B","C","D","E","F","G","H","J","K","L","M","N","O","P","Q","R","S","T");
-        const HOSHI_COORDS = Array.of(3, 9, 15);
+        const ALL_LETTER_LABELS = Array.of("A","B","C","D","E","F","G","H","J","K","L","M","N","O","P","Q","R","S","T");
 
         let moves = new Array();
         let currentHand = 0;
@@ -394,35 +402,50 @@
         const inputSpeed = document.getElementById('inputSpeed');
         const speedDisplay = document.getElementById('speedDisplay');
         const btnResetToFirst = document.getElementById('btnResetToFirst');
+        const selectBoardSize = document.getElementById('selectBoardSize');
 
-        // 1. 碁盤（19路の交差点と星）の生成
+        // 盤面サイズごとの星（ホシ）の座標リストを返す関数
+        function getHoshiCoords(size) {
+            if (size === 19) return Array.of(3, 9, 15);
+            if (size === 13) return Array.of(3, 6, 9);
+            if (size === 9)  return Array.of(2, 4, 6);
+            return Array.of();
+        }
+
+        // 1. 碁盤（指定された路数の交差点と星）の生成
         function initBoard() {
             boardGrid.innerHTML = '';
-            // 18×18のグリッドセルを作り、四隅の交差点を19×19分制御します
-            for (let y = 0; y < 18; y++) {
-                for (let x = 0; x < 18; x++) {
+            const cellsCount = boardSize - 1; // 19路なら18マス、13路なら12マス、9路なら8マス
+
+            // グリッドの列と行の数を動的に変更
+            boardGrid.style.gridTemplateColumns = `repeat(${cellsCount}, 1fr)`;
+            boardGrid.style.gridTemplateRows = `repeat(${cellsCount}, 1fr)`;
+
+            for (let y = 0; y < cellsCount; y++) {
+                for (let x = 0; x < cellsCount; x++) {
                     const cell = document.createElement('div');
                     cell.className = 'intersection';
 
-                    // 左上の交差点（0〜17, 0〜17）を作成
+                    // 左上の交差点
                     createIntersectionTarget(cell, x, y, 'target-tl');
-                    // 一番右端の列の場合、右上の交差点（18, y）を追加
-                    if (x === 17) createIntersectionTarget(cell, 18, y, 'target-tr');
-                    // 一番下端の行の場合、左下の交差点（x, 18）を追加
-                    if (y === 17) createIntersectionTarget(cell, x, 18, 'target-bl');
-                    // 右下の隅（18, 18）を追加
-                    if (x === 17 && y === 17) createIntersectionTarget(cell, 18, 18, 'target-br');
+                    // 一番右端の列の場合
+                    if (x === cellsCount - 1) createIntersectionTarget(cell, cellsCount, y, 'target-tr');
+                    // 一番下端の行の場合
+                    if (y === cellsCount - 1) createIntersectionTarget(cell, x, cellsCount, 'target-bl');
+                    // 右下の隅
+                    if (x === cellsCount - 1 && y === cellsCount - 1) createIntersectionTarget(cell, cellsCount, cellsCount, 'target-br');
 
                     boardGrid.appendChild(cell);
                 }
             }
 
+            // 座標ラベル（A〜T、19〜1）を盤面サイズに合わせて生成
             labelsTop.innerHTML = ''; labelsBottom.innerHTML = ''; labelsLeft.innerHTML = ''; labelsRight.innerHTML = '';
-            for (let i = 0; i < 19; i++) {
-                let t = document.createElement('span'); t.textContent = LETTER_LABELS.at(i); labelsTop.appendChild(t);
-                let b = document.createElement('span'); b.textContent = LETTER_LABELS.at(i); labelsBottom.appendChild(b);
-                let l = document.createElement('span'); l.textContent = 19 - i; labelsLeft.appendChild(l);
-                let r = document.createElement('span'); r.textContent = 19 - i; labelsRight.appendChild(r);
+            for (let i = 0; i < boardSize; i++) {
+                let t = document.createElement('span'); t.textContent = ALL_LETTER_LABELS.at(i); labelsTop.appendChild(t);
+                let b = document.createElement('span'); b.textContent = ALL_LETTER_LABELS.at(i); labelsBottom.appendChild(b);
+                let l = document.createElement('span'); l.textContent = boardSize - i; labelsLeft.appendChild(l);
+                let r = document.createElement('span'); r.textContent = boardSize - i; labelsRight.appendChild(r);
             }
             render();
         }
@@ -434,10 +457,21 @@
             target.dataset.x = x;
             target.dataset.y = y;
 
-            if (HOSHI_COORDS.includes(x) && HOSHI_COORDS.includes(y)) {
+            const hoshiCoords = getHoshiCoords(boardSize);
+            // 9路盤のときは四隅(2,6)と天元(4,4)の5つ、13路・19路は9つの星を表示
+            let isHoshi = false;
+            if (boardSize === 19) {
+                isHoshi = (x === 3 || x === 9 || x === 15) && (y === 3 || y === 9 || y === 15);
+            } else if (boardSize === 13) {
+                isHoshi = ((x === 3 || x === 9) && (y === 3 || y === 9)) || (x === 6 && y === 6);
+            } else if (boardSize === 9) {
+                isHoshi = (x === 4 && y === 4);
+            }
+
+
+            if (isHoshi) {
                 const dot = document.createElement('div');
                 dot.className = 'hoshi-dot';
-                // targetの中心に星を合わせるため調整
                 dot.style.top = '50%';
                 dot.style.left = '50%';
                 dot.style.transform = 'translate(-50%, -50%)';
@@ -447,6 +481,9 @@
             target.addEventListener('click', onIntersectionClick);
             parentCell.appendChild(target);
         }
+
+    
+
 
         // 2. 着手および抜き跡（アゲハマ）処理
         // 2. 着手および自動取り上げ（アゲハマ）処理
@@ -480,7 +517,9 @@
 
                 let capturedStones = new Array();
                 neighbors.forEach(n => {
-                    if (n.nx >= 0 && n.nx < 19 && n.ny >= 0 && n.ny < 19) {
+ 
+              // 修正前：if (n.nx >= 0 && n.nx < 19 && n.ny >= 0 && n.ny < 19) {  
+                    if (n.nx >= 0 && n.nx < 19 && n.ny >= 0 && n.ny < boardSize) {
                         const target = updatedStones.find(s => s.x === n.nx && s.y === n.ny && s.color === opponentColor);
                         if (target) {
                             const groupInfo = checkGroupLiberties(n.nx, n.ny, opponentColor, updatedStones);
@@ -528,7 +567,8 @@
                     dirs.forEach(d => {
                         const nx = curr.x + d.dx;
                         const ny = curr.y + d.dy;
-                        if (nx >= 0 && nx < 19 && ny >= 0 && ny < 19) {
+                        // 修正前：if (nx >= 0 && nx < 19 && ny >= 0 && ny < 19) {
+                        if (nx >= 0 && nx < 19 && ny >= 0 && ny< boardSize) {
                             const neighborStone = boardStones.find(s => s.x === nx && s.y === ny);
                             if (!neighborStone) {
                                 liberties.add(nx + "," + ny);
@@ -600,6 +640,11 @@
                     d.className = 'stone ' + (stone.color === 'B' ? 'black' : 'white') + (isLatest ? ' latest' : '');
                     d.style.top = '50%';
                     d.style.left = '50%';
+                                        // 盤面サイズに合わせて石の大きさを自動調整（19路:26px, 13路:36px, 9路:48px）
+                    const stonePixelSize = (boardSize === 9) ? '48px' : (boardSize === 13) ? '36px' : '26px';
+                    d.style.width = stonePixelSize;
+                    d.style.height = stonePixelSize;
+
                     d.style.transform = 'translate(-50%, -50%)';
 
                     // 手数表示モードに応じた数字の描画
@@ -653,6 +698,21 @@
         const selectNumberMode = document.getElementById('selectNumberMode');
         if (selectNumberMode) {
             selectNumberMode.addEventListener('change', render);
+        }
+        if (selectBoardSize) {
+            selectBoardSize.addEventListener('change', () => {
+                if (moves.length > 0) {
+                    if (!confirm("盤面サイズを変更すると現在の棋譜データはクリアされます。よろしいですか？")) {
+                        selectBoardSize.value = boardSize;
+                        return;
+                    }
+                }
+                if (isPlaying) stopAutoPlay();
+                boardSize = parseInt(selectBoardSize.value, 10);
+                moves = new Array();
+                currentHand = 0;
+                initBoard();
+            });
         }
 
         // 4. 自動再生の速度調節スライダー連動
@@ -737,7 +797,7 @@
             if (!fileName.toLowerCase().endsWith(".sgf")) {
                 fileName += ".sgf";
             }
-
+           // 修正前：let txt = "(;GMFFCA[UTF-8]AP[GoBoardGenerator]SZ\n";
             let txt = "(;GM[1]FF[4]CA[UTF-8]AP[GoBoardGenerator]SZ[19]\n";
             moves.forEach(m => {
                 let x = SGF_CHARS.charAt(m.x);
@@ -786,6 +846,15 @@
         });
         
         function parseSGF(sgf) {
+ 
+         // SGF内の盤面サイズ（SZ[9], SZ[13], SZ[19]）を自動検出して切り替え
+        const szMatch = /SZ\[(\d+)\]/i.exec(sgf);
+        const detectedSize = szMatch ? parseInt(szMatch.at(1), 10) : 19;
+        boardSize = (detectedSize === 9 || detectedSize === 13 || detectedSize === 19) ? detectedSize : 19;
+        if (selectBoardSize) selectBoardSize.value = boardSize;
+        initBoard();
+
+ 
             moves = new Array();
             currentHand = 0;
 
@@ -981,7 +1050,8 @@
                 outer.style.border = '2px solid #6e4e03';
                 outer.style.backgroundColor = '#dcbc7c';
                 outer.style.position = 'relative';
-
+// 印刷用の18×18グリッド
+                const printCellsCount = boardSize - 1;
                 const grid = document.createElement('div');
                 grid.style.position = 'absolute';
                 grid.style.top = '15px';
@@ -989,21 +1059,21 @@
                 grid.style.width = '270px';
                 grid.style.height = '270px';
                 grid.style.display = 'grid';
-                grid.style.gridTemplateColumns = 'repeat(18, 1fr)';
-                grid.style.gridTemplateRows = 'repeat(18, 1fr)';
+                grid.style.gridTemplateColumns = `repeat(${printCellsCount}, 1fr)`;
+                grid.style.gridTemplateRows = `repeat(${printCellsCount}, 1fr)`;
                 grid.style.borderTop = '1px solid #000';
                 grid.style.borderLeft = '1px solid #000';
 
-                for (let y = 0; y < 18; y++) {
-                    for (let x = 0; x < 18; x++) {
+                for (let y = 0; y < printCellsCount; y++) {
+                    for (let x = 0; x < printCellsCount; x++) {
                         const cell = document.createElement('div');
                         cell.style.position = 'relative';
                         cell.style.borderRight = '1px solid #000';
                         cell.style.borderBottom = '1px solid #000';
                         createPrintTarget(cell, x, y, 'target-tl');
-                        if (x === 17) createPrintTarget(cell, 18, y, 'target-tr');
-                        if (y === 17) createPrintTarget(cell, x, 18, 'target-bl');
-                        if (x === 17 && y === 17) createPrintTarget(cell, 18, 18, 'target-br');
+                        if (x === printCellsCount - 1) createPrintTarget(cell, printCellsCount, y, 'target-tr');
+                        if (y === printCellsCount - 1) createPrintTarget(cell, x, printCellsCount, 'target-bl');
+                        if (x === printCellsCount - 1 && y === printCellsCount - 1) createPrintTarget(cell, printCellsCount, printCellsCount, 'target-br');
                         grid.appendChild(cell);
                     }
                 }
@@ -1017,8 +1087,12 @@
                         const d = document.createElement('div');
                         const isLatest = (!stone.isSetup && stone.moveNumber === targetMoveNum);
                         d.style.position = 'absolute';
-                        d.style.width = '14px';
-                        d.style.height = '14px';
+                        
+            const printStoneSize = (boardSize === 9) ? '26px' : (boardSize === 13) ? '20px' : '14px';
+                    d.style.width = printStoneSize;
+                    d.style.height = printStoneSize;
+
+                        
                         d.style.borderRadius = '50%';
                         d.style.top = '50%';
                         d.style.left = '50%';
@@ -1075,24 +1149,32 @@
                 if (subtitle) subtitle.style.display = 'block';
             }, 400);
         });
+    function createPrintTarget(parentCell, x, y, posClass) {
+        const target = document.createElement('div');
+        target.className = 'click-target ' + posClass;
+        target.dataset.x = x;
+        target.dataset.y = y;
 
-
-
-        function createPrintTarget(parentCell, x, y, posClass) {
-            const target = document.createElement('div');
-            target.className = 'click-target ' + posClass;
-            target.dataset.x = x;
-            target.dataset.y = y;
-            if (HOSHI_COORDS.includes(x) && HOSHI_COORDS.includes(y)) {
-                const dot = document.createElement('div');
-                dot.className = 'hoshi-dot';
-                dot.style.top = '50%';
-                dot.style.left = '50%';
-                dot.style.transform = 'translate(-50%, -50%)';
-                target.appendChild(dot);
-            }
-            parentCell.appendChild(target);
+        const hoshiCoords = getHoshiCoords(boardSize);
+        let isHoshi = false;
+        if (boardSize === 9) {
+            isHoshi = ((x === 2 || x === 6) && (y === 2 || y === 6)) || (x === 4 && y === 4);
+        } else {
+            isHoshi = hoshiCoords.includes(x) && hoshiCoords.includes(y);
         }
+
+        if (isHoshi) {
+            const dot = document.createElement('div');
+            dot.className = 'hoshi-dot';
+            dot.style.top = '50%';
+            dot.style.left = '50%';
+            dot.style.transform = 'translate(-50%, -50%)';
+            target.appendChild(dot);
+        }
+        parentCell.appendChild(target);
+    }
+
+
 
         // 9. 初期起動イベント
         window.addEventListener('DOMContentLoaded', initBoard);
