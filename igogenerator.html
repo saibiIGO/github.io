@@ -871,8 +871,9 @@
         btnPrint.addEventListener('click', () => {
             if (moves.length === 0) return alert("印刷する棋譜データがありません。");
 
-            const setupCount = moves.filter(m => m.isSetup).length;
-            const actualTotalMoves = moves.length - setupCount;
+            // 純粋な着手数（問題図とアゲハマの抜き跡を除いた数）を正確にカウント
+            const actualTotalMoves = moves.filter(m => !m.isSetup && !m.isRemove).length;
+
 
             // 区切り手数の入力ダイアログ
             let splitInput = "";
@@ -935,7 +936,23 @@
             let prevMoveNum = 0;
 
             breakPoints.forEach((targetMoveNum) => {
-                const targetHandIndex = setupCount + targetMoveNum;
+                // targetMoveNum手目が、moves配列の何番目（インデックス）にあたるかを正確に探す
+                let targetHandIndex = 0;
+                if (actualTotalMoves === 0) {
+                    targetHandIndex = moves.length;
+                } else {
+                    let count = 0;
+                    for (let i = 0; i < moves.length; i++) {
+                        if (!moves.at(i).isSetup && !moves.at(i).isRemove) {
+                            count++;
+                        }
+                        if (count === targetMoveNum) {
+                            targetHandIndex = i + 1;
+                            break;
+                        }
+                    }
+                }
+
                 const startNum = prevMoveNum + 1;
 
                 const item = document.createElement('div');
