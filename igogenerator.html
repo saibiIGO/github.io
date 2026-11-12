@@ -322,6 +322,15 @@
                     <option value="view-br">右下隅</option>
                     <option value="view-bl">左下隅</option>
                 </select>
+      <div style="margin-top: 8px;">
+                <label style="font-size: 13px; font-weight: bold; color: #333;">手数（数字）の表示：</label>
+                <select id="selectNumberMode" style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #ccc; margin-top: 4px;">
+                    <option value="latest">最新の手のみ数字を表示</option>
+                    <option value="all">すべての石に数字を表示</option>
+                    <option value="none">数字を表示しない</option>
+                </select>
+            </div>
+
             </div>
 
             <!-- ⏱️ 【新機能】自動再生の速度調節スライダー -->
@@ -573,10 +582,13 @@
         }
 
         // 3. 画面の再描画（レンダリング）処理
+        // 3. 画面の再描画（レンダリング）処理
         function render() {
             boardGrid.querySelectorAll('.stone').forEach(s => s.remove());
             
-                        const currentStones = getBoardStateAt(currentHand);
+            const currentStones = getBoardStateAt(currentHand);
+            const numberModeSelect = document.getElementById('selectNumberMode');
+            const numberMode = numberModeSelect ? numberModeSelect.value : 'latest';
             let latestMoveNumber = 0;
 
             currentStones.forEach((stone) => {
@@ -590,8 +602,17 @@
                     d.style.left = '50%';
                     d.style.transform = 'translate(-50%, -50%)';
 
+                    // 手数表示モードに応じた数字の描画
+                    if (!stone.isSetup && stone.moveNumber > 0) {
+                        if (numberMode === 'all') {
+                            d.textContent = stone.moveNumber;
+                            d.style.fontSize = (stone.moveNumber >= 100) ? '10px' : '12px';
+                        } else if (numberMode === 'latest' && isLatest) {
+                            d.textContent = stone.moveNumber;
+                        }
+                    }
+
                     if (isLatest) {
-                        d.textContent = stone.moveNumber;
                         latestMoveNumber = stone.moveNumber;
                     }
                     target.appendChild(d);
@@ -600,13 +621,6 @@
 
             const actualMovesCount = currentStones.filter(s => !s.isSetup).length;
             statusInfo.textContent = "現在の手数: " + actualMovesCount + " 手目";
-
-            
-            
-            
-            
-            
-
 
             if (currentHand > 0) {
                 commentBox.value = moves.at(currentHand - 1).comment || "";
@@ -630,6 +644,11 @@
         });
 
         selectView.addEventListener('change', () => {
+                const selectNumberMode = document.getElementById('selectNumberMode');
+        if (selectNumberMode) {
+            selectNumberMode.addEventListener('change', render);
+        }
+
             boardWrapper.className = 'board-wrapper ' + selectView.value;
         });
 
@@ -816,14 +835,52 @@
 
 
         // 8. 🖨 分割印刷処理（確実出力・自己完結版）
+        // 8. 🖨 分割印刷処理（任意の手数区切り＆全手数表示対応）
         btnPrint.addEventListener('click', () => {
             if (moves.length === 0) return alert("印刷する棋譜データがありません。");
 
-            // 古い印刷エリアがあれば完全に削除して作り直す
+            const setupCount = moves.filter(m => m.isSetup).length;
+            const actualTotalMoves = moves.length - setupCount;
+
+            // 区切り手数の入力ダイアログ
+            let splitInput = "";
+            if (actualTotalMoves > 0) {
+                splitInput = prompt(
+                    `総手数は ${actualTotalMoves} 手です。\n` +
+                    `区切りたい手数をカンマ（,）で入力してください。\n\n` +
+                    `【入力例】\n` +
+                    `・空欄のままOK：最終図（1〜${actualTotalMoves}手目）を1枚に全数字で印刷\n` +
+                    `・35, 82, 140 ：「1〜35」「36〜82」「83〜140」「141〜最終手」に分割\n` +
+                    `・50 ：「1〜50」「51〜最終手」に分割`,
+                    ""
+                );
+                if (splitInput === null) return; // キャンセル時は中止
+            }
+
+            // 入力された手数リストを整理して区切り配列を作る
+            let breakPoints = new Array();
+            if (actualTotalMoves === 0) {
+                breakPoints.push(0);
+            } else {
+                if (splitInput.trim() !== "") {
+                    const parts = splitInput.split(/[,、\s]+/);
+                    parts.forEach(p => {
+                        const num = parseInt(p, 10);
+                        if (!isNaN(num) && num > 0 && num < actualTotalMoves) {
+                            if (!breakPoints.includes(num)) breakPoints.push(num);
+                        }
+                    });
+                    breakPoints.sort((a, b) => a - b);
+                }
+                // 最後に必ず最終手を追加
+                breakPoints.push(actualTotalMoves);
+            }
+
+            // 古い印刷エリアがあれば削除
             const oldArea = document.getElementById('dynamicPrintArea');
             if (oldArea) oldArea.remove();
 
-            // 既存の操作画面を一時的にすべて隠す
+            // 操作画面を一時的に隠す
             const container = document.querySelector('.container');
             const h1 = document.querySelector('h1');
             const subtitle = document.querySelector('.subtitle');
@@ -831,7 +888,6 @@
             if (h1) h1.style.display = 'none';
             if (subtitle) subtitle.style.display = 'none';
 
-            // 新しい印刷専用エリアを body の直下に直接作成
             const newPrintArea = document.createElement('div');
             newPrintArea.id = 'dynamicPrintArea';
             newPrintArea.style.width = '100%';
@@ -844,14 +900,11 @@
             layout.style.gridTemplateColumns = 'repeat(2, 1fr)';
             layout.style.gap = '30px';
 
-            const setupCount = moves.filter(m => m.isSetup).length;
-            const actualTotalMoves = moves.length - setupCount;
-            const step = 50;
-            const loopMax = Math.max(actualTotalMoves, 1);
+            let prevMoveNum = 0;
 
-            for (let mCount = step; mCount <= loopMax || mCount === step; mCount += step) {
-                const targetMoveNum = Math.min(mCount, actualTotalMoves);
+            breakPoints.forEach((targetMoveNum) => {
                 const targetHandIndex = setupCount + targetMoveNum;
+                const startNum = prevMoveNum + 1;
 
                 const item = document.createElement('div');
                 item.style.pageBreakInside = 'avoid';
@@ -869,12 +922,10 @@
                 if (actualTotalMoves === 0) {
                     title.textContent = "問題図（初期配置）";
                 } else {
-                    const startNum = Math.max(1, targetMoveNum - step + 1);
                     title.textContent = `${startNum}手目 ～ ${targetMoveNum}手目`;
                 }
                 item.appendChild(title);
 
-                // 印刷用の碁盤外枠
                 const outer = document.createElement('div');
                 outer.style.width = '300px';
                 outer.style.height = '300px';
@@ -882,7 +933,6 @@
                 outer.style.backgroundColor = '#dcbc7c';
                 outer.style.position = 'relative';
 
-                // 印刷用の18×18グリッド
                 const grid = document.createElement('div');
                 grid.style.position = 'absolute';
                 grid.style.top = '15px';
@@ -910,7 +960,7 @@
                 }
                 outer.appendChild(grid);
 
-                // 石の配置
+                // 石と全手数（数字）の配置
                 const stonesAtHand = getBoardStateAt(targetHandIndex);
                 stonesAtHand.forEach(stone => {
                     const target = grid.querySelector('[data-x="' + stone.x + '"][data-y="' + stone.y + '"]');
@@ -928,7 +978,6 @@
                         d.style.display = 'flex';
                         d.style.alignItems = 'center';
                         d.style.justifyContent = 'center';
-                        d.style.fontSize = '9px';
                         d.style.fontWeight = 'bold';
 
                         if (stone.color === 'B') {
@@ -940,9 +989,14 @@
                             d.style.border = '1px solid #000000';
                         }
 
+                        // 問題図以外のすべての石に手数（数字）を表示
+                        if (!stone.isSetup && stone.moveNumber > 0) {
+                            d.textContent = stone.moveNumber;
+                            d.style.fontSize = (stone.moveNumber >= 100) ? '7px' : '8.5px';
+                        }
+
                         if (isLatest) {
                             d.style.outline = '2px solid #ff3b30';
-                            d.textContent = stone.moveNumber;
                         }
                         target.appendChild(d);
                     }
@@ -958,22 +1012,21 @@
                 item.appendChild(comm);
 
                 layout.appendChild(item);
-                if (targetMoveNum >= actualTotalMoves) break;
-            }
+                prevMoveNum = targetMoveNum;
+            });
 
             newPrintArea.appendChild(layout);
             document.body.appendChild(newPrintArea);
 
-            // ブラウザが描画を終えるのを少し待ってから印刷画面を開く
             setTimeout(() => {
                 window.print();
-                // 印刷ダイアログを閉じたあと、印刷用エリアを消して元の操作画面を復元
                 newPrintArea.remove();
                 if (container) container.style.display = 'flex';
                 if (h1) h1.style.display = 'block';
                 if (subtitle) subtitle.style.display = 'block';
             }, 400);
         });
+
 
 
         function createPrintTarget(parentCell, x, y, posClass) {
