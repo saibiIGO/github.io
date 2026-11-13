@@ -23,13 +23,33 @@
         
         .container { display: flex; flex-wrap: wrap; gap: 20px; max-width: 1400px; width: 100%; justify-content: center; align-items: flex-start; }
         
-  /* 左パネル（碁盤）の横幅を520pxでしっかり固定して潰れないようにする */
+  /* 左パネル（碁盤）の横幅を520pxでしっかり固定して潰れないようにする 🔧 一発で綺麗に整う修正コード*/
+        /* 左パネル（碁盤）の横幅を520pxでしっかり固定して潰れないようにする */
         .left-panel {
             flex: 0 0 520px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
+
+        /* 右パネルを綺麗な2列グリッドにする */
+        .right-panel { 
+            flex: 1; 
+            min-width: 460px; 
+            max-width: 680px; 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 12px; 
+            align-items: start;
+        }
+
+        /* 手数表示・解説欄・下のボタン群・リンクボタンは2列分の横幅いっぱいに広げる */
+        .right-panel .status-info,
+        .right-panel .file-buttons,
+        .right-panel > a { 
+            grid-column: span 2; 
+        }
+
         
         /* 碁盤の最も外側の木枠（茶色い縁） */
         .board-container-outer {
@@ -352,8 +372,35 @@
                     <option value="9">9路盤（入門・詰碁用）</option>
                 </select>
             </div>
-
             </div>
+
+            <!-- 📋 対局情報（SGFヘッダデータ）入力パネル -->
+            <div class="panel-section" style="grid-column: span 2;">
+                <div class="section-title">📋 対局情報（SGF保存・印刷用）</div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 13px;">
+                    <div>
+                        <label style="font-weight: bold; color: #333;">⚫ 黒番対局者名：</label>
+                        <input type="text" id="inputBlackName" placeholder="例：黒番 太郎" style="width: 100%; padding: 5px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;">
+                    </div>
+                    <div>
+                        <label style="font-weight: bold; color: #333;">⚪ 白番対局者名：</label>
+                        <input type="text" id="inputWhiteName" placeholder="例：白番 花子" style="width: 100%; padding: 5px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;">
+                    </div>
+                    <div>
+                        <label style="font-weight: bold; color: #333;">📅 対局日：</label>
+                        <input type="date" id="inputGameDate" style="width: 100%; padding: 4px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;">
+                    </div>
+                    <div>
+                        <label style="font-weight: bold; color: #333;">🏆 棋戦名・結果など：</label>
+                        <input type="text" id="inputGameEvent" placeholder="例：第1回教室大会 / 黒中押勝" style="width: 100%; padding: 5px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ⏱️ 【新機能】自動再生の速度調節スライダー -->
+            <div class="panel-section">
+                <div class="section-title">自動...
+
 
             <!-- ⏱️ 【新機能】自動再生の速度調節スライダー -->
             <div class="panel-section">
@@ -805,36 +852,67 @@
         }
 
         // 6. 【新機能】名前をつけて保存（SGFエクスポート）
+        // 6. SGF保存処理（対局者名・対局日メタデータ＆名前を付けて保存対応）
         btnExport.addEventListener('click', () => {
             if (moves.length === 0) return alert("保存する棋譜データがありません。");
 
-            const defaultName = "kifu_" + new Date().toISOString().slice(0, 10);
-            let fileName = prompt("保存するファイル名を入力してください（拡張子 .sgf は自動で付きます）：", defaultName);
-            
-            if (fileName === null) return;
+            const pb = (document.getElementById('inputBlackName')?.value || "").trim();
+            const pw = (document.getElementById('inputWhiteName')?.value || "").trim();
+            const dt = (document.getElementById('inputGameDate')?.value || "").trim();
+            const ev = (document.getElementById('inputGameEvent')?.value || "").trim();
+
+            // 自動提案するデフォルトのファイル名を作成
+            let defaultName = "kifu";
+            if (dt) defaultName = dt;
+            if (pb || pw) defaultName += `_${pb || "黒"}vs${pw || "白"}`;
+            if (defaultName === "kifu") defaultName = "kifu_" + new Date().toISOString().slice(0, 10);
+
+            let fileName = prompt("保存するファイル名を入力してください（.sgfは自動で付きます）：", defaultName);
+            if (fileName === null) return; // キャンセル時は中止
             fileName = fileName.trim() || defaultName;
-            if (!fileName.toLowerCase().endsWith(".sgf")) {
-                fileName += ".sgf";
+            if (!fileName.toLowerCase().endsWith(".sgf")) fileName += ".sgf";
+
+            // SGFヘッダの組み立て（PB:黒番, PW:白番, DT:対局日, EV:棋戦・備考）
+            let header = `(;GM[1]FF[4]CA[UTF-8]AP[GoBoardGenerator]SZ[${boardSize}]`;
+            if (pb) header += `PB[${pb.replace(/\]/g, "\\]")}]`;
+            if (pw) header += `PW[${pw.replace(/\]/g, "\\]")}]`;
+            if (dt) header += `DT[${dt}]`;
+            if (ev) header += `EV[${ev.replace(/\]/g, "\\]")}]`;
+            let txt = header + "\n";
+
+            // 初期配置石（問題図）の書き出し
+            const setupBlack = moves.filter(m => m.isSetup && m.color === 'B');
+            const setupWhite = moves.filter(m => m.isSetup && m.color === 'W');
+            if (setupBlack.length > 0) {
+                txt += "AB" + setupBlack.map(m => "[" + SGF_CHARS.charAt(m.x) + SGF_CHARS.charAt(m.y) + "]").join("") + "\n";
             }
-           // 修正前：let txt = "(;GMFFCA[UTF-8]AP[GoBoardGenerator]SZ\n";
-            let txt = "(;GM[1]FF[4]CA[UTF-8]AP[GoBoardGenerator]SZ[19]\n";
-            moves.forEach(m => {
-                let x = SGF_CHARS.charAt(m.x);
-                let y = SGF_CHARS.charAt(m.y);
-                if (m.isSetup) {
-                    txt += (m.color === 'B' ? "AB[" : "AW[") + x + y + "]";
-                } else if (m.isRemove) {
-                    txt += ";AE[" + x + y + "]";
+            if (setupWhite.length > 0) {
+                txt += "AW" + setupWhite.map(m => "[" + SGF_CHARS.charAt(m.x) + SGF_CHARS.charAt(m.y) + "]").join("") + "\n";
+            }
+
+            // 着手および抜き跡の書き出し
+            moves.filter(m => !m.isSetup).forEach(m => {
+                const c = SGF_CHARS.charAt(m.x) + SGF_CHARS.charAt(m.y);
+                if (m.isRemove) {
+                    txt += ";AE[" + c + "]";
                 } else {
-                    txt += ";" + m.color + "[" + x + y + "]";
+                    txt += ";" + m.color + "[" + c + "]";
                 }
                 if (m.comment) {
-                    txt += "C[" + m.comment.replace(/]/g, '\\]') + "]";
+                    txt += "C[" + m.comment.replace(/\]/g, "\\]") + "]";
                 }
                 txt += "\n";
             });
-            downloadFile(txt + ")", fileName, "text/plain");
+            txt += ")";
+
+            const blob = new Blob(Array.of(txt), { type: "application/x-go-sgf;charset=utf-8" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = fileName;
+            link.click();
+            URL.revokeObjectURL(link.href);
         });
+
 
         btnHelpExport.addEventListener('click', () => {
             const helpText = "【囲碁・棋譜並べ＆解説作成ジェネレーター 使用説明書】\n\n" +
@@ -872,6 +950,15 @@
         boardSize = (detectedSize === 9 || detectedSize === 13 || detectedSize === 19) ? detectedSize : 19;
         if (selectBoardSize) selectBoardSize.value = boardSize;
         initBoard();
+        // SGFヘッダから対局者名・対局日・棋戦名を読み取って入力欄に復元
+        const pbMatch = /PB\[([^\]]*)\]/i.exec(sgf);
+        const pwMatch = /PW\[([^\]]*)\]/i.exec(sgf);
+        const dtMatch = /DT\[([^\]]*)\]/i.exec(sgf);
+        const evMatch = /EV\[([^\]]*)\]/i.exec(sgf);
+        if (document.getElementById('inputBlackName')) document.getElementById('inputBlackName').value = pbMatch ? pbMatch.at(1) : "";
+        if (document.getElementById('inputWhiteName')) document.getElementById('inputWhiteName').value = pwMatch ? pwMatch.at(1) : "";
+        if (document.getElementById('inputGameDate'))  document.getElementById('inputGameDate').value  = dtMatch ? dtMatch.at(1) : "";
+        if (document.getElementById('inputGameEvent')) document.getElementById('inputGameEvent').value = evMatch ? evMatch.at(1) : "";
 
  
             moves = new Array();
@@ -1152,10 +1239,29 @@
                 const lastComment = (targetHandIndex > 0 && moves.at(targetHandIndex - 1).comment) ? moves.at(targetHandIndex - 1).comment : "（解説なし）";
                 comm.innerHTML = `<strong>【解説】</strong><br>${lastComment.replace(/\n/g, '<br>')}`;
                 item.appendChild(comm);
-
                 layout.appendChild(item);
                 prevMoveNum = targetMoveNum;
             });
+
+            const pbPrint = document.getElementById('inputBlackName')?.value.trim();
+            const pwPrint = document.getElementById('inputWhiteName')?.value.trim();
+            const dtPrint = document.getElementById('inputGameDate')?.value.trim();
+            const evPrint = document.getElementById('inputGameEvent')?.value.trim();
+            if (pbPrint || pwPrint || dtPrint || evPrint) {
+                const printHeader = document.createElement('div');
+                printHeader.style.textAlign = 'center';
+                printHeader.style.marginBottom = '15px';
+                printHeader.style.paddingBottom = '8px';
+                printHeader.style.borderBottom = '2px solid #333';
+                printHeader.style.fontSize = '15px';
+                printHeader.style.fontWeight = 'bold';
+                printHeader.textContent = `${evPrint ? "【" + evPrint + "】 " : ""}${dtPrint ? dtPrint + "  " : ""}⚫ ${pbPrint || "黒番"} vs ⚪ ${pwPrint || "白番"}`;
+                newPrintArea.appendChild(printHeader);
+            }
+
+            newPrintArea.appendChild(layout);
+            document.body.appendChild(newPrintArea);
+
 
             newPrintArea.appendChild(layout);
             document.body.appendChild(newPrintArea);
