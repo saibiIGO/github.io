@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>囲碁・詰碁＆問題保存庫</title>
+    <style>
+        body { font-family: 'Segoe UI', Meiryo, sans-serif; background-color: #f4f1ea; color: #333; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        h1 { margin: 0 0 5px 0; color: #2c3e50; font-size: 24px; }
+        p.subtitle { margin: 0 0 15px 0; color: #666; font-size: 13px; }
+        
+
+        /* 修正前：max-width: 1150px; */
+.container { display: flex; flex-wrap: wrap; gap: 20px; max-width: 1400px; width: 100%; justify-content: center; align-items: flex-start; }
+
+        
+        /* 左パネル：碁盤エリア */
+        .left-panel { display: flex; flex-direction: column; align-items: center; }
+        .board-wrapper { position: relative; width: 540px; height: 540px; background-color: #dcbc7c; border: 3px solid #6e4e03; border-radius: 4px; box-shadow: 0 6px 15px rgba(0,0,0,0.2); padding: 25px; box-sizing: border-box; user-select: none; overflow: hidden; }
+        .board-grid { position: relative; width: 100%; height: 100%; display: grid; border-top: 1px solid #000; border-left: 1px solid #000; box-sizing: border-box; }
+        .intersection { position: relative; border-right: 1px solid #000; border-bottom: 1px solid #000; box-sizing: border-box; }
+        
+        /* 交差点のクリック判定エリア */
+        .click-target { position: absolute; width: 28px; height: 28px; z-index: 5; cursor: pointer; border-radius: 50%; }
+        .target-tl { top: -14px; left: -14px; }
+        .target-tr { top: -14px; right: -14px; }
+        .target-bl { bottom: -14px; left: -14px; }
+        .target-br { bottom: -14px; right: -14px; }
+        .click-target:hover { background-color: rgba(255, 255, 255, 0.35); }
+
+        /* 星（ホシ） */
+        .hoshi-dot { position: absolute; width: 8px; height: 8px; background-color: #000; border-radius: 50%; pointer-events: none; z-index: 2; }
+        
+        /* 碁石 */
+        .stone { position: absolute; border-radius: 50%; z-index: 10; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 2px 2px 4px rgba(0,0,0,0.4); pointer-events: none; }
+        .stone.black { background: radial-gradient(circle at 30% 30%, #555, #000); color: #fff; }
+        .stone.white { background: radial-gradient(circle at 30% 30%, #fff, #ddd); color: #000; border: 1px solid #999; }
+        .stone.latest { outline: 2px solid #ff3b30; }
+
+        /* 座標ラベル */
+        .coord-labels { position: absolute; font-size: 11px; font-weight: bold; color: #5a3e00; pointer-events: none; }
+        .labels-top { top: 6px; left: 25px; right: 25px; display: flex; justify-content: space-between; }
+        .labels-bottom { bottom: 6px; left: 25px; right: 25px; display: flex; justify-content: space-between; }
+        .labels-left { left: 7px; top: 25px; bottom: 25px; display: flex; flex-direction: column; justify-content: space-between; }
+        .labels-right { right: 7px; top: 25px; bottom: 25px; display: flex; flex-direction: column; justify-content: space-between; }
+
+        /* 判定メッセージバナー */
+        .judge-banner { width: 540px; margin-top: 12px; padding: 12px 15px; border-radius: 6px; font-size: 16px; font-weight: bold; text-align: center; box-sizing: border-box; transition: all 0.2s; }
+        .judge-normal { background-color: #e8eef5; color: #2c3e50; border: 1px solid #cbd5e1; }
+        .judge-correct { background-color: #dcfce7; color: #166534; border: 2px solid #22c55e; }
+        .judge-wrong { background-color: #fee2e2; color: #991b1b; border: 2px solid #ef4444; }
+        .judge-create { background-color: #fef3c7; color: #92400e; border: 2px solid #f59e0b; }
+
+        /* 右パネル：操作＆問題保存庫 */
+
+        /* 修正前：.right-panel { flex: 1; min-width: 340px; max-width: 480px; display: flex; flex-direction: column; gap: 15px; } */
+.right-panel { 
+    flex: 1; 
+    min-width: 580px; 
+    max-width: 780px; 
+    display: grid; 
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 12px; 
+    align-items: start;
+}
+/* 一番下の青いリンクボタンは2列分の横幅いっぱいに広げる */
+.right-panel .btn-nav { grid-column: span 2; }
+
+        
+        .panel-section { background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; }
+        .section-title { font-size: 15px; font-weight: bold; color: #1e293b; margin: 0 0 10px 0; padding-bottom: 6px; border-bottom: 2px solid #2e8b57; display: flex; justify-content: space-between; align-items: center; }
+
+        /* 問題保存庫リスト */
+        .library-list { max-height: 220px; overflow-y: auto; border: 1px solid #cbd5e1; border-radius: 6px; background: #f8fafc; padding: 5px; display: flex; flex-direction: column; gap: 6px; }
+        .problem-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 5px; padding: 8px 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: background 0.15s; }
+        .problem-card:hover { background: #f0fdf4; border-color: #2e8b57; }
+        .problem-card.active { background: #dcfce7; border: 2px solid #16a34a; }
+        .problem-info { display: flex; flex-direction: column; gap: 2px; }
+        .problem-title { font-weight: bold; font-size: 14px; color: #0f172a; }
+        .problem-meta { font-size: 11px; color: #64748b; }
+        .badge-must { background: #dc2626; color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 3px; margin-right: 5px; }
+
+        /* ボタン類 */
+        .btn-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+        button { padding: 8px 12px; border: none; border-radius: 5px; font-weight: bold; font-size: 13px; cursor: pointer; transition: opacity 0.2s; }
+        button:hover { opacity: 0.85; }
+        .btn-primary { background-color: #2e8b57; color: #fff; }
+        .btn-secondary { background-color: #475569; color: #fff; }
+        .btn-warning { background-color: #d97706; color: #fff; }
+        .btn-danger { background-color: #dc2626; color: #fff; padding: 4px 8px; font-size: 11px; }
+        .btn-nav { display: block; text-align: center; background-color: #3b82f6; color: #fff; text-decoration: none; padding: 10px; border-radius: 6px; font-weight: bold; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <h1>🧩 囲碁・詰碁＆問題保存庫</h1>
+    <p class="subtitle">必須問題の演習・正誤判定・自作問題の保存ライブラリ</p>
+
+    <div class="container">
+        <!-- 左パネル：碁盤と正誤判定バナー -->
+        <div class="left-panel">
+            <div class="board-wrapper" id="boardWrapper">
+                <div class="coord-labels labels-top" id="labelsTop"></div>
+                <div class="coord-labels labels-bottom" id="labelsBottom"></div>
+                <div class="coord-labels labels-left" id="labelsLeft"></div>
+                <div class="coord-labels labels-right" id="labelsRight"></div>
+                <div class="board-grid" id="boardGrid"></div>
+            </div>
+            <div class="judge-banner judge-normal" id="judgeBanner">
+                右側の「問題保存庫」から問題を選択してください（黒先）
+            </div>
+        </div>
+
+        <!-- 右パネル：保存庫・解答操作・新規問題作成 -->
+        <div class="right-panel">
+            <!-- 1. 問題保存庫 -->
+            <div class="panel-section">
+                <div class="section-title">
+                    <span>📚 問題保存庫（クリックで出題）</span>
+                    <button class="btn-secondary" id="btnResetDefault" style="font-size: 11px; padding: 4px 8px;">初期問題を追加復元</button>
+                </div>
+                <div class="library-list" id="libraryList"></div>
+                <div class="btn-group">
+                    <button class="btn-primary" id="btnRetryProblem">🔄 最初から解き直す</button>
+                    <button class="btn-secondary" id="btnShowAnswer">💡 正解手順を見る</button>
+                </div>
+            </div>
+
+            <!-- 2. 新規問題の登録（問題作成モード） -->
+            <div class="panel-section">
+                <div class="section-title">✏️ 新しい詰碁を保存庫に登録する</div>
+                <div style="font-size: 12px; color: #475569; margin-bottom: 8px;">
+                    ①盤面サイズを選び、問題図（黒石・白石）を配置してください。
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 8px; font-size: 13px;">
+                    <label>サイズ:
+                        <select id="createBoardSize" style="padding: 4px;">
+                            <option value="9" selected>9路盤</option>
+                            <option value="13">13路盤</option>
+                            <option value="19">19路盤</option>
+                        </select>
+                    </label>
+                    <label><input type="radio" name="createColor" value="B" checked> 黒石</label>
+                    <label><input type="radio" name="createColor" value="W"> 白石</label>
+                    <button class="btn-secondary" id="btnClearCreate" style="padding: 4px 8px; font-size: 12px;">盤面クリア</button>
+                </div>
+                <div class="btn-group">
+                    <button class="btn-warning" id="btnStartRecordAnswer">② 問題図を確定し「正解手順」を打ち込む</button>
+                </div>
+                <div id="saveFormArea" style="display: none; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #cbd5e1;">
+                    <input type="text" id="inputProblemTitle" placeholder="問題タイトル（例：必須・隅の死活 第1問）" style="width: 100%; padding: 6px; box-sizing: border-box; margin-bottom: 6px;">
+                    <label style="font-size: 12px; display: block; margin-bottom: 8px;">
+                        <input type="checkbox" id="chkIsMust" checked> 「必須」バッジを付ける
+                    </label>
+                    <button class="btn-primary" id="btnSaveToLibrary" style="width: 100%;">💾 この問題を保存庫に登録する</button>
+                </div>
+            </div>
+
+            <!-- 3. SGFファイルのインポート＆他画面へのリンク -->
+            <div class="panel-section">
+                <div class="section-title">📂 SGFファイルから保存庫へ登録</div>
+                <input type="file" id="fileImportSgf" accept=".sgf" style="font-size: 12px; width: 100%;">
+            </div>
+
+            <a href="igogenerator.html" target="_blank" rel="noopener noreferrer" class="btn-nav">
+                ✨ 囲碁・棋譜並べ＆解説作成ジェネレーターを開く
+            </a>
+        </div>
+    </div>
+    <script>
+        const STORAGE_KEY = "igo_tsumego_library_v1";
+        const SGF_CHARS = "abcdefghijklmnopqrs";
+        const ALL_LETTER_LABELS = Array.of("A","B","C","D","E","F","G","H","J","K","L","M","N","O","P","Q","R","S","T");
+
+        // 最初から保存庫に入っている「必須の詰碁サンプル問題（9路盤・黒先）」
+        const DEFAULT_PROBLEMS = Array.of(
+            {
+                id: "default_1",
+                title: "必須・基本死活 第1問（二眼を作る）",
+                isMust: true,
+                size: 9,
+                setup: Array.of(
+                    { x: 0, y: 1, color: 'B' }, { x: 1, y: 1, color: 'B' }, { x: 2, y: 0, color: 'B' },
+                    { x: 3, y: 0, color: 'W' }, { x: 3, y: 1, color: 'W' }, { x: 2, y: 2, color: 'W' },
+                    { x: 1, y: 2, color: 'W' }, { x: 0, y: 2, color: 'W' }
+                ),
+                solution: Array.of(
+                    { x: 1, y: 0, color: 'B' }
+                )
+            },
+            {
+                id: "default_2",
+                title: "必須・基本死活 第2問（急所の一撃・三目中手）",
+                isMust: true,
+                size: 9,
+                setup: Array.of(
+                    { x: 0, y: 0, color: 'W' }, { x: 2, y: 0, color: 'W' }, { x: 0, y: 1, color: 'W' }, { x: 1, y: 1, color: 'W' }, { x: 2, y: 1, color: 'W' },
+                    { x: 3, y: 0, color: 'B' }, { x: 3, y: 1, color: 'B' }, { x: 3, y: 2, color: 'B' },
+                    { x: 2, y: 2, color: 'B' }, { x: 1, y: 2, color: 'B' }, { x: 0, y: 2, color: 'B' }
+                ),
+                solution: Array.of(
+                    { x: 1, y: 0, color: 'B' }
+                )
+            },
+            {
+                id: "default_3",
+                title: "必須・手筋 第3問（ウッテガエシの基本）",
+                isMust: true,
+                size: 9,
+                setup: Array.of(
+                    { x: 1, y: 0, color: 'W' }, { x: 0, y: 1, color: 'W' }, { x: 2, y: 1, color: 'W' },
+                    { x: 2, y: 0, color: 'B' }, { x: 3, y: 0, color: 'B' }, { x: 3, y: 1, color: 'B' },
+                    { x: 1, y: 2, color: 'B' }, { x: 2, y: 2, color: 'B' }, { x: 0, y: 2, color: 'B' }
+                ),
+                solution: Array.of(
+                    { x: 1, y: 1, color: 'B' },
+                    { x: 0, y: 0, color: 'W' },
+                    { x: 1, y: 1, color: 'B' }
+                )
+            }
+        );
+
+        let library = new Array();
+        let currentProblem = null;
+        let mode = "solve"; // "solve"（解答中）, "setup"（問題図配置中）, "record"（正解手順記録中）
+        let boardSize = 9;
+        let boardStones = new Array(); // 現在の盤面上の石 {x, y, color, moveNum}
+        let solveStepIndex = 0;        // 解答モードでの現在の手数インデックス
+        let isSolved = false;
+
+        // 問題作成用の変数
+        let tempSetupStones = new Array();
+        let tempSolutionMoves = new Array();
+
+        // DOM要素の取得
+        const boardGrid = document.getElementById('boardGrid');
+        const labelsTop = document.getElementById('labelsTop'), labelsBottom = document.getElementById('labelsBottom'), labelsLeft = document.getElementById('labelsLeft'), labelsRight = document.getElementById('labelsRight');
+        const judgeBanner = document.getElementById('judgeBanner');
+        const libraryList = document.getElementById('libraryList');
+        const btnResetDefault = document.getElementById('btnResetDefault');
+        const btnRetryProblem = document.getElementById('btnRetryProblem');
+        const btnShowAnswer = document.getElementById('btnShowAnswer');
+        const createBoardSize = document.getElementById('createBoardSize');
+        const btnClearCreate = document.getElementById('btnClearCreate');
+        const btnStartRecordAnswer = document.getElementById('btnStartRecordAnswer');
+        const saveFormArea = document.getElementById('saveFormArea');
+        const inputProblemTitle = document.getElementById('inputProblemTitle');
+        const chkIsMust = document.getElementById('chkIsMust');
+        const btnSaveToLibrary = document.getElementById('btnSaveToLibrary');
+        const fileImportSgf = document.getElementById('fileImportSgf');
+
+        // 1. 保存庫（LocalStorage）の読み込みと保存
+        function loadLibrary() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    library = JSON.parse(saved);
+                } catch (e) {
+                    library = JSON.parse(JSON.stringify(DEFAULT_PROBLEMS));
+                }
+            } else {
+                library = JSON.parse(JSON.stringify(DEFAULT_PROBLEMS));
+                saveLibrary();
+            }
+            renderLibraryList();
+        }
+
+        function saveLibrary() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(library));
+            renderLibraryList();
+        }
+
+        // 保存庫リストの画面描画
+        function renderLibraryList() {
+            libraryList.innerHTML = '';
+            if (library.length === 0) {
+                libraryList.innerHTML = '<div style="padding:10px; font-size:12px; color:#666; text-align:center;">問題がありません。「初期問題を追加復元」または新規作成してください。</div>';
+                return;
+            }
+
+            library.forEach((prob) => {
+                const card = document.createElement('div');
+                card.className = 'problem-card' + (currentProblem && currentProblem.id === prob.id && mode === 'solve' ? ' active' : '');
+
+                const info = document.createElement('div');
+                info.className = 'problem-info';
+
+                const titleRow = document.createElement('div');
+                titleRow.className = 'problem-title';
+                if (prob.isMust) {
+                    const badge = document.createElement('span');
+                    badge.className = 'badge-must';
+                    badge.textContent = '必須';
+                    titleRow.appendChild(badge);
+                }
+                const titleText = document.createElement('span');
+                titleText.textContent = prob.title;
+                titleRow.appendChild(titleText);
+
+                const meta = document.createElement('div');
+                meta.className = 'problem-meta';
+                meta.textContent = `${prob.size}路盤 / 正解手順: ${prob.solution.length}手`;
+
+                info.appendChild(titleRow);
+                info.appendChild(meta);
+
+                const delBtn = document.createElement('button');
+                delBtn.className = 'btn-danger';
+                delBtn.textContent = '削除';
+                delBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (confirm(`「${prob.title}」を保存庫から削除しますか？`)) {
+                        library = library.filter(item => item.id !== prob.id);
+                        saveLibrary();
+                    }
+                });
+
+                card.appendChild(info);
+                card.appendChild(delBtn);
+
+                // カードをクリックしたら問題を出題
+                card.addEventListener('click', () => {
+                    startProblem(prob);
+                });
+
+                libraryList.appendChild(card);
+            });
+        }
+
+        // 2. 碁盤（9路・13路・19路）と星の生成
+        function initBoard() {
+            boardGrid.innerHTML = '';
+            const cellsCount = boardSize - 1;
+            boardGrid.style.gridTemplateColumns = `repeat(${cellsCount}, 1fr)`;
+            boardGrid.style.gridTemplateRows = `repeat(${cellsCount}, 1fr)`;
+
+            for (let y = 0; y < cellsCount; y++) {
+                for (let x = 0; x < cellsCount; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'intersection';
+
+                    createIntersectionTarget(cell, x, y, 'target-tl');
+                    if (x === cellsCount - 1) createIntersectionTarget(cell, cellsCount, y, 'target-tr');
+                    if (y === cellsCount - 1) createIntersectionTarget(cell, x, cellsCount, 'target-bl');
+                    if (x === cellsCount - 1 && y === cellsCount - 1) createIntersectionTarget(cell, cellsCount, cellsCount, 'target-br');
+
+                    boardGrid.appendChild(cell);
+                }
+            }
+
+            labelsTop.innerHTML = ''; labelsBottom.innerHTML = ''; labelsLeft.innerHTML = ''; labelsRight.innerHTML = '';
+            for (let i = 0; i < boardSize; i++) {
+                let t = document.createElement('span'); t.textContent = ALL_LETTER_LABELS.at(i); labelsTop.appendChild(t);
+                let b = document.createElement('span'); b.textContent = ALL_LETTER_LABELS.at(i); labelsBottom.appendChild(b);
+                let l = document.createElement('span'); l.textContent = boardSize - i; labelsLeft.appendChild(l);
+                let r = document.createElement('span'); r.textContent = boardSize - i; labelsRight.appendChild(r);
+            }
+            renderBoard();
+        }
+
+        function createIntersectionTarget(parentCell, x, y, posClass) {
+            const target = document.createElement('div');
+            target.className = 'click-target ' + posClass;
+            target.dataset.x = x;
+            target.dataset.y = y;
+
+            let isHoshi = false;
+            if (boardSize === 19) {
+                isHoshi = (x === 3 || x === 9 || x === 15) && (y === 3 || y === 9 || y === 15);
+            } else if (boardSize === 13) {
+                isHoshi = ((x === 3 || x === 9) && (y === 3 || y === 9)) || (x === 6 && y === 6);
+            } else if (boardSize === 9) {
+                isHoshi = (x === 4 && y === 4);
+            }
+
+            if (isHoshi) {
+                const dot = document.createElement('div');
+                dot.className = 'hoshi-dot';
+                dot.style.top = '50%';
+                dot.style.left = '50%';
+                dot.style.transform = 'translate(-50%, -50%)';
+                target.appendChild(dot);
+            }
+
+            target.addEventListener('click', onBoardClick);
+            parentCell.appendChild(target);
+        }
+        // 3. 盤面の石と手数の描画処理
+        function renderBoard() {
+            boardGrid.querySelectorAll('.stone').forEach(s => s.remove());
+            const stonePixelSize = (boardSize === 9) ? '48px' : (boardSize === 13) ? '36px' : '26px';
+
+            let maxMove = 0;
+            boardStones.forEach(s => { if (s.moveNum > maxMove) maxMove = s.moveNum; });
+
+            boardStones.forEach(stone => {
+                const target = boardGrid.querySelector('.click-target[data-x="' + stone.x + '"][data-y="' + stone.y + '"]');
+                if (target) {
+                    const d = document.createElement('div');
+                    const isLatest = (stone.moveNum > 0 && stone.moveNum === maxMove);
+                    d.className = 'stone ' + (stone.color === 'B' ? 'black' : 'white') + (isLatest ? ' latest' : '');
+                    d.style.width = stonePixelSize;
+                    d.style.height = stonePixelSize;
+                    d.style.top = '50%';
+                    d.style.left = '50%';
+                    d.style.transform = 'translate(-50%, -50%)';
+
+                    if (stone.moveNum > 0) {
+                        d.textContent = stone.moveNum;
+                        d.style.fontSize = (boardSize === 9) ? '16px' : (boardSize === 13) ? '13px' : '11px';
+                    }
+                    target.appendChild(d);
+                }
+            });
+        }
+
+        // アゲハマ（呼吸点ゼロの石の自動取り上げ）計算ロジック
+        function applyCapture(stonesList, lastX, lastY, placedColor) {
+            const opponentColor = (placedColor === 'B') ? 'W' : 'B';
+            const dirs = Array.of({ dx: 0, dy: -1 }, { dx: 0, dy: 1 }, { dx: -1, dy: 0 }, { dx: 1, dy: 0 });
+            let capturedCoords = new Array();
+
+            dirs.forEach(d => {
+                const nx = lastX + d.dx;
+                const ny = lastY + d.dy;
+                if (nx >= 0 && nx < boardSize && ny >= 0 && ny < boardSize) {
+                    const target = stonesList.find(s => s.x === nx && s.y === ny && s.color === opponentColor);
+                    if (target) {
+                        const info = checkLiberties(nx, ny, opponentColor, stonesList);
+                        if (info.liberties === 0) {
+                            info.group.forEach(g => {
+                                if (!capturedCoords.some(c => c.x === g.x && c.y === g.y)) {
+                                    capturedCoords.push({ x: g.x, y: g.y });
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+
+            if (capturedCoords.length > 0) {
+                return stonesList.filter(s => !capturedCoords.some(c => c.x === s.x && c.y === s.y));
+            }
+            return stonesList;
+        }
+
+        function checkLiberties(startX, startY, color, stonesList) {
+            let group = new Array();
+            let visited = new Set();
+            let liberties = new Set();
+            let queue = Array.of({ x: startX, y: startY });
+
+            while (queue.length > 0) {
+                const curr = queue.shift();
+                const key = curr.x + "," + curr.y;
+                if (visited.has(key)) continue;
+                visited.add(key);
+
+                const stone = stonesList.find(s => s.x === curr.x && s.y === curr.y);
+                if (stone && stone.color === color) {
+                    group.push(stone);
+                    const dirs = Array.of({ dx: 0, dy: -1 }, { dx: 0, dy: 1 }, { dx: -1, dy: 0 }, { dx: 1, dy: 0 });
+                    dirs.forEach(d => {
+                        const nx = curr.x + d.dx;
+                        const ny = curr.y + d.dy;
+                        if (nx >= 0 && nx < boardSize && ny >= 0 && ny < boardSize) {
+                            const nStone = stonesList.find(s => s.x === nx && s.y === ny);
+                            if (!nStone) {
+                                liberties.add(nx + "," + ny);
+                            } else if (nStone.color === color && !visited.has(nx + "," + ny)) {
+                                queue.push({ x: nx, y: ny });
+                            }
+                        }
+                    });
+                }
+            }
+            return { group: group, liberties: liberties.size };
+        }
+
+        // 4. 出題開始（保存庫から問題を選択）
+        function startProblem(prob) {
+            currentProblem = prob;
+            mode = "solve";
+            solveStepIndex = 0;
+            isSolved = false;
+            saveFormArea.style.display = "none";
+
+            boardSize = prob.size || 9;
+            boardStones = prob.setup.map(s => ({ x: s.x, y: s.y, color: s.color, moveNum: 0 }));
+
+            initBoard();
+            renderLibraryList();
+            setBanner(`【出題中】${prob.title}（黒先）`, "judge-normal");
+        }
+
+        function setBanner(text, className) {
+            judgeBanner.textContent = text;
+            judgeBanner.className = "judge-banner " + className;
+        }
+
+        // 5. 盤面クリック時の処理（解答判定 / 問題図作成 / 正解手順記録）
+        function onBoardClick(e) {
+            e.stopPropagation();
+            const x = parseInt(this.dataset.x, 10);
+            const y = parseInt(this.dataset.y, 10);
+            const existing = boardStones.find(s => s.x === x && s.y === y);
+
+            // A. 問題図配置モード（setup）
+            if (mode === "setup") {
+                if (existing) {
+                    boardStones = boardStones.filter(s => !(s.x === x && s.y === y));
+                } else {
+                    const color = document.querySelector('input[name="createColor"]:checked').value;
+                    boardStones.push({ x: x, y: y, color: color, moveNum: 0 });
+                }
+                renderBoard();
+                return;
+            }
+
+            // B. 正解手順記録モード（record）
+            if (mode === "record") {
+                if (existing) return alert("すでに石がある場所には打てません。");
+                const nextNum = tempSolutionMoves.length + 1;
+                const turnColor = (nextNum % 2 === 1) ? 'B' : 'W';
+
+                boardStones.push({ x: x, y: y, color: turnColor, moveNum: nextNum });
+                boardStones = applyCapture(boardStones, x, y, turnColor);
+                tempSolutionMoves.push({ x: x, y: y, color: turnColor });
+
+                renderBoard();
+                setBanner(`正解手順を記録中：現在 ${nextNum} 手目まで入力済み`, "judge-create");
+                return;
+            }
+
+            // C. 詰碁解答モード（solve）
+            if (mode === "solve") {
+                if (!currentProblem) return alert("右側の「問題保存庫」から問題を選んでください。");
+                if (isSolved) return;
+                if (existing) return;
+
+                const expectedMove = currentProblem.solution.at(solveStepIndex);
+                if (!expectedMove) return;
+
+                // プレイヤー（黒番）の着手を盤面に表示
+                const currentMoveNum = solveStepIndex + 1;
+                boardStones.push({ x: x, y: y, color: 'B', moveNum: currentMoveNum });
+                boardStones = applyCapture(boardStones, x, y, 'B');
+                renderBoard();
+
+                // 正誤判定
+                if (x === expectedMove.x && y === expectedMove.y) {
+                    solveStepIndex++;
+
+                    // 最後まで正解したかチェック
+                    if (solveStepIndex >= currentProblem.solution.length) {
+                        isSolved = true;
+                        setBanner(`🎉 見事正解です！「${currentProblem.title}」クリア！`, "judge-correct");
+                    } else {
+                        setBanner("⭕ 正解！相手の応手を待っています...", "judge-correct");
+                        // 0.5秒後に白番（コンピュータ）が自動で応手
+                        setTimeout(() => {
+                            const whiteReply = currentProblem.solution.at(solveStepIndex);
+                            if (whiteReply) {
+                                const wNum = solveStepIndex + 1;
+                                boardStones.push({ x: whiteReply.x, y: whiteReply.y, color: 'W', moveNum: wNum });
+                                boardStones = applyCapture(boardStones, whiteReply.x, whiteReply.y, 'W');
+                                solveStepIndex++;
+                                renderBoard();
+
+                                if (solveStepIndex >= currentProblem.solution.length) {
+                                    isSolved = true;
+                                    setBanner(`🎉 見事正解です！「${currentProblem.title}」クリア！`, "judge-correct");
+                                } else {
+                                    setBanner(`次の黒番（${solveStepIndex + 1}手目）を打ってください`, "judge-normal");
+                                }
+                            }
+                        }, 500);
+                    }
+                } else {
+                    // 不正解の場合：赤バナーを表示し、0.9秒後に1手前の盤面へ自動復元
+                    setBanner("❌ 不正解（失敗）です！別の手を考えてみましょう。", "judge-wrong");
+                    setTimeout(() => {
+                        // 問題図から現在の正解手数（solveStepIndex）まで盤面を再構築して戻す
+                        rebuildBoardToStep(solveStepIndex);
+                        renderBoard();
+                        setBanner(`【再挑戦】${currentProblem.title}（${solveStepIndex + 1}手目・黒番）`, "judge-normal");
+                    }, 900);
+                }
+            }
+        }
+
+        // 指定ステップまでの盤面を再構築する補助関数
+        function rebuildBoardToStep(stepCount) {
+            boardStones = currentProblem.setup.map(s => ({ x: s.x, y: s.y, color: s.color, moveNum: 0 }));
+            for (let i = 0; i < stepCount; i++) {
+                const m = currentProblem.solution.at(i);
+                boardStones.push({ x: m.x, y: m.y, color: m.color, moveNum: i + 1 });
+                boardStones = applyCapture(boardStones, m.x, m.y, m.color);
+            }
+        }
+
+        // 6. ボタンイベント類（解き直し・正解表示・問題作成・SGF読込）
+        btnRetryProblem.addEventListener('click', () => {
+            if (!currentProblem) return;
+            startProblem(currentProblem);
+        });
+
+        btnShowAnswer.addEventListener('click', () => {
+                    if (!currentProblem) return alert("問題を選択してください。");
+            rebuildBoardToStep(currentProblem.solution.length);
+            solveStepIndex = currentProblem.solution.length;
+            isSolved = true;
+            renderBoard();
+            setBanner(`💡 正解手順（全${currentProblem.solution.length}手）を表示しました`, "judge-create");
+        });
+
+        btnResetDefault.addEventListener('click', () => {
+            if (!confirm("初期収録の必須問題3問を保存庫に追加復元しますか？")) return;
+            DEFAULT_PROBLEMS.forEach(def => {
+                if (!library.some(item => item.id === def.id)) {
+                    library.unshift(JSON.parse(JSON.stringify(def)));
+                }
+            });
+            saveLibrary();
+            alert("初期問題を追加しました！");
+        });
+
+        // 新規問題作成フロー
+        createBoardSize.addEventListener('change', () => {
+            mode = "setup";
+            currentProblem = null;
+            boardSize = parseInt(createBoardSize.value, 10);
+            boardStones = new Array();
+            saveFormArea.style.display = "none";
+            initBoard();
+            renderLibraryList();
+            setBanner("【問題作成モード】盤面をクリックして問題図（黒石・白石）を配置してください", "judge-create");
+        });
+
+        btnClearCreate.addEventListener('click', () => {
+            mode = "setup";
+            currentProblem = null;
+            boardSize = parseInt(createBoardSize.value, 10);
+            boardStones = new Array();
+            saveFormArea.style.display = "none";
+            initBoard();
+            renderLibraryList();
+            setBanner("【問題作成モード】盤面をクリックして問題図を配置してください", "judge-create");
+        });
+
+        btnStartRecordAnswer.addEventListener('click', () => {
+            if (mode === "record") return alert("すでに正解手順の記録中です。盤面に正解手順を打ち込んでください。");
+            if (boardStones.length === 0) return alert("先に盤面へ問題図（黒石・白石）を配置してください。");
+
+            tempSetupStones = boardStones.map(s => ({ x: s.x, y: s.y, color: s.color }));
+            tempSolutionMoves = new Array();
+            mode = "record";
+            saveFormArea.style.display = "block";
+            setBanner("【正解記録中】黒1番から順に、正解手順（黒・白交互）を盤面に打ってください", "judge-create");
+        });
+
+        btnSaveToLibrary.addEventListener('click', () => {
+            if (tempSolutionMoves.length === 0) return alert("正解手順が1手も打たれていません。盤面に黒1番から正解を打ってください。");
+            const title = inputProblemTitle.value.trim() || "自作詰碁 " + (library.length + 1);
+
+            const newProblem = {
+                id: "prob_" + Date.now(),
+                title: title,
+                isMust: chkIsMust.checked,
+                size: boardSize,
+                setup: tempSetupStones,
+                solution: tempSolutionMoves
+            };
+
+            library.unshift(newProblem);
+            saveLibrary();
+            inputProblemTitle.value = "";
+            saveFormArea.style.display = "none";
+            alert(`「${title}」を問題保存庫に登録しました！`);
+            startProblem(newProblem);
+        });
+
+        // 7. SGFファイルからのインポート（問題図AB/AW＋正解手順を自動登録）
+        fileImportSgf.addEventListener('change', (e) => {
+            const files = e.target.files;
+            if (!files || files.length === 0) return;
+            const file = files.item(0);
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const sgf = evt.target.result;
+                const szMatch = /SZ\[(\d+)\]/i.exec(sgf);
+                const sz = szMatch ? parseInt(szMatch.at(1), 10) : 19;
+                const validSize = (sz === 9 || sz === 13 || sz === 19) ? sz : 19;
+
+                let setup = new Array();
+                const setupRegex = /(AB|AW)((?:\s*\[[a-s]{2}\])+)/gi;
+                let sMatch;
+                while ((sMatch = setupRegex.exec(sgf)) !== null) {
+                    const color = (sMatch.at(1).toUpperCase() === 'AB') ? 'B' : 'W';
+                    const coordRegex = /\[([a-s]{2})\]/gi;
+                    let cMatch;
+                    while ((cMatch = coordRegex.exec(sMatch.at(2))) !== null) {
+                        const c = cMatch.at(1).toLowerCase();
+                        const x = SGF_CHARS.indexOf(c.charAt(0));
+                        const y = SGF_CHARS.indexOf(c.charAt(1));
+                        if (x !== -1 && y !== -1) setup.push({ x: x, y: y, color: color });
+                    }
+                }
+
+                let solution = new Array();
+                const moveRegex = /;\s*(B|W)\s*\[([a-s]{2})\]/gi;
+                let mMatch;
+                while ((mMatch = moveRegex.exec(sgf)) !== null) {
+                    const color = mMatch.at(1).toUpperCase();
+                    const c = mMatch.at(2).toLowerCase();
+                    const x = SGF_CHARS.indexOf(c.charAt(0));
+                    const y = SGF_CHARS.indexOf(c.charAt(1));
+                    if (x !== -1 && y !== -1) solution.push({ x: x, y: y, color: color });
+                }
+
+                if (setup.length === 0 && solution.length === 0) {
+                    return alert("有効なSGFデータが見つかりませんでした。");
+                }
+
+                const probTitle = prompt("保存庫に登録する問題名を入力してください：", file.name.replace(/\.sgf$/i, ""));
+                if (probTitle === null) return;
+
+                const importedProb = {
+                    id: "sgf_" + Date.now(),
+                    title: probTitle.trim() || file.name,
+                    isMust: true,
+                    size: validSize,
+                    setup: setup,
+                    solution: solution
+                };
+
+                library.unshift(importedProb);
+                saveLibrary();
+                startProblem(importedProb);
+                alert(`SGFファイル「${importedProb.title}」を保存庫に登録しました！`);
+            };
+            reader.readAsText(file);
+        });
+
+        // 8. 初期起動処理
+        window.addEventListener('DOMContentLoaded', () => {
+            loadLibrary();
+            if (library.length > 0) {
+                startProblem(library.at(0));
+            } else {
+                initBoard();
+            }
+        });
+
+   </script>
+</body>
+</html>
