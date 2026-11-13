@@ -318,6 +318,37 @@
 
     <h1>囲碁・棋譜並べ＆解説作成ジェネレーター</h1>
     <p class="subtitle">最新手番号のみ表示・アゲハマ対応・無限手数・両面分割印刷対応</p>
+    <!-- 🏁 【最上部エリア】準備・対局ヘッダバー（SGF読込＆対局者情報） -->
+    <div style="width: 100%; max-width: 1220px; background: #fff; border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 15px; margin-bottom: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;">
+        
+        <!-- 左側：まず最初に「SGF読込」ボタン -->
+        <div style="position: relative; flex: 0 0 auto;">
+            <button type="button" style="background-color: #2e8b57; padding: 9px 14px; font-size: 13px; display: flex; align-items: center; gap: 5px;">
+                📂 SGF棋譜を読み込む
+            </button>
+            <input type="file" id="fileImport" accept=".sgf" style="position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer;">
+        </div>
+
+        <!-- 右側：対局者名・対局日・棋戦名を横並びでコンパクトに配置 -->
+        <div style="flex: 1; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: flex-end; font-size: 13px;">
+            <div style="display: flex; align-items: center; gap: 4px;">
+                <label style="font-weight: bold; color: #111; white-space: nowrap;">⚫ 黒番:</label>
+                <input type="text" id="inputBlackName" placeholder="黒番対局者" style="width: 115px; padding: 5px 7px; border: 1px solid #ccc; border-radius: 4px;">
+            </div>
+            <div style="display: flex; align-items: center; gap: 4px;">
+                <label style="font-weight: bold; color: #111; white-space: nowrap;">⚪ 白番:</label>
+                <input type="text" id="inputWhiteName" placeholder="白番対局者" style="width: 115px; padding: 5px 7px; border: 1px solid #ccc; border-radius: 4px;">
+            </div>
+            <div style="display: flex; align-items: center; gap: 4px;">
+                <label style="font-weight: bold; color: #333; white-space: nowrap;">📅 対局日:</label>
+                <input type="date" id="inputGameDate" style="padding: 4px 6px; border: 1px solid #ccc; border-radius: 4px;">
+            </div>
+            <div style="display: flex; align-items: center; gap: 4px;">
+                <label style="font-weight: bold; color: #333; white-space: nowrap;">🏆 棋戦・結果:</label>
+                <input type="text" id="inputGameEvent" placeholder="棋戦名・結果など" style="width: 140px; padding: 5px 7px; border: 1px solid #ccc; border-radius: 4px;">
+            </div>
+        </div>
+    </div>
 
     <div class="container">
         <div class="left-panel">
@@ -374,28 +405,7 @@
             </div>
             </div>
 
-            <!-- 📋 対局情報（SGFヘッダデータ）入力パネル -->
-            <div class="panel-section" style="grid-column: span 2;">
-                <div class="section-title">📋 対局情報（SGF保存・印刷用）</div>
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 13px;">
-                    <div>
-                        <label style="font-weight: bold; color: #333;">⚫ 黒番対局者名：</label>
-                        <input type="text" id="inputBlackName" placeholder="例：黒番 太郎" style="width: 100%; padding: 5px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;">
-                    </div>
-                    <div>
-                        <label style="font-weight: bold; color: #333;">⚪ 白番対局者名：</label>
-                        <input type="text" id="inputWhiteName" placeholder="例：白番 花子" style="width: 100%; padding: 5px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;">
-                    </div>
-                    <div>
-                        <label style="font-weight: bold; color: #333;">📅 対局日：</label>
-                        <input type="date" id="inputGameDate" style="width: 100%; padding: 4px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;">
-                    </div>
-                    <div>
-                        <label style="font-weight: bold; color: #333;">🏆 棋戦名・結果など：</label>
-                        <input type="text" id="inputGameEvent" placeholder="例：第1回教室大会 / 黒中押勝" style="width: 100%; padding: 5px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;">
-                    </div>
-                </div>
-            </div>
+
 
             <!-- ⏱️ 【新機能】自動再生の速度調節スライダー -->
             <div class="panel-section">
@@ -428,10 +438,7 @@
             <!-- 💾 ファイル操作・印刷ボタン類 -->
             <div class="file-buttons">
                 <div class="file-row">
-                    <div class="file-input-wrapper">
-                        <button style="background-color:#34c759; width:100%;">SGF読込</button>
-                        <input type="file" id="fileImport" accept=".sgf">
-                    </div>
+
                     <!-- 💡 【新機能】名前をつけて保存に変更 -->
                     <button id="btnExport" style="background-color:#5856d6; flex: 1;">名前をつけて保存</button>
                 </div>
