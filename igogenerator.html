@@ -644,7 +644,8 @@
                     d.style.top = '50%';
                     d.style.left = '50%';
                                         // 盤面サイズに合わせて石の大きさを自動調整（19路:26px, 13路:36px, 9路:48px）
-                    const stonePixelSize = (boardSize === 9) ? '48px' : (boardSize === 13) ? '36px' : '26px';
+                   // 隣の石と重ならない最適なサイズに調整（19路:22px, 13路:32px, 9路:44px）
+                    const stonePixelSize = (boardSize === 9) ? '44px' : (boardSize === 13) ? '32px' : '22px';
                     d.style.width = stonePixelSize;
                     d.style.height = stonePixelSize;
 
@@ -654,7 +655,7 @@
                     if (!stone.isSetup && stone.moveNumber > 0) {
                         if (numberMode === 'all') {
                             d.textContent = stone.moveNumber;
-                            d.style.fontSize = (stone.moveNumber >= 100) ? '10px' : '12px';
+                            d.style.fontSize = (stone.moveNumber >= 100) ? '8.5px' : '10.5px';
                         } else if (numberMode === 'latest' && isLatest) {
                             d.textContent = stone.moveNumber;
                         }
