@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <title>囲碁・棋譜並べ＆解説作成ジェネレーター（完成版）</title>
     <style>
         :root {
@@ -311,6 +312,31 @@
                 text-align: left;
             }
         }
+        /* 📱 スマホ・タブレット画面（横幅900px以下）での自動レイアウト調整 */
+        @media screen and (max-width: 900px) {
+            body { padding: 10px; }
+            .container { flex-direction: column; align-items: center; }
+            .left-panel { flex: none; width: 100%; max-width: 520px; }
+            .board-container-outer { width: 100%; max-width: 94vw; }
+            .right-panel { 
+                flex: none; 
+                width: 100%; 
+                min-width: 0; 
+                max-width: 520px; 
+                grid-template-columns: 1fr; 
+            }
+            .right-panel .status-info,
+            .right-panel .file-buttons,
+            .right-panel > a,
+            .right-panel .panel-section { 
+                grid-column: span 1 !important; 
+            }
+            /* 最上部の対局情報バーもスマホでは1列でスッキリ並べる */
+            div[style*="max-width: 1120px"] > div[style*="grid-template-columns"] {
+                grid-template-columns: 1fr !important;
+                min-width: 0 !important;
+            }
+        }
 
     </style>
 </head>
@@ -318,22 +344,26 @@
 
     <h1>囲碁・棋譜並べ＆解説作成ジェネレーター</h1>
     <p class="subtitle">最新手番号のみ表示・アゲハマ対応・無限手数・両面分割印刷対応</p>
-
-    <!-- 🏁 【最上部エリア】準備・対局ヘッダバー（横幅整理版） -->
-    <div style="width: 100%; max-width: 1120px; background: #fff; border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 15px; margin-bottom: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 15px; align-items: center; justify-content: space-between;">
+    <!-- 🏁 【最上部エリア】準備・対局ヘッダバー（読込＆保存を最上部に横並び配置） -->
+    <div style="width: 100%; max-width: 520px; background: #fff; border: 1px solid #d1d5db; border-radius: 8px; padding: 12px 15px; margin-bottom: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); box-sizing: border-box; display: flex; flex-direction: column; gap: 12px;">
         
-        <!-- 左側：まず最初に「SGF読込」ボタン -->
-
-        <!-- 右側：対局者名・対局日・棋戦名を「2列×2段」でコンパクトに整列 -->
-        <div style="flex: 1; min-width: 300px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 3px 15px; font-size: 13px;">
-                            <!-- 左側：まず最初に「SGF読込」ボタン -->
-                        <button type="button" style="background-color: #2e8b57; padding: 12px 18px; font-size: 14px; display: flex; align-items: center; gap: 6px; white-space: nowrap;">
-                📂 SGF棋譜を読み込む
+        <!-- 1段目：最上部に「SGF読込」と「名前をつけて保存」を横並び配置 -->
+        <div style="display: flex; gap: 10px; width: 100%;">
+            <div style="position: relative; flex: 1;">
+                <button type="button" style="background-color: #2e8b57; width: 100%; padding: 10px 14px; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    📂 SGF棋譜を読み込む
+                </button>
+                <input type="file" id="fileImport" accept=".sgf" style="position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer;">
+            </div>
+            <button id="btnExport" type="button" style="background-color: #5856d6; flex: 1; padding: 10px 14px; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                💾 名前をつけて保存
             </button>
-              <input type="file" id="fileImport" accept=".sgf" style="position: absolute; left: 0; top: 0; 　opacity: 0; width: 100%; height: 100%; cursor: pointer;">
-             <button id="btnExport" style="background-color:#5856d6; flex: 1;">名前をつけて保存</button>
+        </div>
+          </div>
+    <div style="width: 100%; max-width: 620px; background: #fff; border: 1px solid #d1d5db; border-radius: 8px; padding: 12px 15px; margin-bottom: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); box-sizing: border-box; display: flex; flex-direction: column; gap: 12px;">
+        <!-- 2段目：対局者名・対局日・対局結果を整列 -->
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 15px; font-size: 13px;">
             <div style="display: flex; align-items: center; gap: 6px;">
-            
                 <label style="font-weight: bold; color: #111; width: 75px; white-space: nowrap;">⚫ 黒番:</label>
                 <input type="text" id="inputBlackName" placeholder="黒番対局者名" style="flex: 1; min-width: 0; padding: 5px 8px; border: 1px solid #ccc; border-radius: 4px;">
             </div>
@@ -349,18 +379,19 @@
                 <label style="font-weight: bold; color: #333; width: 75px; white-space: nowrap;">🏆 対局結果:</label>
                 <input type="text" id="inputGameEvent" placeholder="棋戦名・結果など" style="flex: 1; min-width: 0; padding: 5px 8px; border: 1px solid #ccc; border-radius: 4px;">
             </div>
-
         </div>
     </div>
 
+
+
     <div class="container">
+        <!-- 左パネル：碁盤と再生コントロール -->
         <div class="left-panel">
             <div class="board-container-outer">
                 <div class="board-wrapper view-all" id="boardWrapper">
                     <div class="labels-row top" id="labelsTop"></div>
                     <div class="labels-row bottom" id="labelsBottom"></div>
                     <div class="labels-col left" id="labelsLeft"></div>
-
                     <div class="labels-col right" id="labelsRight"></div>
                     <div class="board-main">
                         <div class="board-grid" id="boardGrid"></div>
@@ -375,14 +406,14 @@
                 <button id="btnClear" style="background-color:#8e8e93;">全クリア</button>
             </div>
         </div>
-   <!-- ===============================================================-->
-        <!-- 右パネル：各種設定と解説入力（機能拡張版） -->
+
+        <!-- 右パネル：各種設定と解説入力（2列グリッド整列） -->
         <div class="right-panel">
             <div class="status-info" id="statusInfo">現在の手数: 0 手目</div>
             
-            <!-- 👁️ 盤面範囲切り替え -->
+            <!-- 👁️ 盤面範囲・数字表示・サイズ切り替え -->
             <div class="panel-section">
-                <div class="section-title">盤面の表示範囲</div>
+                <div class="section-title">盤面の表示設定</div>
                 <select id="selectView">
                     <option value="view-all">盤面全体 (19路盤総譜用)</option>
                     <option value="view-tr">右上隅</option>
@@ -390,69 +421,60 @@
                     <option value="view-br">右下隅</option>
                     <option value="view-bl">左下隅</option>
                 </select>
-      <div style="margin-top: 8px;">
-                <label style="font-size: 13px; font-weight: bold; color: #333;">手数（数字）の表示：</label>
-                <select id="selectNumberMode" style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #ccc; margin-top: 4px;">
-                    <option value="latest">最新の手のみ数字を表示</option>
-                    <option value="all">すべての石に数字を表示</option>
-                    <option value="none">数字を表示しない</option>
-                </select>
-            </div>
-            <div style="margin-top: 8px;">
-                <label style="font-size: 13px; font-weight: bold; color: #333;">盤面サイズ：</label>
-                <select id="selectBoardSize" style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #ccc; margin-top: 4px;">
-                    <option value="19" selected>19路盤（標準）</option>
-                    <option value="13">13路盤（中盤・詰碁用）</option>
-                    <option value="9">9路盤（入門・詰碁用）</option>
-                </select>
-            </div>
-            </div>
-
-
-
-            <!-- ⏱️ 【新機能】自動再生の速度調節スライダー -->
-            <div class="panel-section">
-                <div class="section-title">自動...
-
-
-            <!-- ⏱️ 【新機能】自動再生の速度調節スライダー -->
-            <div class="panel-section">
-                <div class="section-title">自動再生の速度：<span id="speedDisplay">10</span> 秒 / 1手</div>
-                <input type="range" id="inputSpeed" min="1" max="10" value="10" style="width: 100%; cursor: pointer;">
-            </div>
-
-            <!-- ☖ 手番と新機能ボタン -->
-            <div class="panel-section">
-                <div class="section-title">手番の設定</div>
-                <div class="radio-group" style="margin-bottom: 10px;">
-                    <label><input type="radio" id="colorBlack" name="stoneColor" value="B" checked> <b>黒番</b></label>
-                    <label><input type="radio" id="colorWhite" name="stoneColor" value="W"> <b>白番</b></label>
+                <div style="margin-top: 8px;">
+                    <label style="font-size: 13px; font-weight: bold; color: #333;">手数（数字）の表示：</label>
+                    <select id="selectNumberMode" style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #ccc; margin-top: 4px;">
+                        <option value="latest">最新の手のみ数字を表示</option>
+                        <option value="all">すべての石に数字を表示</option>
+                        <option value="none">数字を表示しない</option>
+                    </select>
                 </div>
-                <!-- 💡 【新機能】ここからの手順を黒1からスタートさせるボタン -->
-                <button id="btnResetToFirst" style="background-color: #ff9500; width: 100%; font-size: 13px; padding: 6px 10px;">🔄 現在の局面から黒1番で並べる</button>
+                <div style="margin-top: 8px;">
+                    <label style="font-size: 13px; font-weight: bold; color: #333;">盤面サイズ：</label>
+                    <select id="selectBoardSize" style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #ccc; margin-top: 4px;">
+                        <option value="19" selected>19路盤（標準）</option>
+                        <option value="13">13路盤（中盤・詰碁用）</option>
+                        <option value="9">9路盤（入門・詰碁用）</option>
+                    </select>
+                </div>
             </div>
 
-            <!-- 📝 解説入力 -->
-            <div class="panel-section" style="flex: 1; display: flex; flex-direction: column;">
+            <!-- ☖ 手番・速度調節エリア -->
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div class="panel-section">
+                    <div class="section-title">手番の設定</div>
+                    <div class="radio-group" style="margin-bottom: 10px;">
+                        <label><input type="radio" id="colorBlack" name="stoneColor" value="B" checked> <b>黒番</b></label>
+                        <label><input type="radio" id="colorWhite" name="stoneColor" value="W"> <b>白番</b></label>
+                    </div>
+                    <button id="btnResetToFirst" style="background-color: #ff9500; width: 100%; font-size: 13px; padding: 8px 10px;">🔄 現在の局面から黒1番で並べる</button>
+                </div>
+
+                <div class="panel-section">
+                    <div class="section-title">自動再生の速度：<span id="speedDisplay">10</span> 秒 / 1手</div>
+                    <input type="range" id="inputSpeed" min="1" max="10" value="10" style="width: 100%; cursor: pointer;">
+                </div>
+            </div>
+
+            <!-- 📝 解説入力（2列ぶち抜きで広く使いやすく） -->
+            <div class="panel-section" style="grid-column: span 2; display: flex; flex-direction: column;">
                 <div class="section-title">この局面（手数）の解説・メモ</div>
                 <textarea class="comment-box" id="commentBox" placeholder="ここに解説を入力してください..."></textarea>
             </div>
-            
-            <!-- 💾 ファイル操作・印刷ボタン類 -->
+
+            <!-- 💾 印刷・説明書・詰碁移動ボタン類 -->
             <div class="file-buttons">
                 <div class="file-row">
-
-                    <!-- 💡 【新機能】名前をつけて保存に変更 -->
-                    <button id="btnExport" style="background-color:#5856d6; flex: 1;">名前をつけて保存</button>
+                    <button id="btnPrint" style="background-color:#e07a5f; flex: 2;">🖨 棋譜の分割印刷 (A4両面最適化)</button>
+                    <button id="btnHelpExport" style="background-color:#107c41; flex: 1;">📄 説明書保存</button>
                 </div>
-                <button id="btnPrint" style="background-color:#e07a5f; width:100%;">🖨 棋譜の分割印刷 (A4両面最適化)</button>
-                            <a href="tsumego.html" target="_blank" rel="noopener noreferrer" style="display: block; background-color: #2e8b57; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); margin-top: 12px;">
-                🧩 囲碁・詰碁＆問題保存庫を開く
-            </a>
-
-                <button id="btnHelpExport" style="background-color:#107c41; width:100%;">📄 説明書保存</button>
+                <a href="tsumego.html" target="_blank" rel="noopener noreferrer" style="display: block; background-color: #2e8b57; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
+                    🧩 囲碁・詰碁＆問題保存庫を開く
+                </a>
             </div>
         </div>
+    </div>
+
 
    <!-- ===============================================================-->
     <!-- 印刷用テンポラリエリア -->
