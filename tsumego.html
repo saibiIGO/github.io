@@ -89,6 +89,23 @@
         .btn-warning { background-color: #d97706; color: #fff; }
         .btn-danger { background-color: #dc2626; color: #fff; padding: 4px 8px; font-size: 11px; }
         .btn-nav { display: block; text-align: center; background-color: #3b82f6; color: #fff; text-decoration: none; padding: 10px; border-radius: 6px; font-weight: bold; font-size: 14px; }
+                /* 📱 スマホ・タブレット画面（横幅900px以下）での自動レイアウト調整 */
+        @media screen and (max-width: 900px) {
+            body { padding: 10px; }
+            .container { flex-direction: column; align-items: center; }
+            .left-panel { flex: none; width: 100%; max-width: 540px; }
+            .board-wrapper { width: 94vw; height: 94vw; max-width: 540px; max-height: 540px; padding: 18px; }
+            .judge-banner { width: 94vw; max-width: 540px; font-size: 14px; }
+            .right-panel { 
+                flex: none; 
+                width: 100%; 
+                min-width: 0; 
+                max-width: 540px; 
+                grid-template-columns: 1fr; 
+            }
+            .right-panel .btn-nav { grid-column: span 1 !important; }
+        }
+
     </style>
 </head>
 <body>
@@ -499,6 +516,81 @@
         }
 
         // 5. 盤面クリック時の処理（解答判定 / 問題図作成 / 正解手順記録）
+        // 🚫 合法手（自殺手・コウ禁止）の事前チェック補助関数
+        function checkLegalMoveTsumego(currentStones, x, y, color, prevBoardStones) {
+            // 1. 仮に石を置いて相手の石が取れるか（applyCaptureで石の数が減るか）確認
+            const testBefore = currentStones.map(s => ({ ...s }));
+            testBefore.push({ x: x, y: y, color: color, moveNum: 999 });
+            const testAfter = applyCapture(testBefore, x, y, color);
+            const capturedCount = testBefore.length - testAfter.length;
+
+            // 2. 相手の石を1つも取れない場合、自分の連に呼吸点（ダメ）が1つ以上あるか確認
+            if (capturedCount === 0) {
+                const visited = new Set();
+                const queue = Array.of({ x: x, y: y });
+                let hasLiberty = false;
+                while (queue.length > 0) {
+                    const curr = queue.shift();
+                    const key = `${curr.x},${curr.y}`;
+                    if (visited.has(key)) continue;
+                    visited.add(key);
+
+                    const dirs = Array.of({ dx: 0, dy: -1 }, { dx: 0, dy: 1 }, { dx: -1, dy: 0 }, { dx: 1, dy: 0 });
+                    for (const d of dirs) {
+                        const nx = curr.x + d.dx, ny = curr.y + d.dy;
+                        if (nx >= 0 && nx < boardSize && ny >= 0 && ny < boardSize) {
+                            const s = testAfter.find(st => st.x === nx && st.y === ny);
+                            if (!s) {
+                                hasLiberty = true;
+                                break;
+                            } else if (s.color === color && !visited.has(`${nx},${ny}`)) {
+                                queue.push({ x: nx, y: ny });
+                            }
+                        }
+                    }
+                    if (hasLiberty) break;
+                }
+                if (!hasLiberty) {
+                    return { valid: false, reason: "🚫 着手禁止点（自殺手）のため打てません！" };
+                }
+            }
+
+            // 3. コウ（同形反復）の即時取り返し禁止チェック（1目抜いて1手前の盤面と完全一致する場合）
+            if (capturedCount === 1 && prevBoardStones) {
+                const isSame = (testAfter.length === prevBoardStones.length) &&
+                    testAfter.every(s1 => prevBoardStones.some(s2 => s1.x === s2.x && s1.y === s2.y && s1.color === s2.color));
+                if (isSame) {
+                    return { valid: false, reason: "🚫 「コウ（劫）」のため、すぐには取り返せません！" };
+                }
+            }
+
+            return { valid: true };
+        }
+
+        // 直前の盤面状態を取得する補助関数（コウ判定用）
+        function getPrevBoardForKo(modeType) {
+            if (modeType === "solve" && currentProblem && solveStepIndex >= 1) {
+                let stones = currentProblem.setup.map(s => ({ x: s.x, y: s.y, color: s.color, moveNum: 0 }));
+                for (let i = 0; i < solveStepIndex - 1; i++) {
+                    const m = currentProblem.solution.at(i);
+                    stones.push({ x: m.x, y: m.y, color: m.color, moveNum: i + 1 });
+                    stones = applyCapture(stones, m.x, m.y, m.color);
+                }
+                return stones;
+            }
+            if (modeType === "record" && tempSolutionMoves.length >= 1) {
+                let stones = tempSetupStones.map(s => ({ x: s.x, y: s.y, color: s.color, moveNum: 0 }));
+                for (let i = 0; i < tempSolutionMoves.length - 1; i++) {
+                    const m = tempSolutionMoves.at(i);
+                    stones.push({ x: m.x, y: m.y, color: m.color, moveNum: i + 1 });
+                    stones = applyCapture(stones, m.x, m.y, m.color);
+                }
+                return stones;
+            }
+            return null;
+        }
+
+        // 5. 盤面クリック時の処理（解答判定 / 問題図作成 / 正解手順記録 ＋ 自殺手・コウ禁止対応）
         function onBoardClick(e) {
             e.stopPropagation();
             const x = parseInt(this.dataset.x, 10);
@@ -523,6 +615,11 @@
                 const nextNum = tempSolutionMoves.length + 1;
                 const turnColor = (nextNum % 2 === 1) ? 'B' : 'W';
 
+                // 🚫 自殺手・コウ禁止チェック
+                const prevBoard = getPrevBoardForKo("record");
+                const check = checkLegalMoveTsumego(boardStones, x, y, turnColor, prevBoard);
+                if (!check.valid) return alert(check.reason);
+
                 boardStones.push({ x: x, y: y, color: turnColor, moveNum: nextNum });
                 boardStones = applyCapture(boardStones, x, y, turnColor);
                 tempSolutionMoves.push({ x: x, y: y, color: turnColor });
@@ -537,6 +634,14 @@
                 if (!currentProblem) return alert("右側の「問題保存庫」から問題を選んでください。");
                 if (isSolved) return;
                 if (existing) return;
+
+                // 🚫 自殺手・コウ禁止チェック（違反手は盤面に置かず赤バナーで注意喚起）
+                const prevBoard = getPrevBoardForKo("solve");
+                const check = checkLegalMoveTsumego(boardStones, x, y, 'B', prevBoard);
+                if (!check.valid) {
+                    setBanner(check.reason, "judge-wrong");
+                    return;
+                }
 
                 const expectedMove = currentProblem.solution.at(solveStepIndex);
                 if (!expectedMove) return;
@@ -580,7 +685,6 @@
                     // 不正解の場合：赤バナーを表示し、0.9秒後に1手前の盤面へ自動復元
                     setBanner("❌ 不正解（失敗）です！別の手を考えてみましょう。", "judge-wrong");
                     setTimeout(() => {
-                        // 問題図から現在の正解手数（solveStepIndex）まで盤面を再構築して戻す
                         rebuildBoardToStep(solveStepIndex);
                         renderBoard();
                         setBanner(`【再挑戦】${currentProblem.title}（${solveStepIndex + 1}手目・黒番）`, "judge-normal");
@@ -588,6 +692,7 @@
                 }
             }
         }
+
 
         // 指定ステップまでの盤面を再構築する補助関数
         function rebuildBoardToStep(stepCount) {
