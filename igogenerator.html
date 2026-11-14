@@ -337,6 +337,113 @@
                 min-width: 0 !important;
             }
         }
+        /* ========================================================
+           🖨️ A4全面（1枚）直接印刷用レイアウト設定
+           ======================================================== */
+        @media print {
+            @page {
+                size: A4 portrait; /* A4横向きにしたい場合は portrait を landscape に変更 */
+                margin: 10mm;
+            }
+
+            /* 印刷時に不要な操作ボタン・設定パネル・タイマー・リンクを隠す */
+            button,
+            .controls,
+            .timer-bar,
+            .file-buttons,
+            .subtitle,
+            .right-panel > a,
+            .right-panel > .panel-section:first-of-type,
+            .right-panel > div:not(.panel-section):not(.status-info) {
+                display: none !important;
+            }
+
+            /* SGF読込ボタンの透明inputも念のため非表示 */
+            #fileImport {
+                display: none !important;
+            }
+
+            /* 全体の背景を白にし、A4サイズに収まるよう調整 */
+            body {
+                background-color: #ffffff !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                zoom: 88%; /* もし2ページ目に少しはみ出る場合は 80% に下げてください */
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            h1 {
+                font-size: 18px !important;
+                margin: 0 0 10px 0 !important;
+                text-align: center;
+            }
+
+            /* 上部のボタン枠を隠し、対局者情報枠だけを横幅いっぱいに整える */
+            body > div:first-of-type {
+                display: none !important;
+            }
+            body > div:nth-of-type(2) {
+                max-width: 100% !important;
+                width: 100% !important;
+                box-shadow: none !important;
+                border: 1px solid #888 !important;
+                margin-bottom: 12px !important;
+            }
+
+            /* 碁盤（上）と解説（下）を縦並びにしてA4全面に収める */
+            .container {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                width: 100% !important;
+                gap: 12px !important;
+            }
+
+            .left-panel {
+                flex: none !important;
+                width: 460px !important; /* A4縦に綺麗に収まる盤面サイズ */
+                max-width: 460px !important;
+            }
+
+            .board-container-outer {
+                box-shadow: none !important;
+                max-width: 460px !important;
+            }
+
+            .right-panel {
+                display: flex !important;
+                flex-direction: column !important;
+                width: 100% !important;
+                min-width: 100% !important;
+                max-width: 100% !important;
+                gap: 8px !important;
+            }
+
+            .status-info {
+                font-size: 15px !important;
+                padding: 6px !important;
+                border: 1px solid #ccc !important;
+                background-color: #f8f8f8 !important;
+            }
+
+            /* 解説欄をA4の下半分に広く表示 */
+            .panel-section {
+                border: 1px solid #888 !important;
+                background-color: #ffffff !important;
+                padding: 10px !important;
+            }
+
+            .comment-box {
+                width: 100% !important;
+                min-height: 160px !important;
+                border: none !important;
+                font-size: 14px !important;
+                line-height: 1.5 !important;
+                resize: none !important;
+                box-sizing: border-box !important;
+            }
+        }
 
     </style>
 </head>
@@ -358,6 +465,11 @@
             <button id="btnExport" type="button" style="background-color: #5856d6; flex: 1; padding: 10px 14px; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 6px;">
                 💾 名前をつけて保存
             </button>
+            <!-- 直接印刷ボタン -->
+<button onclick="window.print()" style="padding: 10px 20px; font-size: 14px; cursor: pointer; border: 1px solid #003366; background-color: #0056b3; color: white; border-radius: 4px; font-weight: bold; transition: 0.2s;">
+  🖨️ このページを直接印刷する
+</button>
+
         </div>
           </div>
     <div style="width: 100%; max-width: 620px; background: #fff; border: 1px solid #d1d5db; border-radius: 8px; padding: 12px 15px; margin-bottom: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); box-sizing: border-box; display: flex; flex-direction: column; gap: 12px;">
