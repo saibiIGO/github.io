@@ -721,6 +721,8 @@
 
         // 2. 着手および抜き跡（アゲハマ）処理
         // 2. 着手および自動取り上げ（アゲハマ）処理
+        // 2. 着手および自動取り上げ（アゲハマ）・着手禁止点（自殺手）ブロック処理
+        // 2. 着手および自動取り上げ（アゲハマ）・着手禁止点（自殺手・コウ）ブロック処理
         function onIntersectionClick(e) {
             e.stopPropagation();
             if (isPlaying) stopAutoPlay();
@@ -728,6 +730,7 @@
             const currentBoardStones = getBoardStateAt(currentHand);
             const existingStone = currentBoardStones.find(s => s.x === x && s.y === y);
             
+            const backupMoves = [...moves]; // 違反手だった場合に元に戻すための控え
             if (currentHand < moves.length) { moves = moves.slice(0, currentHand); }
 
             // すでに石がある場所をクリックした場合は、手動で取り除く（従来の機能も維持）
@@ -751,9 +754,7 @@
 
                 let capturedStones = new Array();
                 neighbors.forEach(n => {
- 
-              // 修正前：if (n.nx >= 0 && n.nx < 19 && n.ny >= 0 && n.ny < 19) {  
-                    if (n.nx >= 0 && n.nx < 19 && n.ny >= 0 && n.ny < boardSize) {
+                    if (n.nx >= 0 && n.nx < boardSize && n.ny >= 0 && n.ny < boardSize) {
                         const target = updatedStones.find(s => s.x === n.nx && s.y === n.ny && s.color === opponentColor);
                         if (target) {
                             const groupInfo = checkGroupLiberties(n.nx, n.ny, opponentColor, updatedStones);
@@ -768,10 +769,41 @@
                     }
                 });
 
-                // 3. 呼吸点がゼロになった相手の石をすべて取り上げる（履歴に抜き跡を追加）
+                // 🚫 3. 着手禁止点（自殺手）のチェック
+                if (capturedStones.length === 0) {
+                    const myGroupInfo = checkGroupLiberties(x, y, color, updatedStones);
+                    if (myGroupInfo.liberties === 0) {
+                        moves = backupMoves;
+                        alert("ここは着手禁止点（自殺手）のため打てません。");
+                        return;
+                    }
+                }
+
+                // 4. 呼吸点がゼロになった相手の石をすべて取り上げる（履歴に抜き跡を追加）
                 capturedStones.forEach(cStone => {
                     moves.push({ x: cStone.x, y: cStone.y, color: cStone.color, comment: "", isRemove: true, isSetup: false });
                 });
+
+                // 🚫 5. コウ（同形反復）の即時取り返しチェック
+                // 1目だけ抜いた結果、1手前の盤面とまったく同じ石の配置に戻ってしまった場合はコウ違反
+                if (capturedStones.length === 1 && currentHand >= 1) {
+                    // 最新の盤面（抜き跡反映後）と、直前の着手前（1手前）の盤面を比較する
+                    let prevMoveIndex = currentHand - 1;
+                    while (prevMoveIndex > 0 && moves[prevMoveIndex].isRemove) {
+                        prevMoveIndex--;
+                    }
+                    const afterBoard = getBoardStateAt(moves.length);
+                    const beforePrevBoard = getBoardStateAt(prevMoveIndex);
+
+                    const isSameBoard = (afterBoard.length === beforePrevBoard.length) &&
+                        afterBoard.every(s1 => beforePrevBoard.some(s2 => s1.x === s2.x && s1.y === s2.y && s1.color === s2.color));
+
+                    if (isSameBoard) {
+                        moves = backupMoves;
+                        alert("ここは「コウ（劫）」のため、すぐには取り返せません。コウダテを打ってから取り返してください。");
+                        return;
+                    }
+                }
 
                 // 手番を交代
                 if (color === 'B') { document.getElementById('colorWhite').checked = true; }
@@ -780,6 +812,7 @@
             currentHand = moves.length;
             render();
         }
+
 
         // 石の連（グループ）と呼吸点（ダメ）の数を調べる関数
         function checkGroupLiberties(startX, startY, color, boardStones) {
