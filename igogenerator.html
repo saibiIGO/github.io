@@ -338,60 +338,60 @@
             }
         }
         /* ========================================================
-           🖨️ A4全面（1枚）直接印刷用レイアウト設定
+           🖨️ A4全面（1枚）直接印刷用レイアウト設定（修正版）
            ======================================================== */
         @media print {
             @page {
-                size: A4 portrait; /* A4横向きにしたい場合は portrait を landscape に変更 */
+                size: A4 portrait;
                 margin: 10mm;
             }
 
-            /* 印刷時に不要な操作ボタン・設定パネル・タイマー・リンクを隠す */
-            button,
-            .controls,
-            .timer-bar,
-            .file-buttons,
-            .subtitle,
-            .right-panel > a,
-            .right-panel > .panel-section:first-of-type,
-            .right-panel > div:not(.panel-section):not(.status-info) {
-                display: none !important;
-            }
-
-            /* SGF読込ボタンの透明inputも念のため非表示 */
-            #fileImport {
-                display: none !important;
-            }
-
-            /* 全体の背景を白にし、A4サイズに収まるよう調整 */
-            body {
-                background-color: #ffffff !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                zoom: 88%; /* もし2ページ目に少しはみ出る場合は 80% に下げてください */
+            /* 背景色（碁盤の色・黒石・白石）を強制的に印刷させる */
+            * {
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
 
+            body {
+                background-color: #ffffff !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+            }
+
             h1 {
                 font-size: 18px !important;
-                margin: 0 0 10px 0 !important;
+                margin: 0 0 8px 0 !important;
                 text-align: center;
             }
 
-            /* 上部のボタン枠を隠し、対局者情報枠だけを横幅いっぱいに整える */
-            body > div:first-of-type {
+            /* 印刷時に不要な要素を徹底的に隠す */
+            .subtitle,
+            button,
+            input[type="file"],
+            .timer-bar,
+            .controls,
+            .file-buttons,
+            .right-panel > a,
+            .right-panel > div:not(.status-info):not(:has(#commentBox)) {
+                display: none !important;
+            }
+
+            /* 上部1段目のボタンバーを隠し、2段目の対局者情報だけを表示 */
+            body > div:nth-of-type(1) {
                 display: none !important;
             }
             body > div:nth-of-type(2) {
+                display: flex !important;
                 max-width: 100% !important;
                 width: 100% !important;
                 box-shadow: none !important;
                 border: 1px solid #888 !important;
                 margin-bottom: 12px !important;
+                padding: 8px 12px !important;
             }
 
-            /* 碁盤（上）と解説（下）を縦並びにしてA4全面に収める */
+            /* 全体コンテナを縦並びにする */
             .container {
                 display: flex !important;
                 flex-direction: column !important;
@@ -400,17 +400,36 @@
                 gap: 12px !important;
             }
 
+            /* ★重要：碁盤パネルと碁盤そのものの幅・高さを数値で固定して確実に表示 */
             .left-panel {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                width: 460px !important;
+                height: auto !important;
                 flex: none !important;
-                width: 460px !important; /* A4縦に綺麗に収まる盤面サイズ */
-                max-width: 460px !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
             }
 
             .board-container-outer {
-                box-shadow: none !important;
+                display: block !important;
+                width: 460px !important;
+                height: 460px !important; /* aspect-ratioの代わりに高さを明示 */
                 max-width: 460px !important;
+                box-shadow: none !important;
+                border: 4px solid #6e4e03 !important;
+                background-color: var(--board-color) !important;
+                position: relative !important;
             }
 
+            .board-wrapper {
+                display: block !important;
+                width: 100% !important;
+                height: 100% !important;
+            }
+
+            /* 右パネル（手数情報と解説欄のみ表示） */
             .right-panel {
                 display: flex !important;
                 flex-direction: column !important;
@@ -421,22 +440,28 @@
             }
 
             .status-info {
+                display: block !important;
                 font-size: 15px !important;
                 padding: 6px !important;
-                border: 1px solid #ccc !important;
-                background-color: #f8f8f8 !important;
+                border: 1px solid #888 !important;
+                background-color: #f4f4f4 !important;
             }
 
-            /* 解説欄をA4の下半分に広く表示 */
-            .panel-section {
+            /* 解説欄のボックス */
+            .right-panel > div:has(#commentBox) {
+                display: flex !important;
+                flex-direction: column !important;
+                width: 100% !important;
                 border: 1px solid #888 !important;
                 background-color: #ffffff !important;
                 padding: 10px !important;
+                box-sizing: border-box !important;
             }
 
             .comment-box {
+                display: block !important;
                 width: 100% !important;
-                min-height: 160px !important;
+                height: 180px !important;
                 border: none !important;
                 font-size: 14px !important;
                 line-height: 1.5 !important;
