@@ -264,13 +264,23 @@
             </div>
 
             <!-- 2. SGFファイルのインポート -->
+            <!-- 2. SGFファイルの読込＆保存（全OS共通フォーマット） -->
             <div class="panel-section">
-                <div class="section-title">📂 SGFファイルから保存庫へ登録</div>
+                <div class="section-title">📂 SGFファイル読込・保存（全OS共通）</div>
                 <div style="font-size: 12px; color: #475569; margin-bottom: 8px;">
-                    外部の詰碁SGFファイルを読み込んで保存庫に追加できます。
+                    問題図＋正解手順を標準SGF形式で保存・読込できます。
                 </div>
-                <input type="file" id="fileImportSgf" accept=".sgf" style="font-size: 12px; width: 100%;">
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="position: relative;">
+                        <button type="button" class="btn-primary" style="width: 100%;">📥 SGFファイルから保存庫へ読込</button>
+                        <input type="file" id="fileImportSgf" accept=".sgf" style="position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer;">
+                    </div>
+                    <button type="button" id="btnExportProblemSgf" class="btn-secondary" style="width: 100%; background-color: #5856d6;">
+                        📤 出題中の問題をSGFで保存
+                    </button>
+                </div>
             </div>
+
 
             <!-- 3. 問題保存庫（2列カードでコンパクトに表示） -->
             <div class="panel-section" style="grid-column: span 2;">
@@ -970,6 +980,129 @@
             } else {
                 initBoard();
             }
+        });
+        // 📤 出題中の問題（問題図＋正解手順＋タイトル）を国際標準SGF形式で書き出し
+        document.getElementById('btnExportProblemSgf')?.addEventListener('click', () => {
+            if (!currentProblem) return alert("保存したい問題を保存庫から選択（出題）してください。");
+
+            const sz = currentProblem.size || 9;
+            const title = currentProblem.title || "tsumego";
+            let sgf = `(;GM[1]FF[4]CA[UTF-8]AP[GoTsumegoLibrary]SZ[${sz}]GN[${title.replace(/\]/g, "\\]")}]\n`;
+
+            // 初期配置石（問題図）の書き出し
+            const setupB = currentProblem.setup.filter(s => s.color === 'B');
+            const setupW = currentProblem.setup.filter(s => s.color === 'W');
+            if (setupB.length > 0) {
+                sgf += "AB" + setupB.map(s => "[" + SGF_CHARS.charAt(s.x) + SGF_CHARS.charAt(s.y) + "]").join("") + "\n";
+            }
+            if (setupW.length > 0) {
+                sgf += "AW" + setupW.map(s => "[" + SGF_CHARS.charAt(s.x) + SGF_CHARS.charAt(s.y) + "]").join("") + "\n";
+            }
+
+            // 正解手順の書き出し
+            currentProblem.solution.forEach(m => {
+                sgf += `;${m.color}[${SGF_CHARS.charAt(m.x)}${SGF_CHARS.charAt(m.y)}]`;
+            });
+            sgf += "\n)";
+
+            const defaultFileName = title.replace(/[\\/:*?"<>|]/g, "_") + ".sgf";
+            const fileName = prompt("保存するSGFファイル名を入力してください：", defaultFileName);
+            if (!fileName) return;
+            const finalName = fileName.toLowerCase().endsWith(".sgf") ? fileName : fileName + ".sgf";
+
+            const blob = new Blob(Array.of(sgf), { type: "application/x-go-sgf;charset=utf-8" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = finalName;
+            link.click();
+            URL.revokeObjectURL(link.href);
+        });
+
+        // 📥 SGFファイルから「問題図＋正解手順＋タイトル」を読み込んで保存庫に自動登録
+        document.getElementById('fileImportSgf')?.addEventListener('change', function(e) {
+            const file = e.target.files.at(0);
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const sgf = evt.target.result;
+                const szMatch = /SZ\[(\d+)\]/i.exec(sgf);
+                const parsedSize = szMatch ? parseInt(szMatch.at(1), 10) : 9;
+                const gnMatch = /GN\[([^\]]*)\]/i.exec(sgf);
+                const parsedTitle = gnMatch ? gnMatch.at(1) : file.name.replace(/\.sgf$/i, "");
+
+                const setupStones = new Array();
+                // AB[...]（黒の初期配置）の解析
+                const abRegex = /AB((?:\[[a-s]{2}\])+)/gi;
+                let abMatch;
+                while ((abMatch = abRegex.exec(sgf)) !== null) {
+                    const coords = abMatch.at(1).match(/\[([a-s]{2})\]/gi);
+                    if (coords) {
+                        coords.forEach(c => {
+                            const x = SGF_CHARS.indexOf(c.charAt(1).toLowerCase());
+                            const y = SGF_CHARS.indexOf(c.charAt(2).toLowerCase());
+                            if (x >= 0 && y >= 0) setupStones.push({ x, y, color: 'B' });
+                        });
+                    }
+                }
+                // AW[...]（白の初期配置）の解析
+                const awRegex = /AW((?:\[[a-s]{2}\])+)/gi;
+                let awMatch;
+                while ((awMatch = awRegex.exec(sgf)) !== null) {
+                    const coords = awMatch.at(1).match(/\[([a-s]{2})\]/gi);
+                    if (coords) {
+                        coords.forEach(c => {
+                            const x = SGF_CHARS.indexOf(c.charAt(1).toLowerCase());
+                            const y = SGF_CHARS.indexOf(c.charAt(2).toLowerCase());
+                            if (x >= 0 && y >= 0) setupStones.push({ x, y, color: 'W' });
+                        });
+                    }
+                }
+
+                // ;B[..] / ;W[..]（正解手順）の解析
+                const solutionMoves = new Array();
+                const moveRegex = /;([BW])\[([a-s]{2})\]/gi;
+                let mMatch;
+                while ((mMatch = moveRegex.exec(sgf)) !== null) {
+                    const color = mMatch.at(1).toUpperCase();
+                    const x = SGF_CHARS.indexOf(mMatch.at(2).charAt(0).toLowerCase());
+                    const y = SGF_CHARS.indexOf(mMatch.at(2).charAt(1).toLowerCase());
+                    if (x >= 0 && y >= 0) solutionMoves.push({ x, y, color });
+                }
+
+                if (setupStones.length === 0 && solutionMoves.length === 0) {
+                    alert("有効な碁石データが見つかりませんでした。");
+                    return;
+                }
+
+                // 正解手順が含まれているSGFなら、そのまま問題保存庫に登録して即出題！
+                if (solutionMoves.length > 0) {
+                    const newProb = {
+                        id: "sgf_" + Date.now(),
+                        title: parsedTitle,
+                        isMust: false,
+                        size: parsedSize,
+                        setup: setupStones,
+                        solution: solutionMoves
+                    };
+                    library.unshift(newProb);
+                    saveLibrary();
+                    startProblem(newProb);
+                    alert(`SGF問題「${parsedTitle}」（正解${solutionMoves.length}手）を保存庫に登録しました！`);
+                } else {
+                    // 問題図だけのSGFなら、問題作成モードで盤面に並べて正解入力へ誘導
+                    mode = "setup";
+                    currentProblem = null;
+                    boardSize = parsedSize;
+                    if (createBoardSize) createBoardSize.value = String(parsedSize);
+                    boardStones = setupStones.map(s => ({ x: s.x, y: s.y, color: s.color, moveNum: 0 }));
+                    saveFormArea.style.display = "none";
+                    initBoard();
+                    setBanner(`SGF問題図「${parsedTitle}」を読み込みました。「②正解手順を打ち込む」を押してください`, "judge-create");
+                }
+            };
+            reader.readAsText(file);
+            e.target.value = "";
         });
 
    </script>
