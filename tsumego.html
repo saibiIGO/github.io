@@ -15,8 +15,22 @@
 
         
         /* 左パネル：碁盤エリア */
+
+        /* 左パネル：碁盤エリア */
         .left-panel { display: flex; flex-direction: column; align-items: center; }
-        .board-wrapper { position: relative; width: 540px; height: 540px; background-color: #dcbc7c; border: 3px solid #6e4e03; border-radius: 4px; box-shadow: 0 6px 15px rgba(0,0,0,0.2); padding: 25px; box-sizing: border-box; user-select: none; overflow: hidden; }
+        .board-wrapper {
+            position: relative;
+            width: 520px;
+            height: 520px;
+            background-color: var(--board-color);
+            border: 4px solid #6e4e03;
+            border-radius: 4px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+            padding: 25px;
+            box-sizing: border-box;
+            user-select: none;
+            overflow: hidden;
+        }
         .board-grid { position: relative; width: 100%; height: 100%; display: grid; border-top: 1px solid #000; border-left: 1px solid #000; box-sizing: border-box; }
         .intersection { position: relative; border-right: 1px solid #000; border-bottom: 1px solid #000; box-sizing: border-box; }
         
@@ -31,21 +45,23 @@
         /* 星（ホシ） */
         .hoshi-dot { position: absolute; width: 8px; height: 8px; background-color: #000; border-radius: 50%; pointer-events: none; z-index: 2; }
         
-        /* 碁石 */
+        /* 碁石（JavaScript側のサイズ計算と完全一致する純正スタイル） */
         .stone { position: absolute; border-radius: 50%; z-index: 10; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 2px 2px 4px rgba(0,0,0,0.4); pointer-events: none; }
         .stone.black { background: radial-gradient(circle at 30% 30%, #555, #000); color: #fff; }
         .stone.white { background: radial-gradient(circle at 30% 30%, #fff, #ddd); color: #000; border: 1px solid #999; }
         .stone.latest { outline: 2px solid #ff3b30; }
 
-        /* 座標ラベル */
+        /* 座標ラベル（A B C / 9 8 7 が格子線の真上にピタリと並ぶ純正位置） */
         .coord-labels { position: absolute; font-size: 11px; font-weight: bold; color: #5a3e00; pointer-events: none; }
         .labels-top { top: 6px; left: 25px; right: 25px; display: flex; justify-content: space-between; }
         .labels-bottom { bottom: 6px; left: 25px; right: 25px; display: flex; justify-content: space-between; }
         .labels-left { left: 7px; top: 25px; bottom: 25px; display: flex; flex-direction: column; justify-content: space-between; }
         .labels-right { right: 7px; top: 25px; bottom: 25px; display: flex; flex-direction: column; justify-content: space-between; }
+        .labels-top span, .labels-bottom span { width: 0; display: flex; justify-content: center; overflow: visible; }
+        .labels-left span, .labels-right span { height: 0; display: flex; align-items: center; overflow: visible; }
 
         /* 判定メッセージバナー */
-        .judge-banner { width: 540px; margin-top: 12px; padding: 12px 15px; border-radius: 6px; font-size: 16px; font-weight: bold; text-align: center; box-sizing: border-box; transition: all 0.2s; }
+        .judge-banner { width: 520px; margin-top: 12px; padding: 12px 15px; border-radius: 6px; font-size: 16px; font-weight: bold; text-align: center; box-sizing: border-box; transition: all 0.2s; }
         .judge-normal { background-color: #e8eef5; color: #2c3e50; border: 1px solid #cbd5e1; }
         .judge-correct { background-color: #dcfce7; color: #166534; border: 2px solid #22c55e; }
         .judge-wrong { background-color: #fee2e2; color: #991b1b; border: 2px solid #ef4444; }
@@ -89,21 +105,96 @@
         .btn-warning { background-color: #d97706; color: #fff; }
         .btn-danger { background-color: #dc2626; color: #fff; padding: 4px 8px; font-size: 11px; }
         .btn-nav { display: block; text-align: center; background-color: #3b82f6; color: #fff; text-decoration: none; padding: 10px; border-radius: 6px; font-weight: bold; font-size: 14px; }
-                /* 📱 スマホ・タブレット画面（横幅900px以下）での自動レイアウト調整 */
-        @media screen and (max-width: 900px) {
+        /* 📱 スマホ・タブレット画面（横幅900px以下）での自動レイアウト調整その後以下に書き換え */
+        /* 📚 問題保存庫リストをコンパクトな2列グリッドにし、縦長を防ぐ */
+        #libraryList {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            max-height: 240px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        /* 保存庫パネル全体を右パネルの横幅いっぱいに広げて2列カードをゆったり見せる */
+        .right-panel > .panel-section:first-child {
+            grid-column: span 2;
+        }
+        .problem-card {
+            margin-bottom: 0 !important;
+            padding: 8px 10px !important;
+        }
+
+        /* 📱 タブレット画面（横幅601px〜1024px）の能率的レイアウト */
+        @media screen and (max-width: 1024px) and (min-width: 601px) {
+            body { padding: 12px; }
+            .container { flex-direction: column; align-items: center; }
+            .left-panel { flex: none; width: 100%; max-width: 520px; }
+            .board-wrapper { width: 480px; height: 480px; }
+            .judge-banner { width: 480px; font-size: 14px; }
+            /* タブレットでは操作パネルを「2列」で並べて縦長を防止 */
+            .right-panel {
+                flex: none;
+                width: 100%;
+                min-width: 0;
+                max-width: 720px;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+            .right-panel > .panel-section:first-child,
+            .right-panel > div[style*="grid-column: span 2"],
+            .right-panel .btn-nav {
+                grid-column: span 2 !important;
+            }
+        }
+
+        /* 📱 スマホ画面（横幅600px以下）の縦1列レイアウト */
+        /* 📱 タブレット画面（横幅601px〜1024px）の能率的レイアウト */
+        @media screen and (max-width: 1024px) and (min-width: 601px) {
+            body { padding: 12px; }
+            .container { flex-direction: column; align-items: center; }
+            .left-panel { flex: none; width: 100%; max-width: 520px; }
+            .board-wrapper { width: 480px; height: 480px; padding: 25px; }
+            .judge-banner { width: 480px; font-size: 14px; }
+            .right-panel {
+                flex: none;
+                width: 100%;
+                min-width: 0;
+                max-width: 720px;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+            .right-panel > .panel-section:first-child,
+            .right-panel > div[style*="grid-column: span 2"],
+            .right-panel .btn-nav {
+                grid-column: span 2 !important;
+            }
+        }
+
+        /* 📱 スマホ画面（横幅600px以下）の縦1列レイアウト */
+        @media screen and (max-width: 600px) {
             body { padding: 10px; }
             .container { flex-direction: column; align-items: center; }
-            .left-panel { flex: none; width: 100%; max-width: 540px; }
-            .board-wrapper { width: 94vw; height: 94vw; max-width: 540px; max-height: 540px; padding: 18px; }
-            .judge-banner { width: 94vw; max-width: 540px; font-size: 14px; }
+            .left-panel { flex: none; width: 100%; max-width: 520px; }
+            .board-wrapper { width: 94vw; height: 94vw; max-width: 520px; max-height: 520px; padding: 20px; }
+            .labels-top, .labels-bottom { left: 20px; right: 20px; }
+            .labels-left, .labels-right { top: 20px; bottom: 20px; }
+            .judge-banner { width: 94vw; max-width: 520px; font-size: 13px; }
             .right-panel { 
                 flex: none; 
                 width: 100%; 
                 min-width: 0; 
-                max-width: 540px; 
+                max-width: 520px; 
                 grid-template-columns: 1fr; 
             }
-            .right-panel .btn-nav { grid-column: span 1 !important; }
+            #libraryList {
+                grid-template-columns: 1fr;
+                max-height: 220px;
+            }
+            .right-panel > .panel-section:first-child,
+            .right-panel > div[style*="grid-column: span 2"],
+            .right-panel .btn-nav { 
+                grid-column: span 1 !important; 
+            }
         }
 
     </style>
@@ -438,9 +529,15 @@
             parentCell.appendChild(target);
         }
         // 3. 盤面の石と手数の描画処理
+        // 3. 盤面の石と手数の描画処理（パソコン・タブレット・スマホのどの盤面幅でも自動フィット）
         function renderBoard() {
             boardGrid.querySelectorAll('.stone').forEach(s => s.remove());
-            const stonePixelSize = (boardSize === 9) ? '48px' : (boardSize === 13) ? '36px' : '26px';
+            
+            // 現在の実際の盤面（格子エリア）の横幅から、1マスの90%の大きさを自動計算
+            const gridWidth = boardGrid.clientWidth || 460;
+            const cellStep = gridWidth / (boardSize - 1);
+            const dynamicStoneSize = Math.floor(cellStep * 0.90) + 'px';
+            const dynamicFontSize = Math.max(10, Math.floor(cellStep * 0.36)) + 'px';
 
             let maxMove = 0;
             boardStones.forEach(s => { if (s.moveNum > maxMove) maxMove = s.moveNum; });
@@ -451,20 +548,26 @@
                     const d = document.createElement('div');
                     const isLatest = (stone.moveNum > 0 && stone.moveNum === maxMove);
                     d.className = 'stone ' + (stone.color === 'B' ? 'black' : 'white') + (isLatest ? ' latest' : '');
-                    d.style.width = stonePixelSize;
-                    d.style.height = stonePixelSize;
+                    d.style.width = dynamicStoneSize;
+                    d.style.height = dynamicStoneSize;
                     d.style.top = '50%';
                     d.style.left = '50%';
                     d.style.transform = 'translate(-50%, -50%)';
 
                     if (stone.moveNum > 0) {
                         d.textContent = stone.moveNum;
-                        d.style.fontSize = (boardSize === 9) ? '16px' : (boardSize === 13) ? '13px' : '11px';
+                        d.style.fontSize = dynamicFontSize;
                     }
                     target.appendChild(d);
                 }
             });
         }
+
+        // 画面の向きやウィンドウサイズが変わったときも石の大きさを即座に再計算
+        window.addEventListener('resize', () => {
+            if (typeof renderBoard === 'function') renderBoard();
+        });
+
 
         // アゲハマ（呼吸点ゼロの石の自動取り上げ）計算ロジック
         function applyCapture(stonesList, lastX, lastY, placedColor) {
