@@ -274,6 +274,17 @@
                 </div>
                 <div id="saveFormArea" style="display: none; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #cbd5e1;">
                     <input type="text" id="inputProblemTitle" placeholder="問題タイトル（例：必須・隅の死活 第1問）" style="width: 100%; padding: 6px; box-sizing: border-box; margin-bottom: 6px;">
+                                       <div style="margin-bottom: 6px; font-size: 12px;">
+                        <label style="font-weight: bold; color: #334155;">難易度：</label>
+                        <select id="selectProblemLevel" style="width: 100%; padding: 5px; margin-top: 2px; border: 1px solid #cbd5e1; border-radius: 4px;">
+                            <option value="初級（8〜10級）" selected>初級（8〜10級）</option>
+                            <option value="中級（4〜7級）">中級（4〜7級）</option>
+                            <option value="上級（1〜3級）">上級（1〜3級）</option>
+                            <option value="有段者">有段者</option>
+                            <option value="プロ級">プロ級</option>
+                        </select>
+                    </div>
+ 
                     <label style="font-size: 12px; display: block; margin-bottom: 8px;">
                         <input type="checkbox" id="chkIsMust" checked> 「必須」バッジを付ける
                     </label>
@@ -301,12 +312,24 @@
                     </button>
                </div>
             </div>
-            <!-- 3. 問題保存庫（2列カードでコンパクトに表示） -->
+                            <!-- 3. 問題保存庫（2列カードでコンパクトに表示） -->
             <div class="panel-section" style="grid-column: span 2;">
                 <div class="section-title">
                     <span>📚 問題保存庫（クリックで出題）</span>
                     <button class="btn-secondary" id="btnResetDefault" style="font-size: 11px; padding: 4px 8px;">初期問題を追加復元</button>
                 </div>
+                <!-- 🏷️ 難易度別フィルタータブ（生徒画面でも操作可能） -->
+                <div id="levelFilterBar" style="display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px;">
+                    <button type="button" class="level-tab active" data-level="ALL" style="padding: 4px 8px; font-size: 11px; border-radius: 4px; background: #2e8b57; color: #fff;">すべて</button>
+                    <button type="button" class="level-tab" data-level="初級（8〜10級）" style="padding: 4px 8px; font-size: 11px; border-radius: 4px; background: #e2e8f0; color: #334155;">初級（8〜10級）</button>
+                    <button type="button" class="level-tab" data-level="中級（4〜7級）" style="padding: 4px 8px; font-size: 11px; border-radius: 4px; background: #e2e8f0; color: #334155;">中級（4〜7級）</button>
+                    <button type="button" class="level-tab" data-level="上級（1〜3級）" style="padding: 4px 8px; font-size: 11px; border-radius: 4px; background: #e2e8f0; color: #334155;">上級（1〜3級）</button>
+                    <button type="button" class="level-tab" data-level="有段者" style="padding: 4px 8px; font-size: 11px; border-radius: 4px; background: #e2e8f0; color: #334155;">有段者</button>
+                    <button type="button" class="level-tab" data-level="プロ級" style="padding: 4px 8px; font-size: 11px; border-radius: 4px; background: #e2e8f0; color: #334155;">プロ級</button>
+                </div>
+                <div class="library-list" id="libraryList"></div>
+            </div>
+
                 <div class="library-list" id="libraryList"></div>
             </div>
 
@@ -420,14 +443,34 @@
         }
 
         // 保存庫リストの画面描画
+        let currentLevelFilter = "ALL"; // 現在選択中の難易度フィルター
+
+        // 難易度タブのクリック切り替え処理
+        document.querySelectorAll('#levelFilterBar .level-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                currentLevelFilter = tab.dataset.level;
+                document.querySelectorAll('#levelFilterBar .level-tab').forEach(t => {
+                    const isSelected = (t === tab);
+                    t.style.background = isSelected ? '#2e8b57' : '#e2e8f0';
+                    t.style.color = isSelected ? '#fff' : '#334155';
+                });
+                renderLibraryList();
+            });
+        });
+
+        // 保存庫リストの画面描画（難易度別絞り込み＆バッジ表示対応）
         function renderLibraryList() {
             libraryList.innerHTML = '';
-            if (library.length === 0) {
-                libraryList.innerHTML = '<div style="padding:10px; font-size:12px; color:#666; text-align:center;">問題がありません。「初期問題を追加復元」または新規作成してください。</div>';
+            const filtered = (currentLevelFilter === "ALL")
+                ? library
+                : library.filter(p => (p.level || "初級（8〜10級）") === currentLevelFilter);
+
+            if (filtered.length === 0) {
+                libraryList.innerHTML = `<div style="grid-column: span 2; padding:12px; font-size:12px; color:#666; text-align:center;">「${currentLevelFilter}」の問題はまだ登録されていません。</div>`;
                 return;
             }
 
-            library.forEach((prob) => {
+            filtered.forEach((prob) => {
                 const card = document.createElement('div');
                 card.className = 'problem-card' + (currentProblem && currentProblem.id === prob.id && mode === 'solve' ? ' active' : '');
 
@@ -448,7 +491,8 @@
 
                 const meta = document.createElement('div');
                 meta.className = 'problem-meta';
-                meta.textContent = `${prob.size}路盤 / 正解手順: ${prob.solution.length}手`;
+                const probLevel = prob.level || "初級（8〜10級）";
+                meta.textContent = `【${probLevel}】 ${prob.size}路盤 / 正解: ${prob.solution.length}手`;
 
                 info.appendChild(titleRow);
                 info.appendChild(meta);
@@ -467,7 +511,6 @@
                 card.appendChild(info);
                 card.appendChild(delBtn);
 
-                // カードをクリックしたら問題を出題
                 card.addEventListener('click', () => {
                     startProblem(prob);
                 });
@@ -838,7 +881,7 @@
         }
 
 
-        // 指定ステップまでの盤面を再構築する補助関数
+        //🎉  指定ステップまでの盤面を再構築する補助関数
         function rebuildBoardToStep(stepCount) {
             boardStones = currentProblem.setup.map(s => ({ x: s.x, y: s.y, color: s.color, moveNum: 0 }));
             for (let i = 0; i < stepCount; i++) {
@@ -911,10 +954,11 @@
         btnSaveToLibrary.addEventListener('click', () => {
             if (tempSolutionMoves.length === 0) return alert("正解手順が1手も打たれていません。盤面に黒1番から正解を打ってください。");
             const title = inputProblemTitle.value.trim() || "自作詰碁 " + (library.length + 1);
-
+            const selectedLevel = document.getElementById('selectProblemLevel')?.value || "初級（8〜10級）";
             const newProblem = {
                 id: "prob_" + Date.now(),
                 title: title,
+                level: selectedLevel,
                 isMust: chkIsMust.checked,
                 size: boardSize,
                 setup: tempSetupStones,
@@ -925,7 +969,7 @@
             saveLibrary();
             inputProblemTitle.value = "";
             saveFormArea.style.display = "none";
-            alert(`「${title}」を問題保存庫に登録しました！`);
+            alert(`「${title}」（${selectedLevel}）を問題保存庫に登録しました！`);
             startProblem(newProblem);
         });
 
