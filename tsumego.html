@@ -953,7 +953,7 @@
 
         btnSaveToLibrary.addEventListener('click', () => {
             if (tempSolutionMoves.length === 0) return alert("正解手順が1手も打たれていません。盤面に黒1番から正解を打ってください。");
-            const title = inputProblemTitle.value.trim() || "自作詰碁 " + (library.length + 1);
+            const title = inputProblemTitle.value.trim() || "詰碁問題 " + (library.length + 1);
             const selectedLevel = document.getElementById('selectProblemLevel')?.value || "初級（8〜10級）";
             const newProblem = {
                 id: "prob_" + Date.now(),
