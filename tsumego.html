@@ -1163,10 +1163,29 @@
             reader.readAsText(file);
             e.target.value = "";
         });
-      // 🔒 URLに "teacher=1" が含まれている場合のみ、先生用ボタンを表示する
-      if (window.location.href.indexOf('teacher=1') !== -1) {
-          document.body.classList.add('can-teacher');
-      }
+        // 🔒 先生端末の認証（?teacher=1 で1回開くか、タイトルを5回連続タップすると端末に記憶される）
+        const TEACHER_AUTH_KEY = "igo_tsumego_is_teacher_v1";
+        if (window.location.href.indexOf('teacher=1') !== -1) {
+            localStorage.setItem(TEACHER_AUTH_KEY, "true");
+        }
+        if (localStorage.getItem(TEACHER_AUTH_KEY) === "true") {
+            document.body.classList.add('can-teacher');
+        }
+
+        // 📱 携帯用ショートカット：一番上の「🧩 囲碁・詰碁＆問題保存庫」を素早く5回タップで先生ボタン出現
+        let titleTapCount = 0;
+        let titleTapTimer = null;
+        document.querySelector('h1')?.addEventListener('click', () => {
+            titleTapCount++;
+            clearTimeout(titleTapTimer);
+            titleTapTimer = setTimeout(() => { titleTapCount = 0; }, 1500);
+            if (titleTapCount >= 5) {
+                titleTapCount = 0;
+                localStorage.setItem(TEACHER_AUTH_KEY, "true");
+                document.body.classList.add('can-teacher');
+                alert("先生用端末として記憶しました！右上の「🔧 先生用」ボタンから作成・管理ができます。");
+            }
+        });
 
    </script>
 </body>
