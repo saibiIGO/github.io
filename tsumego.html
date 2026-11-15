@@ -1020,7 +1020,7 @@
                 const currentBranchNum = tempBranches.length + 1;
                 setBanner(`【${currentBranchNum}箇所目】${startColor === 'W' ? '白' : '黒'}先で記録中：現在 ${nextNum} 手目まで入力済み`, "judge-create");
                 return;
-
+ }
             // C. 詰碁解答モード（solve：A・B・C・D選択＆白先・黒先混在完全対応）
             if (mode === "solve") {
                 if (!currentProblem) return alert("右側の「問題保存庫」から問題を選んでください。");
