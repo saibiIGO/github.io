@@ -181,6 +181,10 @@
         body:not(.teacher-mode) .btn-nav {
             display: none !important;
         }
+        /* 🔒 先生用URL（?teacher=1）以外では「先生用ボタン」自体を完全に隠す */
+        body:not(.can-teacher) #btnToggleTeacherMode {
+            display: none !important;
+        }
 
 
     </style>
@@ -1159,6 +1163,10 @@
             reader.readAsText(file);
             e.target.value = "";
         });
+        // 🔒 URLに "?teacher=1" が付いている場合のみ、先生用ボタンを表示する
+        if (new URLSearchParams(window.location.search).get('teacher') === '1') {
+            document.body.classList.add('can-teacher');
+        }
 
    </script>
 </body>
