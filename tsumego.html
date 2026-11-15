@@ -1163,10 +1163,10 @@
             reader.readAsText(file);
             e.target.value = "";
         });
-        // 🔒 URLに "?teacher=1" が付いている場合のみ、先生用ボタンを表示する
-        if (new URLSearchParams(window.location.search).get('teacher') === '1') {
-            document.body.classList.add('can-teacher');
-        }
+      // 🔒 URLに "teacher=1" が含まれている場合のみ、先生用ボタンを表示する
+      if (window.location.href.indexOf('teacher=1') !== -1) {
+          document.body.classList.add('can-teacher');
+      }
 
    </script>
 </body>
