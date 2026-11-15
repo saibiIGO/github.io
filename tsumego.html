@@ -313,9 +313,13 @@
                     <button type="button" id="btnNextBranchRoute" class="btn-secondary" style="width: 100%; display: none; background-color: #0284c7;">
                         ➕ 次の問題箇所（別の①〜）を記録する（四隅用）
                     </button>
+                     <button type="button" id="btnUndoRecordMove" class="btn-secondary" style="width: 100%; display: none; background-color: #64748b;">
+                        ↩️ 正解手順を1手戻る（打ち直し）
+                    </button>
                 </div>
 
                 <div id="saveFormArea" style="display: none; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #cbd5e1;">
+                
                     <div id="branchCountInfo" style="font-size: 12px; font-weight: bold; color: #0369a1; margin-bottom: 6px;">現在 1 箇所目の手順を記録中</div>
                     <input type="text" id="inputProblemTitle" placeholder="問題タイトル（例：四隅の死活 第1問）" style="width: 100%; padding: 6px; box-sizing: border-box; margin-bottom: 6px;">
                     <div style="margin-bottom: 6px; font-size: 12px;">
@@ -771,6 +775,8 @@
             saveFormArea.style.display = "none";
             const btnBranch = document.getElementById('btnNextBranchRoute');
             if (btnBranch) btnBranch.style.display = "none";
+            const btnUndo = document.getElementById('btnUndoRecordMove');
+            if (btnUndo) btnUndo.style.display = "none";
 
             boardSize = prob.size || 9;
             boardStones = prob.setup.map(s => ({ x: s.x, y: s.y, color: s.color, moveNum: 0 }));
@@ -1239,7 +1245,6 @@
         btnStartRecordAnswer.addEventListener('click', () => {
             if (mode === "record") return alert("すでに正解手順の記録中です。盤面に正解手順を打ち込んでください。");
             if (boardStones.length === 0) return alert("先に盤面へ問題図（黒石・白石）を配置してください。");
-
             tempSetupStones = boardStones.map(s => ({ x: s.x, y: s.y, color: s.color }));
             tempSolutionMoves = new Array();
             tempBranches = new Array();
@@ -1247,13 +1252,17 @@
             saveFormArea.style.display = "block";
             const btnBranch = document.getElementById('btnNextBranchRoute');
             if (btnBranch) btnBranch.style.display = "block";
+            const btnUndo = document.getElementById('btnUndoRecordMove');
+            if (btnUndo) btnUndo.style.display = "block";
+
+
+
             const infoEl = document.getElementById('branchCountInfo');
             if (infoEl) infoEl.textContent = "現在 1 箇所目の手順（①〜）を記録中";
 
             const startColor = document.querySelector('input[name="problemTurn"]:checked')?.value || 'B';
             setBanner(`【正解記録中】${startColor === 'W' ? '⚪白①' : '⚫黒①'}から順に、正解手順を盤面に打ってください`, "judge-create");
         });
-
 
         // ➕ 四隅問題などで「次の問題（B, C, D...）の①〜」を続けて記録するボタン（1問ごとに手番変更可）
         document.getElementById('btnNextBranchRoute')?.addEventListener('click', () => {
@@ -1271,6 +1280,42 @@
             const startColor = document.querySelector('input[name="problemTurn"]:checked')?.value || 'B';
             setBanner(`【問題 ${nextLabel} の記録】必要なら手番（黒先/白先）を選び、「${startColor === 'W' ? '⚪白①' : '⚫黒①'}」から打ってください`, "judge-create");
         });
+
+        // ↩️ 正解手順の記録中に1手戻る（打ち間違い訂正・アゲハマも完全復元）
+        document.getElementById('btnUndoRecordMove')?.addEventListener('click', () => {
+            if (mode !== "record") return;
+            if (tempSolutionMoves.length === 0) {
+                return alert("現在記録中の箇所には、まだ戻す手がありません。");
+            }
+
+            // 最後の1手を削除
+            tempSolutionMoves.pop();
+
+            // 問題図 ＋ 確定済みの別箇所 ＋ 残っている手順から盤面を正確に再構築
+            boardStones = tempSetupStones.map(s => ({ x: s.x, y: s.y, color: s.color, moveNum: 0 }));
+            tempBranches.forEach(br => {
+                br.forEach((m, idx) => {
+                    boardStones.push({ x: m.x, y: m.y, color: m.color, moveNum: idx + 1 });
+                    boardStones = applyCapture(boardStones, m.x, m.y, m.color);
+                });
+            });
+            tempSolutionMoves.forEach((m, idx) => {
+                boardStones.push({ x: m.x, y: m.y, color: m.color, moveNum: idx + 1 });
+                boardStones = applyCapture(boardStones, m.x, m.y, m.color);
+            });
+
+            renderBoard();
+
+            const labels = Array.of("A", "B", "C", "D", "E", "F");
+            const currentLabel = labels.at(tempBranches.length) || `${tempBranches.length + 1}箇所目`;
+            const startColor = document.querySelector('input[name="problemTurn"]:checked')?.value || 'B';
+            if (tempSolutionMoves.length === 0) {
+                setBanner(`【問題 ${currentLabel}】1手目に戻りました。「${startColor === 'W' ? '⚪白①' : '⚫黒①'}」から打ち直してください`, "judge-create");
+            } else {
+                setBanner(`【問題 ${currentLabel}】1手戻しました：現在 ${tempSolutionMoves.length} 手目まで入力済み`, "judge-create");
+            }
+        });
+
         btnSaveToLibrary.addEventListener('click', () => {
             const finalBranches = [...tempBranches];
             if (tempSolutionMoves.length > 0) {
@@ -1300,8 +1345,11 @@
             saveFormArea.style.display = "none";
             const btnBranch = document.getElementById('btnNextBranchRoute');
             if (btnBranch) btnBranch.style.display = "none";
+            const btnUndo = document.getElementById('btnUndoRecordMove');
+            if (btnUndo) btnUndo.style.display = "none";
             alert(`「${title}」（${startColor === 'W' ? '白先' : '黒先'}・全${finalBranches.length}箇所）を問題保存庫に登録しました！`);
             startProblem(newProblem);
+
         });
 
         // 7. SGFファイルからのインポート（問題図AB/AW＋正解手順を自動登録）
