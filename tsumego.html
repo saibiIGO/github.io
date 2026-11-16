@@ -234,12 +234,17 @@
                 🔧 先生用（作成・管理）
             </button>
         </div>
-        <!-- 🅰️🅱️ 四隅など複数問題（A・B・C・D）の選択＆手番表示バー（複数問題の時だけ自動表示） -->
-        <div id="subProblemSelectorBar" style="display: none; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #cbd5e1; align-items: center; gap: 6px; flex-wrap: wrap;">
-            <span style="font-size: 12px; font-weight: bold; color: #334155;">問題選択:</span>
-            <div id="subProblemButtons" style="display: flex; gap: 6px; flex-wrap: wrap;"></div>
-        </div>
 
+        <!-- 🅰️🅱️ 碁盤の外側（上部）に配置する「問題選択（A・B・C・D）＆ヒント表示バー」 -->
+        <div id="subProblemSelectorBar" style="display: none; margin-top: 8px; padding: 8px 10px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <span style="font-size: 13px; font-weight: bold; color: #1e293b;">📍 問題選択:</span>
+            <div id="subProblemButtons" style="display: flex; gap: 6px; flex-wrap: wrap;"></div>
+            <button type="button" id="btnToggleHint" class="btn-secondary" style="margin-left: auto; padding: 5px 10px; font-size: 12px; background-color: #d97706; display: none;">
+                💡 ヒントを見る
+            </button>
+        </div>
+        <!-- 💡 碁盤の外に表示されるヒント欄 -->
+        <div id="hintDisplayBox" style="display: none; margin-top: 6px; padding: 8px 12px; background: #fffbeb; border-left: 4px solid #f59e0b; border-radius: 4px; font-size: 13px; color: #78350f;"></div>
 
         <!-- 開閉式の操作マニュアル本体 -->
         <div id="tsumegoManualBox" style="display: none; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 12px; margin-top: 10px; font-size: 13px; line-height: 1.6; color: #1e293b; max-height: 300px; overflow-y: auto; text-align: left;">
@@ -276,12 +281,10 @@
             </div>
         </div>
 
-        <!-- 右パネル：保存庫・解答操作・新規問題作成 -->
+
         <!-- 右パネル：新規問題作成・SGF登録・問題保存庫（操作しやすい順番に整理） -->
         <div class="right-panel">
-            <!-- 1. 旧　新規問題の登録（問題作成モード：上の操作しやすい位置に配置） -->
-            
-            
+
             <!-- 1. 新規問題の登録（問題作成モード：白先・四隅の複数①ルート対応） -->
             <div class="panel-section teacher-only">
                 <div class="section-title">✏️ 新しい詰碁を保存庫に登録する</div>
@@ -313,15 +316,22 @@
                     <button type="button" id="btnNextBranchRoute" class="btn-secondary" style="width: 100%; display: none; background-color: #0284c7;">
                         ➕ 次の問題箇所（別の①〜）を記録する（四隅用）
                     </button>
-                     <button type="button" id="btnUndoRecordMove" class="btn-secondary" style="width: 100%; display: none; background-color: #64748b;">
+                    <button type="button" id="btnUndoRecordMove" class="btn-secondary" style="width: 100%; display: none; background-color: #64748b;">
                         ↩️ 正解手順を1手戻る（打ち直し）
+                    </button>
+                    <button type="button" id="btnFinishRecordMoves" class="btn-primary" style="width: 100%; display: none; background-color: #059669;">
+                        ✅ 入力を終了（確定）する
                     </button>
                 </div>
 
+
                 <div id="saveFormArea" style="display: none; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #cbd5e1;">
-                
                     <div id="branchCountInfo" style="font-size: 12px; font-weight: bold; color: #0369a1; margin-bottom: 6px;">現在 1 箇所目の手順を記録中</div>
                     <input type="text" id="inputProblemTitle" placeholder="問題タイトル（例：四隅の死活 第1問）" style="width: 100%; padding: 6px; box-sizing: border-box; margin-bottom: 6px;">
+                    
+                    <textarea id="inputProblemHint" rows="2" placeholder="💡 ヒント（任意：生徒が見られる急所や狙い）" style="width: 100%; padding: 6px; box-sizing: border-box; margin-bottom: 6px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px;"></textarea>
+
+                   
                     <div style="margin-bottom: 6px; font-size: 12px;">
                         <label style="font-weight: bold; color: #334155;">難易度：</label>
                         <select id="selectProblemLevel" style="width: 100%; padding: 5px; margin-top: 2px; border: 1px solid #cbd5e1; border-radius: 4px;">
@@ -670,30 +680,64 @@
                 }
             });
 
-            // 四隅など複数問題（2問以上）ある場合、各問題の目印石に A, B, C, D の符号を表示
+            // 四隅など複数問題（2問以上）ある場合、既存の石の中央に Ⓐ, Ⓑ, Ⓒ, Ⓓ を表示（着手点を邪魔しない）
+                        // 四隅など複数問題（2問以上）ある場合、盤面中央（天元付近）に碁石より大きく Ⓐ, Ⓑ, Ⓒ, Ⓓ を表示
+            boardGrid.querySelectorAll('.center-quadrant-label').forEach(el => el.remove());
+
             if (mode === "solve" && currentProblem) {
                 const branches = getProblemBranches(currentProblem);
                 if (branches.length > 1) {
-                    const labels = Array.of("A", "B", "C", "D", "E", "F");
+                    const labels = Array.of("Ⓐ", "Ⓑ", "Ⓒ", "Ⓓ", "Ⓔ", "Ⓕ");
+                    const mid = (boardSize - 1) / 2;
+                    const bigFontSize = Math.max(22, Math.floor(cellStep * 1.45)) + 'px';
+
                     branches.forEach((br, idx) => {
-                        const anchor = getBranchAnchorStone(currentProblem, br);
-                        if (anchor) {
-                            const target = boardGrid.querySelector('.click-target[data-x="' + anchor.x + '"][data-y="' + anchor.y + '"]');
-                            if (target) {
-                                const lbl = document.createElement('div');
-                                const isDone = solvedBranchIndices.includes(idx);
-                                const isCurrent = (activeBranchIndex === idx);
-                                lbl.className = 'board-problem-label' + (isDone ? ' solved' : (isCurrent ? ' active' : ''));
-                                const turnMark = (br.at(0)?.color === 'W') ? '白' : '黒';
-                                lbl.textContent = `${labels.at(idx) || (idx + 1)}(${turnMark})`;
-                                target.appendChild(lbl);
-                            }
+                        const firstMove = br.at(0);
+                        if (!firstMove) return;
+
+                        // 問題の位置（左上・右上・左下・右下）を判定し、天元のすぐ近くに配置
+                        const isRight = firstMove.x > mid;
+                        const isBottom = firstMove.y > mid;
+                        const offsetPercent = 13; // 天元（50%）からのずらし幅（%）
+
+                        const lbl = document.createElement('div');
+                        lbl.className = 'center-quadrant-label';
+                        const isDone = solvedBranchIndices.includes(idx);
+                        const isCurrent = (activeBranchIndex === idx);
+
+                        lbl.textContent = labels.at(idx) || String(idx + 1);
+                        lbl.style.position = 'absolute';
+                        lbl.style.left = (isRight ? (50 + offsetPercent) : (50 - offsetPercent)) + '%';
+                        lbl.style.top = (isBottom ? (50 + offsetPercent) : (50 - offsetPercent)) + '%';
+                        lbl.style.transform = 'translate(-50%, -50%)';
+                        lbl.style.fontSize = bigFontSize;
+                        lbl.style.fontWeight = 'bold';
+                        lbl.style.lineHeight = '1';
+                        lbl.style.padding = '4px 6px';
+                        lbl.style.borderRadius = '8px';
+                        lbl.style.pointerEvents = 'none';
+                        lbl.style.zIndex = '15';
+                        lbl.style.userSelect = 'none';
+
+                        if (isDone) {
+                            lbl.style.color = '#16a34a';
+                            lbl.style.backgroundColor = 'rgba(255, 255, 255, 0.85)';
+                        } else if (isCurrent) {
+                            lbl.style.color = '#dc2626';
+                            lbl.style.backgroundColor = 'rgba(254, 242, 242, 0.92)';
+                            lbl.style.boxShadow = '0 0 0 2px #dc2626';
+                        } else {
+                            lbl.style.color = '#1e293b';
+                            lbl.style.backgroundColor = 'rgba(255, 255, 255, 0.78)';
                         }
+
+                        boardGrid.appendChild(lbl);
                     });
                 }
             }
         }
 
+            
 
         // 画面の向きやウィンドウサイズが変わったときも石の大きさを即座に再計算
         window.addEventListener('resize', () => {
@@ -808,26 +852,43 @@
             return bestStone;
         }
 
-        // 上部バーの「A・B・C・D 選択ボタン」を更新する関数
+        // 上部バーの「○・□・△・✕ 選択ボタン」と「💡 ヒントを見る」を更新する関数
         function updateSubProblemBar() {
             const bar = document.getElementById('subProblemSelectorBar');
             const btnContainer = document.getElementById('subProblemButtons');
+            const hintBtn = document.getElementById('btnToggleHint');
+            const hintBox = document.getElementById('hintDisplayBox');
             if (!bar || !btnContainer) return;
+
+            if (hintBox) {
+                hintBox.style.display = "none";
+                hintBox.textContent = "";
+            }
 
             if (mode !== "solve" || !currentProblem) {
                 bar.style.display = "none";
                 return;
             }
 
+            bar.style.display = "flex";
+            btnContainer.innerHTML = "";
+
+            if (hintBtn) {
+                hintBtn.style.display = "inline-block";
+                hintBtn.textContent = "💡 ヒントを見る";
+            }
+
             const branches = getProblemBranches(currentProblem);
             if (branches.length <= 1) {
-                bar.style.display = "none";
+                const singleLabel = document.createElement('span');
+                singleLabel.style.fontSize = "12px";
+                singleLabel.style.color = "#475569";
+                singleLabel.textContent = "💡 ヒントが必要なときは右のボタンを押してください";
+                btnContainer.appendChild(singleLabel);
                 return;
             }
 
-            bar.style.display = "flex";
-            btnContainer.innerHTML = "";
-            const labels = Array.of("A", "B", "C", "D", "E", "F");
+          const labels = Array.of("Ⓐ", "Ⓑ", "Ⓒ", "Ⓓ", "Ⓔ", "Ⓕ");
 
             branches.forEach((br, idx) => {
                 const btn = document.createElement('button');
@@ -839,8 +900,8 @@
                 const isCurrent = (activeBranchIndex === idx);
 
                 btn.textContent = isDone ? `✅ ${labelChar}（クリア）` : `${labelChar}（${turnText}）`;
-                btn.style.padding = "5px 10px";
-                btn.style.fontSize = "12px";
+                btn.style.padding = "6px 12px";
+                btn.style.fontSize = "13px";
                 btn.style.fontWeight = "bold";
                 btn.style.borderRadius = "5px";
                 btn.style.border = "none";
@@ -870,6 +931,25 @@
                 btnContainer.appendChild(btn);
             });
         }
+
+        // 💡 ヒント欄の開閉ボタン
+        document.getElementById('btnToggleHint')?.addEventListener('click', () => {
+            const hintBox = document.getElementById('hintDisplayBox');
+            const hintBtn = document.getElementById('btnToggleHint');
+            if (!hintBox || !currentProblem) return;
+
+            if (hintBox.style.display === "none" || hintBox.style.display === "") {
+                const text = (currentProblem.hint && currentProblem.hint.trim() !== "")
+                    ? currentProblem.hint
+                    : "（この問題にはまだヒントが登録されていません）";
+                hintBox.textContent = "💡 ヒント： " + text;
+                hintBox.style.display = "block";
+                if (hintBtn) hintBtn.textContent = "💡 ヒントを隠す";
+            } else {
+                hintBox.style.display = "none";
+                if (hintBtn) hintBtn.textContent = "💡 ヒントを見る";
+            }
+        });
 
 
         // 問題データから全正解ルート（1ルートまたは四隅の複数ルート）を取得する共通関数
@@ -1254,8 +1334,8 @@
             if (btnBranch) btnBranch.style.display = "block";
             const btnUndo = document.getElementById('btnUndoRecordMove');
             if (btnUndo) btnUndo.style.display = "block";
-
-
+            const btnFinish = document.getElementById('btnFinishRecordMoves');
+            if (btnFinish) btnFinish.style.display = "block";
 
             const infoEl = document.getElementById('branchCountInfo');
             if (infoEl) infoEl.textContent = "現在 1 箇所目の手順（①〜）を記録中";
@@ -1316,6 +1396,58 @@
             }
         });
 
+        // ✅ 正解手順の入力を終了（確定）してタイトル・ヒント入力へ進むボタン
+        document.getElementById('btnFinishRecordMoves')?.addEventListener('click', () => {
+            if (mode !== "record") return;
+            const totalRoutes = tempBranches.length + (tempSolutionMoves.length > 0 ? 1 : 0);
+            if (totalRoutes === 0) {
+                return alert("正解手順が1手も打たれていません。盤面に①から正解を打ってください。");
+            }
+
+            if (tempSolutionMoves.length > 0) {
+                tempBranches.push([...tempSolutionMoves]);
+                tempSolutionMoves = new Array();
+            }
+
+
+            const infoEl = document.getElementById('branchCountInfo');
+            if (infoEl) infoEl.textContent = `🎉 全 ${tempBranches.length} 問の入力が完了しました！下のタイトル・ヒントを入力して保存してください`;
+            setBanner(`【入力完了】全 ${tempBranches.length} 問の手順を確定しました。右側の保存ボタンを押してください`, "judge-correct");
+            inputProblemTitle?.focus();
+        });
+
+        btnSaveToLibrary.addEventListener('click', () => {
+
+
+
+            // 最後の1手を削除
+            tempSolutionMoves.pop();
+
+            // 問題図 ＋ 確定済みの別箇所 ＋ 残っている手順から盤面を正確に再構築
+            boardStones = tempSetupStones.map(s => ({ x: s.x, y: s.y, color: s.color, moveNum: 0 }));
+            tempBranches.forEach(br => {
+                br.forEach((m, idx) => {
+                    boardStones.push({ x: m.x, y: m.y, color: m.color, moveNum: idx + 1 });
+                    boardStones = applyCapture(boardStones, m.x, m.y, m.color);
+                });
+            });
+            tempSolutionMoves.forEach((m, idx) => {
+                boardStones.push({ x: m.x, y: m.y, color: m.color, moveNum: idx + 1 });
+                boardStones = applyCapture(boardStones, m.x, m.y, m.color);
+            });
+
+            renderBoard();
+
+            const labels = Array.of("A", "B", "C", "D", "E", "F");
+            const currentLabel = labels.at(tempBranches.length) || `${tempBranches.length + 1}箇所目`;
+            const startColor = document.querySelector('input[name="problemTurn"]:checked')?.value || 'B';
+            if (tempSolutionMoves.length === 0) {
+                setBanner(`【問題 ${currentLabel}】1手目に戻りました。「${startColor === 'W' ? '⚪白①' : '⚫黒①'}」から打ち直してください`, "judge-create");
+            } else {
+                setBanner(`【問題 ${currentLabel}】1手戻しました：現在 ${tempSolutionMoves.length} 手目まで入力済み`, "judge-create");
+            }
+        });
+
         btnSaveToLibrary.addEventListener('click', () => {
             const finalBranches = [...tempBranches];
             if (tempSolutionMoves.length > 0) {
@@ -1326,12 +1458,15 @@
             const title = inputProblemTitle.value.trim() || "自作詰碁 " + (library.length + 1);
             const selectedLevel = document.getElementById('selectProblemLevel')?.value || "初級（8〜10級）";
             const startColor = document.querySelector('input[name="problemTurn"]:checked')?.value || 'B';
+            const hintInput = document.getElementById('inputProblemHint');
+            const hintText = hintInput ? hintInput.value.trim() : "";
 
             const newProblem = {
                 id: "prob_" + Date.now(),
                 title: title,
                 level: selectedLevel,
                 turn: startColor,
+                hint: hintText,
                 isMust: chkIsMust.checked,
                 size: boardSize,
                 setup: tempSetupStones,
@@ -1342,15 +1477,18 @@
             library.unshift(newProblem);
             saveLibrary();
             inputProblemTitle.value = "";
+            if (hintInput) hintInput.value = "";
             saveFormArea.style.display = "none";
             const btnBranch = document.getElementById('btnNextBranchRoute');
             if (btnBranch) btnBranch.style.display = "none";
             const btnUndo = document.getElementById('btnUndoRecordMove');
             if (btnUndo) btnUndo.style.display = "none";
-            alert(`「${title}」（${startColor === 'W' ? '白先' : '黒先'}・全${finalBranches.length}箇所）を問題保存庫に登録しました！`);
+            const btnFinish = document.getElementById('btnFinishRecordMoves');
+            if (btnFinish) btnFinish.style.display = "none";
+            alert(`「${title}」（${startColor === 'W' ? '白先' : '黒先'}・全${finalBranches.length}問）を問題保存庫に登録しました！`);
             startProblem(newProblem);
-
         });
+
 
         // 7. SGFファイルからのインポート（問題図AB/AW＋正解手順を自動登録）
         fileImportSgf.addEventListener('change', (e) => {
@@ -1423,7 +1561,7 @@
                 initBoard();
             }
         });
-        // 📤📤  出題中の問題（問題図＋正解手順＋タイトル）を国際標準SGF形式で書き出し
+        // 📤  出題中の問題（問題図＋正解手順＋タイトル）を国際標準SGF形式で書き出し
 
          // 1問分のデータから標準SGF文字列を生成する共通関数（必須・難易度・白先・四隅複数ルートも完全記録）
         function buildSingleProblemSgf(prob) {
