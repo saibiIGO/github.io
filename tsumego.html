@@ -753,15 +753,30 @@
                 });
             }
 
-            // 2. 生徒の解答中（solve）：問題に含まれる象限（2問以上の場合）を天元付近に絶えず表示
+               // 2. 生徒の解答中（solve）：1問だけの大きな問題は天元をスッキリ空け、2問・3問・4問のときは「登録された問題数だけ」象限記号を表示
             if (mode === "solve" && currentProblem) {
                 const branches = getProblemBranches(currentProblem);
-                if (branches.length > 1) {
+                if (branches.length >= 2) {
+                    const usedOrders = new Set();
                     branches.forEach((br, idx) => {
-                        const firstMove = br.at(0);
+                        const firstMove = br.at(0) || currentProblem.setup.at(0);
                         if (!firstMove) return;
 
-                        const qInfo = getQuadrantInfo(firstMove.x, firstMove.y, mid, idx);
+                        let qInfo = getQuadrantInfo(firstMove.x, firstMove.y, mid, idx);
+                        // 万が一同じ象限に2問ある場合は、空いている次の象限へ自動調整して重なりを防止
+                        if (usedOrders.has(qInfo.order)) {
+                            const altOrder = Array.of(1, 2, 3, 4).find(o => !usedOrders.has(o)) || (idx + 1);
+                            const altMap = {
+                                1: { order: 1, symbol: "Ⓐ", leftPct: 64, topPct: 36 },
+                                2: { order: 2, symbol: "Ⓑ", leftPct: 64, topPct: 64 },
+                                3: { order: 3, symbol: "Ⓒ", leftPct: 36, topPct: 64 },
+                                4: { order: 4, symbol: "Ⓓ", leftPct: 36, topPct: 36 }
+                            };
+                            qInfo = altMap[altOrder] || qInfo;
+                        }
+
+                        usedOrders.add(qInfo.order);
+
                         const lbl = document.createElement('div');
                         lbl.className = 'center-quadrant-label';
                         const isDone = solvedBranchIndices.includes(idx);
@@ -783,14 +798,15 @@
 
                         if (isDone) {
                             lbl.style.color = '#16a34a';
-                            lbl.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+                            lbl.style.backgroundColor = 'rgba(240, 253, 244, 0.95)';
+                            lbl.style.boxShadow = '0 0 0 2px #16a34a';
                         } else if (isCurrent) {
                             lbl.style.color = '#dc2626';
                             lbl.style.backgroundColor = 'rgba(254, 242, 242, 0.95)';
                             lbl.style.boxShadow = '0 0 0 3px #dc2626';
                         } else {
                             lbl.style.color = '#0f172a';
-                            lbl.style.backgroundColor = 'rgba(255, 255, 255, 0.85)';
+                            lbl.style.backgroundColor = 'rgba(255, 255, 255, 0.88)';
                             lbl.style.boxShadow = '0 1px 4px rgba(0,0,0,0.25)';
                         }
 
@@ -799,6 +815,7 @@
                 }
             }
         }
+
 
 
             
@@ -1594,71 +1611,6 @@
 
 
 
-
-
-
-        // 7. SGFファイルからのインポート（問題図AB/AW＋正解手順を自動登録）
-        fileImportSgf.addEventListener('change', (e) => {
-            const files = e.target.files;
-            if (!files || files.length === 0) return;
-            const file = files.item(0);
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                const sgf = evt.target.result;
-                const szMatch = /SZ\[(\d+)\]/i.exec(sgf);
-                const sz = szMatch ? parseInt(szMatch.at(1), 10) : 19;
-                const validSize = (sz === 9 || sz === 13 || sz === 19) ? sz : 19;
-
-                let setup = new Array();
-                const setupRegex = /(AB|AW)((?:\s*\[[a-s]{2}\])+)/gi;
-                let sMatch;
-                while ((sMatch = setupRegex.exec(sgf)) !== null) {
-                    const color = (sMatch.at(1).toUpperCase() === 'AB') ? 'B' : 'W';
-                    const coordRegex = /\[([a-s]{2})\]/gi;
-                    let cMatch;
-                    while ((cMatch = coordRegex.exec(sMatch.at(2))) !== null) {
-                        const c = cMatch.at(1).toLowerCase();
-                        const x = SGF_CHARS.indexOf(c.charAt(0));
-                        const y = SGF_CHARS.indexOf(c.charAt(1));
-                        if (x !== -1 && y !== -1) setup.push({ x: x, y: y, color: color });
-                    }
-                }
-
-                let solution = new Array();
-                const moveRegex = /;\s*(B|W)\s*\[([a-s]{2})\]/gi;
-                let mMatch;
-                while ((mMatch = moveRegex.exec(sgf)) !== null) {
-                    const color = mMatch.at(1).toUpperCase();
-                    const c = mMatch.at(2).toLowerCase();
-                    const x = SGF_CHARS.indexOf(c.charAt(0));
-                    const y = SGF_CHARS.indexOf(c.charAt(1));
-                    if (x !== -1 && y !== -1) solution.push({ x: x, y: y, color: color });
-                }
-
-                if (setup.length === 0 && solution.length === 0) {
-                    return alert("有効なSGFデータが見つかりませんでした。");
-                }
-
-                const probTitle = prompt("保存庫に登録する問題名を入力してください：", file.name.replace(/\.sgf$/i, ""));
-                if (probTitle === null) return;
-
-                const importedProb = {
-                    id: "sgf_" + Date.now(),
-                    title: probTitle.trim() || file.name,
-                    isMust: true,
-                    size: validSize,
-                    setup: setup,
-                    solution: solution
-                };
-
-                library.unshift(importedProb);
-                saveLibrary();
-                startProblem(importedProb);
-                alert(`SGFファイル「${importedProb.title}」を保存庫に登録しました！`);
-            };
-            reader.readAsText(file);
-        });
-
         // 8. 初期起動処理
         window.addEventListener('DOMContentLoaded', () => {
             loadLibrary();
@@ -1668,15 +1620,24 @@
                 initBoard();
             }
         });
-        // 📤  出題中の問題（問題図＋正解手順＋タイトル）を国際標準SGF形式で書き出し
-
-         // 1問分のデータから標準SGF文字列を生成する共通関数（必須・難易度・白先・四隅複数ルートも完全記録）
+        // 1問分のデータから標準SGF文字列を生成する共通関数（必須・難易度・問題別ヒント・複数ルートも完全記録）
         function buildSingleProblemSgf(prob) {
             const sz = prob.size || 9;
             const title = prob.title || "tsumego";
             const mustTag = prob.isMust ? "【必須】" : "";
             const levelTag = prob.level ? `[${prob.level}]` : "";
-          let sgf = `(;GM[1]FF[4]CA[UTF-8]AP[GoTsumegoLibrary]SZ[${sz}]GN[${(mustTag + levelTag + title).replace(/\]/g, "\\]")}]\n`;
+            let sgf = `(;GM[1]FF[4]CA[UTF-8]AP[GoTsumegoLibrary]SZ[${sz}]GN[${(mustTag + levelTag + title).replace(/\]/g, "\\]")}]\n`;
+
+            // ヒント情報（共通ヒント＋問題別ヒント Ⓐ〜Ⓓ）をSGFコメント C[...] に記録
+
+            const hintPayload = {
+                hint: prob.hint || "",
+                branchHints: prob.branchHints || {}
+            };
+            if (hintPayload.hint || Object.values(hintPayload.branchHints).some(v => v)) {
+                const escapedJson = JSON.stringify(hintPayload).replace(/\]/g, "\\]");
+                sgf += `C[HINTS:${escapedJson}]\n`;
+            }
 
             const setupB = prob.setup.filter(s => s.color === 'B');
             const setupW = prob.setup.filter(s => s.color === 'W');
@@ -1689,13 +1650,11 @@
 
             const branches = getProblemBranches(prob);
             if (branches.length <= 1) {
-                // 通常（1ルート）の書き出し
                 const moves = branches.at(0) || prob.solution || new Array();
                 moves.forEach(m => {
                     sgf += `;${m.color}[${SGF_CHARS.charAt(m.x)}${SGF_CHARS.charAt(m.y)}]`;
                 });
             } else {
-                // 四隅など複数ルート（①が複数回出る問題）の標準SGF分岐書き出し
                 branches.forEach(br => {
                     sgf += "\n(";
                     br.forEach(m => {
@@ -1708,11 +1667,9 @@
             return sgf;
         }
 
-        // SGFの1ゲーム文字列から「複数分岐（四隅の①〜）または通常手順」を解析する共通関数
+        // SGFの1ゲーム文字列から「複数分岐（Ⓐ〜Ⓓの①〜）または通常手順」を解析する共通関数
         function parseBranchesFromSgfGame(sgf) {
-            // 初期配置（AB/AW）より後ろの手順部分を抽出
             const branches = new Array();
-            // 分岐 "( ;B[...]... )" が複数含まれる場合を検出
             const variationRegex = /\(\s*((?:;\s*[BW]\s*\[[a-s]{2}\]\s*)+)\)/gi;
             let vMatch;
             while ((vMatch = variationRegex.exec(sgf)) !== null) {
@@ -1730,7 +1687,6 @@
 
             if (branches.length > 0) return branches;
 
-            // 分岐がない通常の1ルート棋譜の場合
             const singleMoves = new Array();
             const moveRegex = /;\s*([BW])\s*\[([a-s]{2})\]/gi;
             let mMatch;
@@ -1743,17 +1699,29 @@
             return singleMoves.length > 0 ? Array.of(singleMoves) : new Array();
         }
 
-        // 1ゲーム分のSGFテキストから問題オブジェクトを組み立てる共通関数
+        // 1ゲーム分のSGFテキストから問題オブジェクトを組み立てる共通関数（難易度・ヒント・複数問題完全復元）
         function parseSingleGameSgfToProblem(sgf, fallbackTitle, idPrefix) {
             const szMatch = /SZ\[(\d+)\]/i.exec(sgf);
             const parsedSize = szMatch ? parseInt(szMatch.at(1), 10) : 9;
-            const gnMatch = /GN\[([^\]]*)\]/i.exec(sgf);
-            let rawTitle = gnMatch ? gnMatch.at(1) : fallbackTitle;
+            const gnMatch = /GN\[((?:\\\]|[^\]])*)\]/i.exec(sgf);
+            let rawTitle = gnMatch ? gnMatch.at(1).replace(/\\\]/g, "]") : fallbackTitle;
             const isMust = rawTitle.startsWith("【必須】");
             rawTitle = rawTitle.replace(/^【必須】/, "");
             const levelMatch = /^\[(初級（8〜10級）|中級（4〜7級）|上級（1〜3級）|有段者|プロ級)\]/.exec(rawTitle);
             const parsedLevel = levelMatch ? levelMatch.at(1) : "初級（8〜10級）";
             const parsedTitle = rawTitle.replace(/^\[(初級（8〜10級）|中級（4〜7級）|上級（1〜3級）|有段者|プロ級)\]/, "");
+
+            // ヒント情報（共通ヒント＋問題別ヒント Ⓐ〜Ⓓ）の復元
+            let parsedHint = "";
+            let parsedBranchHints = {};
+            const cMatch = /C\[HINTS:((?:\\\]|[^\]])*)\]/i.exec(sgf);
+            if (cMatch) {
+                try {
+                    const obj = JSON.parse(cMatch.at(1).replace(/\\\]/g, "]"));
+                    parsedHint = obj.hint || "";
+                    parsedBranchHints = obj.branchHints || {};
+                } catch (e) {}
+            }
 
             const setupStones = new Array();
             const abRegex = /AB((?:\[[a-s]{2}\])+)/gi;
@@ -1782,20 +1750,24 @@
             }
 
             const parsedBranches = parseBranchesFromSgfGame(sgf);
-            const firstColor = parsedBranches.at(0)?.at(0)?.color || 'B';
+            const firstBranch = parsedBranches.at(0) || new Array();
+            const parsedTurn = firstBranch.at(0)?.color || 'B';
 
             return {
                 id: idPrefix,
-                title: parsedTitle,
+                title: parsedTitle || fallbackTitle,
                 level: parsedLevel,
-                turn: firstColor,
+                turn: parsedTurn,
+                hint: parsedHint,
+                branchHints: parsedBranchHints,
                 isMust: isMust,
                 size: parsedSize,
                 setup: setupStones,
-                solution: parsedBranches.at(0) || new Array(),
+                solution: firstBranch,
                 branches: parsedBranches
             };
         }
+
 
         // マルチゲームSGF文字列を1問ずつのSGF文字列に安全に分割する共通関数（入れ子の括弧にも対応）
         function splitMultiGameSgf(fullSgf) {
