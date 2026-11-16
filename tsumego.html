@@ -1475,15 +1475,25 @@
             setBanner(`【問題 ${nextLabel} の記録】必要なら手番（黒先/白先）を選び、「${startColor === 'W' ? '⚪白①' : '⚫黒①'}」から打ってください`, "judge-create");
         });
 
-        // ↩️ 正解手順の記録中に1手戻る（打ち間違い訂正・アゲハマも完全復元）
+
+        // ↩️ 正解手順の記録中に1手戻る（打ち間違い訂正 ＋ ミスクリックで進んだ「1つ前の問題」への戻りも完全対応）
         document.getElementById('btnUndoRecordMove')?.addEventListener('click', () => {
             if (mode !== "record") return;
-            if (tempSolutionMoves.length === 0) {
-                return alert("現在記録中の箇所には、まだ戻す手がありません。");
-            }
 
-            // 最後の1手を削除
-            tempSolutionMoves.pop();
+            // 現在の問題が0手の場合：「➕ 次の問題箇所」をミスクリックして進んでしまった直後かチェック
+            if (tempSolutionMoves.length === 0) {
+                if (tempBranches.length === 0) {
+                    return alert("現在記録中の箇所には、まだ戻す手がありません。");
+                }
+                if (!confirm(`現在入力中の箇所は0手です。\n誤って「次の問題箇所」を押してしまった場合は、1つ前の問題（${tempBranches.length}問目）の記録に戻して修正できます。\n\n1つ前の問題に戻しますか？`)) {
+                    return;
+                }
+                // 1つ前の確定済みルートを取り出して、再び記録中（tempSolutionMoves）に戻す
+                tempSolutionMoves = tempBranches.pop();
+            } else {
+                // 現在の問題の最後の1手を削除
+                tempSolutionMoves.pop();
+            }
 
             // 問題図 ＋ 確定済みの別箇所 ＋ 残っている手順から盤面を正確に再構築
             boardStones = tempSetupStones.map(s => ({ x: s.x, y: s.y, color: s.color, moveNum: 0 }));
@@ -1500,13 +1510,24 @@
 
             renderBoard();
 
-            const labels = Array.of("A", "B", "C", "D", "E", "F");
-            const currentLabel = labels.at(tempBranches.length) || `${tempBranches.length + 1}箇所目`;
+            const mid = (boardSize - 1) / 2;
+            let currentLabel = `${tempBranches.length + 1}箇所目`;
+            if (tempSolutionMoves.length > 0) {
+                const fm = tempSolutionMoves.at(0);
+                currentLabel = getQuadrantInfo(fm.x, fm.y, mid, tempBranches.length).symbol;
+            }
+            const infoEl = document.getElementById('branchCountInfo');
+            if (infoEl) {
+                infoEl.textContent = tempBranches.length > 0
+                    ? `✅ ${tempBranches.length}問確定済み ／ 現在「問題 ${currentLabel}」の手順を記録中`
+                    : `現在 1 箇所目（右上=Ⓐ / 右下=Ⓑ / 左下=Ⓒ / 左上=Ⓓ）を記録中`;
+            }
+
             const startColor = document.querySelector('input[name="problemTurn"]:checked')?.value || 'B';
             if (tempSolutionMoves.length === 0) {
                 setBanner(`【問題 ${currentLabel}】1手目に戻りました。「${startColor === 'W' ? '⚪白①' : '⚫黒①'}」から打ち直してください`, "judge-create");
             } else {
-                setBanner(`【問題 ${currentLabel}】1手戻しました：現在 ${tempSolutionMoves.length} 手目まで入力済み`, "judge-create");
+                setBanner(`【問題 ${currentLabel}】1手戻しました（現在 ${tempSolutionMoves.length} 手目まで入力済み・さらに戻すこともできます）`, "judge-create");
             }
         });
 
