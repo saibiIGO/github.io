@@ -682,53 +682,114 @@
 
             // 四隅など複数問題（2問以上）ある場合、既存の石の中央に Ⓐ, Ⓑ, Ⓒ, Ⓓ を表示（着手点を邪魔しない）
                         // 四隅など複数問題（2問以上）ある場合、盤面中央（天元付近）に碁石より大きく Ⓐ, Ⓑ, Ⓒ, Ⓓ を表示
+            // 天元付近に時計回り4象限（右上Ⓐ・右下Ⓑ・左下Ⓒ・左上Ⓓ）を「作成中」も「解答中」も絶えず表示
             boardGrid.querySelectorAll('.center-quadrant-label').forEach(el => el.remove());
 
+            if (getComputedStyle(boardGrid).position === 'static') {
+                boardGrid.style.position = 'relative';
+            }
+            const mid = (boardSize - 1) / 2;
+            const bigFontSize = Math.max(26, Math.floor(cellStep * 1.7)) + 'px';
+
+            // 1. 問題作成中（setup / record）：常に4象限の案内（Ⓐ・Ⓑ・Ⓒ・Ⓓ）を天元付近に表示
+            if (mode === "setup" || mode === "record") {
+                const allQuadrants = Array.of(
+                    { symbol: "Ⓐ", leftPct: 64, topPct: 36, qOrder: 1 }, // 第1象限：右上
+                    { symbol: "Ⓑ", leftPct: 64, topPct: 64, qOrder: 2 }, // 第2象限：右下
+                    { symbol: "Ⓒ", leftPct: 36, topPct: 64, qOrder: 3 }, // 第3象限：左下
+                    { symbol: "Ⓓ", leftPct: 36, topPct: 36, qOrder: 4 }  // 第4象限：左上
+                );
+
+                // 現在入力中の手順（tempSolutionMoves）があれば、どの象限を入力中か判定して赤枠強調
+                let activeQOrder = -1;
+                if (mode === "record" && tempSolutionMoves.length > 0) {
+                    const fm = tempSolutionMoves.at(0);
+                    activeQOrder = getQuadrantInfo(fm.x, fm.y, mid, 0).order;
+                }
+
+                // すでに確定済みの象限（tempBranches）を緑色で表示
+                const doneQOrders = tempBranches.map(br => {
+                    const fm = br.at(0);
+                    return fm ? getQuadrantInfo(fm.x, fm.y, mid, 0).order : -1;
+                });
+
+                allQuadrants.forEach(q => {
+                    const lbl = document.createElement('div');
+                    lbl.className = 'center-quadrant-label';
+                    const isDone = doneQOrders.includes(q.qOrder);
+                    const isCurrent = (activeQOrder === q.qOrder);
+
+                    lbl.textContent = q.symbol;
+                    lbl.style.position = 'absolute';
+                    lbl.style.left = q.leftPct + '%';
+                    lbl.style.top = q.topPct + '%';
+                    lbl.style.transform = 'translate(-50%, -50%)';
+                    lbl.style.fontSize = bigFontSize;
+                    lbl.style.fontWeight = 'bold';
+                    lbl.style.lineHeight = '1';
+                    lbl.style.padding = '5px 8px';
+                    lbl.style.borderRadius = '10px';
+                    lbl.style.pointerEvents = 'none';
+                    lbl.style.zIndex = '30';
+                    lbl.style.userSelect = 'none';
+
+                    if (isDone) {
+                        lbl.style.color = '#16a34a';
+                        lbl.style.backgroundColor = 'rgba(240, 253, 244, 0.92)';
+                        lbl.style.boxShadow = '0 0 0 2px #16a34a';
+                    } else if (isCurrent) {
+                        lbl.style.color = '#dc2626';
+                        lbl.style.backgroundColor = 'rgba(254, 242, 242, 0.95)';
+                        lbl.style.boxShadow = '0 0 0 3px #dc2626';
+                    } else {
+                        lbl.style.color = '#475569';
+                        lbl.style.backgroundColor = 'rgba(255, 255, 255, 0.80)';
+                        lbl.style.boxShadow = '0 1px 4px rgba(0,0,0,0.2)';
+                    }
+
+                    boardGrid.appendChild(lbl);
+                });
+            }
+
+            // 2. 生徒の解答中（solve）：問題に含まれる象限（2問以上の場合）を天元付近に絶えず表示
             if (mode === "solve" && currentProblem) {
                 const branches = getProblemBranches(currentProblem);
                 if (branches.length > 1) {
-                    const labels = Array.of("Ⓐ", "Ⓑ", "Ⓒ", "Ⓓ", "Ⓔ", "Ⓕ");
-                    const mid = (boardSize - 1) / 2;
-                    const bigFontSize = Math.max(22, Math.floor(cellStep * 1.45)) + 'px';
-
                     branches.forEach((br, idx) => {
                         const firstMove = br.at(0);
                         if (!firstMove) return;
 
-                        // 問題の位置（左上・右上・左下・右下）を判定し、天元のすぐ近くに配置
-                        const isRight = firstMove.x > mid;
-                        const isBottom = firstMove.y > mid;
-                        const offsetPercent = 13; // 天元（50%）からのずらし幅（%）
-
+                        const qInfo = getQuadrantInfo(firstMove.x, firstMove.y, mid, idx);
                         const lbl = document.createElement('div');
                         lbl.className = 'center-quadrant-label';
                         const isDone = solvedBranchIndices.includes(idx);
                         const isCurrent = (activeBranchIndex === idx);
 
-                        lbl.textContent = labels.at(idx) || String(idx + 1);
+                        lbl.textContent = qInfo.symbol;
                         lbl.style.position = 'absolute';
-                        lbl.style.left = (isRight ? (50 + offsetPercent) : (50 - offsetPercent)) + '%';
-                        lbl.style.top = (isBottom ? (50 + offsetPercent) : (50 - offsetPercent)) + '%';
+                        lbl.style.left = qInfo.leftPct + '%';
+                        lbl.style.top = qInfo.topPct + '%';
                         lbl.style.transform = 'translate(-50%, -50%)';
                         lbl.style.fontSize = bigFontSize;
                         lbl.style.fontWeight = 'bold';
                         lbl.style.lineHeight = '1';
-                        lbl.style.padding = '4px 6px';
-                        lbl.style.borderRadius = '8px';
+                        lbl.style.padding = '5px 8px';
+                        lbl.style.borderRadius = '10px';
                         lbl.style.pointerEvents = 'none';
-                        lbl.style.zIndex = '15';
+                        lbl.style.zIndex = '30';
                         lbl.style.userSelect = 'none';
 
                         if (isDone) {
                             lbl.style.color = '#16a34a';
-                            lbl.style.backgroundColor = 'rgba(255, 255, 255, 0.85)';
+                            lbl.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
                         } else if (isCurrent) {
                             lbl.style.color = '#dc2626';
-                            lbl.style.backgroundColor = 'rgba(254, 242, 242, 0.92)';
-                            lbl.style.boxShadow = '0 0 0 2px #dc2626';
+                            lbl.style.backgroundColor = 'rgba(254, 242, 242, 0.95)';
+                            lbl.style.boxShadow = '0 0 0 3px #dc2626';
                         } else {
-                            lbl.style.color = '#1e293b';
-                            lbl.style.backgroundColor = 'rgba(255, 255, 255, 0.78)';
+                            lbl.style.color = '#0f172a';
+                            lbl.style.backgroundColor = 'rgba(255, 255, 255, 0.85)';
+                            lbl.style.boxShadow = '0 1px 4px rgba(0,0,0,0.25)';
                         }
 
                         boardGrid.appendChild(lbl);
@@ -736,6 +797,7 @@
                 }
             }
         }
+
 
             
 
@@ -918,17 +980,21 @@
                     btn.style.color = "#1e293b";
                 }
 
-                btn.addEventListener('click', () => {
-                    if (isSolved) return;
-                    activeBranchIndex = idx;
-                    solveStepIndex = 0;
-                    rebuildSolvedBranchesOnly();
-                    renderBoard();
-                    updateSubProblemBar();
-                    setBanner(`【問題 ${labelChar} を選択中】${turnText}（${labelChar}の1手目）を打ってください`, "judge-normal");
-                });
-
-                btnContainer.appendChild(btn);
+              btn.addEventListener('click', () => {
+                  // すでにクリア済みの問題を個別に解き直したい場合
+                  if (isDone) {
+                      if (!confirm(`問題 ${labelChar} だけを初期状態に戻して解き直しますか？（他のクリア済み問題はそのまま残ります）`)) return;
+                      solvedBranchIndices = solvedBranchIndices.filter(i => i !== idx);
+                      isSolved = false;
+                  }
+                  activeBranchIndex = idx;
+                  solveStepIndex = 0;
+                  rebuildSolvedBranchesOnly();
+                  renderBoard();
+                  updateSubProblemBar();
+                  setBanner(`【問題 ${labelChar} を選択中】${turnText}（${labelChar}の1手目）を打ってください`, "judge-normal");
+              });
+              btnContainer.appendChild(btn);
             });
         }
 
@@ -1116,8 +1182,6 @@
                 const branches = getProblemBranches(currentProblem);
                 if (branches.length === 0) return;
 
-                const labels = Array.of("A", "B", "C", "D", "E", "F");
-
                 // まだA/B/C/Dボタンが選ばれていない場合は、クリックした1手目から自動特定
                 if (activeBranchIndex === -1) {
                     const matchedIdx = branches.findIndex((br, idx) =>
@@ -1149,8 +1213,9 @@
                 const targetBranch = branches.at(activeBranchIndex);
                 const expectedMove = targetBranch.at(solveStepIndex);
                 if (!expectedMove) return;
-
-                const currentLabel = labels.at(activeBranchIndex) || String(activeBranchIndex + 1);
+                const mid = (boardSize - 1) / 2;
+                const firstMoveOfActive = targetBranch.at(0) || { x: 0, y: 0 };
+                const currentLabel = getQuadrantInfo(firstMoveOfActive.x, firstMoveOfActive.y, mid, activeBranchIndex).symbol;
                 const playerColor = expectedMove.color;
                 const check = checkLegalMoveTsumego(boardStones, x, y, playerColor, getPrevBoardForKo("solve"));
                 if (!check.valid) {
