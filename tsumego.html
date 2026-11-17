@@ -2022,85 +2022,39 @@
         });
 
         // 🌟 コードを書き換えなくても、同じフォルダに「default_problems.sgf」があれば自動で初期問題として読み込む安全機能
+
         window.addEventListener('DOMContentLoaded', () => {
-            fetch('./default_problems.sgf?t=' + Date.now())
+            const targetUrl = localStorage.getItem(CUSTOM_SGF_PATH_KEY) || './default_problems.sgf';
+            if (window.location.protocol === 'file:' && !targetUrl.startsWith('http')) {
+                return;
+            }
+            const sep = targetUrl.includes('?') ? '&' : '?';
+            fetch(targetUrl + sep + 't=' + Date.now())
                 .then(res => res.ok ? res.text() : null)
                 .then(fullSgf => {
                     if (!fullSgf) return;
-                    const gameChunks = fullSgf.split(/\(\s*;/).slice(1).map(chunk => "(;" + chunk);
+                    const gameChunks = splitMultiGameSgf(fullSgf);
                     if (gameChunks.length === 0) return;
 
-                    const externalDefaults = new Array();
+                    const loadedProblems = new Array();
                     gameChunks.forEach((sgf, idx) => {
-                        const szMatch = /SZ\[(\d+)\]/i.exec(sgf);
-                        const parsedSize = szMatch ? parseInt(szMatch.at(1), 10) : 9;
-                        const gnMatch = /GN\[([^\]]*)\]/i.exec(sgf);
-                        let rawTitle = gnMatch ? gnMatch.at(1) : `必須問題 ${idx + 1}`;
-                        const isMust = rawTitle.startsWith("【必須】");
-                        rawTitle = rawTitle.replace(/^【必須】/, "");
-                        const levelMatch = /^\[(初級（8〜10級）|中級（4〜7級）|上級（1〜3級）|有段者|プロ級)\]/.exec(rawTitle);
-                        const parsedLevel = levelMatch ? levelMatch.at(1) : "初級（8〜10級）";
-                        const parsedTitle = rawTitle.replace(/^\[(初級（8〜10級）|中級（4〜7級）|上級（1〜3級）|有段者|プロ級)\]/, "");
-
-                        const setupStones = new Array();
-                        const abRegex = /AB((?:\[[a-s]{2}\])+)/gi;
-                        let abMatch;
-                        while ((abMatch = abRegex.exec(sgf)) !== null) {
-                            const coords = abMatch.at(1).match(/\[([a-s]{2})\]/gi);
-                            if (coords) {
-                                coords.forEach(c => {
-                                    const x = SGF_CHARS.indexOf(c.charAt(1).toLowerCase());
-                                    const y = SGF_CHARS.indexOf(c.charAt(2).toLowerCase());
-                                    if (x >= 0 && y >= 0) setupStones.push({ x, y, color: 'B' });
-                                });
-                            }
-                        }
-                        const awRegex = /AW((?:\[[a-s]{2}\])+)/gi;
-                        let awMatch;
-                        while ((awMatch = awRegex.exec(sgf)) !== null) {
-                            const coords = awMatch.at(1).match(/\[([a-s]{2})\]/gi);
-                            if (coords) {
-                                coords.forEach(c => {
-                                    const x = SGF_CHARS.indexOf(c.charAt(1).toLowerCase());
-                                    const y = SGF_CHARS.indexOf(c.charAt(2).toLowerCase());
-                                    if (x >= 0 && y >= 0) setupStones.push({ x, y, color: 'W' });
-                                });
-                            }
-                        }
-
-                        const solutionMoves = new Array();
-                        const moveRegex = /;([BW])\[([a-s]{2})\]/gi;
-                        let mMatch;
-                        while ((mMatch = moveRegex.exec(sgf)) !== null) {
-                            const color = mMatch.at(1).toUpperCase();
-                            const x = SGF_CHARS.indexOf(mMatch.at(2).charAt(0).toLowerCase());
-                            const y = SGF_CHARS.indexOf(mMatch.at(2).charAt(1).toLowerCase());
-                            if (x >= 0 && y >= 0) solutionMoves.push({ x, y, color });
-                        }
-
-                        if (solutionMoves.length > 0) {
-                            externalDefaults.push({
-                                id: "ext_default_" + idx,
-                                title: parsedTitle,
-                                level: parsedLevel,
-                                isMust: isMust,
-                                size: parsedSize,
-                                setup: setupStones,
-                                solution: solutionMoves
-                            });
+                        const prob = parseSingleGameSgfToProblem(sgf, `問題_${idx + 1}`, `default_${idx + 1}`);
+                        if (prob.branches.length > 0) {
+                            loadedProblems.push(prob);
                         }
                     });
 
-                    // 外部SGF（default_problems.sgf）が見つかったら、初回訪問時の保存庫をそれに置き換える
-                    if (externalDefaults.length > 0 && !localStorage.getItem(STORAGE_KEY)) {
-                        library = externalDefaults;
+                    if (loadedProblems.length > 0) {
+                        library = loadedProblems;
                         saveLibrary();
                         startProblem(library.at(0));
+                        if (typeof renderStudentProblemGrid === 'function') renderStudentProblemGrid();
+                        if (typeof updatePathInfoDisplay === 'function') updatePathInfoDisplay();
                     }
                 })
                 .catch(() => {});
         });
-         // 📚 生徒用・問題選択画面を描画する関数（生徒端末でも常に操作・選択できる）
+
 
         // 📚 生徒用・問題選択画面の開閉ボタン
         document.getElementById('btnToggleStudentGrid')?.addEventListener('click', () => {
