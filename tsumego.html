@@ -275,6 +275,8 @@
                     <button type="button" id="btnSetProblemPath" style="padding: 4px 8px; font-size: 12px; font-weight: bold; background: #475569; color: #fff; border: none; border-radius: 5px; cursor: pointer;">
                         🌐 パス設定
                     </button>
+                   <button type="button" id="btnPasteSgfText" style="padding: 4px 8px; font-size: 12px; font-weight: bold; background: #0d9488; color: #fff; border: none; border-radius: 5px; cursor: pointer;">📋 文字貼付で読込</button>
+ 
                 </div>
             </div>
             <!-- 折りたたみ本体（問題を選んだら自動で閉じる） -->
@@ -2608,6 +2610,29 @@
             printWin.document.write(htmlDoc);
             printWin.document.close();
         });
+document.getElementById('btnPasteSgfText')?.addEventListener('click', () => {
+    const pasted = prompt("SGFファイルの中身（(;GM[1]...)）をコピーしてここに貼り付けてください：");
+    if (!pasted || !pasted.trim()) return;
+    const gameChunks = splitMultiGameSgf(pasted);
+    if (gameChunks.length === 0) return alert("有効なSGFデータが見つかりませんでした。");
+    const targetWarehouse = askTargetWarehouseForSgf("0");
+    if (targetWarehouse === null) return;
+    let count = 0;
+    gameChunks.slice().reverse().forEach((sgf, idx) => {
+        const prob = parseSingleGameSgfToProblem(sgf, `貼付問題_${gameChunks.length - idx}`, `paste_${Date.now()}_${idx}`);
+        if (targetWarehouse !== "KEEP_ORIGINAL") prob.level = targetWarehouse;
+        if (prob.branches.length > 0) {
+            library.unshift(prob);
+            count++;
+        }
+    });
+    if (count > 0) {
+        saveLibrary();
+        startProblem(library.at(0));
+        if (typeof renderStudentProblemGrid === 'function') renderStudentProblemGrid();
+        alert(`全 ${count} 問を読み込みました！`);
+    }
+});
 
 
    </script>
