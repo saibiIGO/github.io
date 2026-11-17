@@ -243,8 +243,43 @@
                 💡 ヒントを見る
             </button>
         </div>
+
         <!-- 💡 碁盤の外に表示されるヒント欄 -->
         <div id="hintDisplayBox" style="display: none; margin-top: 6px; padding: 8px 12px; background: #fffbeb; border-left: 4px solid #f59e0b; border-radius: 4px; font-size: 13px; color: #78350f;"></div>
+
+        <!-- 📚 生徒用・問題選択＆問題ファイル（パス）指定パネル -->
+
+        <!-- 📚 生徒用・問題選択＆問題ファイル（パス）指定パネル（開閉式コンパクト版） -->
+        <div id="studentProblemSelectorPanel" style="margin-top: 6px; padding: 6px 10px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; text-align: left;">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px;">
+                <button type="button" id="btnToggleStudentGrid" style="padding: 5px 10px; font-size: 13px; font-weight: bold; background: #0369a1; color: #fff; border: none; border-radius: 5px; cursor: pointer;">
+                    📚 問題をえらぶ ▼
+                </button>
+                <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                    <select id="studentLevelFilter" style="padding: 4px 6px; font-size: 12px; font-weight: bold; border: 1px solid #7dd3fc; border-radius: 5px; background: #fff; color: #0f172a;">
+                        <option value="ALL">すべての難易度</option>
+                        <option value="初級（8〜10級）">初級（8〜10級）</option>
+                        <option value="中級（4〜7級）">中級（4〜7級）</option>
+                        <option value="上級（1〜3級）">上級（1〜3級）</option>
+                        <option value="有段者">有段者</option>
+                        <option value="プロ級">プロ級</option>
+                    </select>
+                    <label for="studentFileImportSgf" style="padding: 4px 8px; font-size: 12px; font-weight: bold; background: #0284c7; color: #fff; border-radius: 5px; cursor: pointer; display: inline-block;">
+                        📂 問題を開く
+                    </label>
+                    <input type="file" id="studentFileImportSgf" accept=".sgf,.txt" style="display: none;">
+                    <button type="button" id="btnSetProblemPath" style="padding: 4px 8px; font-size: 12px; font-weight: bold; background: #475569; color: #fff; border: none; border-radius: 5px; cursor: pointer;">
+                        🌐 パス設定
+                    </button>
+                </div>
+            </div>
+            <!-- 折りたたみ本体（問題を選んだら自動で閉じる） -->
+            <div id="studentProblemDrawer" style="display: none; margin-top: 8px; padding-top: 6px; border-top: 1px dashed #7dd3fc;">
+                <div id="currentProblemPathInfo" style="font-size: 11px; color: #0369a1; margin-bottom: 6px;"></div>
+                <div id="studentProblemGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 6px; max-height: 180px; overflow-y: auto;"></div>
+            </div>
+        </div>
+
 
         <!-- 開閉式の操作マニュアル本体 -->
         <div id="tsumegoManualBox" style="display: none; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 12px; margin-top: 10px; font-size: 13px; line-height: 1.6; color: #1e293b; max-height: 300px; overflow-y: auto; text-align: left;">
@@ -2049,7 +2084,190 @@
                 })
                 .catch(() => {});
         });
- 
+         // 📚 生徒用・問題選択画面を描画する関数（生徒端末でも常に操作・選択できる）
+
+        // 📚 生徒用・問題選択画面の開閉ボタン
+        document.getElementById('btnToggleStudentGrid')?.addEventListener('click', () => {
+            const drawer = document.getElementById('studentProblemDrawer');
+            const toggleBtn = document.getElementById('btnToggleStudentGrid');
+            if (!drawer) return;
+            const isHidden = (drawer.style.display === "none" || drawer.style.display === "");
+            drawer.style.display = isHidden ? "block" : "none";
+            if (toggleBtn) toggleBtn.textContent = isHidden ? "📚 問題をえらぶ ▲（閉じる）" : "📚 問題をえらぶ ▼";
+            if (isHidden) renderStudentProblemGrid();
+        });
+
+        // 難易度フィルターを変更したときは自動で一覧を開く
+        document.getElementById('studentLevelFilter')?.addEventListener('change', () => {
+            const drawer = document.getElementById('studentProblemDrawer');
+            const toggleBtn = document.getElementById('btnToggleStudentGrid');
+            if (drawer) drawer.style.display = "block";
+            if (toggleBtn) toggleBtn.textContent = "📚 問題をえらぶ ▲（閉じる）";
+            renderStudentProblemGrid();
+        });
+
+        // 📚 生徒用・問題選択画面を描画する関数（問題を選んだら自動で閉じて碁盤を広く見せる）
+        function renderStudentProblemGrid() {
+            const grid = document.getElementById('studentProblemGrid');
+            const filterEl = document.getElementById('studentLevelFilter');
+            if (!grid) return;
+
+            const selectedLevel = filterEl ? filterEl.value : "ALL";
+            const filtered = (selectedLevel === "ALL")
+                ? library
+                : library.filter(p => (p.level || "初級（8〜10級）") === selectedLevel);
+
+            grid.innerHTML = "";
+
+            if (!library || library.length === 0) {
+                grid.innerHTML = `<div style="grid-column: 1 / -1; font-size: 12px; color: #475569; padding: 6px;">問題データを読み込み中です...（上の「📂 問題を開く」から問題を選んでください）</div>`;
+                return;
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div style="grid-column: 1 / -1; font-size: 12px; color: #475569; padding: 6px;">「${selectedLevel}」の問題はまだありません。</div>`;
+                return;
+            }
+
+            filtered.forEach((prob) => {
+                const isCurrent = (currentProblem && currentProblem.id === prob.id && mode === "solve");
+                const btn = document.createElement('button');
+                btn.type = "button";
+                btn.style.textAlign = "left";
+                btn.style.padding = "7px 9px";
+                btn.style.borderRadius = "6px";
+                btn.style.cursor = "pointer";
+                btn.style.border = isCurrent ? "2px solid #0284c7" : "1px solid #cbd5e1";
+                btn.style.backgroundColor = isCurrent ? "#e0f2fe" : "#ffffff";
+                btn.style.color = "#0f172a";
+
+                const branches = getProblemBranches(prob);
+                const subCountText = branches.length > 1 ? `・全${branches.length}問` : "";
+                const levelText = prob.level || "初級（8〜10級）";
+
+                btn.innerHTML = `
+                    <div style="font-size: 12px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        ${isCurrent ? "▶ " : ""}${prob.title}
+                    </div>
+                    <div style="font-size: 11px; color: #475569; margin-top: 2px;">
+                        ${levelText}${subCountText}
+                    </div>
+                `;
+
+                btn.addEventListener('click', () => {
+                    startProblem(prob);
+                    renderStudentProblemGrid();
+                    // 問題を選んだら一覧を自動で閉じて碁盤全体を美しく表示
+                    const drawer = document.getElementById('studentProblemDrawer');
+                    const toggleBtn = document.getElementById('btnToggleStudentGrid');
+                    if (drawer) drawer.style.display = "none";
+                    if (toggleBtn) toggleBtn.textContent = "📚 問題をえらぶ ▼";
+                });
+
+                grid.appendChild(btn);
+            });
+        }
+
+        document.getElementById('studentLevelFilter')?.addEventListener('change', () => {
+            renderStudentProblemGrid();
+        });
+
+        // 📂 生徒・先生共通：画面上部の「📂 問題ファイル(.sgf)を開く」ボタンから好きなフォルダのSGFを読込
+        document.getElementById('studentFileImportSgf')?.addEventListener('change', function(e) {
+            const file = e.target.files.at(0);
+            if (!file) return;
+            const pathInfo = document.getElementById('currentProblemPathInfo');
+            if (pathInfo) pathInfo.textContent = `📁 読み込み元ファイル： ${file.name}`;
+
+            const mainImportInput = document.getElementById('fileImportSgf');
+            if (mainImportInput) {
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                mainImportInput.files = dt.files;
+                mainImportInput.dispatchEvent(new Event('change'));
+            }
+            e.target.value = "";
+        });
+
+        // 🌐 先生・生徒が問題ファイルのパス（URLまたは同一フォルダ内のファイル名）を設定・記憶する機能
+        const CUSTOM_SGF_PATH_KEY = "igo_tsumego_custom_sgf_path_v1";
+
+        function updatePathInfoDisplay() {
+            const pathInfo = document.getElementById('currentProblemPathInfo');
+            if (!pathInfo) return;
+            const savedPath = localStorage.getItem(CUSTOM_SGF_PATH_KEY);
+            if (savedPath) {
+                pathInfo.textContent = `🌐 設定中の問題パス： ${savedPath}`;
+            } else if (window.location.protocol === 'file:') {
+                pathInfo.textContent = `💡 パソコン内のファイルを開くときは、右上の「📂 問題ファイル(.sgf)を開く」からフォルダを選んでください`;
+            } else {
+                pathInfo.textContent = `🌐 自動読込パス： ./default_problems.sgf`;
+            }
+        }
+
+        async function loadFromCustomOrDefaultPath(customUrl) {
+            const targetUrl = customUrl || localStorage.getItem(CUSTOM_SGF_PATH_KEY) || "./default_problems.sgf";
+            if (window.location.protocol === 'file:' && !targetUrl.startsWith('http')) {
+                updatePathInfoDisplay();
+                return;
+            }
+            try {
+                const sep = targetUrl.includes('?') ? '&' : '?';
+                const res = await fetch(targetUrl + sep + 't=' + Date.now());
+                if (!res.ok) throw new Error("HTTP " + res.status);
+                const fullSgf = await res.text();
+                const gameChunks = splitMultiGameSgf(fullSgf);
+                const loadedList = new Array();
+                gameChunks.forEach((sgf, idx) => {
+                    const prob = parseSingleGameSgfToProblem(sgf, `問題_${idx + 1}`, "remote_" + idx);
+                    if (prob.branches.length > 0) loadedList.push(prob);
+                });
+                if (loadedList.length > 0) {
+                    library = loadedList;
+                    saveLibrary();
+                    startProblem(library.at(0));
+                    renderStudentProblemGrid();
+                    updatePathInfoDisplay();
+                    if (customUrl) alert(`指定されたパスから全 ${loadedList.length} 問を読み込みました！`);
+                }
+            } catch (err) {
+                if (customUrl) {
+                    alert(`指定されたパスからの読み込みに失敗しました。\nURLやファイル名が正しいか確認してください。\n(${err.message})`);
+                }
+            }
+        }
+
+        document.getElementById('btnSetProblemPath')?.addEventListener('click', () => {
+            const currentPath = localStorage.getItem(CUSTOM_SGF_PATH_KEY) || "./default_problems.sgf";
+            const inputPath = prompt(
+                "問題ファイル（.sgf）のURL、または同じフォルダ内のファイル名を入力してください：\n" +
+                "（例：./default_problems.sgf や https://example.com）\n" +
+                "※空欄にしてOKを押すと初期設定に戻ります。",
+                currentPath
+            );
+            if (inputPath === null) return;
+            const trimmed = inputPath.trim();
+            if (trimmed === "") {
+                localStorage.removeItem(CUSTOM_SGF_PATH_KEY);
+                updatePathInfoDisplay();
+                alert("問題パスの設定を初期状態に戻しました。");
+            } else {
+                localStorage.setItem(CUSTOM_SGF_PATH_KEY, trimmed);
+                updatePathInfoDisplay();
+                loadFromCustomOrDefaultPath(trimmed);
+            }
+        });
+
+        // 起動時にパス表示と生徒用問題リストを更新
+        window.addEventListener('DOMContentLoaded', () => {
+            updatePathInfoDisplay();
+            renderStudentProblemGrid();
+            const savedPath = localStorage.getItem(CUSTOM_SGF_PATH_KEY);
+            if (savedPath) {
+                loadFromCustomOrDefaultPath(savedPath);
+            }
+        });
+
 
    </script>
 </body>
