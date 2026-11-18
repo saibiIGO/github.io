@@ -414,7 +414,9 @@
 
                     <button type="button" id="btnExportAllSgf" onclick="exportAllProblemsNow()" class="btn-secondary" style="width: 100%; margin-top: 6px; background-color: #0369a1;">📦 保存庫の全問題をSGFで一括保存</button>
 
-                <button type="button" id="btnPrintPdfBooklet" class="btn-primary" style="width: 100%; margin-top: 6px; background-color: #7c3aed;">🖨️ 1冊の印刷用テキスト（PDF）を作成</button>
+                                <button type="button" id="btnPrintPdfBooklet" class="btn-primary" style="width: 100%; margin-top: 6px; background-color: #7c3aed;">🖨️ 1冊の印刷用テキスト（PDF）を作成</button>
+                <button type="button" id="btnMergeCheckedProblems" onclick="mergeCheckedProblemsToFourCorners()" class="btn-primary" style="width: 100%; margin-top: 6px; background-color: #ea580c;">🔗 チェックした問題を1つの4隅問題に合体（総合作成）</button>
+
 
                     <button type="button" id="btnCopyDefaultCode" class="btn-secondary" style="width: 100%; background-color: #b45309;">
                         🛠️ 初期問題コード（プログラム用）をコピー
@@ -644,9 +646,34 @@
 
                 btnBox.appendChild(editBtn);
                 btnBox.appendChild(delBtn);
+                // 合体選択用のチェックボックス（倉庫をまたいで最大4問まで選択可能）
+                const mergeChk = document.createElement('input');
+                mergeChk.type = 'checkbox';
+                mergeChk.title = '4隅合体用に選択';
+                mergeChk.style.width = '18px';
+                mergeChk.style.height = '18px';
+                mergeChk.style.marginRight = '6px';
+                mergeChk.style.cursor = 'pointer';
+                mergeChk.checked = selectedMergeIds.has(prob.id);
+                mergeChk.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (mergeChk.checked) {
+                        if (selectedMergeIds.size >= 4) {
+                            mergeChk.checked = false;
+                            alert("1つの盤面に合体できるのは最大4問（4隅）までです。");
+                            return;
+                        }
+                        selectedMergeIds.add(prob.id);
+                    } else {
+                        selectedMergeIds.delete(prob.id);
+                    }
+                    updateMergeButtonLabel();
+                });
 
+                card.appendChild(mergeChk);
                 card.appendChild(info);
                 card.appendChild(btnBox);
+
 
 
                 card.addEventListener('click', () => {
@@ -2443,6 +2470,7 @@
         }
 
         document.getElementById('btnPrintPdfBooklet')?.addEventListener('click', () => {
+        
             if (!library || library.length === 0) {
                 return alert("保存庫に問題が登録されていません。");
             }
@@ -2605,6 +2633,112 @@ document.getElementById('btnPasteSgfText')?.addEventListener('click', () => {
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
             alert("全 " + library.length + " 問を default_problems.sgf としてダウンロードしました！");
+        }
+                // 🔗 選んだ複数問題（初級・中級など倉庫またぎOK）を1枚の19路盤（4隅問題）に合体するための選択状態管理
+        const selectedMergeIds = new Set();
+
+        function updateMergeButtonLabel() {
+            const btn = document.getElementById('btnMergeCheckedProblems');
+            if (!btn) return;
+            const count = selectedMergeIds.size;
+            btn.textContent = count > 0
+                ? `🔗 選択中の ${count} 問を1つの4隅問題に合体する`
+                : `🔗 チェックした問題を1つの4隅問題に合体（総合作成）`;
+        }
+
+        // 📐 9路・13路・19路盤の座標を、19路盤の指定した隅（0:右上Ⓐ, 1:右下Ⓑ, 2:左下Ⓒ, 3:左上Ⓓ）へ自動変換する関数
+        function mapCoordTo19Corner(x, y, srcSize, cornerIdx) {
+            if (srcSize === 19) return { x, y };
+            const offset = 19 - srcSize;
+            if (cornerIdx === 0) return { x: x + offset, y: y };          // 右上 Ⓐ
+            if (cornerIdx === 1) return { x: x + offset, y: y + offset }; // 右下 Ⓑ
+            if (cornerIdx === 2) return { x: x,          y: y + offset }; // 左下 Ⓒ
+            return { x: x, y: y };                                        // 左上 Ⓓ
+        }
+
+        function mergeCheckedProblemsToFourCorners() {
+            const picked = library.filter(p => selectedMergeIds.has(p.id));
+            if (picked.length < 2) {
+                return alert("合体したい問題に2つ〜4つチェック（☑）を入れてから押してください。\n※9路盤・13路盤・19路盤のどれが混ざっていても自動で19路盤の4隅へ配置されます！");
+            }
+
+            const newTitle = prompt(
+                `選択した ${picked.length} 問を19路盤の4隅問題に合体します。\n新しい問題タイトルを入力してください：`,
+                `総合4隅セット（${picked.map(p => p.title).join("・").slice(0, 24)}）`
+            );
+            if (!newTitle || !newTitle.trim()) return;
+
+            const targetWarehouse = askTargetWarehouseForSgf("6"); // デフォルトは「6：総合」
+            if (targetWarehouse === null) return;
+            const finalLevel = (targetWarehouse === "KEEP_ORIGINAL") ? "総合" : targetWarehouse;
+
+            const mergedSetup = [];
+            const mergedBranches = [];
+            const mergedBranchHints = {};
+            const usedStones = new Set();
+            let hasOverlap = false;
+
+            const targetSize = 19;
+            const mid = (targetSize - 1) / 2;
+
+            picked.forEach((prob, idx) => {
+                const srcSize = prob.size || 19;
+
+                // 初期配置石の統合（9路・13路盤なら自動的に右上→右下→左下→左上へ配置）
+                (prob.setup || []).forEach(st => {
+                    const mapped = mapCoordTo19Corner(st.x, st.y, srcSize, idx);
+                    const key = `${mapped.x},${mapped.y}`;
+                    if (usedStones.has(key)) hasOverlap = true;
+                    usedStones.add(key);
+                    mergedSetup.push({ x: mapped.x, y: mapped.y, color: st.color });
+                });
+
+                // 正解手順（分岐）と問題別ヒントの統合
+                const branches = getProblemBranches(prob);
+                const mainBr = branches.at(0);
+                if (mainBr && mainBr.length > 0) {
+                    const clonedBr = mainBr.map(m => {
+                        const mapped = mapCoordTo19Corner(m.x, m.y, srcSize, idx);
+                        return { x: mapped.x, y: mapped.y, color: m.color };
+                    });
+                    mergedBranches.push(clonedBr);
+
+                    const fm = clonedBr.at(0);
+                    const qInfo = getQuadrantInfo(fm.x, fm.y, mid, idx);
+                    const hintText = prob.hint || (prob.branchHints ? Object.values(prob.branchHints).find(v => v) : "");
+                    if (hintText) {
+                        mergedBranchHints[qInfo.symbol] = hintText;
+                    }
+                }
+            });
+
+            if (hasOverlap) {
+                if (!confirm("⚠️ 選択した問題の中に、同じ位置の石が重なっているものがあります。\nこのまま合体してよろしいですか？")) {
+                    return;
+                }
+            }
+
+            const mergedProblem = {
+                id: "merged_" + Date.now(),
+                title: newTitle.trim(),
+                level: finalLevel,
+                turn: mergedBranches.at(0)?.at(0)?.color || 'B',
+                hint: "",
+                branchHints: mergedBranchHints,
+                isMust: false,
+                size: targetSize,
+                setup: mergedSetup,
+                solution: mergedBranches.at(0) || [],
+                branches: mergedBranches
+            };
+
+            library.unshift(mergedProblem);
+            selectedMergeIds.clear();
+            updateMergeButtonLabel();
+            saveLibrary();
+            startProblem(mergedProblem);
+            if (typeof renderStudentProblemGrid === 'function') renderStudentProblemGrid();
+            alert(`9路・13路盤の座標を自動変換し、「${mergedProblem.title}」（19路盤・全${mergedBranches.length}問）を「${finalLevel}」倉庫に登録しました！`);
         }
 
    </script>
