@@ -411,10 +411,9 @@
                     <button type="button" id="btnExportProblemSgf" class="btn-secondary" style="width: 100%; background-color: #5856d6;">
                         📤 出題中の問題をSGFで保存
                     </button>
-                   <button type="button" id="btnExportAllSgf" class="btn-secondary" style="width: 100%; background-color: #0d9488;">
-                        📦 保存庫の全問題をSGFで一括出力
-                    </button>
-                                    <button type="button" id="btnExportAllSgf" class="btn-secondary" style="width: 100%; margin-top: 6px; background-color: #0369a1;">📦 保存庫の全問題をSGFで一括保存</button>
+
+                    <button type="button" id="btnExportAllSgf" onclick="exportAllProblemsNow()" class="btn-secondary" style="width: 100%; margin-top: 6px; background-color: #0369a1;">📦 保存庫の全問題をSGFで一括保存</button>
+
                 <button type="button" id="btnPrintPdfBooklet" class="btn-primary" style="width: 100%; margin-top: 6px; background-color: #7c3aed;">🖨️ 1冊の印刷用テキスト（PDF）を作成</button>
 
                     <button type="button" id="btnCopyDefaultCode" class="btn-secondary" style="width: 100%; background-color: #b45309;">
@@ -2589,27 +2588,24 @@ document.getElementById('btnPasteSgfText')?.addEventListener('click', () => {
 });
 
         // 📦 保存庫の全問題を1つのSGFファイル（default_problems.sgf）に直接一括出力
-        document.getElementById('btnExportAllSgf')?.addEventListener('click', () => {
+
+
+        function exportAllProblemsNow() {
             if (!library || library.length === 0) {
                 return alert("保存庫に問題が登録されていません。");
             }
-
             const allSgf = library.map(prob => buildSingleProblemSgf(prob)).join("\n\n");
             const blob = new Blob([allSgf], { type: "application/octet-stream" });
             const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
             link.href = url;
             link.download = "default_problems.sgf";
-            link.style.display = "none";
             document.body.appendChild(link);
             link.click();
-
-            setTimeout(() => {
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-            }, 1000);
-        });
-
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            alert("全 " + library.length + " 問を default_problems.sgf としてダウンロードしました！");
+        }
 
    </script>
 </body>
