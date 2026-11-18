@@ -255,7 +255,8 @@
                 <button type="button" id="btnToggleStudentGrid" style="padding: 5px 10px; font-size: 13px; font-weight: bold; background: #0369a1; color: #fff; border: none; border-radius: 5px; cursor: pointer;">
                     📚 問題をえらぶ ▼
                 </button>
-                <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">        
+
                     <select id="studentLevelFilter" style="padding: 4px 6px; font-size: 12px; font-weight: bold; border: 1px solid #7dd3fc; border-radius: 5px; background: #fff; color: #0f172a;">
                         <option value="ALL">すべての倉庫・難易度</option>
                         <option value="初級（8〜10級）">初級（8〜10級）</option>
@@ -275,8 +276,9 @@
                     <button type="button" id="btnSetProblemPath" style="padding: 4px 8px; font-size: 12px; font-weight: bold; background: #475569; color: #fff; border: none; border-radius: 5px; cursor: pointer;">
                         🌐 パス設定
                     </button>
-                   <button type="button" id="btnPasteSgfText" style="padding: 4px 8px; font-size: 12px; font-weight: bold; background: #0d9488; color: #fff; border: none; border-radius: 5px; cursor: pointer;">📋 文字貼付で読込</button>
- 
+                   <button type="button" id="btnPasteSgfText" style="padding: 4px 8px; font-size: 12px; font-weight: bold; background: #0d9488; color: #fff; border: none; border-radius: 5px; cursor: pointer;">📋 文字貼付で読込
+                   </button>
+                 <a href="index.html" style="padding: 5px 10px; font-size: 13px; font-weight: bold; background: #ff9500; color: #fff; border-radius: 5px; cursor: pointer;">← ✨トップページに戻る</a>
                 </div>
             </div>
             <!-- 折りたたみ本体（問題を選んだら自動で閉じる./default_problems.sgf） -->
@@ -448,6 +450,8 @@
             </div>
 
             <!-- 4. ジェネレーターへの移動リンク -->
+            
+            <a href="index.html" target="blank" rel="noopener noreferrer" class="btn-nav"> ←✨  トップページを開く</a>
             <a href="igogenerator.html" target="_blank" rel="noopener noreferrer" class="btn-nav">
                 ✨ 囲碁・棋譜並べ＆解説作成ジェネレーターを開く
             </a>
@@ -468,8 +472,8 @@
                 size: 9,
                 setup: Array.of(
                     { x: 0, y: 1, color: 'B' }, { x: 1, y: 1, color: 'B' }, { x: 2, y: 0, color: 'B' },
-                    { x: 3, y: 0, color: 'W' }, { x: 3, y: 1, color: 'W' }, { x: 2, y: 2, color: 'W' },
-                    { x: 1, y: 2, color: 'W' }, { x: 0, y: 2, color: 'W' }
+                    { x: 4, y: 0, color: 'W' }, { x: 4, y: 1, color: 'W' }, { x: 2, y: 2, color: 'W' },
+                    { x: 1, y: 2, color: 'W' }, { x: 0, y: 2, color: 'W' },{ x: 3, y: 2, color: 'W' }, { x: 4, y: 2, color: 'W' }
                 ),
                 solution: Array.of(
                     { x: 1, y: 0, color: 'B' }
@@ -1726,17 +1730,60 @@
             startProblem(newProblem);
         });
 
-
-
         // 8. 初期起動処理
         window.addEventListener('DOMContentLoaded', () => {
-            loadLibrary();
-            if (library.length > 0) {
-                startProblem(library.at(0));
-            } else {
-                initBoard();
+            const targetUrl = localStorage.getItem(CUSTOM_SGF_PATH_KEY) || './default_problems.sgf';
+            if (window.location.protocol === 'file:' && !targetUrl.startsWith('http')) {
+                if (library && library.length > 0) startProblem(library.at(0));
+                else initBoard();
+                renderLibraryList();
+                return;
             }
+            // すでに保存庫に問題が登録されている場合（先生端末など）は、勝手に上書きしない
+            const hasSavedProblems = localStorage.getItem(STORAGE_KEY);
+            if (hasSavedProblems && library && library.length > 0 && !localStorage.getItem(CUSTOM_SGF_PATH_KEY)) {
+                startProblem(library.at(0));
+                renderLibraryList();
+                if (typeof renderStudentProblemGrid === 'function') renderStudentProblemGrid();
+                if (typeof updatePathInfoDisplay === 'function') updatePathInfoDisplay();
+                return;
+            }
+
+            // まず保存庫または初期盤面をすぐ描画しておく（読み込み待ちで真っ白になるのを防ぐ）
+            if (library && library.length > 0) startProblem(library.at(0));
+            else initBoard();
+            renderLibraryList();
+
+            const sep = targetUrl.includes('?') ? '&' : '?';
+            fetch(targetUrl + sep + 't=' + Date.now())
+                .then(res => res.ok ? res.text() : null)
+                .then(fullSgf => {
+                    if (!fullSgf) return;
+                    const gameChunks = splitMultiGameSgf(fullSgf);
+                    if (gameChunks.length === 0) return;
+
+                    const loadedProblems = new Array();
+                    gameChunks.forEach((sgf, idx) => {
+                        const prob = parseSingleGameSgfToProblem(sgf, `問題_${idx + 1}`, `default_${idx + 1}`);
+                        if (prob.branches.length > 0) {
+                            loadedProblems.push(prob);
+                        }
+                    });
+
+                    if (loadedProblems.length > 0) {
+                        library = loadedProblems;
+                        saveLibrary();
+                        startProblem(library.at(0));
+                        if (typeof renderStudentProblemGrid === 'function') renderStudentProblemGrid();
+                        if (typeof updatePathInfoDisplay === 'function') updatePathInfoDisplay();
+                    }
+                })
+                .catch(() => {});
         });
+
+
+
+
         // 1問分のデータから標準SGF文字列を生成する共通関数（必須・難易度・問題別ヒント・複数ルートも完全記録）
         function buildSingleProblemSgf(prob) {
             const sz = prob.size || 9;
