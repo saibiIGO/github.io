@@ -2587,25 +2587,19 @@ document.getElementById('btnPasteSgfText')?.addEventListener('click', () => {
         alert(`全 ${count} 問を読み込みました！`);
     }
 });
-        // 📦 保存庫の全問題を1つのSGFファイル（マルチゲームSGF）に一括出力（Linux/Firefox/Chrome確実動作版）
+
+        // 📦 保存庫の全問題を1つのSGFファイル（default_problems.sgf）に直接一括出力
         document.getElementById('btnExportAllSgf')?.addEventListener('click', () => {
             if (!library || library.length === 0) {
                 return alert("保存庫に問題が登録されていません。");
             }
 
             const allSgf = library.map(prob => buildSingleProblemSgf(prob)).join("\n\n");
-            const fileName = prompt(
-                `保存庫の全 ${library.length} 問を1つのSGFファイルにまとめて保存します。\nファイル名を入力してください（生徒用配布ファイルは default_problems.sgf）：`,
-                "default_problems.sgf"
-            );
-            if (!fileName) return;
-            const finalName = fileName.toLowerCase().endsWith(".sgf") ? fileName.trim() : fileName.trim() + ".sgf";
-
             const blob = new Blob([allSgf], { type: "application/octet-stream" });
             const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
             link.href = url;
-            link.download = finalName;
+            link.download = "default_problems.sgf";
             link.style.display = "none";
             document.body.appendChild(link);
             link.click();
