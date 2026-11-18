@@ -1,0 +1,17 @@
+(;GM[1]FF[4]CA[UTF-8]AP[GoTsumegoLibrary]SZ[9]GN[【必須】必須・基本死活 第1問（二眼を作る）]
+AB[ab][bb][ca]
+AW[da][db][cc][bc][ac]
+;B[ba]
+)
+
+(;GM[1]FF[4]CA[UTF-8]AP[GoTsumegoLibrary]SZ[9]GN[【必須】必須・基本死活 第2問（急所の一撃・三目中手）]
+AB[da][db][dc][cc][bc][ac]
+AW[aa][ca][ab][bb][cb]
+;B[ba]
+)
+
+(;GM[1]FF[4]CA[UTF-8]AP[GoTsumegoLibrary]SZ[9]GN[【必須】必須・手筋 第3問（ウッテガエシの基本）]
+AB[ca][da][db][bc][cc][ac]
+AW[ba][ab][cb]
+;B[bb];W[aa];B[bb]
+)
