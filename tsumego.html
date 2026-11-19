@@ -278,7 +278,9 @@
                     </button>
                    <button type="button" id="btnPasteSgfText" style="padding: 4px 8px; font-size: 12px; font-weight: bold; background: #0d9488; color: #fff; border: none; border-radius: 5px; cursor: pointer;">📋 文字貼付で読込
                    </button>
-                 <a href="index.html" style="padding: 5px 10px; font-size: 13px; font-weight: bold; background: #ff9500; color: #fff; border-radius: 5px; cursor: pointer;">← ✨トップページに戻る</a>
+                   <button type="button" class="btn" style="background:#b45309;" onclick="location.href='./index.html'">
+            🏯 トップページへ移動
+        </button>
                 </div>
             </div>
             <!-- 折りたたみ本体（問題を選んだら自動で閉じる./default_problems.sgf） -->
@@ -417,7 +419,10 @@
                     <button type="button" id="btnExportAllSgf" onclick="exportAllProblemsNow()" class="btn-secondary" style="width: 100%; margin-top: 6px; background-color: #0369a1;">📦 保存庫の全問題をSGFで一括保存</button>
 
                                 <button type="button" id="btnPrintPdfBooklet" class="btn-primary" style="width: 100%; margin-top: 6px; background-color: #7c3aed;">🖨️ 1冊の印刷用テキスト（PDF）を作成</button>
-                <button type="button" id="btnMergeCheckedProblems" onclick="mergeCheckedProblemsToFourCorners()" class="btn-primary" style="width: 100%; margin-top: 6px; background-color: #ea580c;">🔗 チェックした問題を1つの4隅問題に合体（総合作成）</button>
+
+                                <button type="button" id="btnMergeCheckedProblems" onclick="mergeCheckedProblemsToFourCorners()" class="btn-primary" style="width: 100%; margin-top: 6px; background-color: #ea580c;">🔗 チェックした問題を1つの4隅問題に合体（総合作成）</button>
+                <button type="button" class="btn-primary" style="width: 100%; margin-top: 6px; background-color: #0d9488;" onclick="location.href='./saibiprint.html'">📄 細微プリント（プロ棋譜・A4両面印刷）へ移動</button>
+
 
 
                     <button type="button" id="btnCopyDefaultCode" class="btn-secondary" style="width: 100%; background-color: #b45309;">
@@ -473,7 +478,7 @@
                 setup: Array.of(
                     { x: 0, y: 1, color: 'B' }, { x: 1, y: 1, color: 'B' }, { x: 2, y: 0, color: 'B' },
                     { x: 4, y: 0, color: 'W' }, { x: 4, y: 1, color: 'W' }, { x: 2, y: 2, color: 'W' },
-                    { x: 1, y: 2, color: 'W' }, { x: 0, y: 2, color: 'W' },{ x: 3, y: 2, color: 'W' }, { x: 4, y: 2, color: 'W' }
+              { x: 1, y: 2, color: 'W' }, { x: 0, y: 2, color: 'W' },{ x: 3, y: 2,color:'W' },           { x: 4, y: 2, color: 'W' }
                 ),
                 solution: Array.of(
                     { x: 1, y: 0, color: 'B' }
