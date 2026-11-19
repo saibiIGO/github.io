@@ -283,11 +283,12 @@
             📂 SGF棋譜ファイルを開く
         </button>
         <input type="file" id="sgfFileInput" accept=".sgf,.txt,text/plain" style="display:none;">
-
-     <button type="button" class="btn btn-teal" onclick="const b=document.getElementById('pasteModalBox'); b.style.display=(b.style.display==='none'?'block':'none'); document.getElementById('sgfPasteTextarea')?.focus();">
-         📋 SGF文字を貼付
-     </button>
-
+        <button type="button" class="btn" style="background:#b45309;" onclick="location.href='./index.html'">
+            🏯 トップページへ移動
+        </button>
+                <button type="button" class="btn btn-teal" onclick="toggleSgfEditorBox()">
+            👁️ SGF文字の貼付・中身確認
+        </button>
 
         <select id="historySelect" onchange="loadFromHistory(this.value)" style="max-width: 180px;">
             <option value="">📚 読込履歴（なし）</option>
@@ -299,7 +300,6 @@
             <option value="4">強制 4分割（表2図・裏2図）</option>
             <option value="8">強制 8分割（表4図・裏4図）</option>
         </select>
-
 
         <select id="numberModeSelect" onchange="recalculateAndRender()">
             <option value="TOTAL">手数：通し番号（51〜100）</option>
@@ -320,37 +320,42 @@
             <option value="#71717a">濃淡：薄め（大量印刷向け）</option>
         </select>
 
-        <button type="button" class="btn btn-green" onclick="window.print()">
-            🖨️ 両面印刷 / PDF保存（A4 1枚）
+        <button type="button" class="btn btn-blue" onclick="downloadCurrentSgf()">
+            💾 SGFで保存
         </button>
-         <button type="button" class="btn" style="background:#b45309;" onclick="location.href='./index.html'">
-            🏯 トップページへ移動
+
+        <button type="button" class="btn btn-green" onclick="window.print()">
+            🖨️ プリンター印刷 / PDF保存
         </button>
     </div>
 </div>
 
 <div class="status-bar" id="statusBar">
-    💡 上の「📂 SGF棋譜ファイルを開く」からプロ棋士の棋譜（.sgf）を選ぶと、A4用紙1枚（表・裏）に5手刻みで自動レイアウトします。
+    💡 「📂 SGF棋譜ファイルを開く」または「👁️ SGF文字の貼付・中身確認」から棋譜を読み込むと、A4用紙1枚（表・裏）に自動レイアウトします。
 </div>
+
 <div id="pasteModalBox" style="display:none; background:#fff; border-bottom:2px solid #0d9488; padding:12px 16px;">
-    <div style="font-size:13px; font-weight:bold; margin-bottom:6px; color:#0f172a;">
-        📋 プロ棋士のSGF棋譜データ（(;GM...)）を下の枠に貼り付けて「読み込む」を押してください：
+    <div style="font-size:13px; font-weight:bold; margin-bottom:6px; color:#0f172a; display:flex; justify-content:space-between; align-items:center;">
+        <span>📄 現在のSGF棋譜データ（ファイルから開いた中身・貼り付けた文字の確認や編集ができます）</span>
+        <span id="sgfCharCount" style="font-size:11px; color:#64748b;"></span>
     </div>
-    <textarea id="sgfPasteTextarea" rows="5" style="width:100%; font-family:monospace; font-size:12px; padding:8px; border:1px solid #94a3b8; border-radius:6px;" placeholder="(;GM[1]FF[4]SZ[19]...)"></textarea>
-    <div style="margin-top:8px; display:flex; gap:8px;">
-        <button type="button" class="btn btn-teal" onclick="executeTextareaPaste()">✅ このSGFを読み込む</button>
+    <textarea id="sgfPasteTextarea" rows="6" style="width:100%; font-family:monospace; font-size:12px; padding:8px; border:1px solid #94a3b8; border-radius:6px;" placeholder="ここにSGFデータが表示されます（新しく貼り付けることもできます）"></textarea>
+    <div style="margin-top:8px; display:flex; flex-wrap:wrap; gap:8px;">
+        <button type="button" class="btn btn-teal" onclick="executeTextareaPaste()">✅ このSGFを盤面に反映（読込）</button>
+        <button type="button" class="btn btn-blue" onclick="downloadCurrentSgf()">💾 このSGFをファイル保存</button>
+        <button type="button" class="btn" style="background:#475569;" onclick="clearSgfTextarea()">🗑️ 枠を空にして新規貼付</button>
         <button type="button" class="btn" style="background:#64748b;" onclick="document.getElementById('pasteModalBox').style.display='none'">閉じる</button>
     </div>
 </div>
+<div class="preview-container" id="previewContainer">
+</div>
 
-<div class="preview-container" id="previewContainer"></div>
 <script>
 const SGF_CHARS = "abcdefghijklmnopqrs";
 const SAIBI_HISTORY_KEY = "saibiprint_kifu_history_v1";
 const SAIBI_LAST_SGF_KEY = "saibiprint_last_sgf_v1";
 let currentGame = null;
 
-// 起動時に前回の棋譜を自動読込＆履歴リストを復元
 window.addEventListener('DOMContentLoaded', () => {
     refreshHistorySelect();
     const lastSgf = localStorage.getItem(SAIBI_LAST_SGF_KEY);
@@ -359,11 +364,27 @@ window.addEventListener('DOMContentLoaded', () => {
             const parsed = JSON.parse(lastSgf);
             loadSgfContent(parsed.sgf, parsed.name, true);
         } catch (e) {}
+    } else {
+        showEmptyGuide();
     }
 });
 
-// ファイル選択からの読込
-document.getElementById('sgfFileInput').addEventListener('change', function(e) {
+function showEmptyGuide() {
+    const container = document.getElementById('previewContainer');
+    if (!container) return;
+    container.innerHTML = `
+        <div style="background:#fff; border:2px dashed #94a3b8; border-radius:10px; padding:40px 24px; max-width:680px; width:100%; text-align:center; color:#334155;">
+            <div style="font-size:18px; font-weight:bold; margin-bottom:10px;">📄 まだ棋譜が読み込まれていません</div>
+            <div style="font-size:13px; line-height:1.8;">
+                上の <b>「📂 SGF棋譜ファイルを開く」</b> からファイルを選ぶか、<br>
+                <b>「👁️ SGF文字の貼付・中身確認」</b> にSGF文字を貼り付けて <b>「✅ このSGFを盤面に反映」</b> を押すと、<br>
+                ここに<b>A4用紙1枚（表面・裏面）の印刷プレビュー</b>が表示されます。
+            </div>
+        </div>
+    `;
+}
+
+document.getElementById('sgfFileInput')?.addEventListener('change', function(e) {
     const file = e.target.files?.at(0);
     if (!file) return;
     const reader = new FileReader();
@@ -374,120 +395,154 @@ document.getElementById('sgfFileInput').addEventListener('change', function(e) {
     e.target.value = "";
 });
 
-
-// テキスト貼付枠を開く（長いプロ棋譜も途切れずに貼付可能）
-function pasteSgfPrompt() {
+function toggleSgfEditorBox() {
     const box = document.getElementById('pasteModalBox');
     const area = document.getElementById('sgfPasteTextarea');
     if (!box || !area) return;
     box.style.display = (box.style.display === 'none') ? 'block' : 'none';
     if (box.style.display === 'block') {
-        area.value = "";
+        if (currentGame && currentGame.rawSgf && !area.value.trim()) {
+            area.value = currentGame.rawSgf;
+        }
+        updateSgfCharCount();
         area.focus();
+    }
+}
+
+function clearSgfTextarea() {
+    const area = document.getElementById('sgfPasteTextarea');
+    if (!area) return;
+    area.value = "";
+    updateSgfCharCount();
+    area.focus();
+}
+
+function updateSgfCharCount() {
+    const area = document.getElementById('sgfPasteTextarea');
+    const lbl = document.getElementById('sgfCharCount');
+    if (area && lbl) {
+        lbl.textContent = area.value ? `文字数：${area.value.length}文字` : "";
     }
 }
 
 function executeTextareaPaste() {
     const area = document.getElementById('sgfPasteTextarea');
-    const box = document.getElementById('pasteModalBox');
     const txt = area ? area.value : "";
     if (!txt || !txt.trim()) {
-        return alert("SGFデータを貼り付けてから「読み込む」を押してください。");
+        return alert("SGFデータを貼り付けてから「✅ このSGFを盤面に反映」を押してください。");
     }
-    loadSgfContent(txt, "貼付棋譜", false);
-    if (box) box.style.display = 'none';
+    loadSgfContent(txt, "編集・貼付棋譜", false);
 }
 
-// 履歴から選択して即座に再読込
+function refreshHistorySelect() {
+    const sel = document.getElementById('historySelect');
+    if (!sel) return;
+    let list = new Array();
+    try {
+        list = JSON.parse(localStorage.getItem(SAIBI_HISTORY_KEY) || "[]");
+    } catch (e) { list = new Array(); }
+
+    if (list.length === 0) {
+        sel.innerHTML = `<option value="">📚 読込履歴（なし）</option>`;
+        return;
+    }
+    sel.innerHTML = `<option value="">📚 履歴から再読込 (${list.length}局)</option>` +
+        list.map((item, idx) => `<option value="${idx}">${item.title}</option>`).join("");
+}
+
 function loadFromHistory(idxStr) {
     if (idxStr === "") return;
     const idx = parseInt(idxStr, 10);
     try {
         const list = JSON.parse(localStorage.getItem(SAIBI_HISTORY_KEY) || "[]");
         const item = list.at(idx);
-        if (item) {
-            loadSgfContent(item.sgf, item.name, true);
-        }
+        if (item) loadSgfContent(item.sgf, item.name, true);
     } catch (e) {}
 }
 
-// SGFパース（対局情報・置き石・全手順を抽出＆自動記憶）
 function loadSgfContent(sgfText, fallbackName, skipSaveHistory) {
-    const sizeMatch = sgfText.match(/SZ\[(\d+)\]/i);
-    const boardSize = sizeMatch ? parseInt(sizeMatch.at(1), 10) : 19;
-
-    const getTag = (tag) => {
-        const m = sgfText.match(new RegExp(tag + "\\[([^\\]]*)\\]", "i"));
-        return m ? m.at(1).trim() : "";
-    };
-
-    const eventName = getTag("EV") || getTag("GN") || fallbackName.replace(/\.sgf$/i, "");
-    const blackName = getTag("PB") || "黒番";
-    const blackRank = getTag("BR") ? `(${getTag("BR")})` : "";
-    const whiteName = getTag("PW") || "白番";
-    const whiteRank = getTag("WR") ? `(${getTag("WR")})` : "";
-    const dateStr = getTag("DT") || "";
-    const komiStr = getTag("KM") ? `コミ:${getTag("KM")}` : "";
-    const resultStr = getTag("RE") ? `結果:${getTag("RE")}` : "";
-
-    const setupStones = new Array();
-    const abRegex = /AB((?:\[[a-s]{2}\])+)/gi;
-    let m;
-    while ((m = abRegex.exec(sgfText)) !== null) {
-        const coords = m.at(1).match(/\[([a-s]{2})\]/gi) || new Array();
-        coords.forEach(c => {
-            const x = SGF_CHARS.indexOf(c.charAt(1).toLowerCase());
-            const y = SGF_CHARS.indexOf(c.charAt(2).toLowerCase());
-            if (x >= 0 && y >= 0) setupStones.push({ x, y, color: 'B' });
-        });
-    }
-    const awRegex = /AW((?:\[[a-s]{2}\])+)/gi;
-    while ((m = awRegex.exec(sgfText)) !== null) {
-        const coords = m.at(1).match(/\[([a-s]{2})\]/gi) || new Array();
-        coords.forEach(c => {
-            const x = SGF_CHARS.indexOf(c.charAt(1).toLowerCase());
-            const y = SGF_CHARS.indexOf(c.charAt(2).toLowerCase());
-            if (x >= 0 && y >= 0) setupStones.push({ x, y, color: 'W' });
-        });
-    }
-
-    const moves = extractMainLineMoves(sgfText, boardSize);
-    if (moves.length === 0) {
-        alert("有効な着手データが見つかりませんでした。");
-        return;
-    }
-
-    currentGame = {
-        size: boardSize,
-        eventName,
-        blackName: blackName + blackRank,
-        whiteName: whiteName + whiteRank,
-        dateStr,
-        komiStr,
-        resultStr,
-        setup: setupStones,
-        moves
-    };
-
-    // 次回開いたときのために自動保存
     try {
-        localStorage.setItem(SAIBI_LAST_SGF_KEY, JSON.stringify({ sgf: sgfText, name: fallbackName }));
-        if (!skipSaveHistory) {
-            let list = JSON.parse(localStorage.getItem(SAIBI_HISTORY_KEY) || "[]");
-            const displayTitle = `${eventName}（${blackName} vs ${whiteName}・${moves.length}手）`;
-            list = list.filter(item => item.title !== displayTitle);
-            list.unshift({ title: displayTitle, sgf: sgfText, name: fallbackName });
-            if (list.length > 20) list = list.slice(0, 20);
-            localStorage.setItem(SAIBI_HISTORY_KEY, JSON.stringify(list));
-            refreshHistorySelect();
+        const sizeMatch = sgfText.match(/SZ\[(\d+)\]/i);
+        const boardSize = sizeMatch ? parseInt(sizeMatch.at(1), 10) : 19;
+
+        const getTag = (tag) => {
+            const m = sgfText.match(new RegExp(tag + "\\[([^\\]]*)\\]", "i"));
+            return m ? m.at(1).trim() : "";
+        };
+
+        const eventName = getTag("EV") || getTag("GN") || fallbackName.replace(/\.sgf$/i, "");
+        const blackName = getTag("PB") || "黒番";
+        const blackRank = getTag("BR") ? `(${getTag("BR")})` : "";
+        const whiteName = getTag("PW") || "白番";
+        const whiteRank = getTag("WR") ? `(${getTag("WR")})` : "";
+        const dateStr = getTag("DT") || "";
+        const komiStr = getTag("KM") ? `コミ:${getTag("KM")}` : "";
+        const resultStr = getTag("RE") ? `結果:${getTag("RE")}` : "";
+
+        const setupStones = new Array();
+        const abRegex = /AB((?:\[[a-s]{2}\])+)/gi;
+        let m;
+        while ((m = abRegex.exec(sgfText)) !== null) {
+            const coords = m.at(1).match(/\[([a-s]{2})\]/gi) || new Array();
+            coords.forEach(c => {
+                const x = SGF_CHARS.indexOf(c.charAt(1).toLowerCase());
+                const y = SGF_CHARS.indexOf(c.charAt(2).toLowerCase());
+                if (x >= 0 && y >= 0) setupStones.push({ x, y, color: 'B' });
+            });
         }
-    } catch (e) {}
+        const awRegex = /AW((?:\[[a-s]{2}\])+)/gi;
+        while ((m = awRegex.exec(sgfText)) !== null) {
+            const coords = m.at(1).match(/\[([a-s]{2})\]/gi) || new Array();
+            coords.forEach(c => {
+                const x = SGF_CHARS.indexOf(c.charAt(1).toLowerCase());
+                const y = SGF_CHARS.indexOf(c.charAt(2).toLowerCase());
+                if (x >= 0 && y >= 0) setupStones.push({ x, y, color: 'W' });
+            });
+        }
 
-    recalculateAndRender();
+        const moves = extractMainLineMoves(sgfText, boardSize);
+        if (moves.length === 0) {
+            alert("有効な着手データが見つかりませんでした。SGF形式（;B[pd];W[dp]...）かご確認ください。");
+            return;
+        }
+
+        currentGame = {
+            size: boardSize,
+            eventName,
+            blackName: blackName + blackRank,
+            whiteName: whiteName + whiteRank,
+            dateStr,
+            komiStr,
+            resultStr,
+            setup: setupStones,
+            moves,
+            rawSgf: sgfText
+        };
+
+        const area = document.getElementById('sgfPasteTextarea');
+        if (area) {
+            area.value = sgfText;
+            updateSgfCharCount();
+        }
+
+        try {
+            localStorage.setItem(SAIBI_LAST_SGF_KEY, JSON.stringify({ sgf: sgfText, name: fallbackName }));
+            if (!skipSaveHistory) {
+                let list = JSON.parse(localStorage.getItem(SAIBI_HISTORY_KEY) || "[]");
+                const displayTitle = `${eventName}（${blackName} vs ${whiteName}・${moves.length}手）`;
+                list = list.filter(item => item.title !== displayTitle);
+                list.unshift({ title: displayTitle, sgf: sgfText, name: fallbackName });
+                if (list.length > 20) list = list.slice(0, 20);
+                localStorage.setItem(SAIBI_HISTORY_KEY, JSON.stringify(list));
+                refreshHistorySelect();
+            }
+        } catch (e) {}
+
+        recalculateAndRender();
+    } catch (err) {
+        alert("読み込みエラーが発生しました：" + err.message);
+    }
 }
-
-
-// 分岐があるSGFでも本譜（最初のライン）の着手を正確に抽出する
 function extractMainLineMoves(sgf, size) {
     const moves = new Array();
     let depth = 0;
@@ -529,7 +584,6 @@ function extractMainLineMoves(sgf, size) {
     return moves;
 }
 
-// 碁盤上のルール（アゲハマ・石の打ち上げ）をシミュレート
 function simulateBoardStates(size, setup, moves) {
     let board = Array.from({ length: size }, () => Array(size).fill(null));
     setup.forEach(s => {
@@ -594,7 +648,6 @@ function simulateBoardStates(size, setup, moves) {
     return snapshots;
 }
 
-// 総手数から「2分割・4分割・8分割」および「5手刻みの最適な1図あたり手数」を自動計算
 function computeFiveStepPlan(totalMoves, forcedMode) {
     let divisions = 4;
     if (forcedMode === "2" || forcedMode === "4" || forcedMode === "8") {
@@ -623,16 +676,12 @@ function computeFiveStepPlan(totalMoves, forcedMode) {
     return { divisions, stepPerFig, ranges };
 }
 
-// 1図分の高精細SVG碁盤を生成（外枠線なし・極限拡大版）
-// 1図分の高精細SVG碁盤を生成（外枠線なし・濃淡コントロール対応版）
 function renderDiagramSvg(game, snapshots, range, divisions, numberMode) {
     const sz = game.size;
     const svgSize = divisions === 2 ? 880 : (divisions === 4 ? 435 : 298);
     const margin = Math.round(svgSize / (sz * 1.95));
     const step = (svgSize - margin * 2) / (sz - 1);
     const stoneR = step * 0.48;
-
-    // 選択された濃淡カラーを取得
     const inkColor = document.getElementById('inkShadeSelect')?.value || "#0f172a";
 
     let svg = `<svg width="${svgSize}" height="${svgSize}" viewBox="0 0 ${svgSize} ${svgSize}" xmlns="http://w3.org" style="background:#ffffff; display:block;">`;
@@ -708,8 +757,6 @@ function renderDiagramSvg(game, snapshots, range, divisions, numberMode) {
     return { svg, notes };
 }
 
-
-// 全体を再計算してA4表面・裏面の2ページ構成を描画
 function recalculateAndRender() {
     if (!currentGame) return;
     const forcedMode = document.getElementById('splitModeSelect').value;
@@ -720,7 +767,7 @@ function recalculateAndRender() {
     const snapshots = simulateBoardStates(currentGame.size, currentGame.setup, currentGame.moves);
 
     const statusBar = document.getElementById('statusBar');
-    statusBar.innerHTML = `✅ 総手数：<b>${totalMoves}手</b> ／ 自動設定：<b>${plan.divisions}分割（5手刻み・1図 ${plan.stepPerFig}手基準）</b> ／ <b>A4用紙 1枚（表面・裏面）</b>に収めました！`;
+    statusBar.innerHTML = `✅ 読込完了：<b>${currentGame.eventName}</b>（総手数：<b>${totalMoves}手</b> ／ <b>${plan.divisions}分割・1図${plan.stepPerFig}手基準</b> ／ <b>A4用紙 1枚（表面・裏面）</b>）`;
 
     const half = plan.divisions / 2;
     const frontRanges = plan.ranges.slice(0, half);
@@ -736,9 +783,7 @@ function buildA4PageHtml(game, snapshots, ranges, divisions, numberMode, sideLab
         const res = renderDiagramSvg(game, snapshots, r, divisions, numberMode);
         const svg = res.svg;
         const notes = res.notes;
-        const rangeTitle = r.start
-            ? `${r.start}手目 〜 ${r.end}手目`
-            : `終局済み`;
+        const rangeTitle = r.start ? `${r.start}手目 〜 ${r.end}手目` : `終局済み`;
         const subBadge = (r.start && numberMode === "RESET")
             ? `図内 1〜${r.end - r.start + 1}`
             : (r.start ? `全${r.end - r.start + 1}手` : "");
@@ -804,37 +849,21 @@ function buildA4PageHtml(game, snapshots, ranges, divisions, numberMode, sideLab
     `;
 }
 
-// 現在の棋譜をSGFファイルとして保存する
 function downloadCurrentSgf() {
-    if (!currentGame) {
-        return alert("先にSGF棋譜ファイルを読み込むか、文字を貼り付けてください。");
-    }
-    const sz = currentGame.size;
-    let sgf = "(;GM[" + "1" + "]FF[" + "4" + "]CA[UTF-8]SZ[" + sz + "]";
-    if (currentGame.eventName) sgf += "EV[" + currentGame.eventName + "]";
-    if (currentGame.blackName) sgf += "PB[" + currentGame.blackName + "]";
-    if (currentGame.whiteName) sgf += "PW[" + currentGame.whiteName + "]";
-    if (currentGame.dateStr) sgf += "DT[" + currentGame.dateStr + "]";
+    const area = document.getElementById('sgfPasteTextarea');
+    const textInBox = area ? area.value.trim() : "";
+    const sgfToSave = textInBox || (currentGame ? currentGame.rawSgf : "");
 
-    const blacks = currentGame.setup.filter(s => s.color === 'B');
-    const whites = currentGame.setup.filter(s => s.color === 'W');
-    if (blacks.length > 0) {
-        sgf += "AB" + blacks.map(s => "[" + SGF_CHARS.charAt(s.x) + SGF_CHARS.charAt(s.y) + "]").join("");
-    }
-    if (whites.length > 0) {
-        sgf += "AW" + whites.map(s => "[" + SGF_CHARS.charAt(s.x) + SGF_CHARS.charAt(s.y) + "]").join("");
+    if (!sgfToSave) {
+        return alert("先にSGF棋譜ファイルを開くか、SGF文字を貼り付けてください。");
     }
 
-    currentGame.moves.forEach(m => {
-        sgf += ";" + m.color + "[" + SGF_CHARS.charAt(m.x) + SGF_CHARS.charAt(m.y) + "]";
-    });
-    sgf += ")";
-
-    const blob = new Blob(Array.of(sgf), { type: "application/octet-stream" });
+    const blob = new Blob(Array.of(sgfToSave), { type: "application/octet-stream" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    const safeTitle = (currentGame.eventName || "kifu").replace(/[\\/:*?"<>|]/g, "_");
+    const baseName = (currentGame && currentGame.eventName) ? currentGame.eventName : "kifu_data";
+    const safeTitle = baseName.replace(/[\\/:*?"<>|]/g, "_");
     link.download = safeTitle + ".sgf";
     document.body.appendChild(link);
     link.click();
@@ -844,4 +873,6 @@ function downloadCurrentSgf() {
 </script>
 </body>
 </html>
+
+
 
