@@ -253,7 +253,7 @@
         <div id="studentProblemSelectorPanel" style="margin-top: 6px; padding: 6px 10px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; text-align: left;">
             <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px;">
                 <button type="button" id="btnToggleStudentGrid" style="padding: 5px 10px; font-size: 13px; font-weight: bold; background: #0369a1; color: #fff; border: none; border-radius: 5px; cursor: pointer;">
-                    📚 問題をえらぶ ▼
+                    📚 問題を開く ▼
                 </button>
                 <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">        
 
@@ -408,13 +408,12 @@
                     問題図＋正解手順を標準SGF形式で保存・読込できます。
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 8px;">
-                    <div style="position: relative;">
-                        <button type="button" class="btn-primary" style="width: 100%;">📥 SGFファイルから保存庫へ読込</button>
-                        <input type="file" id="fileImportSgf" accept=".sgf" style="position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer;">
-                    </div>
-                    <button type="button" id="btnExportProblemSgf" class="btn-secondary" style="width: 100%; background-color: #5856d6;">
-                        📤 出題中の問題をSGFで保存
+                  
+                                          <button type="button" class="btn-primary" style="width: 100%;" onclick="document.getElementById('fileImportSgf').click()">
+                        📥 SGFファイルから保存庫へ読込
                     </button>
+                    <input type="file" id="fileImportSgf" accept=".sgf,.txt,text/plain,*/*" style="display: none;" onchange="importSgfFileDirect(this)">
+                    <button type="button" id="btnExportProblemSgf" onclick="exportCurrentProblemNow()" class="btn-secondary" style="width: 100%; background-color: #5856d6;">📤 出題中の問題をSGFで保存</button>
 
                     <button type="button" id="btnExportAllSgf" onclick="exportAllProblemsNow()" class="btn-secondary" style="width: 100%; margin-top: 6px; background-color: #0369a1;">📦 保存庫の全問題をSGFで一括保存</button>
 
@@ -2791,6 +2790,141 @@ document.getElementById('btnPasteSgfText')?.addEventListener('click', () => {
             startProblem(mergedProblem);
             if (typeof renderStudentProblemGrid === 'function') renderStudentProblemGrid();
             alert(`9路・13路盤の座標を自動変換し、「${mergedProblem.title}」（19路盤・全${mergedBranches.length}問）を「${finalLevel}」倉庫に登録しました！`);
+        }
+        // 📤 出題中の問題（または現在盤面に出ている問題）を1問だけSGFで保存する
+        function exportCurrentProblemNow() {
+            const targetProb = currentProblem || (library && library.length > 0 ? library.at(0) : null);
+            if (!targetProb) {
+                return alert("保存する問題が選ばれていません。保存庫から問題を選んでから押してください。");
+            }
+            const sgf = buildSingleProblemSgf(targetProb);
+            const blob = new Blob(Array.of(sgf), { type: "application/octet-stream" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            const safeTitle = (targetProb.title || "tsumego_problem").replace(/[\\/:*?"<>|]/g, "_");
+            link.download = safeTitle + ".sgf";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            alert("「" + targetProb.title + "」を " + safeTitle + ".sgf としてダウンロードしました！");
+        }
+        // 📥 SGFファイル（1問でも複数問でもOK）を確実に読み込んで保存庫＆盤面へ反映する
+        function importSgfFileDirect(input) {
+            const file = input.files?.at(0);
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const fullSgf = evt.target.result;
+                if (!fullSgf || !fullSgf.trim()) {
+                    return alert("ファイルの中身が空でした。");
+                }
+
+                // 既存の分割・解析関数があればそれを使い、なければ内蔵パーサーで確実に読み込む
+                let chunks = new Array();
+                if (typeof splitMultiGameSgf === 'function') {
+                    chunks = splitMultiGameSgf(fullSgf);
+                } else {
+                    chunks = fullSgf.split(/(?=\(\s*;)/).map(s => s.trim()).filter(s => s.startsWith('('));
+                }
+
+                if (chunks.length === 0) {
+                    return alert("有効なSGF棋譜データが見つかりませんでした。");
+                }
+
+                const targetWarehouse = (typeof askTargetWarehouseForSgf === 'function')
+                    ? askTargetWarehouseForSgf("KEEP_ORIGINAL")
+                    : "KEEP_ORIGINAL";
+                if (targetWarehouse === null) return;
+
+                let addedCount = 0;
+                let lastLoadedProb = null;
+
+                chunks.forEach((sgf, idx) => {
+                    const fallbackTitle = file.name.replace(/\.sgf$/i, "") + (chunks.length > 1 ? `_${idx + 1}` : "");
+                    const newId = "imp_" + Date.now() + "_" + idx;
+                    let prob = null;
+
+                    if (typeof parseSingleGameSgfToProblem === 'function') {
+                        prob = parseSingleGameSgfToProblem(sgf, fallbackTitle, newId);
+                    } else {
+                        prob = fallbackParseSgfToProblem(sgf, fallbackTitle, newId);
+                    }
+
+                    if (prob && ((prob.branches && prob.branches.length > 0) || (prob.setup && prob.setup.length > 0))) {
+                        if (targetWarehouse !== "KEEP_ORIGINAL") {
+                            prob.level = targetWarehouse;
+                        }
+                        library.unshift(prob);
+                        lastLoadedProb = prob;
+                        addedCount++;
+                    }
+                });
+
+                if (addedCount === 0) {
+                    return alert("問題図または手順を読み取れませんでした。SGFの中身をご確認ください。");
+                }
+
+                saveLibrary();
+                renderLibraryList();
+                if (typeof renderStudentProblemGrid === 'function') renderStudentProblemGrid();
+                if (lastLoadedProb) {
+                    startProblem(lastLoadedProb);
+                }
+                alert(`✅ 「${file.name}」から ${addedCount} 問を保存庫に読み込み、盤面に表示しました！`);
+            };
+            reader.readAsText(file);
+            input.value = "";
+        }
+
+        // 万が一既存パーサーが見つからない場合の予備SGF解析関数
+        function fallbackParseSgfToProblem(sgf, fallbackTitle, id) {
+            const chars = "abcdefghijklmnopqrs";
+            const szM = sgf.match(/SZ\[(\d+)\]/i);
+            const size = szM ? parseInt(szM.at(1), 10) : 19;
+            const titleM = sgf.match(/(?:EV|GN)\[([^\]]*)\]/i);
+            const title = (titleM && titleM.at(1).trim()) ? titleM.at(1).trim() : fallbackTitle;
+            const setup = new Array();
+
+            const abM = sgf.match(/AB((?:\[[a-s]{2}\])+)/i);
+            if (abM) {
+                (abM.at(1).match(/\[([a-s]{2})\]/gi) || new Array()).forEach(c => {
+                    setup.push({ x: chars.indexOf(c.charAt(1).toLowerCase()), y: chars.indexOf(c.charAt(2).toLowerCase()), color: 'B' });
+                });
+            }
+            const awM = sgf.match(/AW((?:\[[a-s]{2}\])+)/i);
+            if (awM) {
+                (awM.at(1).match(/\[([a-s]{2})\]/gi) || new Array()).forEach(c => {
+                    setup.push({ x: chars.indexOf(c.charAt(1).toLowerCase()), y: chars.indexOf(c.charAt(2).toLowerCase()), color: 'W' });
+                });
+            }
+
+            const moves = new Array();
+            const mvRegex = /;([BW])\[([a-s]{2})\]/gi;
+            let m;
+            while ((m = mvRegex.exec(sgf)) !== null) {
+                moves.push({
+                    x: chars.indexOf(m.at(2).charAt(0).toLowerCase()),
+                    y: chars.indexOf(m.at(2).charAt(1).toLowerCase()),
+                    color: m.at(1).toUpperCase()
+                });
+            }
+
+            return {
+                id,
+                title,
+                level: "初級",
+                turn: moves.at(0)?.color || 'B',
+                hint: "",
+                branchHints: {},
+                isMust: false,
+                size,
+                setup,
+                solution: moves,
+                branches: moves.length > 0 ? Array.of(moves) : new Array()
+            };
         }
 
    </script>
