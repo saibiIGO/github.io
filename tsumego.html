@@ -253,7 +253,12 @@
             <div><b>【ステップ2】</b> 碁盤の打ちたい場所をタップ（クリック）して、正解の手順を打ちます。</div>
             <div><b>【ステップ3】</b> わからない時は「💡 ヒント」、やり直す時は「🔄 最初からやり直す」を押します。</div>
         </div>
-
+  <!-- 🏠 トップページへ戻るバー（独立配置・くっきり視認性） -->
+        <div style="margin-top: 6px; margin-bottom: 4px; display: flex; justify-content: flex-start;">
+            <button type="button" onclick="location.href='./index.html'" style="padding: 6px 14px; font-size: 13px; font-weight: bold; background: #1e293b; color: #ffffff; border: none; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);">
+                🏠 トップページへ戻る
+            </button>
+        </div>
         <!-- 📚 生徒用・問題選択＆問題ファイル（パス）指定パネル（開閉式コンパクト版） -->
         <div id="studentProblemSelectorPanel" style="margin-top: 6px; padding: 6px 10px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; text-align: left;">
             <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px;">
@@ -278,15 +283,13 @@
                     </button>
                     <input type="file" id="studentFileImportSgf" accept="text/plain,.sgf,application/x-go-sgf" style="position: absolute; left: -9999px; opacity: 0;">
 
+        </div>
                     <button type="button" id="btnSetProblemPath" style="padding: 4px 8px; font-size: 12px; font-weight: bold; background: #475569; color: #fff; border: none; border-radius: 5px; cursor: pointer;">
                         🌐 パス設定
                     </button>
                    <button type="button" id="btnPasteSgfText" style="padding: 4px 8px; font-size: 12px; font-weight: bold; background: #0d9488; color: #fff; border: none; border-radius: 5px; cursor: pointer;">📋 文字貼付で読込
                    </button>
-                   <button type="button" class="btn" style="background:#b45309;" onclick="location.href='./index.html'">
-            🏯 トップページへ移動
-        </button>
-                </div>
+
             </div>
             <!-- 折りたたみ本体（問題を選んだら自動で閉じる./default_problems.sgf） -->
             <div id="studentProblemDrawer" style="display: none; margin-top: 8px; padding-top: 6px; border-top: 1px dashed #7dd3fc;">
@@ -343,8 +346,8 @@
                     【手順1】盤面サイズを選ぶ（やり直す時はクリア）
                 </div>
 
-                <div style="display: flex; gap: 6px; margin-bottom: 10px;">
-                    <select id="createBoardSize" style="flex: 1; padding: 6px; border-radius: 5px; border: 1px solid #cbd5e1; font-weight: bold;">
+                    <select id="createBoardSize" onchange="changeBoardSizeDirect(this.value)" style="flex: 1; padding: 6px; border-radius: 5px; border: 1px solid #cbd5e1; font-weight: bold;">
+
                         <option value="9">9路盤</option>
                         <option value="13">13路盤</option>
                         <option value="19" selected>19路盤</option>
@@ -387,7 +390,8 @@
                     </button>
                 </div>
 
-                <div id="saveFormArea" style="display: none; margin-top: 10px; border-top: 2px solid #0284c7; border-radius: 6px; padding: 8px; background: #f8fafc;">
+                <div id="saveFormArea" style="display: block; margin-top: 10px; border-top: 2px solid #0284c7; border-radius: 6px; padding: 8px; background: #f8fafc;">
+
                     <div id="branchCountInfo" style="font-size: 12px; font-weight: bold; color: #0369a1; margin-bottom: 6px;">現在 1 箇所目（右上=Ⓐ / 右下=Ⓑ / 左下=Ⓒ / 左上=Ⓓ）を記録中</div>
                     
                     <div style="font-size: 12px; font-weight: bold; color: #0369a1; margin-bottom: 4px;">

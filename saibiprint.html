@@ -289,6 +289,10 @@
                 <button type="button" class="btn btn-teal" onclick="toggleSgfEditorBox()">
             👁️ SGF文字の貼付・中身確認
         </button>
+                <button type="button" class="btn" style="background:#7c3aed;" onclick="toggleCommentEditorBox()">
+            💬 解説・AI評価を編集
+        </button>
+
 
         <select id="historySelect" onchange="loadFromHistory(this.value)" style="max-width: 180px;">
             <option value="">📚 読込履歴（なし）</option>
@@ -347,6 +351,14 @@
         <button type="button" class="btn" style="background:#64748b;" onclick="document.getElementById('pasteModalBox').style.display='none'">閉じる</button>
     </div>
 </div>
+<div id="commentEditorBox" style="display:none; background:#fff; border-bottom:2px solid #7c3aed; padding:12px 16px;">
+    <div style="font-size:13px; font-weight:bold; margin-bottom:6px; color:#0f172a; display:flex; justify-content:space-between; align-items:center;">
+        <span>💬 各譜の右側空欄に印刷する「解説メッセージ・囲碁AI評価」の編集（入力すると即座に下のA4プレビューへ反映されます）</span>
+        <button type="button" class="btn" style="background:#64748b; padding:4px 10px; font-size:12px;" onclick="document.getElementById('commentEditorBox').style.display='none'">閉じる</button>
+    </div>
+    <div id="commentInputsGrid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:10px;"></div>
+</div>
+
 <div class="preview-container" id="previewContainer">
 </div>
 
@@ -571,11 +583,30 @@ function extractMainLineMoves(sgf, size) {
             if (mvMatch) {
                 const color = mvMatch.at(1).toUpperCase();
                 const coord = mvMatch.at(2).toLowerCase();
+
+                // このノード（次の ; や ( や ) まで）に含まれる C[...] コメントやAI評価を抽出
+                let nodeEnd = i + 1;
+                let inBracket = false;
+                while (nodeEnd < sgf.length) {
+                    const c = sgf.charAt(nodeEnd);
+                    if (c === '\\') { nodeEnd += 2; continue; }
+                    if (c === '[') inBracket = true;
+                    else if (c === ']') inBracket = false;
+                    else if (!inBracket && (c === ';' || c === '(' || c === ')')) break;
+                    nodeEnd++;
+                }
+                const nodeStr = sgf.slice(i + 1, nodeEnd);
+                const cMatch = nodeStr.match(/C\[((?:\\.|[^\]])*)\]/i);
+                let commentText = "";
+                if (cMatch) {
+                    commentText = cMatch.at(1).replace(/\\([\]\\:])/g, "$1").trim();
+                }
+
                 if (coord.length === 2) {
                     const x = SGF_CHARS.indexOf(coord.charAt(0));
                     const y = SGF_CHARS.indexOf(coord.charAt(1));
                     if (x >= 0 && y >= 0 && x < size && y < size) {
-                        moves.push({ x, y, color });
+                        moves.push({ x, y, color, comment: commentText });
                     }
                 }
             }
@@ -583,6 +614,7 @@ function extractMainLineMoves(sgf, size) {
     }
     return moves;
 }
+
 
 function simulateBoardStates(size, setup, moves) {
     let board = Array.from({ length: size }, () => Array(size).fill(null));
@@ -756,8 +788,62 @@ function renderDiagramSvg(game, snapshots, range, divisions, numberMode) {
     svg += `</svg>`;
     return { svg, notes };
 }
+let customDiagramComments = {};
 
-function recalculateAndRender() {
+function toggleCommentEditorBox() {
+    const box = document.getElementById('commentEditorBox');
+    if (!box) return;
+    if (!currentGame) {
+        return alert("先にSGF棋譜ファイルを開くか、SGF文字を読み込んでください。");
+    }
+    box.style.display = (box.style.display === 'none') ? 'block' : 'none';
+    if (box.style.display === 'block') {
+        buildCommentEditorInputs();
+    }
+}
+
+function getDefaultDiagramComment(game, range) {
+    if (!range || !range.start) return "";
+    const lines = new Array();
+    for (let mIdx = range.start - 1; mIdx < range.end; mIdx++) {
+        const mv = game.moves.at(mIdx);
+        if (mv && mv.comment) {
+            const clean = mv.comment.replace(/\s+/g, " ").trim();
+            if (clean) lines.push(`【${mIdx + 1}手目】${clean}`);
+        }
+    }
+    return lines.join("\n");
+}
+
+function buildCommentEditorInputs() {
+    const grid = document.getElementById('commentInputsGrid');
+    if (!grid || !currentGame) return;
+    const forcedMode = document.getElementById('splitModeSelect').value;
+    const plan = computeFiveStepPlan(currentGame.moves.length, forcedMode);
+
+    grid.innerHTML = plan.ranges.map(r => {
+        if (!r.start) return "";
+        const key = `${plan.divisions}_${r.figNum}`;
+        const val = (customDiagramComments[key] !== undefined)
+            ? customDiagramComments[key]
+            : getDefaultDiagramComment(currentGame, r);
+        return `
+            <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:8px;">
+                <div style="font-size:12px; font-weight:bold; color:#0369a1; margin-bottom:4px;">
+                    第${r.figNum}譜（${r.start}〜${r.end}手目）の右側メッセージ・AI評価
+                </div>
+                <textarea rows="4" oninput="onEditDiagramComment('${key}', this.value)" style="width:100%; font-size:12px; padding:6px; border:1px solid #94a3b8; border-radius:4px; line-height:1.5;" placeholder="例：黒51のツケがAI推奨の好手（黒勝率62%・+2.1目）。白は52と受けるのが相場です。">${val}</textarea>
+            </div>
+        `;
+    }).join("");
+}
+
+function onEditDiagramComment(key, text) {
+    customDiagramComments[key] = text;
+    recalculateAndRender(true);
+}
+
+function recalculateAndRender(skipRebuildEditor) {
     if (!currentGame) return;
     const forcedMode = document.getElementById('splitModeSelect').value;
     const numberMode = document.getElementById('numberModeSelect').value;
@@ -776,6 +862,92 @@ function recalculateAndRender() {
     const container = document.getElementById('previewContainer');
     container.innerHTML = buildA4PageHtml(currentGame, snapshots, frontRanges, plan.divisions, numberMode, "表面（1/2）")
                         + buildA4PageHtml(currentGame, snapshots, backRanges, plan.divisions, numberMode, "裏面（2/2）");
+
+    if (!skipRebuildEditor && document.getElementById('commentEditorBox')?.style.display === 'block') {
+        buildCommentEditorInputs();
+    }
+}
+
+function buildA4PageHtml(game, snapshots, ranges, divisions, numberMode, sideLabel) {
+    const cardsHtml = ranges.map(r => {
+        const res = renderDiagramSvg(game, snapshots, r, divisions, numberMode);
+        const svg = res.svg;
+        const notes = res.notes;
+        const rangeTitle = r.start ? `${r.start}手目 〜 ${r.end}手目` : `終局済み`;
+        const subBadge = (r.start && numberMode === "RESET")
+            ? `図内 1〜${r.end - r.start + 1}`
+            : (r.start ? `全${r.end - r.start + 1}手` : "");
+
+        const key = `${divisions}_${r.figNum}`;
+        const rawComment = (customDiagramComments[key] !== undefined)
+            ? customDiagramComments[key]
+            : getDefaultDiagramComment(game, r);
+
+        const escapeHtml = (str) => str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        const formattedCommentHtml = rawComment.trim()
+            ? `<div style="margin-top:6px; padding:6px 8px; background:#f8fafc; border-left:3px solid #0d9488; border-radius:4px; font-size:11px; line-height:1.55; color:#0f172a; white-space:pre-wrap;">${escapeHtml(rawComment.trim())}</div>`
+            : "";
+
+        const noteHtml = notes.length > 0
+            ? (divisions === 8
+                ? `※ ${notes.join(" / ")}`
+                : `<div style="font-weight:bold; color:#0f172a; margin-bottom:2px;">【同一点・コウの注記】</div>` + notes.map(n => `<div>・${n}</div>`).join(""))
+            : "";
+
+        if (divisions === 8) {
+            return `
+                <div class="diagram-card">
+                    <div class="diagram-label">
+                        <span><span class="diagram-badge">第${r.figNum}譜</span> ${rangeTitle}</span>
+                        <span style="font-size:10px; color:#475569;">${subBadge}</span>
+                    </div>
+                    <div class="diagram-board-wrap">${svg}</div>
+                    <div class="diagram-note">${noteHtml}</div>
+                </div>
+            `;
+        }
+
+        return `
+            <div class="diagram-card">
+                <div class="diagram-board-wrap">${svg}</div>
+                <div class="diagram-side-info">
+                    <div class="diagram-label">
+                        <span><span class="diagram-badge">第${r.figNum}譜</span> ${rangeTitle}</span>
+                        <span style="font-size:10.5px; color:#475569;">${subBadge}</span>
+                    </div>
+                    <div class="diagram-note">${noteHtml}</div>
+                    ${formattedCommentHtml}
+                </div>
+            </div>
+        `;
+    }).join("");
+
+    const bindMm = parseInt(document.getElementById('bindingMarginSelect')?.value || "19", 10);
+    const outerMm = 8;
+    const isFront = sideLabel.includes("表面");
+    const padLeft = isFront ? bindMm : outerMm;
+    const padRight = isFront ? outerMm : bindMm;
+
+    return `
+        <div class="a4-sheet" style="padding: 8mm ${padRight}mm 8mm ${padLeft}mm;">
+            <div class="sheet-header">
+                <div>
+                    <div class="sheet-title">${game.eventName}（全${game.moves.length}手・${divisions}分割）</div>
+                    <div class="sheet-meta">⚫黒番：${game.blackName}　⚪白番：${game.whiteName}　${game.dateStr}　${game.komiStr}　${game.resultStr}</div>
+                </div>
+                <div class="name-box">       年　月　日 ／ 名前：　　　　　　　　</div>
+            </div>
+
+            <div class="diagrams-grid grid-div-${divisions}">
+                ${cardsHtml}
+            </div>
+
+            <div class="sheet-footer">
+                <span>※ 番号のない石は前の譜までに打たれた既出石です（アゲハマ自動処理済み）</span>
+                <span>A4両面1枚プリント【${sideLabel}】（左閉じしろ ${bindMm}mm）</span>
+            </div>
+        </div>
+    `;
 }
 
 function buildA4PageHtml(game, snapshots, ranges, divisions, numberMode, sideLabel) {
