@@ -367,6 +367,7 @@ const SGF_CHARS = "abcdefghijklmnopqrs";
 const SAIBI_HISTORY_KEY = "saibiprint_kifu_history_v1";
 const SAIBI_LAST_SGF_KEY = "saibiprint_last_sgf_v1";
 let currentGame = null;
+let customDiagramComments = {};
 
 window.addEventListener('DOMContentLoaded', () => {
     refreshHistorySelect();
@@ -375,34 +376,20 @@ window.addEventListener('DOMContentLoaded', () => {
         try {
             const parsed = JSON.parse(lastSgf);
             loadSgfContent(parsed.sgf, parsed.name, true);
-        } catch (e) {}
-    } else {
-        showEmptyGuide();
-    }
+        } catch (e) { showEmptyGuide(); }
+    } else { showEmptyGuide(); }
 });
 
 function showEmptyGuide() {
-    const container = document.getElementById('previewContainer');
-    if (!container) return;
-    container.innerHTML = `
-        <div style="background:#fff; border:2px dashed #94a3b8; border-radius:10px; padding:40px 24px; max-width:680px; width:100%; text-align:center; color:#334155;">
-            <div style="font-size:18px; font-weight:bold; margin-bottom:10px;">📄 まだ棋譜が読み込まれていません</div>
-            <div style="font-size:13px; line-height:1.8;">
-                上の <b>「📂 SGF棋譜ファイルを開く」</b> からファイルを選ぶか、<br>
-                <b>「👁️ SGF文字の貼付・中身確認」</b> にSGF文字を貼り付けて <b>「✅ このSGFを盤面に反映」</b> を押すと、<br>
-                ここに<b>A4用紙1枚（表面・裏面）の印刷プレビュー</b>が表示されます。
-            </div>
-        </div>
-    `;
+    const c = document.getElementById('previewContainer');
+    if (c) c.innerHTML = '<div style="background:#fff;border:2px dashed #94a3b8;border-radius:10px;padding:40px 24px;max-width:680px;width:100%;text-align:center;color:#334155;"><div style="font-size:18px;font-weight:bold;margin-bottom:10px;">📄 まだ棋譜が読み込まれていません</div><div style="font-size:13px;line-height:1.8;">上の <b>「📂 SGF棋譜ファイルを開く」</b> からファイルを選ぶか、<br><b>「👁️ SGF文字の貼付・中身確認」</b> にSGF文字を貼り付けて <b>「✅ このSGFを盤面に反映」</b> を押すと、<br>ここに<b>A4用紙1枚（表面・裏面）の印刷プレビュー</b>が表示されます。</div></div>';
 }
 
 document.getElementById('sgfFileInput')?.addEventListener('change', function(e) {
     const file = e.target.files?.at(0);
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = function(evt) {
-        loadSgfContent(evt.target.result, file.name, false);
-    };
+    reader.onload = function(evt) { loadSgfContent(evt.target.result, file.name, false); };
     reader.readAsText(file);
     e.target.value = "";
 });
@@ -413,131 +400,43 @@ function toggleSgfEditorBox() {
     if (!box || !area) return;
     box.style.display = (box.style.display === 'none') ? 'block' : 'none';
     if (box.style.display === 'block') {
-        if (currentGame && currentGame.rawSgf && !area.value.trim()) {
-            area.value = currentGame.rawSgf;
-        }
-        updateSgfCharCount();
-        area.focus();
+        if (currentGame && currentGame.rawSgf && !area.value.trim()) area.value = currentGame.rawSgf;
+        updateSgfCharCount(); area.focus();
     }
 }
-
-function clearSgfTextarea() {
-    const area = document.getElementById('sgfPasteTextarea');
-    if (!area) return;
-    area.value = "";
-    updateSgfCharCount();
-    area.focus();
-}
-
-function updateSgfCharCount() {
-    const area = document.getElementById('sgfPasteTextarea');
-    const lbl = document.getElementById('sgfCharCount');
-    if (area && lbl) {
-        lbl.textContent = area.value ? `文字数：${area.value.length}文字` : "";
-    }
-}
-
-function executeTextareaPaste() {
-    const area = document.getElementById('sgfPasteTextarea');
-    const txt = area ? area.value : "";
-    if (!txt || !txt.trim()) {
-        return alert("SGFデータを貼り付けてから「✅ このSGFを盤面に反映」を押してください。");
-    }
-    loadSgfContent(txt, "編集・貼付棋譜", false);
-}
-
+function clearSgfTextarea() { const a = document.getElementById('sgfPasteTextarea'); if (a) { a.value = ""; updateSgfCharCount(); a.focus(); } }
+function updateSgfCharCount() { const a = document.getElementById('sgfPasteTextarea'), l = document.getElementById('sgfCharCount'); if (a && l) l.textContent = a.value ? `文字数：${a.value.length}文字` : ""; }
+function executeTextareaPaste() { const a = document.getElementById('sgfPasteTextarea'); if (!a || !a.value.trim()) return alert("SGFデータを貼り付けてください。"); loadSgfContent(a.value, "編集・貼付棋譜", false); }
 function refreshHistorySelect() {
     const sel = document.getElementById('historySelect');
     if (!sel) return;
     let list = new Array();
-    try {
-        list = JSON.parse(localStorage.getItem(SAIBI_HISTORY_KEY) || "[]");
-    } catch (e) { list = new Array(); }
-
-    if (list.length === 0) {
-        sel.innerHTML = `<option value="">📚 読込履歴（なし）</option>`;
-        return;
-    }
-    sel.innerHTML = `<option value="">📚 履歴から再読込 (${list.length}局)</option>` +
-        list.map((item, idx) => `<option value="${idx}">${item.title}</option>`).join("");
+    try { list = JSON.parse(localStorage.getItem(SAIBI_HISTORY_KEY) || "[]"); } catch (e) { list = new Array(); }
+    sel.innerHTML = list.length === 0 ? '<option value="">📚 読込履歴（なし）</option>' : '<option value="">📚 履歴から再読込 (' + list.length + '局)</option>' + list.map((item, idx) => `<option value="${idx}">${item.title}</option>`).join("");
 }
-
 function loadFromHistory(idxStr) {
     if (idxStr === "") return;
-    const idx = parseInt(idxStr, 10);
-    try {
-        const list = JSON.parse(localStorage.getItem(SAIBI_HISTORY_KEY) || "[]");
-        const item = list.at(idx);
-        if (item) loadSgfContent(item.sgf, item.name, true);
-    } catch (e) {}
+    try { const item = JSON.parse(localStorage.getItem(SAIBI_HISTORY_KEY) || "[]").at(parseInt(idxStr, 10)); if (item) loadSgfContent(item.sgf, item.name, true); } catch (e) {}
 }
-
 function loadSgfContent(sgfText, fallbackName, skipSaveHistory) {
     try {
         const sizeMatch = sgfText.match(/SZ\[(\d+)\]/i);
         const boardSize = sizeMatch ? parseInt(sizeMatch.at(1), 10) : 19;
-
-        const getTag = (tag) => {
-            const m = sgfText.match(new RegExp(tag + "\\[([^\\]]*)\\]", "i"));
-            return m ? m.at(1).trim() : "";
-        };
-
+        const getTag = (tag) => { const m = sgfText.match(new RegExp(tag + "\\[([^\\]]*)\\]", "i")); return m ? m.at(1).trim() : ""; };
         const eventName = getTag("EV") || getTag("GN") || fallbackName.replace(/\.sgf$/i, "");
-        const blackName = getTag("PB") || "黒番";
-        const blackRank = getTag("BR") ? `(${getTag("BR")})` : "";
-        const whiteName = getTag("PW") || "白番";
-        const whiteRank = getTag("WR") ? `(${getTag("WR")})` : "";
-        const dateStr = getTag("DT") || "";
-        const komiStr = getTag("KM") ? `コミ:${getTag("KM")}` : "";
-        const resultStr = getTag("RE") ? `結果:${getTag("RE")}` : "";
-
+        const blackName = getTag("PB") || "黒番", blackRank = getTag("BR") ? `(${getTag("BR")})` : "";
+        const whiteName = getTag("PW") || "白番", whiteRank = getTag("WR") ? `(${getTag("WR")})` : "";
+        const dateStr = getTag("DT") || "", komiStr = getTag("KM") ? `コミ:${getTag("KM")}` : "", resultStr = getTag("RE") ? `結果:${getTag("RE")}` : "";
         const setupStones = new Array();
-        const abRegex = /AB((?:\[[a-s]{2}\])+)/gi;
-        let m;
-        while ((m = abRegex.exec(sgfText)) !== null) {
-            const coords = m.at(1).match(/\[([a-s]{2})\]/gi) || new Array();
-            coords.forEach(c => {
-                const x = SGF_CHARS.indexOf(c.charAt(1).toLowerCase());
-                const y = SGF_CHARS.indexOf(c.charAt(2).toLowerCase());
-                if (x >= 0 && y >= 0) setupStones.push({ x, y, color: 'B' });
-            });
-        }
-        const awRegex = /AW((?:\[[a-s]{2}\])+)/gi;
-        while ((m = awRegex.exec(sgfText)) !== null) {
-            const coords = m.at(1).match(/\[([a-s]{2})\]/gi) || new Array();
-            coords.forEach(c => {
-                const x = SGF_CHARS.indexOf(c.charAt(1).toLowerCase());
-                const y = SGF_CHARS.indexOf(c.charAt(2).toLowerCase());
-                if (x >= 0 && y >= 0) setupStones.push({ x, y, color: 'W' });
-            });
-        }
-
+        let m, abRegex = /AB((?:\[[a-s]{2}\])+)/gi, awRegex = /AW((?:\[[a-s]{2}\])+)/gi;
+        while ((m = abRegex.exec(sgfText)) !== null) (m.at(1).match(/\[([a-s]{2})\]/gi) || new Array()).forEach(c => { const x = SGF_CHARS.indexOf(c.charAt(1).toLowerCase()), y = SGF_CHARS.indexOf(c.charAt(2).toLowerCase()); if (x >= 0 && y >= 0) setupStones.push({ x, y, color: 'B' }); });
+        while ((m = awRegex.exec(sgfText)) !== null) (m.at(1).match(/\[([a-s]{2})\]/gi) || new Array()).forEach(c => { const x = SGF_CHARS.indexOf(c.charAt(1).toLowerCase()), y = SGF_CHARS.indexOf(c.charAt(2).toLowerCase()); if (x >= 0 && y >= 0) setupStones.push({ x, y, color: 'W' }); });
         const moves = extractMainLineMoves(sgfText, boardSize);
-        if (moves.length === 0) {
-            alert("有効な着手データが見つかりませんでした。SGF形式（;B[pd];W[dp]...）かご確認ください。");
-            return;
-        }
-
-        currentGame = {
-            size: boardSize,
-            eventName,
-            blackName: blackName + blackRank,
-            whiteName: whiteName + whiteRank,
-            dateStr,
-            komiStr,
-            resultStr,
-            setup: setupStones,
-            moves,
-            rawSgf: sgfText
-        };
-customDiagramComments = {};
-
+        if (moves.length === 0) return alert("有効な着手データが見つかりませんでした。");
+        currentGame = { size: boardSize, eventName, blackName: blackName + blackRank, whiteName: whiteName + whiteRank, dateStr, komiStr, resultStr, setup: setupStones, moves, rawSgf: sgfText };
+        customDiagramComments = {};
         const area = document.getElementById('sgfPasteTextarea');
-        if (area) {
-            area.value = sgfText;
-            updateSgfCharCount();
-        }
-
+        if (area) { area.value = sgfText; updateSgfCharCount(); }
         try {
             localStorage.setItem(SAIBI_LAST_SGF_KEY, JSON.stringify({ sgf: sgfText, name: fallbackName }));
             if (!skipSaveHistory) {
@@ -550,608 +449,198 @@ customDiagramComments = {};
                 refreshHistorySelect();
             }
         } catch (e) {}
-
         recalculateAndRender();
-    } catch (err) {
-        alert("読み込みエラーが発生しました：" + err.message);
-    }
+    } catch (err) { alert("読み込みエラー：" + err.message); }
 }
-
 function extractMainLineMoves(sgf, size) {
     const moves = new Array();
-    let depth = 0;
-
+    const stack = new Array();
+    let skipDepth = 0;
     for (let i = 0; i < sgf.length; i++) {
         const ch = sgf.charAt(i);
         if (ch === '(') {
-            depth++;
-            if (depth > 1 && moves.length > 0) {
-                let subDepth = 1;
-                i++;
-                while (i < sgf.length && subDepth > 0) {
-                    if (sgf.charAt(i) === '(') subDepth++;
-                    else if (sgf.charAt(i) === ')') subDepth--;
-                    i++;
+            if (skipDepth > 0) { skipDepth++; }
+            else {
+                const hasC = stack.length > 0 && stack.at(-1).hasChild;
+                if (hasC) { skipDepth = 1; }
+                else {
+                    if (stack.length > 0) stack.at(-1).hasChild = true;
+                    stack.push({ hasChild: false });
                 }
-                i--;
-                continue;
             }
         } else if (ch === ')') {
-            depth--;
-            if (depth <= 0 && moves.length > 0) break;
-        } else if (ch === ';') {
-            // ノードの終わり（次の ; や ( や ) ）までを括弧を考慮して正確に取得
-            let nodeEnd = i + 1;
-            let inBracket = false;
+            if (skipDepth > 0) { skipDepth--; }
+            else if (stack.length > 0) {
+                stack.pop();
+                if (stack.length === 0 && moves.length > 0) break;
+            }
+        } else if (ch === ';' && skipDepth === 0) {
+            let nodeEnd = i + 1, inB = false;
             while (nodeEnd < sgf.length) {
                 const c = sgf.charAt(nodeEnd);
                 if (c === '\\') { nodeEnd += 2; continue; }
-                if (c === '[') inBracket = true;
-                else if (c === ']') inBracket = false;
-                else if (!inBracket && (c === ';' || c === '(' || c === ')')) break;
+                if (c === '[') inB = true;
+                else if (c === ']') inB = false;
+                else if (!inB && (c === ';' || c === '(' || c === ')')) break;
                 nodeEnd++;
             }
-
-            // ノード内の全プロパティ（B, W, C, KT など順番問わず）を正確に解析
             const props = {};
             let p = i + 1;
             while (p < nodeEnd) {
                 while (p < nodeEnd && /\s/.test(sgf.charAt(p))) p++;
-                let keyStart = p;
+                let ks = p;
                 while (p < nodeEnd && /[A-Za-z]/.test(sgf.charAt(p))) p++;
-                const propKey = sgf.slice(keyStart, p).toUpperCase();
+                const pk = sgf.slice(ks, p).toUpperCase();
                 while (p < nodeEnd && /\s/.test(sgf.charAt(p))) p++;
-                if (propKey && sgf.charAt(p) === '[') {
+                if (pk && sgf.charAt(p) === '[') {
                     const vals = new Array();
                     while (p < nodeEnd && sgf.charAt(p) === '[') {
-                        p++;
-                        let valStart = p;
+                        p++; let vs = p;
                         while (p < nodeEnd) {
                             if (sgf.charAt(p) === '\\') { p += 2; continue; }
                             if (sgf.charAt(p) === ']') break;
                             p++;
                         }
-                        vals.push(sgf.slice(valStart, p));
+                        vals.push(sgf.slice(vs, p));
                         if (sgf.charAt(p) === ']') p++;
                         while (p < nodeEnd && /\s/.test(sgf.charAt(p))) p++;
                     }
-                    props[propKey] = vals;
-                } else {
-                    p++;
-                }
+                    props[pk] = vals;
+                } else { p++; }
             }
-
-            const moveColor = props.B ? 'B' : (props.W ? 'W' : null);
-            if (moveColor) {
-                const coord = (props[moveColor].at(0) || "").trim().toLowerCase();
-                const commentText = props.C ? props.C.join("\n").replace(/\\([\]\\:])/g, "$1").trim() : "";
-                const ktRaw = props.KT ? props.KT.at(0) : "";
-
-                let aiInfo = null;
-                if (ktRaw) {
-                    aiInfo = parseKaTrainTag(ktRaw, moveColor);
-                } else if (commentText) {
-                    aiInfo = parseCommentAiMetrics(commentText, moveColor);
-                }
-
+            const mc = props.B ? 'B' : (props.W ? 'W' : null);
+            if (mc) {
+                const coord = (props[mc].at(0) || "").trim().toLowerCase();
+                const rawC = props.C ? props.C.join(" ") : "";
+                const cTxt = rawC.replace(/\\([\]\\:])/g, "$1").replace(/[\u200B-\u200D\uFEFF\u3164]/g, "").trim();
+                const aiInfo = parseJapaneseKaTrainComment(cTxt);
                 if (coord.length === 2) {
                     const x = SGF_CHARS.indexOf(coord.charAt(0));
                     const y = SGF_CHARS.indexOf(coord.charAt(1));
                     if (x >= 0 && y >= 0 && x < size && y < size) {
-                        moves.push({ x, y, color: moveColor, comment: commentText, ai: aiInfo });
+                        moves.push({ x, y, color: mc, comment: cTxt, ai: aiInfo });
                     }
                 }
             }
-
-            // 解析済みのノード末尾までスキップ（コメント内の ; や ( ) による誤作動を防止）
             i = nodeEnd - 1;
         }
     }
     return moves;
 }
 
-// KaTrainのKTタグやコメント文字列から「黒勝率・目数差・損失目数・AI推奨手」を抽出
-function parseKaTrainTag(ktRaw, color) {
-    try {
-        const obj = JSON.parse(ktRaw);
-        const winrate = typeof obj.winrate === "number" ? (obj.winrate * 100) : null;
-        const scoreLead = typeof obj.scoreLead === "number" ? obj.scoreLead : null;
-        const pointsLost = typeof obj.pointsLost === "number" ? obj.pointsLost : null;
-        const bestMove = Array.isArray(obj.moves) && obj.moves.length > 0 ? (obj.moves.at(0).move || "") : "";
-        if (winrate !== null || scoreLead !== null) {
-            return { winrate, scoreLead, pointsLost, bestMove };
-        }
-    } catch (e) {}
-    return parseCommentAiMetrics(ktRaw, color);
-}
-
-function parseCommentAiMetrics(txt, color) {
-    // KaTrain標準コメント形式（例: "Black winrate: 54.2%, Score lead: +1.3, Points lost: 2.4, Best: Q16" 等）に対応
-    const wrM = txt.match(/(?:Black\s*winrate|Winrate|黒勝率)[^\d\-+]*([\d.]+)\s*%/i);
-    const scM = txt.match(/(?:Score\s*lead|Score|目数差)[^\d\-+]*([\-+]?[\d.]+)/i);
-    const plM = txt.match(/(?:Points\s*lost|Loss|損失)[^\d\-+]*([\-+]?[\d.]+)/i);
-    const bmM = txt.match(/(?:Best|Top\s*move|推奨)[^A-T0-9]*([A-HJ-T]\d{1,2})/i);
-
-    if (!wrM && !scM && !plM) return null;
+function parseJapaneseKaTrainComment(txt) {
+    if (!txt) return null;
+    const scoreM = txt.match(/目差[：:]\s*([^\s\r\n]+)/);
+    const winM = txt.match(/勝率[：:]\s*([黒白]\s*[\d.]+%)/);
+    const lossM = txt.match(/推定損失目数[：:]\s*([\d.]+)/);
+    const bestM = txt.match(/最善手は\s*([A-T]\d{1,2}(?:\s*\([^)]+\))?)/);
+    const pvM = txt.match(/予想手順[：:]\s*([BW]?[A-T]\d{1,2}(?:\s+[BW]?[A-T]\d{1,2})*)/);
+    if (!scoreM && !winM && !lossM) return null;
     return {
-        winrate: wrM ? parseFloat(wrM.at(1)) : null,
-        scoreLead: scM ? parseFloat(scM.at(1)) : null,
-        pointsLost: plM ? parseFloat(plM.at(1)) : null,
-        bestMove: bmM ? bmM.at(1).toUpperCase() : ""
+        scoreText: scoreM ? scoreM.at(1).trim() : "",
+        winText: winM ? winM.at(1).trim() : "",
+        pointsLost: lossM ? parseFloat(lossM.at(1)) : 0,
+        bestText: bestM ? bestM.at(1).trim() : "",
+        pvText: pvM ? pvM.at(1).trim() : ""
     };
 }
 
-
 function simulateBoardStates(size, setup, moves) {
     let board = Array.from({ length: size }, () => Array(size).fill(null));
-    setup.forEach(s => {
-        if (s.x >= 0 && s.x < size && s.y >= 0 && s.y < size) {
-            board.at(s.y)[s.x] = s.color;
-        }
-    });
-
-    const cloneBoard = (b) => b.map(row => row.slice());
-    const snapshots = new Array();
-    snapshots.push(cloneBoard(board));
-
-    const dirs = Array.of(Array.of(1, 0), Array.of(-1, 0), Array.of(0, 1), Array.of(0, -1));
-
-    function getGroupAndLiberties(b, sx, sy) {
-        const color = b.at(sy).at(sx);
-        const visited = new Set(Array.of(`${sx},${sy}`));
-        const stones = Array.of({ x: sx, y: sy });
-        const liberties = new Set();
-        let head = 0;
-
-        while (head < stones.length) {
-            const cur = stones.at(head++);
+    setup.forEach(s => { if (s.x >= 0 && s.x < size && s.y >= 0 && s.y < size) board.at(s.y)[s.x] = s.color; });
+    const snapshots = Array.of(board.map(r => r.slice())), dirs = Array.of(Array.of(1,0), Array.of(-1,0), Array.of(0,1), Array.of(0,-1));
+    function getGrp(b, sx, sy) {
+        const col = b.at(sy).at(sx), vis = new Set(Array.of(`${sx},${sy}`)), st = Array.of({x:sx, y:sy}), lib = new Set(); let h = 0;
+        while (h < st.length) {
+            const cur = st.at(h++);
             for (const d of dirs) {
-                const nx = cur.x + d.at(0);
-                const ny = cur.y + d.at(1);
+                const nx = cur.x + d.at(0), ny = cur.y + d.at(1);
                 if (nx < 0 || nx >= size || ny < 0 || ny >= size) continue;
                 const cell = b.at(ny).at(nx);
-                if (cell === null) {
-                    liberties.add(`${nx},${ny}`);
-                } else if (cell === color && !visited.has(`${nx},${ny}`)) {
-                    visited.add(`${nx},${ny}`);
-                    stones.push({ x: nx, y: ny });
-                }
+                if (cell === null) lib.add(`${nx},${ny}`); else if (cell === col && !vis.has(`${nx},${ny}`)) { vis.add(`${nx},${ny}`); st.push({x:nx, y:ny}); }
             }
         }
-        return { stones, liberties: liberties.size };
+        return { stones: st, liberties: lib.size };
     }
-
     moves.forEach(mv => {
-        const opp = mv.color === 'B' ? 'W' : 'B';
-        board.at(mv.y)[mv.x] = mv.color;
-
-        for (const d of dirs) {
-            const nx = mv.x + d.at(0);
-            const ny = mv.y + d.at(1);
-            if (nx >= 0 && nx < size && ny >= 0 && ny < size && board.at(ny).at(nx) === opp) {
-                const grp = getGroupAndLiberties(board, nx, ny);
-                if (grp.liberties === 0) {
-                    grp.stones.forEach(st => { board.at(st.y)[st.x] = null; });
-                }
-            }
-        }
-        const selfGrp = getGroupAndLiberties(board, mv.x, mv.y);
-        if (selfGrp.liberties === 0) {
-            selfGrp.stones.forEach(st => { board.at(st.y)[st.x] = null; });
-        }
-
-        snapshots.push(cloneBoard(board));
+        const opp = mv.color === 'B' ? 'W' : 'B'; board.at(mv.y)[mv.x] = mv.color;
+        for (const d of dirs) { const nx = mv.x + d.at(0), ny = mv.y + d.at(1); if (nx >= 0 && nx < size && ny >= 0 && ny < size && board.at(ny).at(nx) === opp) { const g = getGrp(board, nx, ny); if (g.liberties === 0) g.stones.forEach(s => board.at(s.y)[s.x] = null); } }
+        const sg = getGrp(board, mv.x, mv.y); if (sg.liberties === 0) sg.stones.forEach(s => board.at(s.y)[s.x] = null);
+        snapshots.push(board.map(r => r.slice()));
     });
-
     return snapshots;
 }
-
 function computeFiveStepPlan(totalMoves, forcedMode) {
-    let divisions = 4;
-    if (forcedMode === "2" || forcedMode === "4" || forcedMode === "8") {
-        divisions = parseInt(forcedMode, 10);
-    } else {
-        if (totalMoves <= 120) divisions = 2;
-        else if (totalMoves <= 240) divisions = 4;
-        else divisions = 8;
-    }
-
-    const rawPerFig = totalMoves / divisions;
-    let stepPerFig = Math.ceil(rawPerFig / 5) * 5;
-    if (stepPerFig < 5) stepPerFig = 5;
-
+    let div = (forcedMode === "2" || forcedMode === "4" || forcedMode === "8") ? parseInt(forcedMode, 10) : (totalMoves <= 120 ? 2 : (totalMoves <= 240 ? 4 : 8));
+    let step = Math.max(5, Math.ceil((totalMoves / div) / 5) * 5);
     const ranges = new Array();
-    for (let i = 0; i < divisions; i++) {
-        const start = i * stepPerFig + 1;
-        const end = (i === divisions - 1) ? totalMoves : Math.min(totalMoves, (i + 1) * stepPerFig);
-        if (start <= totalMoves) {
-            ranges.push({ figNum: i + 1, start, end });
-        } else {
-            ranges.push({ figNum: i + 1, start: null, end: null });
-        }
-    }
-
-    return { divisions, stepPerFig, ranges };
+    for (let i = 0; i < div; i++) { const s = i * step + 1, e = (i === div - 1) ? totalMoves : Math.min(totalMoves, (i + 1) * step); ranges.push(s <= totalMoves ? { figNum: i + 1, start: s, end: e } : { figNum: i + 1, start: null, end: null }); }
+    return { divisions: div, stepPerFig: step, ranges };
 }
-
 function renderDiagramSvg(game, snapshots, range, divisions, numberMode) {
-    const sz = game.size;
-    const svgSize = divisions === 2 ? 880 : (divisions === 4 ? 435 : 298);
-    const margin = Math.round(svgSize / (sz * 1.95));
-    const step = (svgSize - margin * 2) / (sz - 1);
-    const stoneR = step * 0.48;
-    const inkColor = document.getElementById('inkShadeSelect')?.value || "#0f172a";
-
-    let svg = `<svg width="${svgSize}" height="${svgSize}" viewBox="0 0 ${svgSize} ${svgSize}" xmlns="http://w3.org" style="background:#ffffff; display:block;">`;
-
-    for (let i = 0; i < sz; i++) {
-        const pos = margin + i * step;
-        const sw = (i === 0 || i === sz - 1) ? 1.6 : 0.8;
-        svg += `<line x1="${margin}" y1="${pos}" x2="${svgSize - margin}" y2="${pos}" stroke="${inkColor}" stroke-width="${sw}"/>`;
-        svg += `<line x1="${pos}" y1="${margin}" x2="${pos}" y2="${svgSize - margin}" stroke="${inkColor}" stroke-width="${sw}"/>`;
-    }
-
-    const stars = sz === 19 ? Array.of(3, 9, 15) : (sz === 13 ? Array.of(3, 6, 9) : (sz === 9 ? Array.of(2, 4, 6) : new Array()));
-    stars.forEach(sx => {
-        stars.forEach(sy => {
-            svg += `<circle cx="${margin + sx * step}" cy="${margin + sy * step}" r="${Math.max(2.2, step * 0.11)}" fill="${inkColor}"/>`;
-        });
-    });
-
-    if (!range.start) {
-        svg += `<text x="${svgSize/2}" y="${svgSize/2}" fill="#94a3b8" font-size="14" text-anchor="middle" dominant-baseline="central">（終局済み・余白）</text></svg>`;
-        return { svg, notes: new Array() };
-    }
-
-    const baseBoard = snapshots.at(range.start - 1);
-    const numMap = new Map();
-    const notes = new Array();
-
-    for (let mIdx = range.start - 1; mIdx < range.end; mIdx++) {
-        const mv = game.moves.at(mIdx);
-        const moveNo = mIdx + 1;
-        const dispNo = (numberMode === "RESET") ? (moveNo - range.start + 1) : moveNo;
-        const key = `${mv.x},${mv.y}`;
-
-        if (!numMap.has(key)) {
-            numMap.set(key, { num: dispNo, origNo: moveNo, color: mv.color });
-        } else {
-            const prev = numMap.get(key);
-            const prevDisp = (numberMode === "RESET") ? (prev.origNo - range.start + 1) : prev.origNo;
-            notes.push(`${dispNo}は${prevDisp}の所`);
-        }
-    }
-
-    for (let y = 0; y < sz; y++) {
-        for (let x = 0; x < sz; x++) {
-            const cell = baseBoard.at(y).at(x);
-            if (!cell) continue;
-            if (numMap.has(`${x},${y}`)) continue;
-
-            const cx = margin + x * step;
-            const cy = margin + y * step;
-            const fill = cell === 'B' ? inkColor : '#ffffff';
-            svg += `<circle cx="${cx}" cy="${cy}" r="${stoneR}" fill="${fill}" stroke="${inkColor}" stroke-width="1"/>`;
-        }
-    }
-
-    numMap.forEach((info, key) => {
-        const parts = key.split(',').map(Number);
-        const x = parts.at(0);
-        const y = parts.at(1);
-        const cx = margin + x * step;
-        const cy = margin + y * step;
-        const isBlack = info.color === 'B';
-        const fill = isBlack ? inkColor : '#ffffff';
-        const textColor = isBlack ? '#ffffff' : inkColor;
-        const digits = String(info.num).length;
-        const fontSize = digits >= 3 ? stoneR * 0.85 : (digits === 2 ? stoneR * 1.05 : stoneR * 1.25);
-
-        svg += `<circle cx="${cx}" cy="${cy}" r="${stoneR}" fill="${fill}" stroke="${inkColor}" stroke-width="1"/>`;
-        svg += `<text x="${cx}" y="${cy}" fill="${textColor}" font-size="${fontSize}" font-weight="bold" text-anchor="middle" dominant-baseline="central" font-family="sans-serif">${info.num}</text>`;
-    });
-
-    svg += `</svg>`;
-    return { svg, notes };
+    const sz = game.size, svgSize = divisions === 2 ? 880 : (divisions === 4 ? 435 : 298), margin = Math.round(svgSize / (sz * 1.95)), step = (svgSize - margin * 2) / (sz - 1), stoneR = step * 0.48, ink = document.getElementById('inkShadeSelect')?.value || "#0f172a";
+    let svg = `<svg width="${svgSize}" height="${svgSize}" viewBox="0 0 ${svgSize} ${svgSize}" xmlns="http://w3.org" style="background:#fff;display:block;">`;
+    for (let i = 0; i < sz; i++) { const pos = margin + i * step, sw = (i === 0 || i === sz - 1) ? 1.6 : 0.8; svg += `<line x1="${margin}" y1="${pos}" x2="${svgSize - margin}" y2="${pos}" stroke="${ink}" stroke-width="${sw}"/><line x1="${pos}" y1="${margin}" x2="${pos}" y2="${svgSize - margin}" stroke="${ink}" stroke-width="${sw}"/>`; }
+    const stars = sz === 19 ? Array.of(3,9,15) : (sz === 13 ? Array.of(3,6,9) : (sz === 9 ? Array.of(2,4,6) : new Array()));
+    stars.forEach(sx => stars.forEach(sy => { svg += `<circle cx="${margin + sx * step}" cy="${margin + sy * step}" r="${Math.max(2.2, step * 0.11)}" fill="${ink}"/>`; }));
+    if (!range.start) return { svg: svg + `<text x="${svgSize/2}" y="${svgSize/2}" fill="#94a3b8" font-size="14" text-anchor="middle" dominant-baseline="central">（終局済み・余白）</text></svg>`, notes: new Array() };
+    const base = snapshots.at(range.start - 1), numMap = new Map(), notes = new Array();
+    for (let m = range.start - 1; m < range.end; m++) { const mv = game.moves.at(m), no = m + 1, dNo = (numberMode === "RESET") ? (no - range.start + 1) : no, k = `${mv.x},${mv.y}`; if (!numMap.has(k)) numMap.set(k, { num: dNo, origNo: no, color: mv.color }); else { const p = numMap.get(k); notes.push(`${dNo}は${numberMode === "RESET" ? (p.origNo - range.start + 1) : p.origNo}の所`); } }
+    for (let y = 0; y < sz; y++) for (let x = 0; x < sz; x++) { const c = base.at(y).at(x); if (c && !numMap.has(`${x},${y}`)) svg += `<circle cx="${margin + x * step}" cy="${margin + y * step}" r="${stoneR}" fill="${c === 'B' ? ink : '#fff'}" stroke="${ink}" stroke-width="1"/>`; }
+    numMap.forEach((info, k) => { const pts = k.split(',').map(Number), cx = margin + pts.at(0) * step, cy = margin + pts.at(1) * step, isB = info.color === 'B', d = String(info.num).length, fs = d >= 3 ? stoneR * 0.85 : (d === 2 ? stoneR * 1.05 : stoneR * 1.25); svg += `<circle cx="${cx}" cy="${cy}" r="${stoneR}" fill="${isB ? ink : '#fff'}" stroke="${ink}" stroke-width="1"/><text x="${cx}" y="${cy}" fill="${isB ? '#fff' : ink}" font-size="${fs}" font-weight="bold" text-anchor="middle" dominant-baseline="central" font-family="sans-serif">${info.num}</text>`; });
+    return { svg: svg + '</svg>', notes };
 }
-let customDiagramComments = {};
-
-function toggleCommentEditorBox() {
-    const box = document.getElementById('commentEditorBox');
-    if (!box) return;
-    if (!currentGame) {
-        return alert("先にSGF棋譜ファイルを開くか、SGF文字を読み込んでください。");
-    }
-    box.style.display = (box.style.display === 'none') ? 'block' : 'none';
-    if (box.style.display === 'block') {
-        buildCommentEditorInputs();
-    }
-}
-
+function toggleCommentEditorBox() { const b = document.getElementById('commentEditorBox'); if (!b) return; if (!currentGame) return alert("先にSGF棋譜を開いてください。"); b.style.display = b.style.display === 'none' ? 'block' : 'none'; if (b.style.display === 'block') buildCommentEditorInputs(); }
 function getDefaultDiagramComment(game, range) {
     if (!range || !range.start) return "";
-    const aiLines = new Array();
-    const textLines = new Array();
-
-    for (let mIdx = range.start - 1; mIdx < range.end; mIdx++) {
-        const mv = game.moves.at(mIdx);
-        if (!mv) continue;
-        const moveNo = mIdx + 1;
-        const sideJp = mv.color === 'B' ? '黒' : '白';
-
+    const aiL = new Array(), txL = new Array();
+    for (let m = range.start - 1; m < range.end; m++) {
+        const mv = game.moves.at(m); if (!mv) continue;
+        const no = m + 1, side = mv.color === 'B' ? '黒' : '白';
         if (mv.ai) {
-            const lost = mv.ai.pointsLost;
-            const isLastInFig = (mIdx === range.end - 1);
-            // 1.5目以上の損失（疑問手・悪手）または各譜の最終手の形勢を自動ピックアップ
-            if ((typeof lost === "number" && lost >= 1.5) || isLastInFig) {
-                let tag = isLastInFig && !(lost >= 1.5) ? "【形勢】" : (lost >= 5.0 ? "⚠️大悪手" : (lost >= 3.0 ? "⚡悪手" : "💡疑問手"));
-                let detail = `${moveNo}手目(${sideJp}) ${tag}`;
-                if (typeof lost === "number" && lost >= 1.5) {
-                    detail += ` (-${lost.toFixed(1)}目)`;
-                }
-                const metrics = new Array();
-                if (typeof mv.ai.winrate === "number") {
-                    metrics.push(`黒勝率${mv.ai.winrate.toFixed(1)}%`);
-                }
-                if (typeof mv.ai.scoreLead === "number") {
-                    const lead = mv.ai.scoreLead;
-                    metrics.push(lead >= 0 ? `黒+${lead.toFixed(1)}目` : `白+${Math.abs(lead).toFixed(1)}目`);
-                }
-                if (mv.ai.bestMove && lost >= 1.5) {
-                    metrics.push(`AI推奨:${mv.ai.bestMove}`);
-                }
-                if (metrics.length > 0) {
-                    detail += `\n  └ ${metrics.join(" / ")}`;
-                }
-                aiLines.push(detail);
-            }
-        } else if (mv.comment) {
-            const clean = mv.comment.replace(/\s+/g, " ").trim();
-            if (clean) textLines.push(`【${moveNo}手目】${clean}`);
-        }
+            const l = mv.ai.pointsLost, tag = l >= 5.0 ? "⚠️大悪手" : (l >= 3.0 ? "⚡悪手" : (l >= 1.5 ? "💡疑問手" : "📌AI評価"));
+            let line = `${no}手目(${side}) ${tag}` + (l >= 1.5 ? ` (-${l.toFixed(1)}目)` : "");
+            const sub = new Array(); if (mv.ai.winText) sub.push(`勝率:${mv.ai.winText}`); if (mv.ai.scoreText) sub.push(`目差:${mv.ai.scoreText}`); if (mv.ai.bestText) sub.push(`最善:${mv.ai.bestText}`);
+            if (sub.length > 0) line += `\n  └ ${sub.join(" / ")}`;
+            if (mv.ai.pvText) line += `\n  └ 予想:${mv.ai.pvText}`;
+            aiL.push(line);
+        } else if (mv.comment && !mv.comment.includes("generated by KaTrain")) { const c = mv.comment.replace(/\s+/g, " ").trim(); if (c) txL.push(`【${no}手目】${c}`); }
     }
-
-    const result = new Array();
-    if (aiLines.length > 0) {
-        result.push("🤖 【囲碁AI解析ハイライト】\n" + aiLines.join("\n"));
-    }
-    if (textLines.length > 0) {
-        result.push(textLines.join("\n"));
-    }
-    return result.join("\n\n");
+    const res = new Array(); if (aiL.length > 0) res.push("🤖 【囲碁AI解析ハイライト】\n" + aiL.join("\n")); if (txL.length > 0) res.push(txL.join("\n")); return res.join("\n\n");
 }
-
-
 function buildCommentEditorInputs() {
-    const grid = document.getElementById('commentInputsGrid');
-    if (!grid || !currentGame) return;
-    const forcedMode = document.getElementById('splitModeSelect').value;
-    const plan = computeFiveStepPlan(currentGame.moves.length, forcedMode);
-
-    grid.innerHTML = plan.ranges.map(r => {
-        if (!r.start) return "";
-        const key = `${plan.divisions}_${r.figNum}`;
-        const val = (customDiagramComments[key] !== undefined)
-            ? customDiagramComments[key]
-            : getDefaultDiagramComment(currentGame, r);
-        return `
-            <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:8px;">
-                <div style="font-size:12px; font-weight:bold; color:#0369a1; margin-bottom:4px;">
-                    第${r.figNum}譜（${r.start}〜${r.end}手目）の右側メッセージ・AI評価
-                </div>
-                <textarea rows="4" oninput="onEditDiagramComment('${key}', this.value)" style="width:100%; font-size:12px; padding:6px; border:1px solid #94a3b8; border-radius:4px; line-height:1.5;" placeholder="例：黒51のツケがAI推奨の好手（黒勝率62%・+2.1目）。白は52と受けるのが相場です。">${val}</textarea>
-            </div>
-        `;
-    }).join("");
+    const g = document.getElementById('commentInputsGrid'); if (!g || !currentGame) return;
+    const plan = computeFiveStepPlan(currentGame.moves.length, document.getElementById('splitModeSelect').value);
+    g.innerHTML = plan.ranges.map(r => { if (!r.start) return ""; const k = `${plan.divisions}_${r.figNum}`, v = customDiagramComments[k] !== undefined ? customDiagramComments[k] : getDefaultDiagramComment(currentGame, r); return `<div style="background:#f8fafc;border:1px solid #cbd5e1;border-radius:6px;padding:8px;"><div style="font-size:12px;font-weight:bold;color:#0369a1;margin-bottom:4px;">第${r.figNum}譜（${r.start}〜${r.end}手目）の右側メッセージ・AI評価</div><textarea rows="4" oninput="onEditDiagramComment('${k}', this.value)" style="width:100%;font-size:12px;padding:6px;border:1px solid #94a3b8;border-radius:4px;line-height:1.5;">${v}</textarea></div>`; }).join("");
 }
-
-function onEditDiagramComment(key, text) {
-    customDiagramComments[key] = text;
-    recalculateAndRender(true);
-}
-
-function recalculateAndRender(skipRebuildEditor) {
+function onEditDiagramComment(k, t) { customDiagramComments[k] = t; recalculateAndRender(true); }
+function recalculateAndRender(skip) {
     if (!currentGame) return;
-    const forcedMode = document.getElementById('splitModeSelect').value;
-    const numberMode = document.getElementById('numberModeSelect').value;
-    const totalMoves = currentGame.moves.length;
-
-    const plan = computeFiveStepPlan(totalMoves, forcedMode);
-    const snapshots = simulateBoardStates(currentGame.size, currentGame.setup, currentGame.moves);
-
-    const statusBar = document.getElementById('statusBar');
-    statusBar.innerHTML = `✅ 読込完了：<b>${currentGame.eventName}</b>（総手数：<b>${totalMoves}手</b> ／ <b>${plan.divisions}分割・1図${plan.stepPerFig}手基準</b> ／ <b>A4用紙 1枚（表面・裏面）</b>）`;
-
+    const fm = document.getElementById('splitModeSelect').value, nm = document.getElementById('numberModeSelect').value, tot = currentGame.moves.length, plan = computeFiveStepPlan(tot, fm), snap = simulateBoardStates(currentGame.size, currentGame.setup, currentGame.moves);
+    document.getElementById('statusBar').innerHTML = `✅ 読込完了：<b>${currentGame.eventName}</b>（総手数：<b>${tot}手</b> ／ <b>${plan.divisions}分割・1図${plan.stepPerFig}手基準</b> ／ <b>A4用紙 1枚（表面・裏面）</b>）`;
     const half = plan.divisions / 2;
-    const frontRanges = plan.ranges.slice(0, half);
-    const backRanges = plan.ranges.slice(half, plan.divisions);
-
-    const container = document.getElementById('previewContainer');
-    container.innerHTML = buildA4PageHtml(currentGame, snapshots, frontRanges, plan.divisions, numberMode, "表面（1/2）")
-                        + buildA4PageHtml(currentGame, snapshots, backRanges, plan.divisions, numberMode, "裏面（2/2）");
-
-    if (!skipRebuildEditor && document.getElementById('commentEditorBox')?.style.display === 'block') {
-        buildCommentEditorInputs();
-    }
+    document.getElementById('previewContainer').innerHTML = buildA4PageHtml(currentGame, snap, plan.ranges.slice(0, half), plan.divisions, nm, "表面（1/2）") + buildA4PageHtml(currentGame, snap, plan.ranges.slice(half, plan.divisions), plan.divisions, nm, "裏面（2/2）");
+    if (!skip && document.getElementById('commentEditorBox')?.style.display === 'block') buildCommentEditorInputs();
 }
-
-function buildA4PageHtml(game, snapshots, ranges, divisions, numberMode, sideLabel) {
-    const cardsHtml = ranges.map(r => {
-        const res = renderDiagramSvg(game, snapshots, r, divisions, numberMode);
-        const svg = res.svg;
-        const notes = res.notes;
-        const rangeTitle = r.start ? `${r.start}手目 〜 ${r.end}手目` : `終局済み`;
-        const subBadge = (r.start && numberMode === "RESET")
-            ? `図内 1〜${r.end - r.start + 1}`
-            : (r.start ? `全${r.end - r.start + 1}手` : "");
-
-        const key = `${divisions}_${r.figNum}`;
-        const rawComment = (customDiagramComments[key] !== undefined)
-            ? customDiagramComments[key]
-            : getDefaultDiagramComment(game, r);
-
-        const escapeHtml = (str) => str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        const formattedCommentHtml = rawComment.trim()
-            ? `<div style="margin-top:6px; padding:6px 8px; background:#f8fafc; border-left:3px solid #0d9488; border-radius:4px; font-size:11px; line-height:1.55; color:#0f172a; white-space:pre-wrap;">${escapeHtml(rawComment.trim())}</div>`
-            : "";
-
-        const noteHtml = notes.length > 0
-            ? (divisions === 8
-                ? `※ ${notes.join(" / ")}`
-                : `<div style="font-weight:bold; color:#0f172a; margin-bottom:2px;">【同一点・コウの注記】</div>` + notes.map(n => `<div>・${n}</div>`).join(""))
-            : "";
-
-        if (divisions === 8) {
-            return `
-                <div class="diagram-card">
-                    <div class="diagram-label">
-                        <span><span class="diagram-badge">第${r.figNum}譜</span> ${rangeTitle}</span>
-                        <span style="font-size:10px; color:#475569;">${subBadge}</span>
-                    </div>
-                    <div class="diagram-board-wrap">${svg}</div>
-                    <div class="diagram-note">${noteHtml}</div>
-                </div>
-            `;
-        }
-
-        return `
-            <div class="diagram-card">
-                <div class="diagram-board-wrap">${svg}</div>
-                <div class="diagram-side-info">
-                    <div class="diagram-label">
-                        <span><span class="diagram-badge">第${r.figNum}譜</span> ${rangeTitle}</span>
-                        <span style="font-size:10.5px; color:#475569;">${subBadge}</span>
-                    </div>
-                    <div class="diagram-note">${noteHtml}</div>
-                    ${formattedCommentHtml}
-                </div>
-            </div>
-        `;
+function buildA4PageHtml(game, snap, ranges, div, nm, side) {
+    const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const cards = ranges.map(r => {
+        const res = renderDiagramSvg(game, snap, r, div, nm), rt = r.start ? `${r.start}手目 〜 ${r.end}手目` : '終局済み', sb = (r.start && nm === "RESET") ? `図内 1〜${r.end - r.start + 1}` : (r.start ? `全${r.end - r.start + 1}手` : ""), k = `${div}_${r.figNum}`, raw = customDiagramComments[k] !== undefined ? customDiagramComments[k] : getDefaultDiagramComment(game, r);
+        const cHtml = raw.trim() ? `<div style="margin-top:6px;padding:6px 8px;background:#f8fafc;border-left:3px solid #0d9488;border-radius:4px;font-size:10.5px;line-height:1.5;color:#0f172a;white-space:pre-wrap;">${esc(raw.trim())}</div>` : "";
+        const nHtml = res.notes.length > 0 ? (div === 8 ? `※ ${res.notes.join(" / ")}` : `<div style="font-weight:bold;color:#0f172a;margin-bottom:2px;">【同一点・コウの注記】</div>` + res.notes.map(n => `<div>・${n}</div>`).join("")) : "";
+        
+        return `<div class="diagram-card"><div class="diagram-board-wrap">${res.svg}</div><div class="diagram-side-info"><div class="diagram-label"><span><span class="diagram-badge">第${r.figNum}譜</span> ${rt}</span><span style="font-size:10.5px;color:#475569;">${sb}</span></div><div class="diagram-note">${nHtml}</div>${cHtml}</div></div>`;
     }).join("");
-
-    const bindMm = parseInt(document.getElementById('bindingMarginSelect')?.value || "19", 10);
-    const outerMm = 8;
-    const isFront = sideLabel.includes("表面");
-    const padLeft = isFront ? bindMm : outerMm;
-    const padRight = isFront ? outerMm : bindMm;
-
-    return `
-        <div class="a4-sheet" style="padding: 8mm ${padRight}mm 8mm ${padLeft}mm;">
-            <div class="sheet-header">
-                <div>
-                    <div class="sheet-title">${game.eventName}（全${game.moves.length}手・${divisions}分割）</div>
-                    <div class="sheet-meta">⚫黒番：${game.blackName}　⚪白番：${game.whiteName}　${game.dateStr}　${game.komiStr}　${game.resultStr}</div>
-                </div>
-                <div class="name-box">       年　月　日 ／ 名前：　　　　　　　　</div>
-            </div>
-
-            <div class="diagrams-grid grid-div-${divisions}">
-                ${cardsHtml}
-            </div>
-
-            <div class="sheet-footer">
-                <span>※ 番号のない石は前の譜までに打たれた既出石です（アゲハマ自動処理済み）</span>
-                <span>A4両面1枚プリント【${sideLabel}】（左閉じしろ ${bindMm}mm）</span>
-            </div>
-        </div>
-    `;
+    const bm = parseInt(document.getElementById('bindingMarginSelect')?.value || "19", 10), om = 8, isF = side.includes("表面");
+    return `<div class="a4-sheet" style="padding:8mm ${isF ? om : bm}mm 8mm ${isF ? bm : om}mm;"><div class="sheet-header"><div><div class="sheet-title">${game.eventName}（全${game.moves.length}手・${div}分割）</div><div class="sheet-meta">⚫黒番：${game.blackName}　⚪白番：${game.whiteName}　${game.dateStr}　${game.komiStr}　${game.resultStr}</div></div><div class="name-box">年　月　日 ／ 名前：　　　　　　　　</div></div><div class="diagrams-grid grid-div-${div}">${cards}</div><div class="sheet-footer"><span>※ 番号のない石は前の譜までに打たれた既出石です（アゲハマ自動処理済み）</span><span>A4両面1枚プリント【${side}】（左閉じしろ ${bm}mm）</span></div></div>`;
 }
-
-function buildA4PageHtml(game, snapshots, ranges, divisions, numberMode, sideLabel) {
-    const cardsHtml = ranges.map(r => {
-        const res = renderDiagramSvg(game, snapshots, r, divisions, numberMode);
-        const svg = res.svg;
-        const notes = res.notes;
-        const rangeTitle = r.start ? `${r.start}手目 〜 ${r.end}手目` : `終局済み`;
-        const subBadge = (r.start && numberMode === "RESET")
-            ? `図内 1〜${r.end - r.start + 1}`
-            : (r.start ? `全${r.end - r.start + 1}手` : "");
-
-        const noteHtml = notes.length > 0
-            ? (divisions === 8
-                ? `※ ${notes.join(" / ")}`
-                : `<div style="font-weight:bold; color:#0f172a; margin-bottom:2px;">【同一点・コウの注記】</div>` + notes.map(n => `<div>・${n}</div>`).join(""))
-            : "";
-
-        if (divisions === 8) {
-            return `
-                <div class="diagram-card">
-                    <div class="diagram-label">
-                        <span><span class="diagram-badge">第${r.figNum}譜</span> ${rangeTitle}</span>
-                        <span style="font-size:10px; color:#475569;">${subBadge}</span>
-                    </div>
-                    <div class="diagram-board-wrap">${svg}</div>
-                    <div class="diagram-note">${noteHtml}</div>
-                </div>
-            `;
-        }
-
-        return `
-            <div class="diagram-card">
-                <div class="diagram-board-wrap">${svg}</div>
-                <div class="diagram-side-info">
-                    <div class="diagram-label">
-                        <span><span class="diagram-badge">第${r.figNum}譜</span> ${rangeTitle}</span>
-                        <span style="font-size:10.5px; color:#475569;">${subBadge}</span>
-                    </div>
-                    <div class="diagram-note">${noteHtml}</div>
-                </div>
-            </div>
-        `;
-    }).join("");
-
-    const bindMm = parseInt(document.getElementById('bindingMarginSelect')?.value || "19", 10);
-    const outerMm = 8;
-    const isFront = sideLabel.includes("表面");
-    const padLeft = isFront ? bindMm : outerMm;
-    const padRight = isFront ? outerMm : bindMm;
-
-    return `
-        <div class="a4-sheet" style="padding: 8mm ${padRight}mm 8mm ${padLeft}mm;">
-            <div class="sheet-header">
-                <div>
-                    <div class="sheet-title">${game.eventName}（全${game.moves.length}手・${divisions}分割）</div>
-                    <div class="sheet-meta">⚫黒番：${game.blackName}　⚪白番：${game.whiteName}　${game.dateStr}　${game.komiStr}　${game.resultStr}</div>
-                </div>
-                <div class="name-box">年　月　日 ／ 名前：　　　　　　　　</div>
-            </div>
-
-            <div class="diagrams-grid grid-div-${divisions}">
-                ${cardsHtml}
-            </div>
-
-            <div class="sheet-footer">
-                <span>※ 番号のない石は前の譜までに打たれた既出石です（アゲハマ自動処理済み）</span>
-                <span>A4両面1枚プリント【${sideLabel}】（左閉じしろ ${bindMm}mm）</span>
-            </div>
-        </div>
-    `;
-}
-
 function downloadCurrentSgf() {
-    const area = document.getElementById('sgfPasteTextarea');
-    const textInBox = area ? area.value.trim() : "";
-    const sgfToSave = textInBox || (currentGame ? currentGame.rawSgf : "");
-
-    if (!sgfToSave) {
-        return alert("先にSGF棋譜ファイルを開くか、SGF文字を貼り付けてください。");
-    }
-
-    const blob = new Blob(Array.of(sgfToSave), { type: "application/octet-stream" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    const baseName = (currentGame && currentGame.eventName) ? currentGame.eventName : "kifu_data";
-    const safeTitle = baseName.replace(/[\\/:*?"<>|]/g, "_");
-    link.download = safeTitle + ".sgf";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    const a = document.getElementById('sgfPasteTextarea'), sgf = (a ? a.value.trim() : "") || (currentGame ? currentGame.rawSgf : "");
+    if (!sgf) return alert("先にSGF棋譜を開いてください。");
+    const url = URL.createObjectURL(new Blob(Array.of(sgf), { type: "application/octet-stream" })), link = document.createElement("a");
+    link.href = url; link.download = ((currentGame && currentGame.eventName) ? currentGame.eventName : "kifu_data").replace(/[\\/:*?"<>|]/g, "_") + ".sgf";
+    document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(url);
 }
 </script>
 </body>
 </html>
-
-
-
