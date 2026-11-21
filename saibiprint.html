@@ -386,6 +386,7 @@ const SAIBI_HISTORY_KEY = "saibiprint_kifu_history_v1";
 const SAIBI_LAST_SGF_KEY = "saibiprint_last_sgf_v1";
 let currentGame = null;
 let customDiagramComments = {};
+        const cBox = document.getElementById('commentEditorBox'); if (cBox) cBox.style.display = 'none';
 
 window.addEventListener('DOMContentLoaded', () => {
     refreshHistorySelect();
@@ -463,6 +464,7 @@ function loadSgfContent(sgfText, fallbackName, skipSaveHistory) {
         if (moves.length === 0) return alert("有効な着手データが見つかりませんでした。");
         currentGame = { size: boardSize, eventName, blackName: blackName + blackRank, whiteName: whiteName + whiteRank, dateStr, komiStr, resultStr, setup: setupStones, moves, rawSgf: sgfText };
         customDiagramComments = {};
+        const cBox = document.getElementById('commentEditorBox'); if (cBox) cBox.style.display = 'none';
         const area = document.getElementById('sgfPasteTextarea');
         if (area) { area.value = sgfText; updateSgfCharCount(); }
         try {
@@ -651,7 +653,7 @@ function getDefaultDiagramComment(game, range) {
         const sub = new Array();
         if (item.ai.winText) sub.push(`勝率:${item.ai.winText}`);
         if (item.ai.scoreText) sub.push(`目差:${item.ai.scoreText}`);
-        if (item.ai.bestText) sub.push(`最善:${item.ai.bestText.split(" ")[0]}`);
+        if (item.ai.bestText) sub.push(`最善:${item.ai.bestText.split(" ").at(0)[0]}`);
         if (sub.length > 0) line += `\n └ ${sub.join(" / ")}`;
         return line;
     });
