@@ -271,9 +271,9 @@
         .diagram-card { overflow: hidden; }
         .diagram-side-info { min-width: 0; flex: 1; box-sizing: border-box; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-start; }
         .ai-comment-box {
-            margin-top: 4px; padding: 4px 5px; box-sizing: border-box; width: 100%; background: #f8fafc;
+            margin-top: 3px; padding: 3px 5px; box-sizing: border-box; width: 100%; background: #f8fafc;
             border-left: 3px solid #0d9488; border-radius: 3px;
-            font-size: 11px; line-height: 1.45; letter-spacing: -0.03em; color: #0f172a;
+            font-size: 10.5px; line-height: 1.32; letter-spacing: -0.03em; color: #0f172a;
             white-space: pre-wrap; overflow: hidden;
         }
 
@@ -699,11 +699,14 @@ function getDefaultDiagramComment(game, range) {
             if (c) textLines.push(`【${no}手目】${c}`);
         }
     }
-    // 損失が大きい順に最大3手まで厳選（手数順に並べ直し）
-    const topAi = candidates.slice().sort((a, b) => b.lost - a.lost).slice(0, 3).sort((a, b) => a.no - b.no);
+    // 良い手（損失1.5目未満）を最大2手＋悪手・疑問手を残り枠分選び、合計MAX6手を手数順に並べる
+    const goodMoves = candidates.filter(c => c.lost < 1.5).sort((a, b) => a.lost - b.lost).slice(0, 2);
+    const badMoves = candidates.filter(c => c.lost >= 1.5).sort((a, b) => b.lost - a.lost).slice(0, 6 - goodMoves.length);
+    const topAi = goodMoves.concat(badMoves).sort((a, b) => a.no - b.no);
+
     const aiLines = topAi.map(item => {
         const l = item.lost;
-        const tag = l >= 5.0 ? "⚠️大悪手" : (l >= 3.0 ? "⚡悪手" : (l >= 1.5 ? "💡疑問手" : "📌AI評価"));
+        const tag = l >= 5.0 ? "⚠️大悪手" : (l >= 3.0 ? "⚡悪手" : (l >= 1.5 ? "💡疑問手" : (l <= 0.3 ? "✨好手" : "👍好判断")));
         let line = `${item.no}手(${item.side}) ${tag}` + (l >= 1.5 ? `(-${l.toFixed(1)}目)` : "");
         const sub = new Array();
         if (item.ai.winText) sub.push(`勝率:${item.ai.winText.replace(/\s+/g, "")}`);
