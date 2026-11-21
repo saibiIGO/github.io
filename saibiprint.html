@@ -694,7 +694,17 @@ async function downloadCurrentSgf() {
     const sgf = (a ? a.value.trim() : "") || (currentGame ? currentGame.rawSgf : "");
     if (!sgf) return alert("先にSGF棋譜ファイルを開くか、SGF文字を貼り付けてください。");
 
-    const baseName = ((currentGame && currentGame.eventName) ? currentGame.eventName : "kifu_data").replace(/[\\/:*?"<>|]/g, "_");
+    let rawBase = "kifu_data";
+    if (currentGame) {
+        const b = currentGame.blackName || "";
+        const w = currentGame.whiteName || "";
+        if ((b && b !== "黒番") || (w && w !== "白番")) {
+            rawBase = `${b}_vs_${w}`;
+        } else if (currentGame.eventName) {
+            rawBase = currentGame.eventName;
+        }
+    }
+    const baseName = rawBase.replace(/[\\/:*?"<>|]/g, "_");
     const fileName = baseName + ".sgf";
 
     // 保存先フォルダ（sgfFile 等）を直接選べるダイアログ対応
