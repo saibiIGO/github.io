@@ -738,6 +738,50 @@ async function downloadCurrentSgf() {
     URL.revokeObjectURL(url);
     alert("✅ 「" + fileName + "」を保存しました！\n（※ダウンロードフォルダに入った場合は、ブラウザ設定で「保存場所を毎回確認する」をオンにすると sgfFile を直接選べます）");
 }
+
+function prepareCleanPrint() {
+    const target = document.getElementById('previewContainer');
+    if (!target) return;
+    window._hiddenPrintEls = [];
+    let cur = target;
+    while (cur && cur !== document.body) {
+        const parent = cur.parentElement;
+        if (parent) {
+            Array.from(parent.children).forEach(sib => {
+                if (sib !== cur && sib.tagName !== 'SCRIPT' && sib.tagName !== 'STYLE') {
+                    window._hiddenPrintEls.push({ el: sib, prev: sib.style.display });
+                    sib.style.setProperty('display', 'none', 'important');
+                }
+            });
+            window._hiddenPrintEls.push({ el: parent, prevPad: parent.style.padding, prevMar: parent.style.margin });
+            parent.style.setProperty('padding', '0', 'important');
+            parent.style.setProperty('margin', '0', 'important');
+        }
+        cur = parent;
+    }
+    document.querySelectorAll('.a4-sheet').forEach(sheet => {
+        sheet.style.setProperty('height', '295mm', 'important');
+        sheet.style.setProperty('min-height', '295mm', 'important');
+        sheet.style.setProperty('max-height', '295mm', 'important');
+        sheet.style.setProperty('overflow', 'hidden', 'important');
+    });
+}
+
+function restoreAfterPrint() {
+    if (!window._hiddenPrintEls) return;
+    window._hiddenPrintEls.forEach(item => {
+        if ('prev' in item) item.el.style.display = item.prev || '';
+        if ('prevPad' in item) {
+            item.el.style.padding = item.prevPad || '';
+            item.el.style.margin = item.prevMar || '';
+        }
+    });
+    window._hiddenPrintEls = [];
+}
+
+window.addEventListener('beforeprint', prepareCleanPrint);
+window.addEventListener('afterprint', restoreAfterPrint);
+
 </script>
 </body>
 </html>
