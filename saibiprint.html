@@ -694,15 +694,15 @@ async function downloadCurrentSgf() {
     const sgf = (a ? a.value.trim() : "") || (currentGame ? currentGame.rawSgf : "");
     if (!sgf) return alert("先にSGF棋譜ファイルを開くか、SGF文字を貼り付けてください。");
 
+    const pbM = sgf.match(/PB\[([^\]]+)\]/i);
+    const pwM = sgf.match(/PW\[([^\]]+)\]/i);
+    const pbName = pbM ? pbM.at(1).trim() : "";
+    const pwName = pwM ? pwM.at(1).trim() : "";
     let rawBase = "kifu_data";
-    if (currentGame) {
-        const b = currentGame.blackName || "";
-        const w = currentGame.whiteName || "";
-        if ((b && b !== "黒番") || (w && w !== "白番")) {
-            rawBase = `${b}_vs_${w}`;
-        } else if (currentGame.eventName) {
-            rawBase = currentGame.eventName;
-        }
+    if (pbName || pwName) {
+        rawBase = `${pbName || "黒番"}_vs_${pwName || "白番"}`;
+    } else if (currentGame && currentGame.eventName) {
+        rawBase = currentGame.eventName;
     }
     const baseName = rawBase.replace(/[\\/:*?"<>|]/g, "_");
     const fileName = baseName + ".sgf";
