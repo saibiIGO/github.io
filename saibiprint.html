@@ -282,7 +282,7 @@
         <button type="button" class="btn btn-blue" onclick="document.getElementById('sgfFileInput').click()">
             📂 SGF棋譜ファイルを開く
         </button>
-        <input type="file" id="sgfFileInput" accept=".sgf,.txt,text/plain" style="display:none;">
+        <input type="file" id="sgfFileInput" accept=".sgf,.txt,text/plain,*/*" style="display:none;" onchange="handleDirectFileSelect(this)">
         <button type="button" class="btn" style="background:#b45309;" onclick="location.href='./index.html'">
             🏯 トップページへ移動
         </button>
@@ -423,6 +423,16 @@ function loadFromHistory(idxStr) {
     if (idxStr === "") return;
     try { const item = JSON.parse(localStorage.getItem(SAIBI_HISTORY_KEY) || "[]").at(parseInt(idxStr, 10)); if (item) loadSgfContent(item.sgf, item.name, true); } catch (e) {}
 }
+
+function handleDirectFileSelect(inp) {
+    const file = inp.files && inp.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(evt) { loadSgfContent(evt.target.result, file.name, false); };
+    reader.readAsText(file);
+    inp.value = "";
+}
+
 function loadSgfContent(sgfText, fallbackName, skipSaveHistory) {
     try {
         const sizeMatch = sgfText.match(/SZ\[(\d+)\]/i);
