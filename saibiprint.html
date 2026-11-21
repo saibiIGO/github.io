@@ -289,7 +289,10 @@
                 <button type="button" class="btn btn-teal" onclick="toggleSgfEditorBox()">
             👁️ SGF文字の貼付・中身確認
         </button>
-                <button type="button" class="btn" style="background:#7c3aed;" onclick="toggleCommentEditorBox()">
+                <button type="button" class="btn" style="background:#0f766e;" onclick="launchKaTrainApp()" title="囲碁AI（KaTrain）を起動します">
+            🤖 囲碁AI（KaTrain）を起動
+        </button>
+        <button type="button" class="btn" style="background:#7c3aed;"  onclick="toggleCommentEditorBox()">
             💬 解説・AI評価を編集
         </button>
 
@@ -609,6 +612,9 @@ function renderDiagramSvg(game, snapshots, range, divisions, numberMode) {
     for (let y = 0; y < sz; y++) for (let x = 0; x < sz; x++) { const c = base.at(y).at(x); if (c && !numMap.has(`${x},${y}`)) svg += `<circle cx="${margin + x * step}" cy="${margin + y * step}" r="${stoneR}" fill="${c === 'B' ? ink : '#fff'}" stroke="${ink}" stroke-width="1"/>`; }
     numMap.forEach((info, k) => { const pts = k.split(',').map(Number), cx = margin + pts.at(0) * step, cy = margin + pts.at(1) * step, isB = info.color === 'B', d = String(info.num).length, fs = d >= 3 ? stoneR * 0.85 : (d === 2 ? stoneR * 1.05 : stoneR * 1.25); svg += `<circle cx="${cx}" cy="${cy}" r="${stoneR}" fill="${isB ? ink : '#fff'}" stroke="${ink}" stroke-width="1"/><text x="${cx}" y="${cy}" fill="${isB ? '#fff' : ink}" font-size="${fs}" font-weight="bold" text-anchor="middle" dominant-baseline="central" font-family="sans-serif">${info.num}</text>`; });
     return { svg: svg + '</svg>', notes };
+}
+function launchKaTrainApp() {
+    window.location.href = "katrain://open";
 }
 function toggleCommentEditorBox() { const b = document.getElementById('commentEditorBox'); if (!b) return; if (!currentGame) return alert("先にSGF棋譜を開いてください。"); b.style.display = b.style.display === 'none' ? 'block' : 'none'; if (b.style.display === 'block') buildCommentEditorInputs(); }
 function getDefaultDiagramComment(game, range) {
