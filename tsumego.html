@@ -211,6 +211,16 @@
 
 
     </style>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f766e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="才美プリント">
+<link rel="apple-touch-icon" href="icon.svg">
+<script>
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+    window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+}
+</script>
 </head>
 <body>
 
@@ -492,7 +502,7 @@
                                 <button type="button" id="btnPrintPdfBooklet" class="btn-primary" style="width: 100%; margin-top: 6px; background-color: #7c3aed;">🖨️ 1冊の印刷用テキスト（PDF）を作成</button>
 
                                 <button type="button" id="btnMergeCheckedProblems" onclick="mergeCheckedProblemsToFourCorners()" class="btn-primary" style="width: 100%; margin-top: 6px; background-color: #ea580c;">🔗 チェックした問題を1つの4隅問題に合体（総合作成）</button>
-                <button type="button" class="btn-primary" style="width: 100%; margin-top: 6px; background-color: #0d9488;" onclick="location.href='./saibiprint.html'">📄 細微プリント（プロ棋譜・A4両面印刷）へ移動</button>
+                <button type="button" class="btn-primary" style="width: 100%; margin-top: 6px; background-color: #0d9488;" onclick="location.href='./saibiprint.html'">📄 才美プリント（プロ棋譜・A4両面印刷）へ移動</button>
 
 
 
