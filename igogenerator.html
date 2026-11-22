@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>囲碁・棋譜並べ＆解説作成ジェネレーター（完成版）</title>
+    <style>
+        :root {
+            --board-color: #dcbc7c;
+            --line-color: #000000;
+        }
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 { color: #1a1a1a; margin-bottom: 5px; font-size: 22px; }
+        p.subtitle { color: #666; margin: 0 0 20px 0; font-size: 13px; }
+        
+        .container { display: flex; flex-wrap: wrap; gap: 20px; max-width: 1400px; width: 100%; justify-content: center; align-items: flex-start; }
+        
+  /* 左パネル（碁盤）の横幅を520pxでしっかり固定して潰れないようにする 🔧 一発で綺麗に整う修正コード*/
+        /* 左パネル（碁盤）の横幅を520pxでしっかり固定して潰れないようにする */
+        .left-panel {
+            flex: 0 0 520px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 右パネルを綺麗な2列グリッドにする */
+        .right-panel { 
+            flex: 1; 
+            min-width: 460px; 
+            max-width: 680px; 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 12px; 
+            align-items: start;
+        }
+
+        /* 手数表示・解説欄・下のボタン群・リンクボタンは2列分の横幅いっぱいに広げる */
+        .right-panel .status-info,
+        .right-panel .file-buttons,
+        .right-panel > a { 
+            grid-column: span 2; 
+        }
+
+        
+        /* 碁盤の最も外側の木枠（茶色い縁） */
+        .board-container-outer {
+            width: 100%;
+            max-width: 520px;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            border: 4px solid #6e4e03;
+            border-radius: 4px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+            background-color: var(--board-color);
+        }
+        
+        .board-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background-color: var(--board-color);
+            transform-origin: top left;
+            transition: transform 0.3s ease;
+        }
+        
+        .view-all { transform: scale(1) translate(0, 0); }
+        .view-tr  { transform: scale(2.1) translate(-52.3%, 0); }
+        .view-tl  { transform: scale(2.1) translate(0, 0); }
+        .view-br  { transform: scale(2.1) translate(-52.3%, -52.3%); }
+        .view-bl  { transform: scale(2.1) translate(0, -52.3%); }
+
+        /* 碁盤の19路の線が走るエリア（周囲に均等な「外べり」を確保） */
+        .board-main {
+            position: absolute;
+            top: 6.5%; 
+            left: 6.5%; 
+            width: 87%; 
+            height: 87%;
+            box-sizing: border-box;
+        }
+
+        /* 18マス×18マスの格子状に並べ、セルの右側と下側に線を引きます */
+        .board-grid {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: grid;
+            grid-template-columns: repeat(18, 1fr);
+            grid-template-rows: repeat(18, 1fr);
+            border-top: 1px solid var(--line-color);    /* 1路（一番上の外周線） */
+            border-left: 1px solid var(--line-color);   /* 1路（一番左の外周線） */
+            box-sizing: border-box;
+        }
+        
+        /* 碁盤を構成するマス目の定義（右と下に線を引くことで綺麗な格子になります） */
+        .intersection {
+            position: relative;
+            border-right: 1px solid var(--line-color);  /* 縦線 */
+            border-bottom: 1px solid var(--line-color); /* 横線 */
+            box-sizing: border-box;
+        }
+
+        /* 碁石を「格子線の交差点」にジャストフィットさせるための、透明なクリック判定エリア */
+        .click-target {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            z-index: 5;
+        }
+        /* 交差点（マスの角）を中心にずらすための調整 */
+        .target-tl { top: -50%; left: -50%; }
+        .target-tr { top: -50%; left: 50%; }
+        .target-bl { top: 50%; left: -50%; }
+        .target-br { top: 50%; left: 50%; }
+        
+        /* 星（黒いドット）の位置固定 */
+        .hoshi-dot {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background-color: var(--line-color);
+            border-radius: 50%;
+            z-index: 2;
+            top: -3px;
+            left: -3px;
+            pointer-events: none;
+        }
+
+        /* 碁石のデザイン：交差点の真上に完璧に中心を合わせます */
+        .stone {
+            position: absolute; 
+            width: 92%; 
+            height: 92%;
+            border-radius: 50%; 
+            z-index: 10;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 11px; user-select: none;
+            box-shadow: 1px 2px 4px rgba(0,0,0,0.3);
+            top: -46%;
+            left: -46%;
+        }
+        .stone.black { background: radial-gradient(circle at 30% 30%, #444, #000); color: #ffffff; }
+        .stone.white { background: radial-gradient(circle at 30% 30%, #fff, #dbdbdb); color: #000000; border: 1px solid #999; }
+        
+        .stone.latest::after {
+            content: ''; width: 90%; height: 90%; border: 2px solid #ff3b30; border-radius: 50%; position: absolute;
+        }
+
+        /* 座標ラベルの位置を交差点と100%完全一致させます */
+        .labels-row {
+            position: absolute; 
+            left: 6.5%; 
+            width: 87%; 
+            height: 6.5%;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 11px; font-weight: bold; color: #444; user-select: none;
+        }
+        .labels-row.top { top: 0.5%; }
+        .labels-row.bottom { bottom: 0.5%; }
+
+        .labels-col {
+            position: absolute; 
+            top: 6.5%; 
+            height: 87%; 
+            width: 6.5%;
+            display: flex; flex-direction: column; justify-content: space-between; align-items: center;
+            font-size: 11px; font-weight: bold; color: #444; user-select: none;
+        }
+        .labels-col.left { left: 0.5%; }
+        .labels-col.right { right: 0.5%; }
+
+        .labels-row span {
+    display: flex; align-items: center; justify-content: center; width: 0; height: 24px; overflow: visible;
+        }
+.labels-col span {
+    display: flex; align-items: center; justify-content: center; width: 24px; height: 0; overflow: visible;
+        }
+ 
+        .timer-bar {
+            width: 100%; max-width: 520px; height: 6px; background-color: #e5e5ea;
+            margin-top: 12px; border-radius: 3px; overflow: hidden;
+        }
+        .timer-progress { width: 0%; height: 100%; background-color: #34c759; transition: width 0.1s linear; }
+        
+        .controls { margin-top: 15px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+        button {
+            padding: 10px 18px; font-size: 14px; border: none; border-radius: 6px;
+            background-color: #007aff; color: white; cursor: pointer; font-weight: bold;
+            transition: background 0.2s;
+        }
+        button:hover { background-color: #0056b3; }
+        button:disabled { background-color: #d1d1d6; cursor: not-allowed; }
+        button.stop { background-color: #ff3b30; }
+        button.stop:hover { background-color: #c72c22; }
+
+ /* 右パネルを綺麗な2列グリッドにする */
+        .right-panel { 
+            flex: 1; 
+            min-width: 460px; 
+            max-width: 680px; 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 12px; 
+            align-items: start;
+        }
+
+        /* 手数表示・解説欄・下のボタン群・リンクボタンは2列分の横幅いっぱいに広げる */
+        .right-panel .status-info,
+        .right-panel .file-buttons,
+        .right-panel > a { 
+            grid-column: span 2; 
+        }
+        .right-panel .btn-nav { grid-column: span 2; }
+
+
+        .status-info { font-size: 18px; font-weight: bold; color: #1c1c1e; background: #f2f2f7; padding: 10px; border-radius: 6px; text-align: center;}
+        
+        .panel-section { background: #fcfcfd; border: 1px solid #e5e5ea; padding: 12px; border-radius: 8px; }
+        .section-title { font-weight: bold; font-size: 13px; color: #666; margin-bottom: 8px; text-transform: uppercase; }
+        
+        .radio-group { display: flex; gap: 15px; }
+        .comment-box {
+            width: 100%; height: 110px; box-sizing: border-box; padding: 12px;
+            border: 1px solid #c7c7cc; border-radius: 6px; resize: none; font-size: 14px; line-height: 1.4;
+        }
+        .comment-box:focus { border-color: #007aff; outline: none; }
+        
+        select { padding: 6px 10px; font-size: 14px; border-radius: 4px; border: 1px solid #c7c7cc; width: 100%; }
+        
+        .file-buttons { display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
+        .file-row { display: flex; gap: 10px; width: 100%; }
+        .file-input-wrapper { position: relative; flex: 1; }
+        .file-input-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+
+        #printArea { display: none; }
+
+        /* 🖨 分割印刷モード用CSS設定 */
+        @media print {
+            body { 
+                background-color: #fff !important; 
+                padding: 0 !important; 
+                margin: 0 !important; 
+                -webkit-print-color-adjust: exact !important; 
+                print-color-adjust: exact !important; 
+            }
+
+            /* 画面のタイトル・盤面・右側の操作パネルをすべて確実に隠す */
+            h1, 
+            p.subtitle, 
+            .container, 
+            .left-panel, 
+            .right-panel { 
+                display: none !important; 
+            }
+
+            /* 印刷用エリア（50手ごとの棋譜）だけを表示する */
+            #printArea { 
+                display: block !important; 
+                visibility: visible !important;
+                position: static !important;
+                width: 100% !important;
+            }
+
+            .print-layout {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 25px;
+                width: 100%;
+                padding: 15px;
+                box-sizing: border-box;
+            }
+            .print-item {
+                break-inside: avoid;
+                page-break-inside: avoid;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                border: 1px solid #ddd;
+                padding: 10px;
+                border-radius: 6px;
+            }
+            .print-title {
+                font-size: 15px;
+                font-weight: bold;
+                margin-bottom: 8px;
+                color: #000;
+            }
+            .print-board-outer {
+                width: 300px !important;
+                height: 300px !important;
+                border: 2px solid #6e4e03 !important;
+                background-color: #dcbc7c !important;
+                position: relative !important;
+                display: block !important;
+            }
+            .print-comment {
+                width: 300px;
+                font-size: 12px;
+                margin-top: 8px;
+                color: #000;
+                line-height: 1.4;
+                text-align: left;
+            }
+        }
+        /* 📱 スマホ・タブレット画面（横幅900px以下）での自動レイアウト調整 */
+        @media screen and (max-width: 900px) {
+            body { padding: 10px; }
+            .container { flex-direction: column; align-items: center; }
+            .left-panel { flex: none; width: 100%; max-width: 520px; }
+            .board-container-outer { width: 100%; max-width: 94vw; }
+            .right-panel { 
+                flex: none; 
+                width: 100%; 
+                min-width: 0; 
+                max-width: 520px; 
+                grid-template-columns: 1fr; 
+            }
+            .right-panel .status-info,
+            .right-panel .file-buttons,
+            .right-panel > a,
+            .right-panel .panel-section { 
+                grid-column: span 1 !important; 
+            }
+            /* 最上部の対局情報バーもスマホでは1列でスッキリ並べる */
+            div[style*="max-width: 1120px"] > div[style*="grid-template-columns"] {
+                grid-template-columns: 1fr !important;
+                min-width: 0 !important;
+            }
+        }
+        /* ========================================================
+           🖨️ A4全面（1枚）直接印刷用レイアウト設定（修正版）
+           ======================================================== */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 10mm;
+            }
+
+            /* 背景色（碁盤の色・黒石・白石）を強制的に印刷させる */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            body {
+                background-color: #ffffff !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+            }
+
+            h1 {
+                font-size: 18px !important;
+                margin: 0 0 8px 0 !important;
+                text-align: center;
+            }
+
+            /* 印刷時に不要な要素を徹底的に隠す */
+            .subtitle,
+            button,
+            input[type="file"],
+            .timer-bar,
+            .controls,
+            .file-buttons,
+            .right-panel > a,
+            .right-panel > div:not(.status-info):not(:has(#commentBox)) {
+                display: none !important;
+            }
+
+            /* 上部1段目のボタンバーを隠し、2段目の対局者情報だけを表示 */
+            body > div:nth-of-type(1) {
+                display: none !important;
+            }
+            body > div:nth-of-type(2) {
+                display: flex !important;
+                max-width: 100% !important;
+                width: 100% !important;
+                box-shadow: none !important;
+                border: 1px solid #888 !important;
+                margin-bottom: 12px !important;
+                padding: 8px 12px !important;
+            }
+
+            /* 全体コンテナを縦並びにする */
+            .container {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                width: 100% !important;
+                gap: 12px !important;
+            }
+
+            /* ★重要：碁盤パネルと碁盤そのものの幅・高さを数値で固定して確実に表示 */
+            .left-panel {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                width: 460px !important;
+                height: auto !important;
+                flex: none !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+
+            .board-container-outer {
+                display: block !important;
+                width: 460px !important;
+                height: 460px !important; /* aspect-ratioの代わりに高さを明示 */
+                max-width: 460px !important;
+                box-shadow: none !important;
+                border: 4px solid #6e4e03 !important;
+                background-color: var(--board-color) !important;
+                position: relative !important;
+            }
+
+            .board-wrapper {
+                display: block !important;
+                width: 100% !important;
+                height: 100% !important;
+            }
+
+            /* 右パネル（手数情報と解説欄のみ表示） */
+            .right-panel {
+                display: flex !important;
+                flex-direction: column !important;
+                width: 100% !important;
+                min-width: 100% !important;
+                max-width: 100% !important;
+                gap: 8px !important;
+            }
+
+            .status-info {
+                display: block !important;
+                font-size: 15px !important;
+                padding: 6px !important;
+                border: 1px solid #888 !important;
+                background-color: #f4f4f4 !important;
+            }
+
+            /* 解説欄のボックス */
+            .right-panel > div:has(#commentBox) {
+                display: flex !important;
+                flex-direction: column !important;
+                width: 100% !important;
+                border: 1px solid #888 !important;
+                background-color: #ffffff !important;
+                padding: 10px !important;
+                box-sizing: border-box !important;
+            }
+
+            .comment-box {
+                display: block !important;
+                width: 100% !important;
+                height: 180px !important;
+                border: none !important;
+                font-size: 14px !important;
+                line-height: 1.5 !important;
+                resize: none !important;
+                box-sizing: border-box !important;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>囲碁・棋譜並べ＆解説作成ジェネレーター</h1>
+    <p class="subtitle">最新手番号のみ表示・アゲハマ対応・無限手数・両面分割印刷対応</p>
+    <!-- 🏁 【最上部エリア】準備・対局ヘッダバー（読込＆保存を最上部に横並び配置） -->
+    <div style="width: 100%; max-width: 520px; background: #fff; border: 1px solid #d1d5db; border-radius: 8px; padding: 12px 15px; margin-bottom: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); box-sizing: border-box; display: flex; flex-direction: column; gap: 12px;">
+        
+        <!-- 1段目：最上部に「SGF読込」と「名前をつけて保存」を横並び配置 -->
+        <div style="display: flex; gap: 10px; width: 100%;">
+            <div style="position: relative; flex: 1;">
+                <button type="button" style="background-color: #2e8b57; width: 100%; padding: 10px 14px; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    📂 SGF棋譜を読み込む
+                </button>
+                <input type="file" id="fileImport" accept=".sgf" style="position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer;">
+            </div>
+            <button id="btnExport" type="button" style="background-color: #5856d6; flex: 1; padding: 10px 14px; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                💾 名前をつけて保存
+            </button>
+            <!-- 直接印刷ボタン -->
+<button onclick="window.print()" style="padding: 10px 20px; font-size: 14px; cursor: pointer; border: 1px solid #003366; background-color: #0056b3; color: white; border-radius: 4px; font-weight: bold; transition: 0.2s;">
+  🖨️ このページを直接印刷する
+</button>
+
+        </div>
+          </div>
+    <div style="width: 100%; max-width: 620px; background: #fff; border: 1px solid #d1d5db; border-radius: 8px; padding: 12px 15px; margin-bottom: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); box-sizing: border-box; display: flex; flex-direction: column; gap: 12px;">
+        <!-- 2段目：対局者名・対局日・対局結果を整列 -->
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 15px; font-size: 13px;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <label style="font-weight: bold; color: #111; width: 75px; white-space: nowrap;">⚫ 黒番:</label>
+                <input type="text" id="inputBlackName" placeholder="黒番対局者名" style="flex: 1; min-width: 0; padding: 5px 8px; border: 1px solid #ccc; border-radius: 4px;">
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <label style="font-weight: bold; color: #111; width: 75px; white-space: nowrap;">⚪ 白番:</label>
+                <input type="text" id="inputWhiteName" placeholder="白番対局者名" style="flex: 1; min-width: 0; padding: 5px 8px; border: 1px solid #ccc; border-radius: 4px;">
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <label style="font-weight: bold; color: #333; width: 75px; white-space: nowrap;">📅 対局日:</label>
+                <input type="date" id="inputGameDate" style="flex: 1; min-width: 0; padding: 4px 8px; border: 1px solid #ccc; border-radius: 4px;">
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <label style="font-weight: bold; color: #333; width: 75px; white-space: nowrap;">🏆 対局結果:</label>
+                <input type="text" id="inputGameEvent" placeholder="棋戦名・結果など" style="flex: 1; min-width: 0; padding: 5px 8px; border: 1px solid #ccc; border-radius: 4px;">
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="container">
+        <!-- 左パネル：碁盤と再生コントロール -->
+        <div class="left-panel">
+            <div class="board-container-outer">
+                <div class="board-wrapper view-all" id="boardWrapper">
+                    <div class="labels-row top" id="labelsTop"></div>
+                    <div class="labels-row bottom" id="labelsBottom"></div>
+                    <div class="labels-col left" id="labelsLeft"></div>
+                    <div class="labels-col right" id="labelsRight"></div>
+                    <div class="board-main">
+                        <div class="board-grid" id="boardGrid"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="timer-bar"><div class="timer-progress" id="timerProgress"></div></div>
+            <div class="controls">
+                <button id="btnPrev">← 前の手</button>
+                <button id="btnPlay">自動再生</button>
+                <button id="btnNext">次の手 →</button>
+                <button id="btnClear" style="background-color:#8e8e93;">全クリア</button>
+            </div>
+        </div>
+
+        <!-- 右パネル：各種設定と解説入力（2列グリッド整列） -->
+        <div class="right-panel">
+            <div class="status-info" id="statusInfo">現在の手数: 0 手目</div>
+            
+            <!-- 👁️ 盤面範囲・数字表示・サイズ切り替え -->
+            <div class="panel-section">
+                <div class="section-title">盤面の表示設定</div>
+                <select id="selectView">
+                    <option value="view-all">盤面全体 (19路盤総譜用)</option>
+                    <option value="view-tr">右上隅</option>
+                    <option value="view-tl">左上隅</option>
+                    <option value="view-br">右下隅</option>
+                    <option value="view-bl">左下隅</option>
+                </select>
+                <div style="margin-top: 8px;">
+                    <label style="font-size: 13px; font-weight: bold; color: #333;">手数（数字）の表示：</label>
+                    <select id="selectNumberMode" style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #ccc; margin-top: 4px;">
+                        <option value="latest">最新の手のみ数字を表示</option>
+                        <option value="all">すべての石に数字を表示</option>
+                        <option value="none">数字を表示しない</option>
+                    </select>
+                </div>
+                <div style="margin-top: 8px;">
+                    <label style="font-size: 13px; font-weight: bold; color: #333;">盤面サイズ：</label>
+                    <select id="selectBoardSize" style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #ccc; margin-top: 4px;">
+                        <option value="19" selected>19路盤（標準）</option>
+                        <option value="13">13路盤（中盤・詰碁用）</option>
+                        <option value="9">9路盤（入門・詰碁用）</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- ☖ 手番・速度調節エリア -->
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div class="panel-section">
+                    <div class="section-title">手番の設定</div>
+                    <div class="radio-group" style="margin-bottom: 10px;">
+                        <label><input type="radio" id="colorBlack" name="stoneColor" value="B" checked> <b>黒番</b></label>
+                        <label><input type="radio" id="colorWhite" name="stoneColor" value="W"> <b>白番</b></label>
+                    </div>
+                    <button id="btnResetToFirst" style="background-color: #ff9500; width: 100%; font-size: 13px; padding: 8px 10px;">🔄 現在の局面から黒1番で並べる</button>
+                </div>
+
+                <div class="panel-section">
+                    <div class="section-title">自動再生の速度：<span id="speedDisplay">10</span> 秒 / 1手</div>
+                    <input type="range" id="inputSpeed" min="1" max="10" value="10" style="width: 100%; cursor: pointer;">
+                </div>
+            </div>
+
+            <!-- 📝 解説入力（2列ぶち抜きで広く使いやすく） -->
+            <div class="panel-section" style="grid-column: span 2; display: flex; flex-direction: column;">
+                <div class="section-title">この局面（手数）の解説・メモ</div>
+                <textarea class="comment-box" id="commentBox" placeholder="ここに解説を入力してください..."></textarea>
+            </div>
+
+            <!-- 💾 印刷・説明書・詰碁移動ボタン類 -->
+            <div class="file-buttons">
+                <div class="file-row">
+                    <button id="btnPrint" style="background-color:#e07a5f; flex: 2;">🖨 棋譜の分割印刷 (A4両面最適化)</button>
+                    <button id="btnHelpExport" style="background-color:#107c41; flex: 1;">📄 説明書保存</button>
+                </div>
+                <a href="tsumego.html" target="_blank" rel="noopener noreferrer" style="display: block; background-color: #2e8b57; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
+                    🧩 囲碁・詰碁＆問題保存庫を開く
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+   <!-- ===============================================================-->
+    <!-- 印刷用テンポラリエリア -->
+    <div id="printArea"></div>
+    <script>
+            let autoplayTime = 10000; // 初期値：10秒（10000ミリ秒）
+        let boardSize = 19;       // 現在の盤面サイズ（19, 13, 9）
+        const SGF_CHARS = "abcdefghijklmnopqrs";
+        const ALL_LETTER_LABELS = Array.of("A","B","C","D","E","F","G","H","J","K","L","M","N","O","P","Q","R","S","T");
+
+        let moves = new Array();
+        let currentHand = 0;
+        let isPlaying = false, timerId = null, timerStart = 0, progressIntervalId = null;
+
+        const boardWrapper = document.getElementById('boardWrapper'), boardGrid = document.getElementById('boardGrid');
+        const statusInfo = document.getElementById('statusInfo'), commentBox = document.getElementById('commentBox'), timerProgress = document.getElementById('timerProgress');
+        const btnPrev = document.getElementById('btnPrev'), btnNext = document.getElementById('btnNext'), btnPlay = document.getElementById('btnPlay'), btnClear = document.getElementById('btnClear');
+        const btnExport = document.getElementById('btnExport'), fileImport = document.getElementById('fileImport'), selectView = document.getElementById('selectView'), btnHelpExport = document.getElementById('btnHelpExport'), btnPrint = document.getElementById('btnPrint'), printArea = document.getElementById('printArea');
+        const labelsTop = document.getElementById('labelsTop'), labelsBottom = document.getElementById('labelsBottom'), labelsLeft = document.getElementById('labelsLeft'), labelsRight = document.getElementById('labelsRight');
+        
+        // 新機能用の要素取得
+        const inputSpeed = document.getElementById('inputSpeed');
+        const speedDisplay = document.getElementById('speedDisplay');
+        const btnResetToFirst = document.getElementById('btnResetToFirst');
+        const selectBoardSize = document.getElementById('selectBoardSize');
+
+        // 盤面サイズごとの星（ホシ）の座標リストを返す関数
+        function getHoshiCoords(size) {
+            if (size === 19) return Array.of(3, 9, 15);
+            if (size === 13) return Array.of(3, 6, 9);
+            if (size === 9)  return Array.of(2, 4, 6);
+            return Array.of();
+        }
+
+        // 1. 碁盤（指定された路数の交差点と星）の生成
+        function initBoard() {
+            boardGrid.innerHTML = '';
+            const cellsCount = boardSize - 1; // 19路なら18マス、13路なら12マス、9路なら8マス
+
+            // グリッドの列と行の数を動的に変更
+            boardGrid.style.gridTemplateColumns = `repeat(${cellsCount}, 1fr)`;
+            boardGrid.style.gridTemplateRows = `repeat(${cellsCount}, 1fr)`;
+
+            for (let y = 0; y < cellsCount; y++) {
+                for (let x = 0; x < cellsCount; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'intersection';
+
+                    // 左上の交差点
+                    createIntersectionTarget(cell, x, y, 'target-tl');
+                    // 一番右端の列の場合
+                    if (x === cellsCount - 1) createIntersectionTarget(cell, cellsCount, y, 'target-tr');
+                    // 一番下端の行の場合
+                    if (y === cellsCount - 1) createIntersectionTarget(cell, x, cellsCount, 'target-bl');
+                    // 右下の隅
+                    if (x === cellsCount - 1 && y === cellsCount - 1) createIntersectionTarget(cell, cellsCount, cellsCount, 'target-br');
+
+                    boardGrid.appendChild(cell);
+                }
+            }
+
+            // 座標ラベル（A〜T、19〜1）を盤面サイズに合わせて生成
+            labelsTop.innerHTML = ''; labelsBottom.innerHTML = ''; labelsLeft.innerHTML = ''; labelsRight.innerHTML = '';
+            for (let i = 0; i < boardSize; i++) {
+                let t = document.createElement('span'); t.textContent = ALL_LETTER_LABELS.at(i); labelsTop.appendChild(t);
+                let b = document.createElement('span'); b.textContent = ALL_LETTER_LABELS.at(i); labelsBottom.appendChild(b);
+                let l = document.createElement('span'); l.textContent = boardSize - i; labelsLeft.appendChild(l);
+                let r = document.createElement('span'); r.textContent = boardSize - i; labelsRight.appendChild(r);
+            }
+            render();
+        }
+
+        // 各交差点のターゲット（クリック判定＋星マーク）を生成する補助関数
+        function createIntersectionTarget(parentCell, x, y, posClass) {
+            const target = document.createElement('div');
+            target.className = 'click-target ' + posClass;
+            target.dataset.x = x;
+            target.dataset.y = y;
+
+            const hoshiCoords = getHoshiCoords(boardSize);
+            // 9路盤のときは四隅(2,6)と天元(4,4)の5つ、13路・19路は9つの星を表示
+            let isHoshi = false;
+            if (boardSize === 19) {
+                isHoshi = (x === 3 || x === 9 || x === 15) && (y === 3 || y === 9 || y === 15);
+            } else if (boardSize === 13) {
+                isHoshi = ((x === 3 || x === 9) && (y === 3 || y === 9)) || (x === 6 && y === 6);
+            } else if (boardSize === 9) {
+                isHoshi = (x === 4 && y === 4);
+            }
+
+
+            if (isHoshi) {
+                const dot = document.createElement('div');
+                dot.className = 'hoshi-dot';
+                dot.style.top = '50%';
+                dot.style.left = '50%';
+                dot.style.transform = 'translate(-50%, -50%)';
+                target.appendChild(dot);
+            }
+
+            target.addEventListener('click', onIntersectionClick);
+            parentCell.appendChild(target);
+        }
+
+    
+
+
+        // 2. 着手および抜き跡（アゲハマ）処理
+        // 2. 着手および自動取り上げ（アゲハマ）処理
+        // 2. 着手および自動取り上げ（アゲハマ）・着手禁止点（自殺手）ブロック処理
+        // 2. 着手および自動取り上げ（アゲハマ）・着手禁止点（自殺手・コウ）ブロック処理
+        function onIntersectionClick(e) {
+            e.stopPropagation();
+            if (isPlaying) stopAutoPlay();
+            const x = parseInt(this.dataset.x), y = parseInt(this.dataset.y);
+            const currentBoardStones = getBoardStateAt(currentHand);
+            const existingStone = currentBoardStones.find(s => s.x === x && s.y === y);
+            
+            const backupMoves = [...moves]; // 違反手だった場合に元に戻すための控え
+            if (currentHand < moves.length) { moves = moves.slice(0, currentHand); }
+
+            // すでに石がある場所をクリックした場合は、手動で取り除く（従来の機能も維持）
+            if (existingStone) {
+                moves.push({ x: x, y: y, color: existingStone.color, comment: "石の抜き跡", isRemove: true, isSetup: false });
+            } else {
+                const color = document.querySelector('input[name="stoneColor"]:checked').value;
+                const opponentColor = (color === 'B') ? 'W' : 'B';
+
+                // 1. まず新しい石を履歴に追加
+                moves.push({ x: x, y: y, color: color, comment: "", isRemove: false, isSetup: false });
+
+                // 2. 最新の盤面状態を取得して、隣接する相手の石が取られるか判定
+                const updatedStones = getBoardStateAt(moves.length);
+                const neighbors = Array.of(
+                    { nx: x, ny: y - 1 },
+                    { nx: x, ny: y + 1 },
+                    { nx: x - 1, ny: y },
+                    { nx: x + 1, ny: y }
+                );
+
+                let capturedStones = new Array();
+                neighbors.forEach(n => {
+                    if (n.nx >= 0 && n.nx < boardSize && n.ny >= 0 && n.ny < boardSize) {
+                        const target = updatedStones.find(s => s.x === n.nx && s.y === n.ny && s.color === opponentColor);
+                        if (target) {
+                            const groupInfo = checkGroupLiberties(n.nx, n.ny, opponentColor, updatedStones);
+                            if (groupInfo.liberties === 0) {
+                                groupInfo.group.forEach(gStone => {
+                                    if (!capturedStones.some(c => c.x === gStone.x && c.y === gStone.y)) {
+                                        capturedStones.push(gStone);
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
+
+                // 🚫 3. 着手禁止点（自殺手）のチェック
+                if (capturedStones.length === 0) {
+                    const myGroupInfo = checkGroupLiberties(x, y, color, updatedStones);
+                    if (myGroupInfo.liberties === 0) {
+                        moves = backupMoves;
+                        alert("ここは着手禁止点（自殺手）のため打てません。");
+                        return;
+                    }
+                }
+
+                // 4. 呼吸点がゼロになった相手の石をすべて取り上げる（履歴に抜き跡を追加）
+                capturedStones.forEach(cStone => {
+                    moves.push({ x: cStone.x, y: cStone.y, color: cStone.color, comment: "", isRemove: true, isSetup: false });
+                });
+
+                // 🚫 5. コウ（同形反復）の即時取り返しチェック
+                // 1目だけ抜いた結果、1手前の盤面とまったく同じ石の配置に戻ってしまった場合はコウ違反
+                if (capturedStones.length === 1 && currentHand >= 1) {
+                    // 最新の盤面（抜き跡反映後）と、直前の着手前（1手前）の盤面を比較する
+                    let prevMoveIndex = currentHand - 1;
+                    while (prevMoveIndex > 0 && moves[prevMoveIndex].isRemove) {
+                        prevMoveIndex--;
+                    }
+                    const afterBoard = getBoardStateAt(moves.length);
+                    const beforePrevBoard = getBoardStateAt(prevMoveIndex);
+
+                    const isSameBoard = (afterBoard.length === beforePrevBoard.length) &&
+                        afterBoard.every(s1 => beforePrevBoard.some(s2 => s1.x === s2.x && s1.y === s2.y && s1.color === s2.color));
+
+                    if (isSameBoard) {
+                        moves = backupMoves;
+                        alert("ここは「コウ（劫）」のため、すぐには取り返せません。コウダテを打ってから取り返してください。");
+                        return;
+                    }
+                }
+
+                // 手番を交代
+                if (color === 'B') { document.getElementById('colorWhite').checked = true; }
+                else { document.getElementById('colorBlack').checked = true; }
+            }
+            currentHand = moves.length;
+            render();
+        }
+
+
+        // 石の連（グループ）と呼吸点（ダメ）の数を調べる関数
+        function checkGroupLiberties(startX, startY, color, boardStones) {
+            let group = new Array();
+            let visited = new Set();
+            let liberties = new Set();
+            let queue = Array.of({ x: startX, y: startY });
+
+            while (queue.length > 0) {
+                const curr = queue.shift();
+                const key = curr.x + "," + curr.y;
+                if (visited.has(key)) continue;
+                visited.add(key);
+
+                const stone = boardStones.find(s => s.x === curr.x && s.y === curr.y);
+                if (stone && stone.color === color) {
+                    group.push(stone);
+                    const dirs = Array.of({ dx: 0, dy: -1 }, { dx: 0, dy: 1 }, { dx: -1, dy: 0 }, { dx: 1, dy: 0 });
+                    dirs.forEach(d => {
+                        const nx = curr.x + d.dx;
+                        const ny = curr.y + d.dy;
+                        // 修正前：if (nx >= 0 && nx < 19 && ny >= 0 && ny < 19) {
+                        if (nx >= 0 && nx < 19 && ny >= 0 && ny< boardSize) {
+                            const neighborStone = boardStones.find(s => s.x === nx && s.y === ny);
+                            if (!neighborStone) {
+                                liberties.add(nx + "," + ny);
+                            } else if (neighborStone.color === color && !visited.has(nx + "," + ny)) {
+                                queue.push({ x: nx, y: ny });
+                            }
+                        }
+                    });
+                }
+            }
+            return { group: group, liberties: liberties.size };
+        }
+        // 【復元】現在の盤面を問題図（番号なし）として固定し、次の手から黒1番でスタートする
+        btnResetToFirst.addEventListener('click', () => {
+            if (isPlaying) stopAutoPlay();
+            const currentStones = getBoardStateAt(currentHand);
+            if (currentStones.length === 0) {
+                alert("盤面に石が置かれていません。先に問題図（配置）を作成してください。");
+                return;
+            }
+            if (!confirm("現在の盤面を『問題図（番号なし）』として固定し、次の一手から黒1番としてスタートしますか？")) return;
+
+            moves = new Array();
+            currentStones.forEach(s => {
+                moves.push({ x: s.x, y: s.y, color: s.color, comment: "", isRemove: false, isSetup: true });
+            });
+            currentHand = moves.length;
+            document.getElementById('colorBlack').checked = true;
+            render();
+        });
+
+        // 【復元】指定手数時点での盤面の石の状態を計算する関数
+        function getBoardStateAt(hand) {
+            let activeStones = new Array();
+            let moveCount = 0;
+
+            for (let i = 0; i < hand; i++) {
+                const m = moves.at(i);
+                if (m.isRemove) {
+                    activeStones = activeStones.filter(s => !(s.x === m.x && s.y === m.y));
+                } else {
+                    if (m.isSetup) {
+                        activeStones.push({ x: m.x, y: m.y, color: m.color, moveNumber: 0, isSetup: true });
+                    } else {
+                        moveCount++;
+                        activeStones.push({ x: m.x, y: m.y, color: m.color, moveNumber: moveCount, isSetup: false });
+                    }
+                }
+            }
+            return activeStones;
+        }
+
+        // 3. 画面の再描画（レンダリング）処理
+
+        function render() {
+            boardGrid.querySelectorAll('.stone').forEach(s => s.remove());
+            
+            const currentStones = getBoardStateAt(currentHand);
+            const numberModeSelect = document.getElementById('selectNumberMode');
+            const numberMode = numberModeSelect ? numberModeSelect.value : 'latest';
+            let latestMoveNumber = 0;
+
+            currentStones.forEach((stone) => {
+                const target = boardGrid.querySelector('.click-target[data-x="' + stone.x + '"][data-y="' + stone.y + '"]');
+                if (target) {
+                    const d = document.createElement('div');
+                    const isLatest = (!stone.isSetup && stone.moveNumber > 0 && iIsLatestMove(stone, currentStones));
+                    
+                    d.className = 'stone ' + (stone.color === 'B' ? 'black' : 'white') + (isLatest ? ' latest' : '');
+                    d.style.top = '50%';
+                    d.style.left = '50%';
+                                        // 盤面サイズに合わせて石の大きさを自動調整（19路:26px, 13路:36px, 9路:48px）
+                   // 隣の石と重ならない最適なサイズに調整（19路:22px, 13路:32px, 9路:44px）
+                    const stonePixelSize = (boardSize === 9) ? '44px' : (boardSize === 13) ? '32px' : '22px';
+                    d.style.width = stonePixelSize;
+                    d.style.height = stonePixelSize;
+
+                    d.style.transform = 'translate(-50%, -50%)';
+
+                    // 手数表示モードに応じた数字の描画
+                    if (!stone.isSetup && stone.moveNumber > 0) {
+                        if (numberMode === 'all') {
+                            d.textContent = stone.moveNumber;
+                            d.style.fontSize = (stone.moveNumber >= 100) ? '8.5px' : '10.5px';
+                        } else if (numberMode === 'latest' && isLatest) {
+                            d.textContent = stone.moveNumber;
+                        }
+                    }
+
+                    if (isLatest) {
+                        latestMoveNumber = stone.moveNumber;
+                    }
+                    target.appendChild(d);
+                }
+            });
+
+            // 現在の時点までに打たれた手数（抜き跡・問題図を除く）と、棋譜全体の総手数を計算
+            const currentMoveNum = moves.slice(0, currentHand).filter(m => !m.isSetup && !m.isRemove).length;
+            const totalMovesCount = moves.filter(m => !m.isSetup && !m.isRemove).length;
+            statusInfo.textContent = "現在の手数: " + currentMoveNum + " 手目 / 総手数: " + totalMovesCount + " 手";
+
+
+            if (currentHand > 0) {
+                commentBox.value = moves.at(currentHand - 1).comment || "";
+                commentBox.disabled = false;
+            } else {
+                commentBox.value = "";
+                commentBox.disabled = true;
+            }
+        }
+
+        function iIsLatestMove(targetStone, allStones) {
+            let maxNum = 0;
+            allStones.forEach(s => {
+                if (!s.isSetup && s.moveNumber > maxNum) maxNum = s.moveNumber;
+            });
+            return targetStone.moveNumber === maxNum;
+        }
+
+        commentBox.addEventListener('input', () => {
+            if (currentHand > 0) moves.at(currentHand - 1).comment = commentBox.value;
+        });
+
+        selectView.addEventListener('change', () => {
+            boardWrapper.className = 'board-wrapper ' + selectView.value;
+        });
+
+        const selectNumberMode = document.getElementById('selectNumberMode');
+        if (selectNumberMode) {
+            selectNumberMode.addEventListener('change', render);
+        }
+        if (selectBoardSize) {
+            selectBoardSize.addEventListener('change', () => {
+                if (moves.length > 0) {
+                    if (!confirm("盤面サイズを変更すると現在の棋譜データはクリアされます。よろしいですか？")) {
+                        selectBoardSize.value = boardSize;
+                        return;
+                    }
+                }
+                if (isPlaying) stopAutoPlay();
+                boardSize = parseInt(selectBoardSize.value, 10);
+                moves = new Array();
+                currentHand = 0;
+                initBoard();
+            });
+        }
+
+        // 4. 自動再生の速度調節スライダー連動
+
+        inputSpeed.addEventListener('input', () => {
+            const sec = parseInt(inputSpeed.value);
+            speedDisplay.textContent = sec;
+            autoplayTime = sec * 1000;
+        });
+
+        btnPrev.addEventListener('click', () => {
+            if (isPlaying) stopAutoPlay();
+            if (currentHand > 0) { currentHand--; render(); }
+        });
+
+        btnNext.addEventListener('click', () => {
+            if (isPlaying) stopAutoPlay();
+            if (currentHand < moves.length) { currentHand++; render(); }
+        });
+
+        btnClear.addEventListener('click', () => {
+            if (isPlaying) stopAutoPlay();
+            if (confirm("すべての棋譜データをクリアしますか？")) {
+                moves = new Array(); currentHand = 0; render();
+            }
+        });
+
+        // 5. 自動再生ロジック
+        btnPlay.addEventListener('click', () => {
+            if (isPlaying) stopAutoPlay(); else startAutoPlay();
+        });
+
+        function startAutoPlay() {
+            if (currentHand >= moves.length) currentHand = 0;
+            isPlaying = true;
+            btnPlay.textContent = "再生停止";
+            btnPlay.classList.add('stop');
+            timerStart = Date.now();
+            runAutoPlayStep();
+        }
+
+        function runAutoPlayStep() {
+            if (!isPlaying) return;
+            if (currentHand < moves.length) {
+                currentHand++;
+                render();
+                timerStart = Date.now();
+                updateProgressBar();
+                timerId = setTimeout(runAutoPlayStep, autoplayTime);
+            } else {
+                stopAutoPlay();
+            }
+        }
+
+        function stopAutoPlay() {
+            isPlaying = false;
+            btnPlay.textContent = "自動再生";
+            btnPlay.classList.remove('stop');
+            clearTimeout(timerId);
+            clearInterval(progressIntervalId);
+            timerProgress.style.width = "0%";
+        }
+
+        function updateProgressBar() {
+            clearInterval(progressIntervalId);
+            progressIntervalId = setInterval(() => {
+                if (!isPlaying) return;
+                const p = Math.min(((Date.now() - timerStart) / autoplayTime) * 100, 100);
+                timerProgress.style.width = p + "%";
+            }, 50);
+        }
+
+        // 6. 【新機能】名前をつけて保存（SGFエクスポート）
+        // 6. SGF保存処理（対局者名・対局日メタデータ＆名前を付けて保存対応）
+        btnExport.addEventListener('click', () => {
+            if (moves.length === 0) return alert("保存する棋譜データがありません。");
+
+            const pb = (document.getElementById('inputBlackName')?.value || "").trim();
+            const pw = (document.getElementById('inputWhiteName')?.value || "").trim();
+            const dt = (document.getElementById('inputGameDate')?.value || "").trim();
+            const ev = (document.getElementById('inputGameEvent')?.value || "").trim();
+
+            // 自動提案するデフォルトのファイル名を作成
+            let defaultName = "kifu";
+            if (dt) defaultName = dt;
+            if (pb || pw) defaultName += `_${pb || "黒"}vs${pw || "白"}`;
+            if (defaultName === "kifu") defaultName = "kifu_" + new Date().toISOString().slice(0, 10);
+
+            let fileName = prompt("保存するファイル名を入力してください（.sgfは自動で付きます）：", defaultName);
+            if (fileName === null) return; // キャンセル時は中止
+            fileName = fileName.trim() || defaultName;
+            if (!fileName.toLowerCase().endsWith(".sgf")) fileName += ".sgf";
+
+            // SGFヘッダの組み立て（PB:黒番, PW:白番, DT:対局日, EV:棋戦・備考）
+            let header = `(;GM[1]FF[4]CA[UTF-8]AP[GoBoardGenerator]SZ[${boardSize}]`;
+            if (pb) header += `PB[${pb.replace(/\]/g, "\\]")}]`;
+            if (pw) header += `PW[${pw.replace(/\]/g, "\\]")}]`;
+            if (dt) header += `DT[${dt}]`;
+            if (ev) header += `EV[${ev.replace(/\]/g, "\\]")}]`;
+            let txt = header + "\n";
+
+            // 初期配置石（問題図）の書き出し
+            const setupBlack = moves.filter(m => m.isSetup && m.color === 'B');
+            const setupWhite = moves.filter(m => m.isSetup && m.color === 'W');
+            if (setupBlack.length > 0) {
+                txt += "AB" + setupBlack.map(m => "[" + SGF_CHARS.charAt(m.x) + SGF_CHARS.charAt(m.y) + "]").join("") + "\n";
+            }
+            if (setupWhite.length > 0) {
+                txt += "AW" + setupWhite.map(m => "[" + SGF_CHARS.charAt(m.x) + SGF_CHARS.charAt(m.y) + "]").join("") + "\n";
+            }
+
+            // 着手および抜き跡の書き出し
+            moves.filter(m => !m.isSetup).forEach(m => {
+                const c = SGF_CHARS.charAt(m.x) + SGF_CHARS.charAt(m.y);
+                if (m.isRemove) {
+                    txt += ";AE[" + c + "]";
+                } else {
+                    txt += ";" + m.color + "[" + c + "]";
+                }
+                if (m.comment) {
+                    txt += "C[" + m.comment.replace(/\]/g, "\\]") + "]";
+                }
+                txt += "\n";
+            });
+            txt += ")";
+
+            const blob = new Blob(Array.of(txt), { type: "application/x-go-sgf;charset=utf-8" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = fileName;
+            link.click();
+            URL.revokeObjectURL(link.href);
+        });
+
+
+        btnHelpExport.addEventListener('click', () => {
+            const helpText = "【囲碁・棋譜並べ＆解説作成ジェネレーター 使用説明書】\n\n" +
+                "1. 盤面の交差点をクリックすると石が置かれます。\n" +
+                "2. 「現在の局面から黒1番で並べる」を押すと、そこまでの石を問題図として固定し、次の1手から黒1番として番号を振れます。\n" +
+                "3. スライダーで自動再生の速度（1秒〜10秒）を自由に調節できます。\n" +
+                "4. 「名前をつけて保存」で好きなファイル名を指定してSGF形式で保存できます。\n" +
+                "5. 「棋譜の分割印刷」でA4両面印刷に対応したレイアウトで出力できます。";
+            downloadFile(helpText, "readme.txt", "text/plain");
+        });
+
+        function downloadFile(content, fileName, contentType) {
+            const a = document.createElement("a");
+            const blob = new Blob([content], { type: contentType });
+            a.href = URL.createObjectURL(blob);
+            a.download = fileName;
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
+
+        // 7. SGF読み込み（初期配置石 AB/AW にも対応）
+        fileImport.addEventListener('change', (e) => {
+            const files = e.target.files;
+            if (!files || files.length === 0) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) { parseSGF(evt.target.result); };
+            reader.readAsText(files.item(0));
+        });
+        
+        function parseSGF(sgf) {
+ 
+         // SGF内の盤面サイズ（SZ[9], SZ[13], SZ[19]）を自動検出して切り替え
+        const szMatch = /SZ\[(\d+)\]/i.exec(sgf);
+        const detectedSize = szMatch ? parseInt(szMatch.at(1), 10) : 19;
+        boardSize = (detectedSize === 9 || detectedSize === 13 || detectedSize === 19) ? detectedSize : 19;
+        if (selectBoardSize) selectBoardSize.value = boardSize;
+        initBoard();
+        // SGFヘッダから対局者名・対局日・棋戦名を読み取って入力欄に復元
+        const pbMatch = /PB\[([^\]]*)\]/i.exec(sgf);
+        const pwMatch = /PW\[([^\]]*)\]/i.exec(sgf);
+        const dtMatch = /DT\[([^\]]*)\]/i.exec(sgf);
+        const evMatch = /EV\[([^\]]*)\]/i.exec(sgf);
+        if (document.getElementById('inputBlackName')) document.getElementById('inputBlackName').value = pbMatch ? pbMatch.at(1) : "";
+        if (document.getElementById('inputWhiteName')) document.getElementById('inputWhiteName').value = pwMatch ? pwMatch.at(1) : "";
+        if (document.getElementById('inputGameDate'))  document.getElementById('inputGameDate').value  = dtMatch ? dtMatch.at(1) : "";
+        if (document.getElementById('inputGameEvent')) document.getElementById('inputGameEvent').value = evMatch ? evMatch.at(1) : "";
+
+ 
+            moves = new Array();
+            currentHand = 0;
+
+            // 1. 初期配置石（AB[xx], AW[xx]）の抽出
+            const setupRegex = /(AB|AW)((?:\s*\[[a-s]{2}\])+)/gi;
+            let sMatch;
+            while ((sMatch = setupRegex.exec(sgf)) !== null) {
+                const color = (sMatch.at(1).toUpperCase() === 'AB') ? 'B' : 'W';
+                const coordsBlock = sMatch.at(2);
+                const coordRegex = /\[([a-s]{2})\]/gi;
+                let cMatch;
+                while ((cMatch = coordRegex.exec(coordsBlock)) !== null) {
+                    const c = cMatch.at(1).toLowerCase();
+                    const x = SGF_CHARS.indexOf(c.charAt(0));
+                    const y = SGF_CHARS.indexOf(c.charAt(1));
+                    if (x !== -1 && y !== -1) {
+                        moves.push({ x: x, y: y, color: color, comment: "", isRemove: false, isSetup: true });
+                    }
+                }
+            }
+
+            // 2. 着手および抜き跡（;B[xx], ;W[xx], ;AE[xx]）の抽出＋アゲハマ自動判定
+            const moveRegex = /;\s*(B|W|AE)\s*\[([a-s]{2})\](?:\s*C\[([\s\S]*?)\])?/gi;
+            let mMatch;
+            while ((mMatch = moveRegex.exec(sgf)) !== null) {
+                const type = mMatch.at(1).toUpperCase();
+                const c = mMatch.at(2).toLowerCase();
+                const comment = mMatch.at(3) || "";
+                const x = SGF_CHARS.indexOf(c.charAt(0));
+                const y = SGF_CHARS.indexOf(c.charAt(1));
+                
+                if (x !== -1 && y !== -1) {
+                    if (type === 'AE') {
+                        moves.push({ x: x, y: y, color: 'B', comment: comment, isRemove: true, isSetup: false });
+                    } else {
+                        const opponentColor = (type === 'B') ? 'W' : 'B';
+                        moves.push({ x: x, y: y, color: type, comment: comment, isRemove: false, isSetup: false });
+
+                        // 1手置くごとに呼吸点（ダメ）がゼロになった相手の石を自動取り上げ
+                        const updatedStones = getBoardStateAt(moves.length);
+                        const neighbors = Array.of(
+                            { nx: x, ny: y - 1 },
+                            { nx: x, ny: y + 1 },
+                            { nx: x - 1, ny: y },
+                            { nx: x + 1, ny: y }
+                        );
+
+                        let capturedStones = new Array();
+                        neighbors.forEach(n => {
+                            if (n.nx >= 0 && n.nx < 19 && n.ny >= 0 && n.ny < 19) {
+                                const target = updatedStones.find(s => s.x === n.nx && s.y === n.ny && s.color === opponentColor);
+                                if (target) {
+                                    const groupInfo = checkGroupLiberties(n.nx, n.ny, opponentColor, updatedStones);
+                                    if (groupInfo.liberties === 0) {
+                                        groupInfo.group.forEach(gStone => {
+                                            if (!capturedStones.some(cStone => cStone.x === gStone.x && cStone.y === gStone.y)) {
+                                                capturedStones.push(gStone);
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                        });
+
+                        capturedStones.forEach(cStone => {
+                            moves.push({ x: cStone.x, y: cStone.y, color: cStone.color, comment: "", isRemove: true, isSetup: false });
+                        });
+                    }
+                }
+            }
+
+            if (moves.length > 0) {
+                currentHand = moves.length;
+                render();
+                // 初期配置石とアゲハマ（抜き跡）を除いた「純粋な総手数」を計算
+                const totalMovesCount = moves.filter(m => !m.isSetup && !m.isRemove).length;
+                alert("総手数 " + totalMovesCount + " 手の棋譜を読み込みました！（アゲハマ自動処理済み）");
+            } else {
+                alert("SGFの読み込みに失敗しました。有効なデータが見つかりません。");
+            }
+              }  // ← ★この閉じカッコ「 } 」を1つ追加します！
+        // 8. 🖨 分割印刷処理（任意の手数区切り＆全手数表示対応）
+        btnPrint.addEventListener('click', () => {
+            if (moves.length === 0) return alert("印刷する棋譜データがありません。");
+
+            // 純粋な着手数（問題図とアゲハマの抜き跡を除いた数）を正確にカウント
+            const actualTotalMoves = moves.filter(m => !m.isSetup && !m.isRemove).length;
+
+
+            // 区切り手数の入力ダイアログ
+            let splitInput = "";
+            if (actualTotalMoves > 0) {
+                splitInput = prompt(
+                    `総手数は ${actualTotalMoves} 手です。\n` +
+                    `区切りたい手数をカンマ（,）で入力してください。\n\n` +
+                    `【入力例】\n` +
+                    `・空欄のままOK：最終図（1〜${actualTotalMoves}手目）を1枚に全数字で印刷\n` +
+                    `・35, 82, 140 ：「1〜35」「36〜82」「83〜140」「141〜最終手」に分割\n` +
+                    `・50 ：「1〜50」「51〜最終手」に分割`,
+                    ""
+                );
+                if (splitInput === null) return; // キャンセル時は中止
+            }
+
+            // 入力された手数リストを整理して区切り配列を作る
+            let breakPoints = new Array();
+            if (actualTotalMoves === 0) {
+                breakPoints.push(0);
+            } else {
+                if (splitInput.trim() !== "") {
+                    const parts = splitInput.split(/[,、\s]+/);
+                    parts.forEach(p => {
+                        const num = parseInt(p, 10);
+                        if (!isNaN(num) && num > 0 && num < actualTotalMoves) {
+                            if (!breakPoints.includes(num)) breakPoints.push(num);
+                        }
+                    });
+                    breakPoints.sort((a, b) => a - b);
+                }
+                // 最後に必ず最終手を追加
+                breakPoints.push(actualTotalMoves);
+            }
+
+            // 古い印刷エリアがあれば削除
+            const oldArea = document.getElementById('dynamicPrintArea');
+            if (oldArea) oldArea.remove();
+
+            // 操作画面を一時的に隠す
+            const container = document.querySelector('.container');
+            const h1 = document.querySelector('h1');
+            const subtitle = document.querySelector('.subtitle');
+            if (container) container.style.display = 'none';
+            if (h1) h1.style.display = 'none';
+            if (subtitle) subtitle.style.display = 'none';
+
+            const newPrintArea = document.createElement('div');
+            newPrintArea.id = 'dynamicPrintArea';
+            newPrintArea.style.width = '100%';
+            newPrintArea.style.backgroundColor = '#ffffff';
+            newPrintArea.style.padding = '20px';
+            newPrintArea.style.boxSizing = 'border-box';
+
+            const layout = document.createElement('div');
+            layout.style.display = 'grid';
+            layout.style.gridTemplateColumns = 'repeat(2, 1fr)';
+            layout.style.gap = '30px';
+
+            let prevMoveNum = 0;
+
+            breakPoints.forEach((targetMoveNum) => {
+                // targetMoveNum手目が、moves配列の何番目（インデックス）にあたるかを正確に探す
+                let targetHandIndex = 0;
+                if (actualTotalMoves === 0) {
+                    targetHandIndex = moves.length;
+                } else {
+                    let count = 0;
+                    for (let i = 0; i < moves.length; i++) {
+                        if (!moves.at(i).isSetup && !moves.at(i).isRemove) {
+                            count++;
+                        }
+                        if (count === targetMoveNum) {
+                            targetHandIndex = i + 1;
+                            break;
+                        }
+                    }
+                }
+
+                const startNum = prevMoveNum + 1;
+
+                const item = document.createElement('div');
+                item.style.pageBreakInside = 'avoid';
+                item.style.breakInside = 'avoid';
+                item.style.display = 'flex';
+                item.style.flexDirection = 'column';
+                item.style.alignItems = 'center';
+                item.style.border = '1px solid #ccc';
+                item.style.padding = '15px';
+
+                const title = document.createElement('div');
+                title.style.fontSize = '16px';
+                title.style.fontWeight = 'bold';
+                title.style.marginBottom = '10px';
+                if (actualTotalMoves === 0) {
+                    title.textContent = "問題図（初期配置）";
+                } else {
+                    title.textContent = `${startNum}手目 ～ ${targetMoveNum}手目`;
+                }
+                item.appendChild(title);
+
+                const outer = document.createElement('div');
+                outer.style.width = '300px';
+                outer.style.height = '300px';
+                outer.style.border = '2px solid #6e4e03';
+                outer.style.backgroundColor = '#dcbc7c';
+                outer.style.position = 'relative';
+// 印刷用の18×18グリッド
+                const printCellsCount = boardSize - 1;
+                const grid = document.createElement('div');
+                grid.style.position = 'absolute';
+                grid.style.top = '15px';
+                grid.style.left = '15px';
+                grid.style.width = '270px';
+                grid.style.height = '270px';
+                grid.style.display = 'grid';
+                grid.style.gridTemplateColumns = `repeat(${printCellsCount}, 1fr)`;
+                grid.style.gridTemplateRows = `repeat(${printCellsCount}, 1fr)`;
+                grid.style.borderTop = '1px solid #000';
+                grid.style.borderLeft = '1px solid #000';
+
+                for (let y = 0; y < printCellsCount; y++) {
+                    for (let x = 0; x < printCellsCount; x++) {
+                        const cell = document.createElement('div');
+                        cell.style.position = 'relative';
+                        cell.style.borderRight = '1px solid #000';
+                        cell.style.borderBottom = '1px solid #000';
+                        createPrintTarget(cell, x, y, 'target-tl');
+                        if (x === printCellsCount - 1) createPrintTarget(cell, printCellsCount, y, 'target-tr');
+                        if (y === printCellsCount - 1) createPrintTarget(cell, x, printCellsCount, 'target-bl');
+                        if (x === printCellsCount - 1 && y === printCellsCount - 1) createPrintTarget(cell, printCellsCount, printCellsCount, 'target-br');
+                        grid.appendChild(cell);
+                    }
+                }
+                outer.appendChild(grid);
+
+                // 石と全手数（数字）の配置
+                const stonesAtHand = getBoardStateAt(targetHandIndex);
+                stonesAtHand.forEach(stone => {
+                    const target = grid.querySelector('[data-x="' + stone.x + '"][data-y="' + stone.y + '"]');
+                    if (target) {
+                        const d = document.createElement('div');
+                        const isLatest = (!stone.isSetup && stone.moveNumber === targetMoveNum);
+                        d.style.position = 'absolute';
+                        
+            const printStoneSize = (boardSize === 9) ? '26px' : (boardSize === 13) ? '20px' : '14px';
+                    d.style.width = printStoneSize;
+                    d.style.height = printStoneSize;
+
+                        
+                        d.style.borderRadius = '50%';
+                        d.style.top = '50%';
+                        d.style.left = '50%';
+                        d.style.transform = 'translate(-50%, -50%)';
+                        d.style.zIndex = '20';
+                        d.style.display = 'flex';
+                        d.style.alignItems = 'center';
+                        d.style.justifyContent = 'center';
+                        d.style.fontWeight = 'bold';
+
+                        if (stone.color === 'B') {
+                            d.style.backgroundColor = '#000000';
+                            d.style.color = '#ffffff';
+                        } else {
+                            d.style.backgroundColor = '#ffffff';
+                            d.style.color = '#000000';
+                            d.style.border = '1px solid #000000';
+                        }
+
+                        // 問題図以外のすべての石に手数（数字）を表示
+                        if (!stone.isSetup && stone.moveNumber > 0) {
+                            d.textContent = stone.moveNumber;
+                            d.style.fontSize = (stone.moveNumber >= 100) ? '7px' : '8.5px';
+                        }
+
+                        if (isLatest) {
+                            d.style.outline = '2px solid #ff3b30';
+                        }
+                        target.appendChild(d);
+                    }
+                });
+                item.appendChild(outer);
+
+                const comm = document.createElement('div');
+                comm.style.width = '300px';
+                comm.style.fontSize = '12px';
+                comm.style.marginTop = '10px';
+                const lastComment = (targetHandIndex > 0 && moves.at(targetHandIndex - 1).comment) ? moves.at(targetHandIndex - 1).comment : "（解説なし）";
+                comm.innerHTML = `<strong>【解説】</strong><br>${lastComment.replace(/\n/g, '<br>')}`;
+                item.appendChild(comm);
+                layout.appendChild(item);
+                prevMoveNum = targetMoveNum;
+            });
+
+            const pbPrint = document.getElementById('inputBlackName')?.value.trim();
+            const pwPrint = document.getElementById('inputWhiteName')?.value.trim();
+            const dtPrint = document.getElementById('inputGameDate')?.value.trim();
+            const evPrint = document.getElementById('inputGameEvent')?.value.trim();
+            if (pbPrint || pwPrint || dtPrint || evPrint) {
+                const printHeader = document.createElement('div');
+                printHeader.style.textAlign = 'center';
+                printHeader.style.marginBottom = '15px';
+                printHeader.style.paddingBottom = '8px';
+                printHeader.style.borderBottom = '2px solid #333';
+                printHeader.style.fontSize = '15px';
+                printHeader.style.fontWeight = 'bold';
+                printHeader.textContent = `${evPrint ? "【" + evPrint + "】 " : ""}${dtPrint ? dtPrint + "  " : ""}⚫ ${pbPrint || "黒番"} vs ⚪ ${pwPrint || "白番"}`;
+                newPrintArea.appendChild(printHeader);
+            }
+
+            newPrintArea.appendChild(layout);
+            document.body.appendChild(newPrintArea);
+
+
+            newPrintArea.appendChild(layout);
+            document.body.appendChild(newPrintArea);
+
+            setTimeout(() => {
+                window.print();
+                newPrintArea.remove();
+                if (container) container.style.display = 'flex';
+                if (h1) h1.style.display = 'block';
+                if (subtitle) subtitle.style.display = 'block';
+            }, 400);
+        });
+    function createPrintTarget(parentCell, x, y, posClass) {
+        const target = document.createElement('div');
+        target.className = 'click-target ' + posClass;
+        target.dataset.x = x;
+        target.dataset.y = y;
+
+        const hoshiCoords = getHoshiCoords(boardSize);
+        let isHoshi = false;
+        if (boardSize === 9) {
+            isHoshi = ((x === 2 || x === 6) && (y === 2 || y === 6)) || (x === 4 && y === 4);
+        } else {
+            isHoshi = hoshiCoords.includes(x) && hoshiCoords.includes(y);
+        }
+
+        if (isHoshi) {
+            const dot = document.createElement('div');
+            dot.className = 'hoshi-dot';
+            dot.style.top = '50%';
+            dot.style.left = '50%';
+            dot.style.transform = 'translate(-50%, -50%)';
+            target.appendChild(dot);
+        }
+        parentCell.appendChild(target);
+    }
+
+
+
+        // 9. 初期起動イベント
+        window.addEventListener('DOMContentLoaded', initBoard);
+    </script>
+</body>
+</html>
+
+

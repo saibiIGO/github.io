@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>囲碁解説スライド作成＆SGF編集ツール（目盛り付き完全版）</title>
+    <style>
+        :root {
+            --board-color: #dcbc7c;
+            --line-color: #000000; /* 罫線と星の色をくっきりした真っ黒に設定 */
+        }
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 { color: #1a1a1a; margin-bottom: 5px; font-size: 22px; }
+        p.subtitle { color: #666; margin: 0 0 20px 0; font-size: 13px; }
+        
+        .container {
+            display: flex;
+            gap: 25px;
+            max-width: 1100px;
+            width: 100%;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+        
+        .left-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .board-container-outer {
+            width: 100%;
+            max-width: 520px;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            border: 3px solid #6e4e03;
+            border-radius: 4px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+            background-color: var(--board-color);
+        }
+        
+        .board-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background-color: var(--board-color);
+            transform-origin: top left;
+            transition: transform 0.3s ease;
+        }
+        
+        .view-all { transform: scale(1) translate(0, 0); }
+        .view-tr  { transform: scale(2.1) translate(-52.3%, 0); }
+        .view-tl  { transform: scale(2.1) translate(0, 0); }
+        .view-br  { transform: scale(2.1) translate(-52.3%, -52.3%); }
+        .view-bl  { transform: scale(2.1) translate(0, -52.3%); }
+
+        .board-main {
+            position: absolute;
+            top: 5%; left: 5%; width: 90%; height: 90%;
+        }
+
+        .board-grid {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: grid;
+            grid-template-columns: repeat(19, 1fr);
+            grid-template-rows: repeat(19, 1fr);
+        }
+        
+        .intersection { position: relative; cursor: pointer; }
+        .intersection::before {
+            content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 1px; background-color: var(--line-color);
+        }
+        .intersection::after {
+            content: ''; position: absolute; left: 50%; top: 0; height: 100%; width: 1px; background-color: var(--line-color);
+        }
+        
+        .hoshi::after {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            width: 6px; height: 6px; background-color: var(--line-color);
+            border-radius: 50%; transform: translate(-50%, -50%); z-index: 2;
+        }
+
+        .stone {
+            position: absolute; top: 6%; left: 6%; width: 88%; height: 88%;
+            border-radius: 50%; z-index: 10;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 11px; user-select: none;
+            box-shadow: 1px 2px 4px rgba(0,0,0,0.3);
+        }
+        .stone.black { background: radial-gradient(circle at 30% 30%, #444, #000); color: white; }
+        .stone.white { background: radial-gradient(circle at 30% 30%, #fff, #dbdbdb); color: black; border: 1px solid #999; }
+        .stone.latest::after {
+            content: ''; width: 6px; height: 6px; background-color: #ff3b30; border-radius: 50%; position: absolute;
+            box-shadow: 0 0 2px white;
+        }
+
+        .labels-row {
+            position: absolute; left: 5%; width: 90%; height: 5%;
+            display: flex; justify-content: space-around; align-items: center;
+            font-size: 11px; font-weight: bold; color: #444; user-select: none;
+        }
+        .labels-row.top { top: 0; }
+        .labels-row.bottom { bottom: 0; }
+
+        .labels-col {
+            position: absolute; top: 5%; height: 90%; width: 5%;
+            display: flex; flex-direction: column; justify-content: space-around; align-items: center;
+            font-size: 11px; font-weight: bold; color: #444; user-select: none;
+        }
+        .labels-col.left { left: 0; }
+        .labels-col.right { right: 0; }
+
+        .labels-row span, .labels-col span {
+            display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;
+        }
+
+        .timer-bar {
+            width: 100%; max-width: 520px; height: 6px; background-color: #e5e5ea;
+            margin-top: 12px; border-radius: 3px; overflow: hidden;
+        }
+        .timer-progress { width: 0%; height: 100%; background-color: #34c759; transition: width 0.1s linear; }
+        
+        .controls { margin-top: 15px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+        button {
+            padding: 10px 18px; font-size: 14px; border: none; border-radius: 6px;
+            background-color: #007aff; color: white; cursor: pointer; font-weight: bold;
+            transition: background 0.2s;
+        }
+        button:hover { background-color: #0056b3; }
+        button:disabled { background-color: #d1d1d6; cursor: not-allowed; }
+        button.stop { background-color: #ff3b30; }
+        button.stop:hover { background-color: #c72c22; }
+
+        .right-panel { width: 380px; display: flex; flex-direction: column; gap: 18px; }
+        .status-info { font-size: 18px; font-weight: bold; color: #1c1c1e; background: #f2f2f7; padding: 10px; border-radius: 6px; text-align: center;}
+        
+        .panel-section { background: #fcfcfd; border: 1px solid #e5e5ea; padding: 12px; border-radius: 8px; }
+        .section-title { font-weight: bold; font-size: 13px; color: #666; margin-bottom: 8px; text-transform: uppercase; }
+        
+        .radio-group { display: flex; gap: 15px; }
+        .comment-box {
+            width: 100%; height: 110px; box-sizing: border-box; padding: 12px;
+            border: 1px solid #c7c7cc; border-radius: 6px; resize: none; font-size: 14px; line-height: 1.4;
+        }
+        .comment-box:focus { border-color: #007aff; outline: none; }
+        
+        select { padding: 6px 10px; font-size: 14px; border-radius: 4px; border: 1px solid #c7c7cc; width: 100%; }
+        
+        .file-buttons { display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
+        .file-row { display: flex; gap: 10px; width: 100%; }
+        .file-input-wrapper { position: relative; flex: 1; }
+        .file-input-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <h1>囲碁解説スライド作成ツール（完全版）</h1>
+    <p class="subtitle">最大10枚解説・10秒タイマー・部分ズーム・SGF保存＆読込対応</p>
+
+    <div class="container">
+        <!-- 左パネル：盤面と操作 -->
+        <div class="left-panel">
+            <div class="board-container-outer">
+                <div class="board-wrapper view-all" id="boardWrapper">
+                    <div class="labels-row top" id="labelsTop"></div>
+                    <div class="labels-row bottom" id="labelsBottom"></div>
+                    <div class="labels-col left" id="labelsLeft"></div>
+                    <div class="labels-col right" id="labelsRight"></div>
+                    <div class="board-main">
+                        <div class="board-grid" id="boardGrid"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="timer-bar"><div class="timer-progress" id="timerProgress"></div></div>
+            <div class="controls">
+                <button id="btnPrev">← 前の手</button>
+                <button id="btnPlay">自動再生 (最大10秒)</button>
+                <button id="btnNext">次の手 →</button>
+                <button id="btnClear" style="background-color:#8e8e93;">全クリア</button>
+            </div>
+        </div>
+
+        <!-- 右パネル：各種設定と解説入力 -->
+        <div class="right-panel">
+            <div class="status-info" id="statusInfo">スライド: 1 / 10</div>
+            
+            <div class="panel-section">
+                <div class="section-title">盤面の表示範囲 (詰碁用ズーム)</div>
+                <select id="selectView">
+                    <option value="view-all">盤面全体 (19路盤)</option>
+                    <option value="view-tr">右上隅 (詰碁おすすめ)</option>
+                    <option value="view-tl">左上隅</option>
+                    <option value="view-br">右下隅</option>
+                    <option value="view-bl">左下隅</option>
+                </select>
+            </div>
+
+            <div class="panel-section">
+                <div class="section-title">次に置く石の色</div>
+                <div class="radio-group">
+                    <label><input type="radio" id="colorBlack" name="stoneColor" value="B" checked> <b>黒石</b></label>
+                    <label><input type="radio" id="colorWhite" name="stoneColor" value="W"> <b>白石</b></label>
+                </div>
+            </div>
+
+            <div class="panel-section" style="flex: 1; display: flex; flex-direction: column;">
+                <div class="section-title">この一手（画面）の解説文</div>
+                <textarea class="comment-box" id="commentBox" placeholder="この局面のポイントや、打たれた手の意味を解説してください..."></textarea>
+            </div>
+            
+            <div class="file-buttons">
+                <div class="file-row">
+                    <div class="file-input-wrapper">
+                        <button style="background-color:#34c759; width:100%;">SGFを読み込む</button>
+                        <input type="file" id="fileImport" accept=".sgf">
+                    </div>
+                    <button id="btnExport" style="background-color:#5856d6; flex: 1;">SGFを保存する</button>
+                </div>
+                <button id="btnHelpExport" style="background-color:#107c41; width:100%;">📄 使用説明書(TXT)を保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const MAX_SLIDES = 10;
+        const AUTOPLAY_TIME = 10000;
+        
+        let slides = Array.from({ length: MAX_SLIDES }, () => ({ stones: [], comment: "" }));
+        let currentIdx = 0;
+        
+        let isPlaying = false;
+        let timerId = null;
+        let timerStart = 0;
+        let progressIntervalId = null;
+
+        const SGF_CHARS = "abcdefghijklmnopqrs";
+        const LETTER_LABELS = ["A","B","C","D","E","F","G","H","J","K","L","M","N","O","P","Q","R","S","T"]; 
+        const HOSHI_COORDS = Array.of(3, 9, 15); 
+
+        const boardWrapper = document.getElementById('boardWrapper');
+        const boardGrid = document.getElementById('boardGrid');
+        const statusInfo = document.getElementById('statusInfo');
+        const commentBox = document.getElementById('commentBox');
+        const timerProgress = document.getElementById('timerProgress');
+        const btnPrev = document.getElementById('btnPrev');
+        const btnNext = document.getElementById('btnNext');
+        const btnPlay = document.getElementById('btnPlay');
+        const btnClear = document.getElementById('btnClear');
+        const btnExport = document.getElementById('btnExport');
+        const fileImport = document.getElementById('fileImport');
+        const selectView = document.getElementById('selectView');
+        const btnHelpExport = document.getElementById('btnHelpExport');
+
+        const labelsTop = document.getElementById('labelsTop');
+        const labelsBottom = document.getElementById('labelsBottom');
+        const labelsLeft = document.getElementById('labelsLeft');
+        const labelsRight = document.getElementById('labelsRight');
+
+        function initBoard() {
+            boardGrid.innerHTML = '';
+            for (let y = 0; y < 19; y++) {
+                for (let x = 0; x < 19; x++) {
+                    const intersection = document.createElement('div');
+                    intersection.className = 'intersection';
+                    if (HOSHI_COORDS.includes(x) && HOSHI_COORDS.includes(y)) {
+                        intersection.classList.add('hoshi');
+                    }
+                    intersection.dataset.x = x;
+                    intersection.dataset.y = y;
+                    intersection.addEventListener('click', onIntersectionClick);
+                    boardGrid.appendChild(intersection);
+                }
+            }
+
+            labelsTop.innerHTML = ''; labelsBottom.innerHTML = '';
+            labelsLeft.innerHTML = ''; labelsRight.innerHTML = '';
+
+            for (let i = 0; i < 19; i++) {
+                const topSpan = document.createElement('span'); topSpan.textContent = LETTER_LABELS.at(i);
+                const bottomSpan = document.createElement('span'); bottomSpan.textContent = LETTER_LABELS.at(i);
+                labelsTop.appendChild(topSpan);
+                labelsBottom.appendChild(bottomSpan);
+
+                const leftSpan = document.createElement('span'); leftSpan.textContent = 19 - i;
+                const rightSpan = document.createElement('span'); rightSpan.textContent = 19 - i;
+                labelsLeft.appendChild(leftSpan);
+                labelsRight.appendChild(rightSpan);
+            }
+
+            render();
+        }
+
+        function onIntersectionClick() {
+            if (isPlaying) stopAutoPlay();
+            
+            const x = parseInt(this.dataset.x);
+            const y = parseInt(this.dataset.y);
+            const color = document.querySelector('input[name="stoneColor"]:checked').value;
+
+            let currentStones = [...slides.at(currentIdx).stones];
+            const existingIdx = currentStones.findIndex(s => s.x === x && s.y === y);
+
+            if (existingIdx >= 0) {
+                currentStones.splice(existingIdx, 1);
+            } else {
+                currentStones.push({ x: x, y: y, color: color });
+            }
+
+            for (let i = currentIdx + 1; i < MAX_SLIDES; i++) {
+                if (slides.at(i).stones.length === 0) {
+                    slides.at(i).stones = [...currentStones];
+                }
+            }
+
+            slides.at(currentIdx).stones = currentStones;
+            render();
+        }
+
+        commentBox.addEventListener('input', () => {
+            slides.at(currentIdx).comment = commentBox.value;
+        });
+
+        selectView.addEventListener('change', () => {
+            boardWrapper.className = 'board-wrapper ' + selectView.value;
+        });
+
+        function render() {
+            const intersections = boardGrid.querySelectorAll('.intersection');
+            intersections.forEach(el => {
+                const stoneEl = el.querySelector('.stone');
+                if (stoneEl) stoneEl.remove();
+            });
+
+            const currentStones = slides.at(currentIdx).stones;
+            currentStones.forEach((stone, idx) => {
+                const el = boardGrid.querySelector('[data-x="' + stone.x + '"][data-y="' + stone.y + '"]');
+                if (el) {
+                    const stoneDiv = document.createElement('div');
+                    const isLatest = (idx === currentStones.length - 1);
+                    stoneDiv.className = 'stone ' + (stone.color === 'B' ? 'black' : 'white') + (isLatest ? ' latest' : '');
+                    el.appendChild(stoneDiv);
+                }
+            });
+
+            statusInfo.textContent = 'スライド: ' + (currentIdx + 1) + ' / ' + MAX_SLIDES + (isPlaying ? ' (再生中)' : '');
+            commentBox.value = slides.at(currentIdx).comment;
+
+            btnPrev.disabled = (currentIdx === 0);
+            btnNext.disabled = (currentIdx === MAX_SLIDES - 1);
+        }
+
+        function prevSlide() {
+            if (currentIdx > 0) {
+                if (isPlaying) stopAutoPlay();
+                currentIdx--;
+                render();
+            }
+        }
+
+        function nextSlide() {
+            if (currentIdx < MAX_SLIDES - 1) {
+                currentIdx++;
+                render();
+                if (isPlaying) startTimer();
+            } else {
+                stopAutoPlay();
+            }
+        }
+
+        function togglePlay() {
+            if (isPlaying) {
+                stopAutoPlay();
+            } else {
+                isPlaying = true;
+                btnPlay.textContent = "ストップ";
+                btnPlay.classList.add('stop');
+                startTimer();
+            }
+        }
+
+        function startTimer() {
+            if (timerId) clearTimeout(timerId);
+            if (progressIntervalId) clearInterval(progressIntervalId);
+
+            timerStart = Date.now();
+            timerId = setTimeout(nextSlide, AUTOPLAY_TIME);
+
+            progressIntervalId = setInterval(() => {
+                const elapsed = Date.now() - timerStart;
+                const percentage = Math.min((elapsed / AUTOPLAY_TIME) * 100, 100);
+                timerProgress.style.width = percentage + '%';
+            }, 100);
+        }
+
+        function stopAutoPlay() {
+            isPlaying = false;
+            btnPlay.textContent = "自動再生 (最大10秒)";
+            btnPlay.classList.remove('stop');
+            if (timerId) clearTimeout(timerId);
+            if (progressIntervalId) clearInterval(progressIntervalId);
+            timerProgress.style.width = "0%";
+            render();
+        }
+
+        fileImport.addEventListener('change', (e) => {
+            const files = e.target.files; 
+            if (!files || files.length === 0) return;
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const text = evt.target.result;
+                parseSGF(text);
+            };
+            reader.readAsText(files.item(0));
+        });
+
+        function parseSGF(sgfText) {
+            slides = Array.from({ length: MAX_SLIDES }, () => ({ stones: [], comment: "" }));
+            currentIdx = 0;
+
+            let initialStones = [];
+            const abMatches = sgfText.match(/AB(\[[a-s]{2}\])+/g);
+            const awMatches = sgfText.match(/AW(\[[a-s]{2}\])+/g);
+
+            if (abMatches) {
+                abMatches.forEach(m => {
+                    const coords = m.match(/[a-s]{2}/g);
+                    coords.forEach(c => {
+                        initialStones.push({ x: SGF_CHARS.indexOf(c.charAt(0)), y: SGF_CHARS.indexOf(c.charAt(1)), color: 'B' });
+                    });
+                });
+            }
+            if (awMatches) {
+                awMatches.forEach(m => {
+                    const coords = m.match(/[a-s]{2}/g);
+                    coords.forEach(c => {
+                        initialStones.push({ x: SGF_CHARS.indexOf(c.charAt(0)), y: SGF_CHARS.indexOf(c.charAt(1)), color: 'W' });
+                    });
+                });
+            }
+            
+            let firstComment = "";
+            const firstCommentMatch = sgfText.match(/^[^;]*;[^;]*C\[([\s\S]*?)\]/);
+            if (firstCommentMatch) firstComment = firstCommentMatch.at(1); 
+
+            slides.at(0).stones = [...initialStones]; 
+            slides.at(0).comment = firstComment; 
+
+            const nodes = sgfText.split(';');
+            let slideCounter = 1;
+            let currentAccumulatedStones = [...initialStones];
+
+            for (let i = 1; i < nodes.length; i++) {
+                if (slideCounter >= MAX_SLIDES) break;
+                const node = nodes.at(i);
+                
+                const moveMatch = node.match(/([BW])\[([a-s]{2})\]/);
+                const commentMatch = node.match(/C\[([\s\S]*?)\]/);
+
+                if (moveMatch) {
+                    const color = moveMatch.at(1); 
+                    const coord = moveMatch.at(2); 
+                    const x = SGF_CHARS.indexOf(coord.charAt(0));
+                    const y = SGF_CHARS.indexOf(coord.charAt(1));
+                    
+                    currentAccumulatedStones.push({ x: x, y: y, color: color });
+                    slides.at(slideCounter).stones = [...currentAccumulatedStones];
+                    
+                    if (commentMatch) {
+                        slides.at(slideCounter).comment = commentMatch.at(1); 
+                    }
+                    slideCounter++;
+                } else if (commentMatch && slideCounter > 0) {
+                    slides.at(slideCounter).stones = [...currentAccumulatedStones];
+                    slides.at(slideCounter).comment = commentMatch.at(1); 
+                    slideCounter++;
+                }
+            }
+
+            alert("SGFファイルを読み込みました");
+            initBoard();
+        }
+
+        // 7. SGFファイルの出力
+        function exportToSGF() {
+            let sgf = "(;GMFFCA[UTF-8]AP[IgoSlideShow]SZ\n";
+            
+            const firstSlide = slides.at(0); 
+            let ab = ""; let aw = "";
+            firstSlide.stones.forEach(s => {
+                const coord = SGF_CHARS.charAt(s.x) + SGF_CHARS.charAt(s.y);
+                if (s.color === 'B') ab += "[" + coord + "]";
+                else aw += "[" + coord + "]";
+            });
+            if (ab) sgf += "AB" + ab;
+            if (aw) sgf += "AW" + aw;
+            if (firstSlide.comment) sgf += "C[" + firstSlide.comment + "]";
+            sgf += "\n";
+
+            for (let i = 1; i < MAX_SLIDES; i++) {
+                const prevStones = slides.at(i-1).stones;
+                const currentStones = slides.at(i).stones;
+                const comment = slides.at(i).comment;
+
+                const newStone = currentStones.find(curr => 
+                    !prevStones.some(prev => prev.x === curr.x && prev.y === curr.y && prev.color === curr.color)
+                );
+
+                if (newStone) {
+                    const coord = SGF_CHARS.charAt(newStone.x) + SGF_CHARS.charAt(newStone.y);
+                    sgf += ";" + newStone.color + "[" + coord + "]";
+                    if (comment) sgf += "C[" + comment + "]";
+                    sgf += "\n";
+                } else if (comment && currentStones.length > 0) {
+                    sgf += ";C[" + comment + "]\n";
+                }
+            }
+            sgf += ")";
+
+            const blob = new Blob([sgf], { type: "text/plain;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "tumeigo_slides_" + Date.now() + ".sgf";
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // 説明書の保存処理
+        btnHelpExport.addEventListener('click', () => {
+            const helpText = 
+                "==================================================\n" +
+                "     囲碁解説スライド作成ツール 使用説明書\n" +
+                "==================================================\n\n" +
+                "【1. 基本画面の見方】\n" +
+                "・左側（碁盤エリア）：19路盤と周囲の目盛り（A～S、19～1）が表示されます。\n" +
+                "・右側（操作パネル）：ズーム機能、手番、解説欄、ファイルボタンが並びます。\n\n" +
+                "【2. 詳しい使い方】\n" +
+                "1. 問題図（1枚目）を作る\n" +
+                "   - 右側の「黒石」「白石」を切り替え、碁盤をクリックして問題の配置を作ります。\n" +
+                "   - 間違えた石は、もう一度クリックすると消せます。\n" +
+                "   - 解説欄に問題の条件（例：黒先白死、など）を入力します。\n\n" +
+                "2. 手順（2枚目以降）を進める\n" +
+                "   - 「次の手 →」ボタンでスライドを「2 / 10」に進めます。\n" +
+                "   - 1枚目の配置は自動で引き継がれるので、続きから次の石を配置します。\n" +
+                "   - 新しく置いた最新の1手には「赤い点」が自動でつきます。\n" +
+                "   - その手の意味を解説欄に入力し、これを繰り返します（最大10枚）。\n\n" +
+                "【3. 便利機能の紹介】\n" +
+                "・詰碁用ズーム：「表示範囲」を右上隅などに切り替えると、隅が拡大されます。\n" +
+                "・自動再生：「自動再生」ボタンで、10秒ごとに一手ずつ自動で手順が進みます。\n" +
+                "  「ストップ」ボタン、または手動ナビゲーションを押すと、いつでも一時停止します。\n" +
+                "・キーボード操作：キーボードの「←」「→」キーでもスライドを切り替えられます。\n\n" +
+                "【4. 保存と再編集】\n" +
+                "・SGFを保存する：完成したらボタンを押すと「.sgf」ファイルがダウンロードされます。\n" +
+                "・SGFを読み込む：次回ツールを開いた際、このファイルを読み込めば10枚のスライドと解説文がすべて復元され、続きから再編集が可能です。\n";
+
+            const blob = new Blob([helpText], { type: "text/plain;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "readme_囲碁解説ツール説明書.txt";
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        // 全クリア処理
+        btnClear.addEventListener('click', () => {
+            if(confirm("全データが完全に削除されます。よろしいですか？")) {
+                stopAutoPlay();
+                slides = Array.from({ length: MAX_SLIDES }, () => ({ stones: [], comment: "" }));
+                currentIdx = 0;
+                initBoard();
+            }
+        });
+
+        // ボタンのイベント接続
+        btnPrev.addEventListener('click', prevSlide);
+        btnNext.addEventListener('click', nextSlide);
+        btnPlay.addEventListener('click', togglePlay);
+        btnExport.addEventListener('click', exportToSGF);
+
+        document.addEventListener('keydown', (e) => {
+            if (document.activeElement === commentBox) return;
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+
+        initBoard();
+    </script>
+</body>
+</html>
+ 

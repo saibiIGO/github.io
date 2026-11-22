@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- 才美塾スライドショウ・枠組み -->
+<div style="width: 100%; max-width: 8０0px; margin: 20px auto; padding: 15px; background: #fff; border: 1px solid #ddd; border-radius: 6px; text-align: center; box-sizing: border-box;">
+  <div style="margin-bottom: 15px; text-align: left;">
+    <label for="saibi-gallery-select" style="font-size: 13px; font-weight: bold; color: #003366; margin-right: 5px;" id="welcome">ギャラリー選択窓:</label>
+    <select id="saibi-gallery-select" onchange="switchGallerySet(this.value)" oninput="switchGallerySet(this.value)" style="padding: 6px 10px; border: 1px solid #003366; border-radius: 4px; color: #003366; font-weight: bold; background: #fff; cursor: pointer; font-size: 13px;"></select>
+  </div>
+  
+  <h3 id="saibi-gallery-title" style="margin: 0 0 10px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 3px;">📸 碁盤ギャラリー</h3>
+  
+  <!-- 💡 クリックすると一時停止するエリア -->
+  <div onclick="togglePause()" style="width: 100%; min-height: 350px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; background: #f0f0f0; cursor: pointer;" title="クリックで一時停止 / 再生">
+    <div id="saibi-slideshow-container" style="width: 100%; height: 100%; position: relative;"></div>
+    
+    <!-- ⏸️ 一時停止中に表示されるバッジ -->
+    <div id="saibi-pause-badge" style="display: none; position: absolute; top: 10px; right: 10px; background: rgba(220,53,69,0.9); color: white; padding: 4px 8px; font-size: 12px; font-weight: bold; border-radius: 4px; z-index: 10;">⏸️ 一時停止中</div>
+  </div>
+
+  <!-- 📢 【新設】ここに一時停止の操作説明を追加しました！ -->
+  <div style="margin-top: 10px; font-size: 12px; color: #666; text-align: center; background: #f9f9f9; padding: 6px; border-radius: 4px; border: 1px dashed #ccc;">
+    💡 <strong>写真をゆっくり見たいとき：</strong>上の写真をクリックすると<strong>一時停止</strong>します。もう一度クリックすると、また動きだします。
+  </div>
+</div>
+
+<div id="saibi-admin-modal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center;">
+  <div style="background: #fff; padding: 25px; border-radius: 8px; width: 95%; max-width: 500px; max-height: 85vh; overflow-y: auto; text-align: left; position: relative;">
+    <span onclick="closeAdminModal()" style="position: absolute; right: 15px; top: 10px; font-size: 24px; font-weight: bold; color: #aaa; cursor: pointer;">&times;</span>
+    <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #003366; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 5px;">🛠️ 才美塾・ギャラリー管理人室</h3>
+    <div style="margin-bottom: 15px;"><label style="font-size: 13px; font-weight: bold;">変更するセットを選択:</label><select id="admin-set-select" onchange="loadSetToEditor(this.value)" style="width: 100%; padding: 5px; margin-top: 5px;"></select></div>
+    <div style="margin-bottom: 15px;"><label style="font-size: 13px; font-weight: bold;">ギャラリー名の変更:</label><input type="text" id="edit-set-name" style="width: 100%; padding: 5px; margin-top: 5px; box-sizing: border-box;"></div>
+    <div style="margin-bottom: 15px; display: flex; gap: 5px;"><input type="text" id="new-set-name" placeholder="新しいセット名を入力" style="flex: 1; padding: 5px;"><button onclick="createNewSet()" style="padding: 5px 10px; background: #003366; color: white; border: none; cursor: pointer;">新規セット追加</button></div>
+    <hr style="border: 0; border-top: 1px solid #ddd; margin: 15px 0;"><h4 style="margin: 0 0 10px 0; font-size: 14px; color: #333;">🖼️ コマの編集 (最大10枚)</h4>
+    <div id="admin-slides-list" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px;"></div>
+    <button onclick="addBlankSlideRow()" id="add-slide-row-btn" style="width: 100%; padding: 8px; background: #f0f0f0; border: 1px dashed #aaa; cursor: pointer; font-weight: bold; margin-bottom: 20px;">＋ コマ（写真）を追加する</button>
+    <div style="display: flex; gap: 10px;"><button onclick="saveAdminData()" style="flex: 1; padding: 12px; background: #28a745; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; text-align: center;">変更を保存して適用</button><button onclick="deleteCurrentSet()" style="padding: 12px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">セット削除</button></div>
+  </div>
+</div>
+
+
+<!-- javascript エリア はじまり-->
+<script>
+  // =================================================================
+  // 📝 【初期データ設定エリア】
+  // =================================================================
+  const defaultGalleryData = {
+    set1: {
+      name: "因島北認定こども園教室", folder: "image1",
+      slides: [
+        { img: "image1/photo1.jpg", text: "① どこに打てばいいんだろう…？", duration: 4 },
+        { img: "image1/photo2.jpg", text: "② 先生が優しくヒントを教えてくれるよ！", duration: 4 },
+        { img: "image1/photo3.jpg", text: "③ わかった！ここに打ってみよう！", duration: 4 },
+        { img: "image1/photo4.jpg", text: "④ やったー！見事正解です！", duration: 6 },
+        { img: "image1/photo5.jpg", text: "⑤ こんどはシチョウの練習です。", duration: 5 }, // 🚀 5 を半角に修正
+        { img: "image1/photo6.jpg", text: "⑥ どうかな？先生が優しく教えてくれるよ！", duration: 4 }, // 🚀 6 を半角に修正
+        { img: "image1/photo7.jpg", text: "⑦ いま、ならったシチョウかな？", duration: 4 }, // 🚀 7 を半角に修正
+        { img: "image1/photo8.jpg", text: "⑧ やったー先生！見事正解です！", duration: 4 }, // 🚀 8 を半角に修正
+        { img: "image1/photo9.jpg", text: " ⑨いつもとちがう、ぼくがいるよ！", duration: 4 }, // 🚀 9 を半角に修正
+        { img: "image1/photo10.jpg", text: "⑩ そう！わたしが、わかるかな！", duration: 4 }
+      ]
+    },
+
+    set2: {
+      name: "令和８年虎ちゃん囲碁まつり", folder: "image2",
+      slides: [
+        { img: "image2/photo1.jpg", text: "① 応援の方々もハラハラ、次の一手はどこかな！", duration: 5 },
+        { img: "image2/photo2.jpg", text: "②この大会に出場する勇気と努力を讃え全員に奨励賞を贈ります。", duration: 5},
+        { img: "image2/photo3.jpg", text: "③ あと少しだよ、じっくり考えてみよう！", duration: 4 },
+        { img: "image2/photo4.jpg", text: "④ ここに打つとどうなるかな？考えてごらん", duration: 4 },
+        { img: "image2/photo5.jpg", text: "⑤ 三々があるよ。あと少しで正解だよ！", duration: 4 },
+        { img: "image2/photo6.jpg", text: "⑥ はーい！おわりました。正解！よくできました！", duration: 5 },
+        { img: "image2/photo7.jpg", text: "⑦ 大模様からの激戦、シノギが成功したかな。", duration: 4 },
+        { img: "image2/photo8.jpg", text: "⑧両ガカリ！フーム！！どちらにツケるかな？", duration: 4 },
+        { img: "image2/photo9.jpg", text: "⑨ 今回で自信もついた。次はシニアデビューだよ。", duration: 5 },
+        { img: "image2/photo10.jpg", text: "⑩ 秀策がもらった免状です。秀策囲碁記念館に本物があるよ。", duration: 5 }
+      ]
+    },
+    set3: {
+      name: "囲碁プロを目指す少年少女", folder: "image3", 
+      slides: [
+        { img: "image3/photo1.jpg", text: "① 初めてのシニアに挑戦。", duration: 5 }, 
+        { img: "image3/photo2.jpg", text: "② 御初手合、緊張のスタートです。", duration: 5 }, 
+        { img: "image3/photo3.jpg", text: "③ お姉さんが棋譜をとっています。", duration: 3 },
+        { img: "image3/photo4.jpg", text: "④ 隣の教室では、後輩たちが出番待ちです。", duration: 3 },
+        { img: "image3/photo5.jpg", text: "⑤ こちらでも真剣な眼差しです。", duration: 3 },
+        { img: "image3/photo6.jpg", text: "⑥ どうやらシノギ勝負となって考慮中！", duration: 3 },
+        { img: "image3/photo7.jpg", text: "⑦ 局後の難解定石だったところの復習。", duration: 3 },
+        { img: "image3/photo8.jpg", text: "⑧ 優しい恩師の言葉。まず守り。これが秘伝だよ！", duration: 3},
+        { img: "image3/photo9.jpg", text: "⑨ 御初手合の浦丸社長を囲んで一同パチリ！", duration: 3 },
+        { img: "image3/photo10.jpg", text: "⑩ 翌週の中国こども本因坊戦では第２位でした。次回に向けて頑張ります。", duration: 3} 
+      ]
+    }, 
+ // 🖼️ 既存のセット4
+    set4: {
+      name: "成長の過程をみましょう", folder: "image4", 
+      slides: [
+        { img: "image4/photo1.jpg", text: "① みんな、はじめはこんなだったよね。", duration: 5 }, 
+        { img: "image4/photo2.jpg", text: "② それがいまでは高段者。", duration: 5 }, 
+        { img: "image4/photo3.jpg", text: "③ きちんと棋譜を残すのが秘伝です。", duration: 3 },
+        { img: "image4/photo4.jpg", text: "④ 地合の計算も初めが肝心です。", duration: 3 },
+          ]
+    }, // 👈 1. 必ずここに「カンマ（ , ）」を新しく書き足します！
+        // 🖼️ 【新アルバム】セット5（ここに新しいデータを追加しました！）
+    set5: {
+      name: "（例：令和８年冬季大会など、イベント名をここに書く）", 
+      folder: "image5", 
+      slides: [
+        { img: "image5/photo1.jpg", text: "① ここに1枚目の説明文を書きます。", duration: 5 }, 
+        { img: "image5/photo2.jpg", text: "② ここに2枚目の説明文を書きます。", duration: 5 }, 
+        { img: "image5/photo3.jpg", text: "③ ここに3枚目の説明文を書きます。", duration: 5 }, 
+        { img: "image5/photo4.jpg", text: "④ ここに4枚目の説明文を書きます。", duration: 5 }, 
+        { img: "image5/photo5.jpg", text: "⑤ ここに5枚目の説明文を書きます。", duration: 5 }, 
+        { img: "image5/photo6.jpg", text: "⑥ ここに6枚目の説明文を書きます。", duration: 5 }, 
+        { img: "image5/photo7.jpg", text: "⑦ ここに7枚目の説明文を書きます。", duration: 5 }, 
+        { img: "image5/photo8.jpg", text: "⑧ ここに8枚目の説明文を書きます。", duration: 5 }, 
+        { img: "image5/photo9.jpg", text: "⑨ ここに9枚目の説明文を書きます。", duration: 5 }, 
+        { img: "image5/photo10.jpg", text: "⑩ ここに10枚目の説明文を書きます。", duration: 5 }
+      ]
+    },
+       // 🖼️ セット6（自前チャレンジ版！）
+    set6: {
+      name: "令和９年春の新イベント（例）", folder: "image6", 
+      slides: [
+        { img: "image6/photo1.jpg", text: "① 春の新しいイベントです！", duration: 5 }, 
+        { img: "image6/photo2.jpg", text: "② ここに2枚目の説明文を書きます。", duration: 5 }, 
+        { img: "image6/photo3.jpg", text: "③ ここに3枚目の説明文を書きます。", duration: 5 }, 
+        { img: "image6/photo4.jpg", text: "④ ここに4枚目の説明文を書きます。", duration: 5 }, 
+        { img: "image6/photo5.jpg", text: "⑤ ここに5枚目の説明文を書きます。", duration: 5 }, 
+        { img: "image6/photo6.jpg", text: "⑥ ここに6枚目の説明文を書きます。", duration: 5 }, 
+        { img: "image6/photo7.jpg", text: "⑦ ここに7枚目の説明文を書きます。", duration: 5 }, 
+        { img: "image6/photo8.jpg", text: "⑧ ここに8枚目の説明文を書きます。", duration: 5 }, 
+        { img: "image6/photo9.jpg", text: "⑨ ここに9枚目の説明文を書きます。", duration: 5 }, 
+        { img: "image6/photo10.jpg", text: "⑩ ここに10枚目の説明文を書きます。", duration: 5 }
+      ]
+    } // 👈 【超重要】最後なのでここにはカンマをつけません！
+  }; // 👈 あなたが見つけてくれた、動かしてはいけない裏表紙
+
+
+
+  // =================================================================
+  // ⚙️ 【システム処理エリア】
+  // =================================================================
+  // 🚀 合言葉（名前）の最後に _reset_all_data をつけて完全に新しい記憶の箱を作ります
+  const STORAGE_KEY = 'saibi_gallery_v2026_final_v5_perfect_reset_all_data';
+  
+  // 過去の記憶を完全に無視して、コードに書いた最新データを強制的にセットします！
+  let saibiGalleryData = defaultGalleryData;
+  localStorage.clear(); // ブラウザに残っている古いゴミ箱データを一度きれいに大掃除します
+
+  // 🚀 ブラウザの古い記憶を完全にリセットし、コードに書いた文字を強制採用します！
+  Object.keys(defaultGalleryData).forEach(key => {
+    saibiGalleryData[key] = defaultGalleryData[key];
+  });
+  // さらに、管理人室のデータ（過去の記憶）を一度完全にクリアします
+  saibiGalleryData = defaultGalleryData;
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(saibiGalleryData));
+
+  let currentSetKey = Object.keys(saibiGalleryData)[0] || 'set1';
+  let currentSlideIndex = 0; 
+  let slideshowTimeout = null;
+  let isPaused = false; 
+
+  window.addEventListener('DOMContentLoaded', () => { 
+    updateUserSelectOptions(); 
+    startSlideshow(); 
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
+    if (e.key === 's' || e.key === 'S') {
+      const pass = prompt("🔑 パスワードを入力してください（管理人専用）:");
+      if (typeof ADMIN_PASSWORD !== 'undefined' && pass === ADMIN_PASSWORD) openAdminModal();
+      else if (pass !== null) alert("❌ パスワードが違います。");
+    }
+  });
+
+  function openAdminModal() { 
+    document.getElementById('saibi-admin-modal').style.display = 'flex'; 
+    buildAdminSetSelect(); 
+    loadSetToEditor(currentSetKey); 
+  }
+
+  function closeAdminModal() { 
+    document.getElementById('saibi-admin-modal').style.display = 'none'; 
+  }
+
+  function updateUserSelectOptions() {
+    const select = document.getElementById('saibi-gallery-select'); 
+    if(!select) return; 
+    select.innerHTML = '';
+    Object.keys(saibiGalleryData).forEach(key => {
+      const opt = document.createElement('option'); 
+      opt.value = key; 
+      opt.textContent = saibiGalleryData[key].name;
+      if (key === currentSetKey) opt.selected = true; 
+      select.appendChild(opt);
+    });
+  }
+
+  function buildAdminSetSelect() {
+    const select = document.getElementById('admin-set-select'); 
+    if(!select) return; 
+    select.innerHTML = '';
+    Object.keys(saibiGalleryData).forEach(key => {
+      const opt = document.createElement('option'); 
+      opt.value = key; 
+      opt.textContent = saibiGalleryData[key].name;
+      if (key === currentSetKey) opt.selected = true; 
+      select.appendChild(opt);
+    });
+  }
+
+  function loadSetToEditor(setKey) {
+    currentSetKey = setKey; 
+    const set = saibiGalleryData[setKey]; 
+    if (!set) return;
+    document.getElementById('edit-set-name').value = set.name;
+    const slidesList = document.getElementById('admin-slides-list'); 
+    if (!slidesList) return; 
+    slidesList.innerHTML = '';
+    set.slides.forEach((slide, idx) => createSlideRowHTML(slide.img, slide.text, slide.duration, idx));
+    toggleAddButtonVisibility();
+  }
+
+  function createSlideRowHTML(img, text, duration, idx) {
+    const slidesList = document.getElementById('admin-slides-list');
+    const div = document.createElement('div'); 
+    div.className = 'admin-slide-row'; 
+    div.style = 'padding: 10px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px; margin-bottom:10px; text-align:left;';
+    div.innerHTML = `
+      <div style="font-weight:bold; font-size:12px; color:#003366; margin-bottom:5px;">📷 コマ ${idx + 1}</div>
+      <div style="display:flex; flex-direction:column; gap:5px;">
+        <input type="text" class="slide-img" value="${img}" placeholder="画像のパス" style="width:100%; padding:4px;">
+        <input type="text" class="slide-text" value="${text}" placeholder="字幕テキスト" style="width:100%; padding:4px;">
+        <label style="font-size:11px;">表示時間（秒）: 
+          <input type="number" class="slide-duration" value="${duration}" min="1" style="width:50px; padding:4px;">
+        </label>
+      </div>
+    `;
+    slidesList.appendChild(div);
+  }
+
+  function toggleAddButtonVisibility() {
+    const set = saibiGalleryData[currentSetKey];
+    const btn = document.getElementById('add-slide-row-btn');
+    if (!set || !btn) return;
+    const currentRows = document.querySelectorAll('.admin-slide-row').length;
+    btn.style.display = currentRows >= 10 ? 'none' : 'block';
+  }
+
+  function addBlankSlideRow() {
+    const currentRows = document.querySelectorAll('.admin-slide-row').length;
+    if (currentRows >= 10) return;
+    const folder = saibiGalleryData[currentSetKey]?.folder || 'image';
+    createSlideRowHTML(`${folder}/photo${currentRows + 1}.jpg`, `新コマのテキスト`, 5, currentRows);
+    toggleAddButtonVisibility();
+  }
+
+  function startSlideshow() {
+    if (slideshowTimeout) clearTimeout(slideshowTimeout);
+    currentSlideIndex = 0;
+    isPaused = false; 
+    showSlide();
+  }
+
+  function togglePause() {
+    const badge = document.getElementById('saibi-pause-badge');
+    if (isPaused) {
+      isPaused = false;
+      if (badge) badge.style.display = 'none';
+      
+      const set = saibiGalleryData[currentSetKey];
+      const slide = set.slides[currentSlideIndex];
+      const duration = (slide.duration || 5) * 1000;
+      
+      if (slideshowTimeout) clearTimeout(slideshowTimeout);
+      slideshowTimeout = setTimeout(() => {
+        currentSlideIndex++;
+        showSlide();
+      }, duration);
+    } else {
+      isPaused = true;
+      if (slideshowTimeout) clearTimeout(slideshowTimeout); 
+      if (badge) badge.style.display = 'block';
+    }
+  }
+
+  function showSlide() {
+    if (slideshowTimeout) {
+      clearTimeout(slideshowTimeout);
+      slideshowTimeout = null;
+    }
+
+    const set = saibiGalleryData[currentSetKey];
+    const container = document.getElementById('saibi-slideshow-container');
+    if (!set || !container || !set.slides || set.slides.length === 0) {
+      container.innerHTML = '<div style="padding:20px; text-align:center;">画像が登録されていません</div>';
+      return;
+    }
+
+    if (currentSlideIndex >= set.slides.length) {
+      currentSlideIndex = 0;
+    }
+
+    const slide = set.slides[currentSlideIndex];
+
+    const titleEl = document.getElementById('saibi-gallery-title');
+    if (titleEl) {
+      titleEl.textContent = `📸 ${set.name}`;
+    }
+
+    container.innerHTML = `
+      <div style="position:relative; width:100%; max-width:600px; margin:0 auto; overflow:hidden;">
+        <img src="${slide.img}" alt="スライド" style="width:100%; max-height: 400px; object-fit: contain; display:block;" 
+             onerror="handleImageError(this);"/>
+        <div style="background:rgba(0,51,102,0.85); color:#fff; padding:10px; font-size:14px; font-weight:bold; text-align:center;">
+          ${slide.text}
+        </div>
+      </div>
+    `;
+
+    if (!isPaused) {
+      const duration = (slide.duration || 5) * 1000;
+      slideshowTimeout = setTimeout(() => {
+        currentSlideIndex++;
+        showSlide();
+      }, duration);
+    }
+  }
+
+  function handleImageError(imgElement) {
+    if (!imgElement.dataset.tried) {
+      imgElement.dataset.tried = "1";
+      if (imgElement.src.endsWith('.jpg')) {
+        imgElement.src = imgElement.src.replace(/\.jpg$/, '.JPG');
+      } else if (imgElement.src.endsWith('.JPG')) {
+        imgElement.src = imgElement.src.replace(/\.JPG$/, '.jpg');
+      } else if (imgElement.src.endsWith('.png')) {
+        imgElement.src = imgElement.src.replace(/\.png$/, '.PNG');
+      } else if (imgElement.src.endsWith('.PNG')) {
+        imgElement.src = imgElement.src.replace(/\.PNG$/, '.png');
+      }
+    }
+  }
+
+  function switchGallerySet(setKey) {
+    if (!saibiGalleryData[setKey]) return;
+    currentSetKey = setKey;
+    startSlideshow();
+  }
+
+  function createNewSet() {
+    const input = document.getElementById('new-set-name');
+    const name = input ? input.value.trim() : '';
+  }
+</script>
+
