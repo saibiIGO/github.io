@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>数字譜 ⇔ 文字譜（SGF）相互変換ツール</title>
+<style>
+  body { font-family: sans-serif; background: #f8fafc; color: #0f172a; margin: 16px; }
+  .card { max-width: 720px; margin: 0 auto; background: #fff; padding: 16px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+  h2 { margin: 0 0 10px; font-size: 17px; color: #4c1d95; }
+  textarea { width: 100%; box-sizing: border-box; font-family: monospace; font-size: 13px; padding: 8px; border: 1px solid #a78bfa; border-radius: 6px; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; align-items: center; }
+  button { padding: 7px 12px; font-size: 13px; font-weight: bold; color: #fff; border: none; border-radius: 5px; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h2>🔄 数字譜（座標・手順） ⇔ 文字譜（SGF） 相互変換ツール</h2>
+  <div class="row" style="font-size:13px;">
+    <label>路盤: <select id="sz"><option value="19" selected>19路</option><option value="13">13路</option><option value="9">9路</option></select></label>
+    <label>数字のみの手番: <select id="fc"><option value="B" selected>黒先</option><option value="W">白先</option></select></label>
+  </div>
+  <textarea id="ta" rows="8" placeholder="【SGF文字譜の例】 (;GMFFSZAB[pd][qd]AW[oc];B[pe];W[oe])&#10;&#10;【数字譜の例】&#10;【黒配置】Q16, R16&#10;【白配置】P17&#10;【手順】1:黒Q15  2:白P15"></textarea>
+  <div class="row">
+    <button style="background:#0284c7;" onclick="toNum()">⬇️ 文字譜(SGF) → 数字譜</button>
+    <button style="background:#059669;" onclick="toSgf()">⬆️ 数字譜 → 文字譜(SGF)</button>
+    <button style="background:#475569;" onclick="cp()">📋 結果をコピー</button>
+    <button style="background:#94a3b8;" onclick="document.getElementById('ta').value=''">🗑️ クリア</button>
+  </div>
+</div>
+<script>
+const COLS = "ABCDEFGHJKLMNOPQRST", SGF = "abcdefghijklmnopqrs";
+function p2h(p, s) {
+  const x = SGF.indexOf(p.charAt(0).toLowerCase()), y = SGF.indexOf(p.charAt(1).toLowerCase());
+  return (x >= 0 && y >= 0 && x < s && y < s) ? COLS.charAt(x) + String(s - y) : "";
+}
+function h2p(c, s) {
+  const m = c.trim().toUpperCase().match(/^([A-HJ-T])([0-9]{1,2})$/);
+  if (!m) return "";
+  const x = COLS.indexOf(m[1]), y = s - parseInt(m[2], 10);
+  return (x >= 0 && y >= 0 && x < s && y < s) ? SGF.charAt(x) + SGF.charAt(y) : "";
+}
+function toNum() {
+  const ta = document.getElementById('ta'), raw = ta.value.trim();
+  if (!raw.includes("(")) return alert("SGF文字譜（(;GM...)）を貼り付けてください。");
+  const sm = raw.match(/SZ\[(\d+)\]/i), s = sm ? parseInt(sm[1], 10) : parseInt(document.getElementById('sz').value, 10);
+  document.getElementById('sz').value = String(s);
+  const gm = raw.match(/GN\[([^\]]+)\]/i);
+  const getC = (pr) => {
+    const r = new RegExp(pr + "((?:\\[[a-s]{2}\\])+)", "gi"), a = []; let m;
+    while ((m = r.exec(raw)) !== null) (m[1].match(/[a-s]{2}/gi) || []).forEach(x => { const h = p2h(x, s); if (h) a.push(h); });
+    return a;
+  };
+  const ab = getC("AB"), aw = getC("AW"), sub = raw.indexOf("(", 1), main = sub !== -1 ? raw.slice(0, sub) : raw;
+  const mr = /;([BW])\[([a-s]{2})\]/gi, mv = []; let mm, st = 1;
+  while ((mm = mr.exec(main)) !== null) { const h = p2h(mm[2], s); if (h) mv.push(`${st++}:${mm[1].toUpperCase()==='B'?'黒':'白'}${h}`); }
+  const out = [`【路盤】${s}路`];
+  if (gm) out.push(`【問題名】${gm[1].trim()}`);
+  if (ab.length) out.push(`【黒配置】${ab.join(", ")}`);
+  if (aw.length) out.push(`【白配置】${aw.join(", ")}`);
+  out.push(`【手順】${mv.length ? mv.join("  ") : "（手順なし）"}`);
+  ta.value = out.join("\n");
+}
+function toSgf() {
+  const ta = document.getElementById('ta'), raw = ta.value.trim();
+  if (!raw) return alert("数字譜を入力してください。");
+  const sm = raw.match(/【路盤】\s*(\d+)/), s = sm ? parseInt(sm[1], 10) : parseInt(document.getElementById('sz').value, 10);
+  const tm = raw.match(/【問題名】\s*(.+)/), title = tm ? tm[1].trim() : "変換詰碁";
+  const bm = raw.match(/【黒配置】\s*(.+)/), wm = raw.match(/【白配置】\s*(.+)/);
+  const ab = bm ? (bm[1].match(/[A-HJ-T]\d{1,2}/gi) || []).map(c => h2p(c, s)).filter(Boolean) : [];
+  const aw = wm ? (wm[1].match(/[A-HJ-T]\d{1,2}/gi) || []).map(c => h2p(c, s)).filter(Boolean) : [];
+  const pi = raw.indexOf("【手順】"), z = pi !== -1 ? raw.slice(pi + 4) : raw.replace(/【(?:路盤|問題名|黒配置|白配置)】.*/g, "");
+  const tr = /(?:(\d+)\s*[:：.\-．]?\s*)?(黒|白|B|W)?\s*([A-HJ-T]\d{1,2})/gi, mvs = [];
+  let col = document.getElementById('fc').value, m;
+  while ((m = tr.exec(z)) !== null) {
+    if (m[2]) col = (m[2] === "黒" || m[2].toUpperCase() === "B") ? "B" : "W";
+    const p = h2p(m[3], s);
+    if (p) { mvs.push(`;${col}[${p}]`); col = (col === "B") ? "W" : "B"; }
+  }
+  if (!ab.length && !aw.length && !mvs.length) return alert("有効な座標が見つかりませんでした。");
+  let sgf = `(;GMFFSZ[${s}]GN[${title}]`;
+  if (ab.length) sgf += "AB" + ab.map(p => `[${p}]`).join("");
+  if (aw.length) sgf += "AW" + aw.map(p => `[${p}]`).join("");
+  ta.value = sgf + mvs.join("") + ")";
+}
+function cp() {
+  const ta = document.getElementById('ta');
+  if (ta.value.trim()) navigator.clipboard.writeText(ta.value).then(() => alert("📋 コピーしました！"));
+}
+</script>
+</body>
+</html>
