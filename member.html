@@ -105,6 +105,16 @@
 }
 <!-- 👈 この終わりのタグのすぐ上に置くと間違いがありません -->
 </style>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f766e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="才美プリント">
+<link rel="apple-touch-icon" href="icon.svg">
+<script>
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+    window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+}
+</script>
 </head>
 <body>
 <div class="container">
@@ -946,6 +956,83 @@ function switchYouTube(button) {
 <!-- ==========================================
      【新設】スポンサー・地域関連リンク セクション
      ========================================== -->
+
+<section id="saibiMemberSystem" style="background:#ffffff;border:2px solid #0d9488;border-radius:10px;padding:16px;margin:16px 0;box-shadow:0 3px 10px rgba(0,0,0,0.08);">
+  <h2 style="margin:0 0 10px;font-size:18px;color:#0f766e;border-bottom:2px solid #ccfbf1;padding-bottom:6px;">
+    🏯 才美塾 会員登録＆6教室統合管理システム（師範・門弟）
+  </h2>
+  <div style="background:#f0fdfa;padding:12px;border-radius:8px;border:1px solid #99f6e4;margin-bottom:14px;">
+    <div style="font-weight:bold;font-size:13px;color:#115e59;margin-bottom:8px;">📝 新規登録（師範・門弟の選択と所属教室）</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;font-size:13px;">
+      <div><label>区分（必須）:<br>
+        <select id="regRole" style="width:100%;padding:6px;border-radius:4px;border:1px solid #5eead4;font-weight:bold;">
+          <option value="門弟" selected>🎓 門弟（生徒・塾生）</option>
+          <option value="師範">🏯 師範（講師・指導者）</option>
+        </select></label></div>
+      <div><label>お名前（必須）:<br><input type="text" id="regName" placeholder="例：因島 太郎" style="width:100%;box-sizing:border-box;padding:6px;border-radius:4px;border:1px solid #cbd5e1;"></label></div>
+      <div><label>ふりがな:<br><input type="text" id="regKana" placeholder="例：いんのしま たろう" style="width:100%;box-sizing:border-box;padding:6px;border-radius:4px;border:1px solid #cbd5e1;"></label></div>
+      <div><label>棋力・段級位:<br>
+        <select id="regRank" style="width:100%;padding:6px;border-radius:4px;border:1px solid #cbd5e1;">
+          <option value="入門">入門</option><option value="30級〜20級">30級〜20級</option><option value="19級〜10級">19級〜10級</option>
+          <option value="9級〜1級" selected>9級〜1級</option><option value="初段">初段</option><option value="二段">二段</option>
+          <option value="三段">三段</option><option value="四段">四段</option><option value="五段以上">五段以上</option>
+        </select></label></div>
+      <div><label>連絡先・メモ:<br><input type="text" id="regMemo" placeholder="電話番号や備考" style="width:100%;box-sizing:border-box;padding:6px;border-radius:4px;border:1px solid #cbd5e1;"></label></div>
+    </div>
+    <div style="margin-top:8px;font-size:13px;">
+      <span style="font-weight:bold;color:#115e59;">所属教室（複数選択可）:</span><br>
+      <div id="regRoomsBox" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;">
+        <label><input type="checkbox" value="才美塾のひろば" checked> 才美塾のひろば</label>
+        <label><input type="checkbox" value="鏡浦町の歴史"> 鏡浦町の歴史</label>
+        <label><input type="checkbox" value="棋譜ならべ"> 棋譜ならべ</label>
+        <label><input type="checkbox" value="詰碁"> 詰碁</label>
+        <label><input type="checkbox" value="プリンター"> プリンター</label>
+        <label><input type="checkbox" value="本校"> 本校</label>
+      </div>
+    </div>
+    <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+      <button type="button" onclick="registerSaibiMember()" style="background:#0d9488;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;cursor:pointer;">✅ 登録する</button>
+      <button type="button" onclick="openGoogleFormLink()" style="background:#2563eb;color:#fff;border:none;padding:8px 12px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer;">🌐 Googleフォーム（B方式）を開く</button>
+      <button type="button" onclick="setGoogleFormUrl()" style="background:#64748b;color:#fff;border:none;padding:8px 10px;border-radius:6px;font-size:12px;cursor:pointer;">⚙️ フォームURL設定</button>
+    </div>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;align-items:center;font-size:12px;">
+    <b>教室別表示:</b>
+    <button type="button" class="room-tab" onclick="filterMembers('ALL')" style="padding:4px 8px;border-radius:4px;border:1px solid #0d9488;background:#0d9488;color:#fff;cursor:pointer;">すべて</button>
+    <button type="button" class="room-tab" onclick="filterMembers('才美塾のひろば')" style="padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;">才美塾のひろば</button>
+    <button type="button" class="room-tab" onclick="filterMembers('鏡浦町の歴史')" style="padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;">鏡浦町の歴史</button>
+    <button type="button" class="room-tab" onclick="filterMembers('棋譜ならべ')" style="padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;">棋譜ならべ</button>
+    <button type="button" class="room-tab" onclick="filterMembers('詰碁')" style="padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;">詰碁</button>
+    <button type="button" class="room-tab" onclick="filterMembers('プリンター')" style="padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;">プリンター</button>
+    <button type="button" class="room-tab" onclick="filterMembers('本校')" style="padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;">本校</button>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;align-items:center;font-size:12px;">
+    <select id="filterRoleSel" onchange="renderMemberTable()" style="padding:4px;border-radius:4px;">
+      <option value="ALL">区分：すべて（師範・門弟）</option>
+      <option value="師範">🏯 師範のみ</option>
+      <option value="門弟">🎓 門弟のみ</option>
+    </select>
+    <input type="text" id="searchMemberInput" oninput="renderMemberTable()" placeholder="名前・番号・メモで検索..." style="padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;">
+    <button type="button" onclick="exportMembersCsv()" style="background:#059669;color:#fff;border:none;padding:5px 10px;border-radius:4px;font-weight:bold;cursor:pointer;">📥 CSV保存（Excel/スプシ用）</button>
+    <label style="background:#d97706;color:#fff;padding:5px 10px;border-radius:4px;font-weight:bold;cursor:pointer;">📤 CSV取込<input type="file" accept=".csv" onchange="importMembersCsv(event)" style="display:none;"></label>
+  </div>
+  <div style="overflow-x:auto;">
+    <table style="width:100%;border-collapse:collapse;font-size:12px;text-align:left;">
+      <thead><tr style="background:#e2e8f0;color:#1e293b;">
+        <th style="padding:6px;border:1px solid #cbd5e1;">番号</th>
+        <th style="padding:6px;border:1px solid #cbd5e1;">区分</th>
+        <th style="padding:6px;border:1px solid #cbd5e1;">お名前（ふりがな）</th>
+        <th style="padding:6px;border:1px solid #cbd5e1;">所属教室</th>
+        <th style="padding:6px;border:1px solid #cbd5e1;">棋力</th>
+        <th style="padding:6px;border:1px solid #cbd5e1;">出席</th>
+        <th style="padding:6px;border:1px solid #cbd5e1;">連絡先・メモ</th>
+        <th style="padding:6px;border:1px solid #cbd5e1;">操作</th>
+      </tr></thead>
+      <tbody id="memberTableBody"></tbody>
+    </table>
+  </div>
+</section>
+
 <section class="links-section" style="margin-top: 40px;">  
 
   <!-- 🏆 スポンサーエリア（今後増えたらここに追加） -->
@@ -1288,6 +1375,142 @@ function switchYouTube(button) {
         <a href="index.html" style="color: #b35900; text-decoration: none; font-weight: bold;">← トップページに戻る</a>
         <p style="font-size: 12px; color: #999; margin-top: 15px;">&copy; 才美塾囲碁教室生徒のページ</p>
     </footer>
+<script src="counter.js"></script>
+
+<script id="saibiMemberScript">
+const MEMBER_KEY = "saibi_members_v1";
+const GFORM_KEY = "saibi_google_form_url";
+let currentRoomFilter = "ALL";
+
+function getMembers() {
+  try { return JSON.parse(localStorage.getItem(MEMBER_KEY) || "[]"); } catch(e) { return []; }
+}
+function saveMembers(list) {
+  localStorage.setItem(MEMBER_KEY, JSON.stringify(list));
+  renderMemberTable();
+}
+function registerSaibiMember() {
+  const role = document.getElementById("regRole").value;
+  const name = document.getElementById("regName").value.trim();
+  const kana = document.getElementById("regKana").value.trim();
+  const rank = document.getElementById("regRank").value;
+  const memo = document.getElementById("regMemo").value.trim();
+  const rooms = Array.from(document.querySelectorAll("#regRoomsBox input:checked")).map(c => c.value);
+  if (!name) return alert("お名前を入力してください。");
+  if (!rooms.length) return alert("所属教室を1つ以上チェックしてください。");
+  const list = getMembers();
+  const num = "SB-" + String(list.length + 1).padStart(3, "0");
+  list.unshift({
+    id: Date.now(), code: num, role, name, kana, rooms, rank,
+    attend: 1, lastDate: new Date().toISOString().slice(0, 10), memo
+  });
+  saveMembers(list);
+  document.getElementById("regName").value = "";
+  document.getElementById("regKana").value = "";
+  document.getElementById("regMemo").value = "";
+  alert(`✅ ${role}「${name}」様（${num}）を登録しました！`);
+}
+function filterMembers(room) {
+  currentRoomFilter = room;
+  document.querySelectorAll(".room-tab").forEach(b => {
+    const active = (room === "ALL" && b.textContent === "すべて") || b.textContent === room;
+    b.style.background = active ? "#0d9488" : "#f8fafc";
+    b.style.color = active ? "#fff" : "#1e293b";
+  });
+  renderMemberTable();
+}
+function addAttend(id) {
+  const list = getMembers();
+  const m = list.find(x => x.id === id);
+  if (m) { m.attend = (m.attend || 0) + 1; m.lastDate = new Date().toISOString().slice(0, 10); saveMembers(list); }
+}
+function delMember(id) {
+  if (!confirm("この登録データを削除しますか？")) return;
+  saveMembers(getMembers().filter(x => x.id !== id));
+}
+function renderMemberTable() {
+  const tbody = document.getElementById("memberTableBody");
+  if (!tbody) return;
+  const roleF = document.getElementById("filterRoleSel").value;
+  const kw = document.getElementById("searchMemberInput").value.trim().toLowerCase();
+  const list = getMembers().filter(m => {
+    if (currentRoomFilter !== "ALL" && !(m.rooms || []).includes(currentRoomFilter)) return false;
+    if (roleF !== "ALL" && m.role !== roleF) return false;
+    if (kw && !(`${m.code} ${m.name} ${m.kana} ${m.memo}`).toLowerCase().includes(kw)) return false;
+    return true;
+  });
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="8" style="padding:12px;text-align:center;color:#64748b;">該当する登録データがありません（上のフォームから新規登録できます）</td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.map(m => {
+    const badge = m.role === "師範"
+      ? '<span style="background:#fef3c7;color:#92400e;border:1px solid #f59e0b;padding:2px 6px;border-radius:4px;font-weight:bold;">🏯 師範</span>'
+      : '<span style="background:#e0f2fe;color:#075985;border:1px solid #38bdf8;padding:2px 6px;border-radius:4px;font-weight:bold;">🎓 門弟</span>';
+    return `<tr>
+      <td style="padding:6px;border:1px solid #cbd5e1;">${m.code || ""}</td>
+      <td style="padding:6px;border:1px solid #cbd5e1;">${badge}</td>
+      <td style="padding:6px;border:1px solid #cbd5e1;"><b>${m.name}</b><br><span style="font-size:10px;color:#64748b;">${m.kana || ""}</span></td>
+      <td style="padding:6px;border:1px solid #cbd5e1;">${(m.rooms || []).join("・")}</td>
+      <td style="padding:6px;border:1px solid #cbd5e1;">${m.rank || ""}</td>
+      <td style="padding:6px;border:1px solid #cbd5e1;">${m.attend || 0}回<br><span style="font-size:10px;color:#64748b;">${m.lastDate || ""}</span></td>
+      <td style="padding:6px;border:1px solid #cbd5e1;">${m.memo || ""}</td>
+      <td style="padding:6px;border:1px solid #cbd5e1;white-space:nowrap;">
+        <button type="button" onclick="addAttend(${m.id})" style="background:#0284c7;color:#fff;border:none;padding:3px 6px;border-radius:4px;cursor:pointer;">+出席</button>
+        <button type="button" onclick="delMember(${m.id})" style="background:#dc2626;color:#fff;border:none;padding:3px 6px;border-radius:4px;cursor:pointer;">削除</button>
+      </td>
+    </tr>`;
+  }).join("");
+}
+function exportMembersCsv() {
+  const list = getMembers();
+  if (!list.length) return alert("保存する登録データがありません。");
+  const rows = [["会員番号","区分","お名前","ふりがな","所属教室","棋力","出席回数","最終参加日","連絡先メモ"]];
+  list.forEach(m => rows.push([m.code, m.role, m.name, m.kana, (m.rooms||[]).join("/"), m.rank, m.attend, m.lastDate, m.memo]));
+  const csv = "﻿" + rows.map(r => r.map(v => `"${String(v||"").replace(/"/g,'""')}"`).join(",")).join("
+");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], {type:"text/csv"}));
+  a.download = "saibi_members_" + new Date().toISOString().slice(0,10) + ".csv";
+  a.click();
+}
+function importMembersCsv(ev) {
+  const file = ev.target.files;
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    const lines = reader.result.split(/?
+/).filter(Boolean).slice(1);
+    const list = getMembers();
+    lines.forEach((ln, idx) => {
+      const cols = ln.split(",").map(c => c.replace(/^"|"$/g, "").trim());
+      if (cols) {
+        list.unshift({
+          id: Date.now() + idx, code: cols || ("SB-" + (list.length + 1)),
+          role: (cols === "師範") ? "師範" : "門弟",
+          name: cols, kana: cols || "", rooms: (cols || "才美塾のひろば").split("/"),
+          rank: cols || "入門", attend: parseInt(cols||"0",10), lastDate: cols || "", memo: cols || ""
+        });
+      }
+    });
+    saveMembers(list);
+    alert(`✅ ${lines.length}件のCSVデータを取り込みました！`);
+  };
+  reader.readAsText(file, "UTF-8");
+}
+function setGoogleFormUrl() {
+  const cur = localStorage.getItem(GFORM_KEY) || "";
+  const url = prompt("連携するGoogleフォームのURLを入力してください（スプレッドシート自動集計用）:", cur);
+  if (url !== null) { localStorage.setItem(GFORM_KEY, url.trim()); alert("✅ GoogleフォームURLを保存しました！"); }
+}
+function openGoogleFormLink() {
+  const url = localStorage.getItem(GFORM_KEY);
+  if (!url) return alert("先に右隣の「⚙️ フォームURL設定」からGoogleフォームのURLを登録してください。");
+  window.open(url, "_blank");
+}
+window.addEventListener("DOMContentLoaded", renderMemberTable);
+</script>
+
 </body>
 </html>
 

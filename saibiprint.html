@@ -264,6 +264,16 @@
             }
         }
     </style>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f766e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="才美プリント">
+<link rel="apple-touch-icon" href="icon.svg">
+<script>
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+    window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+}
+</script>
 </head>
 <body>
 
@@ -601,7 +611,7 @@ function computeFiveStepPlan(totalMoves, forcedMode) {
 }
 function renderDiagramSvg(game, snapshots, range, divisions, numberMode) {
     const sz = game.size;
-    const svgSize = divisions === 2 ? 880 : (divisions === 4 ? 435 : 298);
+    const svgSize = divisions === 2 ? 850 : (divisions === 4 ? 418 : 288);
     const margin = Math.round(svgSize / (sz * 1.48));
     const step = (svgSize - margin * 2) / (sz - 1);
     const stoneR = step * 0.47;
@@ -725,7 +735,7 @@ function buildA4PageHtml(game, snap, ranges, div, nm, side) {
         return `<div class="diagram-card"><div class="diagram-board-wrap">${res.svg}</div><div class="diagram-side-info"><div class="diagram-label"><span><span class="diagram-badge">第${r.figNum}譜</span> ${rt}</span><span style="font-size:10.5px;color:#475569;">${sb}</span></div><div class="diagram-note">${nHtml}</div>${cHtml}</div></div>`;
     }).join("");
     const bm = parseInt(document.getElementById('bindingMarginSelect')?.value || "19", 10), om = 8, isF = side.includes("表面");
-    return `<div class="a4-sheet" style="padding:8mm ${isF ? om : bm}mm 8mm ${isF ? bm : om}mm;"><div class="sheet-header"><div><div class="sheet-title">${game.eventName}（全${game.moves.length}手・${div}分割）</div><div class="sheet-meta" style="line-height:1.45; margin-top:2px;"><div>⚫黒番：${game.blackName}　⚪白番：${game.whiteName}</div><div>${game.dateStr}　${game.komiStr}　${game.resultStr}</div></div></div><div class="name-box" style="font-size:13px; padding:5px 10px;">　　　年　　月　　日 ／ 名前：　　　　　　　　　</div></div><div class="diagrams-grid grid-div-${div}">${cards}</div><div class="sheet-footer"><span>※ 番号のない石は前の譜までに打たれた既出石です（アゲハマ自動処理済み）</span><span>A4両面1枚プリント【${side}】（左閉じしろ ${bm}mm）</span></div></div>`;
+    return `<div class="a4-sheet" style="padding:11mm ${isF ? om : bm}mm 9mm ${isF ? bm : om}mm;"><div class="sheet-header"><div><div class="sheet-title" style="font-size:${(game.eventName.length > 26 ? 11 : (game.eventName.length > 18 ? 12.5 : 14))}px !important; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${game.eventName}（全${game.moves.length}手・${div}分割）</div><div class="sheet-meta" style="line-height:1.45; margin-top:2px;"><div>⚫黒番：${game.blackName}　⚪白番：${game.whiteName}</div><div>${game.dateStr}　${game.komiStr}　${game.resultStr}</div></div></div><div class="name-box" style="font-size:13px; padding:5px 10px;">　　　年　　月　　日 ／ 名前：　　　　　　　　　</div></div><div class="diagrams-grid grid-div-${div}">${cards}</div><div class="sheet-footer"><span>※ 番号のない石は前の譜までに打たれた既出石です（アゲハマ自動処理済み）</span><span>A4両面1枚プリント【${side}】（左閉じしろ ${bm}mm）</span></div></div>`;
 }
 async function downloadCurrentSgf() {
     const a = document.getElementById('sgfPasteTextarea');
@@ -821,5 +831,6 @@ window.addEventListener('beforeprint', prepareCleanPrint);
 window.addEventListener('afterprint', restoreAfterPrint);
 
 </script>
+<script src="counter.js"></script>
 </body>
 </html>

@@ -4,12 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>因島鏡浦の歴史訪問</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f766e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="才美プリント">
+<link rel="apple-touch-icon" href="icon.svg">
+<script>
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+    window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+}
+</script>
 </head>
 <body style="font-family: sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; color: #333; background-color: #fcfaf2;">
 
     <!-- ヘッダー部分（タイトルとキャッチコピー） -->
     <header style="margin-bottom: 40px; border-bottom: 2px solid #b35900; padding-bottom: 20px;">
-        <h1 style="color: #4a2700; margin-bottom: 5px;">鏡浦町のページへようこそ！</h1>
+        <h1 style="color: #4a2700; margin-bottom: 5px;" id="komonjo">鏡浦町のページへようこそ！</h1>
         <p style="color: #666; margin-top: 0; font-size: 16px;">解き明かされる歴史の新事実</p>
 
         <div style="text-align: left; display: flex; flex-direction: column; justify-content: center; gap: 4px; margin-top: 20px; background-color: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
@@ -28,12 +38,13 @@
     <main>
                 <!-- １．江戸時代からの歴史 -->
         <section style="margin-bottom: 40px; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-            <h2 style="color: #b35900; border-left: 5px solid #b35900; padding-left: 10px; margin-top: 0;">１．江戸時代からの歴史</h2>
+            <h2 style="color: #b35900; border-left: 5px solid #b35900; padding-left: 10px; margin-top: 0;">１．江戸時代からの歴史            <a href="igogenerator.html" target="_blank" rel="noopener noreferrer" class="btn-nav">
+                ✨ 囲碁・棋譜並べ＆解説作成ジェネレーターを開く</h2>
             <p style="font-size: 16px; font-weight: bold; color: #4a2700; margin-bottom: 15px;">
                 🌊 漁村「能地」から始まった鏡浦のルーツ
             </p>
             <p>
-                鏡浦の歴史の始まりは、三原城の近くで漁村の能地（のうじ）から始まると言われています。
+                鏡浦港の歴史の始まりは、三原城の近くで漁村の能地（のうじ）から始まると言われています。
             </p>
 
             <!-- 💡 古文書の移住記録一覧表 -->
@@ -228,5 +239,6 @@
         <p style="font-size: 12px; color: #999; margin-top: 15px;">&copy; 因島鏡浦の歴史訪問</p>
     </footer>
 
+<script src="counter.js"></script>
 </body>
 </html>
