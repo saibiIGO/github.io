@@ -20,6 +20,14 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
     <!-- ヘッダー部分（タイトルとキャッチコピー） -->
     <header style="margin-bottom: 40px; border-bottom: 2px solid #b35900; padding-bottom: 20px;">
         <h1 style="color: #4a2700; margin-bottom: 5px;" id="komonjo">鏡浦町のページへようこそ！</h1>
+
+    <!-- ▼ English とまったく同じ枠・色・サイズで揃えた来塾者数カウンター ▼ -->
+<span style="display: inline-flex; align-items: center; margin-left: 6px; font-size: 12px; color: #b35900; font-weight: bold; border: 1px solid #b35900; padding: 3px 8px; border-radius: 4px; background-color: #ffffff; white-space: nowrap; vertical-align: middle;">
+    <span style="display: inline-block; width: 8px; height: 8px; background: #222; border-radius: 50%; margin-right: 2px;"></span>
+    <span style="display: inline-block; width: 8px; height: 8px; background: #fff; border: 1px solid #555; border-radius: 50%; margin-right: 5px;"></span>
+    受講者数：<span id="count" style="margin-left: 1px;">...</span>
+</span>
+
         <p style="color: #666; margin-top: 0; font-size: 16px;">解き明かされる歴史の新事実</p>
 
         <div style="text-align: left; display: flex; flex-direction: column; justify-content: center; gap: 4px; margin-top: 20px; background-color: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
@@ -240,6 +248,17 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
         <a href="index.html" style="color: #b35900; text-decoration: none; font-weight: bold;">← トップページに戻る</a>
         <p style="font-size: 12px; color: #999; margin-top: 15px;">&copy; 因島鏡浦の歴史訪問</p>
     </footer>
-
+          // ▼ 最後の 'room1' を教室ごとの英数字（例: innoshima, onomichi など）に変えるだけ
+    <script>
+      fetch('https://abacus.jasoncameron.dev/hit/saibiigo-kyoshitu/komonjo')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('count').textContent = data.value.toLocaleString();
+        })
+        .catch(() => {
+          document.getElementById('count').textContent = '---';
+        });
+    </script>
 </body>
 </html>
+

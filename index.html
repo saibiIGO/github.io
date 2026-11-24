@@ -164,7 +164,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
 <span style="display: inline-flex; align-items: center; margin-left: 6px; font-size: 12px; color: #b35900; font-weight: bold; border: 1px solid #b35900; padding: 3px 8px; border-radius: 4px; background-color: #ffffff; white-space: nowrap; vertical-align: middle;">
     <span style="display: inline-block; width: 8px; height: 8px; background: #222; border-radius: 50%; margin-right: 2px;"></span>
     <span style="display: inline-block; width: 8px; height: 8px; background: #fff; border: 1px solid #555; border-radius: 50%; margin-right: 5px;"></span>
-    来塾者数：<span id="count" style="margin-left: 1px;">...</span>
+    受講者数：<span id="count" style="margin-left: 1px;">...</span>
 </span>
 
 
@@ -1352,7 +1352,7 @@ function switchYouTube(button) {
     </footer>
     
 
-      // ▼ 最後の 'room1' を教室ごとの英数字（例: innoshima, onomichi など）に変えるだけ
+      // ▼ 最後の 'index' を教室ごとの英数字（例: innoshima, onomichi など）に変えるだけ
     <script>
       fetch('https://abacus.jasoncameron.dev/hit/saibiigo-kyoshitu/index')
         .then(response => response.json())
@@ -1363,7 +1363,6 @@ function switchYouTube(button) {
           document.getElementById('count').textContent = '---';
         });
     </script>
-    
 </body>
 </html>
 

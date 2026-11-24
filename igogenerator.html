@@ -601,6 +601,12 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
                     <div class="section-title">自動再生の速度：<span id="speedDisplay">10</span> 秒 / 1手</div>
                     <input type="range" id="inputSpeed" min="1" max="10" value="10" style="width: 100%; cursor: pointer;">
                 </div>
+                <!-- ▼ English とまったく同じ枠・色・サイズで揃えた来塾者数カウンター ▼ -->
+<span style="display: inline-flex; align-items: center; margin-left: 6px; font-size: 12px; color: #b35900; font-weight: bold; border: 1px solid #b35900; padding: 3px 8px; border-radius: 4px; background-color: #ffffff; white-space: nowrap; vertical-align: middle;">
+    <span style="display: inline-block; width: 8px; height: 8px; background: #222; border-radius: 50%; margin-right: 2px;"></span>
+    <span style="display: inline-block; width: 8px; height: 8px; background: #fff; border: 1px solid #555; border-radius: 50%; margin-right: 5px;"></span>
+    受講者数：<span id="count" style="margin-left: 1px;">...</span>
+</span>
             </div>
 
             <!-- 📝 解説入力（2列ぶち抜きで広く使いやすく） -->
@@ -1516,6 +1522,20 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
         // 9. 初期起動イベント
         window.addEventListener('DOMContentLoaded', initBoard);
     </script>
+    
+          // ▼ 最後の 'index' を教室ごとの英数字（例: innoshima, onomichi など）に変えるだけ
+    <script>
+      fetch('https://abacus.jasoncameron.dev/hit/saibiigo-kyoshitu/igogenerator')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('count').textContent = data.value.toLocaleString();
+        })
+        .catch(() => {
+          document.getElementById('count').textContent = '---';
+        });
+    </script>
+</body>
+</html>
 </body>
 </html>
 

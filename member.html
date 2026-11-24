@@ -127,6 +127,12 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
             <!-- 生徒専用ページの看板（四角い枠線で囲むデザイン） -->
     <h1 style="text-align: center; color: #007bff; margin-top: 0; font-size: 1.8rem; font-weight: bold; border: 3px double #007bff; padding: 15px 10px; border-radius: 6px; background-color: #ffffff;">
         才美塾 ネット囲碁教室
+        <!-- ▼ English とまったく同じ枠・色・サイズで揃えた来塾者数カウンター ▼ -->
+<span style="display: inline-flex; align-items: center; margin-left: 6px; font-size: 12px; color: #b35900; font-weight: bold; border: 1px solid #b35900; padding: 3px 8px; border-radius: 4px; background-color: #ffffff; white-space: nowrap; vertical-align: middle;">
+    <span style="display: inline-block; width: 8px; height: 8px; background: #222; border-radius: 50%; margin-right: 2px;"></span>
+    <span style="display: inline-block; width: 8px; height: 8px; background: #fff; border: 1px solid #555; border-radius: 50%; margin-right: 5px;"></span>
+    受講者数：<span id="count" style="margin-left: 1px;">...</span>
+</span>
     </h1>
 
     <!-- CONCEPT（教室の理念や概要） -->
@@ -140,6 +146,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
     <!-- 💡 【最上部】メッセージロゴ枠（画像大きめ・高さ極小版） -->
     <div style="width: 100%; text-align: center; margin-bottom: 35px; padding: 12px 20px; background-color: #ffffff; border-top: 4px solid #b35900; border-bottom: 4px solid #b35900; box-shadow: 0 4px 12px rgba(0,0,0,0.02); box-sizing: border-box; position: relative;">
             <!-- CONCEPT（教室の理念や概要） -->
+            
     <div style="margin: 20px 0; line-height: 1.8; color: #444;">
 
         <p style="margin: 0;">
@@ -150,6 +157,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
     <a href="en.html" style="font-size: 13px; color: #b35900; text-decoration: none; font-weight: bold; border: 1px solid #b35900; padding: 3px 6px; border-radius: 4px; background-color: #ffffff; white-space: nowrap;">
         🌐 English
     </a>
+    
         <!-- ① コンセプトタグ -->
         <div style="position: absolute; top: -9px; left: 50%; transform: translateX(-50%); background-color: #b35900; color: #fff; font-size: 15px; padding: 2px 12px; border-radius: 3px; letter-spacing: 0.15em; font-weight: bold;">📌 CONCEPT（教室の概要）</div>
         
@@ -1479,7 +1487,8 @@ function importMembersCsv(ev) {
   if (!file) return;
   const reader = new FileReader();
   reader.onload = () => {
-    const lines = reader.result.split(/?
+    const lines = reader.result.split(/
+?
 /).filter(Boolean).slice(1);
     const list = getMembers();
     lines.forEach((ln, idx) => {
@@ -1511,6 +1520,17 @@ function openGoogleFormLink() {
 window.addEventListener("DOMContentLoaded", renderMemberTable);
 </script>
 
+      // ▼ 最後の 'index' を教室ごとの英数字（例: innoshima, onomichi など）に変えるだけ
+    <script>
+      fetch('https://abacus.jasoncameron.dev/hit/saibiigo-kyoshitu/member')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('count').textContent = data.value.toLocaleString();
+        })
+        .catch(() => {
+          document.getElementById('count').textContent = '---';
+        });
+    </script>
 </body>
 </html>
 
