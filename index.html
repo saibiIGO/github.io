@@ -162,9 +162,11 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
         <!-- もともとある english のリンクなど -->
 
 <!-- ▼ すぐ後ろに置くコンパクトなカウンター ▼ -->
+
 <span style="display: inline-block; margin-left: 15px; padding: 4px 12px; border: 1px solid #8b5a2b; background-color: #fdfaf2; border-radius: 4px; font-size: 14px; color: #333; vertical-align: middle;">
-  通学者数：<strong id="count" style="font-size: 16px; color: #222;">...</strong> 名
+  ご来訪者数：<strong id="count" style="font-size: 16px; color: #222;">...</strong> 名様
 </span>
+
 
     </p>
     
@@ -1346,16 +1348,24 @@ function switchYouTube(button) {
 </script>
 </div>
 </div> <!-- 💡 800pxの全体コンテナをここで閉じます -->
-    <!-- フッター部分（トップに戻るリンクなど） -->
-    <!-- フッター部分（トップに戻るリンクなど） -->
+
+<!-- フッター部分（トップに戻るリンクなど） -->
     <footer style="margin-top: 50px; text-align: center; border-top: 1px solid #ddd; padding-top: 20px;">
         <a href="index.html" style="color: #b35900; text-decoration: none; font-weight: bold;">← トップページに戻る</a>
-
-        <!-- ★ここにコピーしたカウンターの文字を貼り付けます★ -->
-
-        <p style="font-size: 12px; color: #999; margin-top: 15px;">&copy; 才美塾囲碁教室</p>
     </footer>
+    
+    <script>
+      fetch('https://api.counterapi.dev/v2/saibiigos-team-6335/first-counter-6335/up')
+        .then(response => response.json())
+        .then(result => {
+          document.getElementById('count').textContent = result.data.up_count.toLocaleString();
+        })
+        .catch(() => {
+          document.getElementById('count').textContent = '---';
+        });
+    </script>
 </body>
 </html>
+
 
 
