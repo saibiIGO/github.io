@@ -156,20 +156,17 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
     <!-- CONCEPT（教室の理念や概要） -->
     <div style="margin: 20px 0; line-height: 1.2; color: #444;">
         <p style="font-weight: bold; color: #b26f1a; font-size: 1.1rem; margin-bottom: 10px;">📌 CONCEPT（📖 教室の概要）      
-             <!-- 🌐 英語版への切り替えリンク（地頭力のすぐ右側に配置） -->
+<!-- 🌐 英語版への切り替えリンク（地頭力のすぐ右側に配置） -->
     <a href="en.html" style="font-size: 12px; color: #b35900; text-decoration: none; font-weight: bold; border: 1px solid #b35900; padding: 3px 8px; border-radius: 4px; background-color: #ffffff; white-space: nowrap;">
         🌐 English</a>
-        <!-- もともとある english のリンクなど -->
 
-<!-- ▼ すぐ後ろに置くコンパクトなカウンター ▼ -->
-
-<span style="display: inline-block; margin-left: 15px; padding: 4px 12px; border: 1px solid #8b5a2b; background-color: #fdfaf2; border-radius: 4px; font-size: 14px; color: #333; vertical-align: middle;">
-  ご来訪者数：<strong id="count" style="font-size: 16px; color: #222;">...</strong> 名様
+<!-- ▼ English とまったく同じ枠・色・サイズで揃えた来塾者数カウンター ▼ -->
+<span style="display: inline-flex; align-items: center; margin-left: 6px; font-size: 12px; color: #b35900; font-weight: bold; border: 1px solid #b35900; padding: 3px 8px; border-radius: 4px; background-color: #ffffff; white-space: nowrap; vertical-align: middle;">
+    <span style="display: inline-block; width: 8px; height: 8px; background: #222; border-radius: 50%; margin-right: 2px;"></span>
+    <span style="display: inline-block; width: 8px; height: 8px; background: #fff; border: 1px solid #555; border-radius: 50%; margin-right: 5px;"></span>
+    来塾者数：<span id="count" style="margin-left: 1px;">...</span>
 </span>
 
-
-    </p>
-    
 
         <p style="margin: 0;">
             尾道市因島の『さいび塾（才美塾）囲碁教室』です。はじめて囲碁にふれる子どもたちから、見守る先輩たちまで楽しく囲碁を学んでいます。無意識のうちに自然と集中力や考える力が身につきます。
@@ -1354,18 +1351,23 @@ function switchYouTube(button) {
         <a href="index.html" style="color: #b35900; text-decoration: none; font-weight: bold;">← トップページに戻る</a>
     </footer>
     
+
+      // ▼ 最後の 'room1' を教室ごとの英数字（例: innoshima, onomichi など）に変えるだけ
     <script>
-      fetch('https://api.counterapi.dev/v2/saibiigos-team-6335/first-counter-6335/up')
+      fetch('https://abacus.jasoncameron.dev/hit/saibiigo-kyoshitu/index')
         .then(response => response.json())
-        .then(result => {
-          document.getElementById('count').textContent = result.data.up_count.toLocaleString();
+        .then(data => {
+          document.getElementById('count').textContent = data.value.toLocaleString();
         })
         .catch(() => {
           document.getElementById('count').textContent = '---';
         });
     </script>
+    
 </body>
 </html>
+
+
 
 
 
