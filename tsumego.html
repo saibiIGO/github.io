@@ -1604,6 +1604,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
 
         // 新規問題作成フロー
         function changeBoardSizeDirect(val){mode="setup";currentProblem=null;boardSize=parseInt(val,10)||19;boardStones=[];if(saveFormArea)saveFormArea.style.display="none";initBoard();renderLibraryList();setBanner("【問題作成モード】"+boardSize+"路盤に切り替えました","judge-create");}
+function changeBoardSizeDirect(val){mode="setup";currentProblem=null;boardSize=parseInt(val,10)||19;boardStones=[];if(saveFormArea)saveFormArea.style.display="none";initBoard();renderLibraryList();setBanner("【問題作成モード】"+boardSize+"路盤に切り替えました","judge-create");}document.querySelectorAll("input[name=createColor]").forEach(r=>r.addEventListener("change",()=>{if(mode!=="record")mode="setup"}));
 createBoardSize.addEventListener('change', () => {
             mode = "setup";
             currentProblem = null;
