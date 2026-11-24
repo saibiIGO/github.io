@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>囲碁教室 カウンター</title>
+</head>
+<body>
+
+  <!-- 囲碁教室風のカウンター表示 -->
+  <div style="text-align: center; padding: 15px; border: 2px solid #8b5a2b; background-color: #fdfaf2; border-radius: 8px; max-width: 280px; margin: 20px auto;">
+    <p style="margin: 0 0 8px; font-size: 14px; color: #555;">これまでのご来訪者数</p>
+    <p style="margin: 0; font-size: 26px; font-weight: bold; color: #222;">
+      <span id="count">読み込み中...</span> <span style="font-size: 14px;">名様</span>
+    </p>
+  </div>
+            <!-- ▼ English とまったく同じ枠・色・サイズで揃えた来塾者数カウンター ▼ -->
+<span style="display: inline-flex; align-items: center; margin-left: 6px; font-size: 12px; color: #b35900; font-weight: bold; border: 1px solid #b35900; padding: 3px 8px; border-radius: 4px; background-color: #ffffff; white-space: nowrap; vertical-align: middle;">
+    <span style="display: inline-block; width: 8px; height: 8px; background: #222; border-radius: 50%; margin-right: 2px;"></span>
+    <span style="display: inline-block; width: 8px; height: 8px; background: #fff; border: 1px solid #555; border-radius: 50%; margin-right: 5px;"></span>
+    受講者数：<span id="count" style="margin-left: 1px;">...</span>
+</span>
+  <script>
+    // ページが開かれたときに自動で裏側の counter.php を呼び出す
+    fetch('counter.php')
+      .then(response => response.text())
+      .then(num => {
+        document.getElementById('count').textContent = Number(num).toLocaleString();
+      })
+      .catch(() => {
+        document.getElementById('count').textContent = '---';
+      });
+  </script>
+
+
+      // ▼ 最後の 'index' を教室ごとの英数字（例: innoshima, onomichi など）に変えるだけ
+    <script>
+      fetch('https://abacus.jasoncameron.dev/hit/saibiigo-kyoshitu/saibiprint')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('count').textContent = data.value.toLocaleString();
+        })
+        .catch(() => {
+          document.getElementById('count').textContent = '---';
+        });
+    </script>
+</body>
+</html>
+
