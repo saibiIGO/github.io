@@ -1387,16 +1387,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
             const existing = boardStones.find(s => s.x === x && s.y === y);
 
             // A. 問題図配置モード（setup）
-            if (mode === "setup") {
-                if (existing) {
-                    boardStones = boardStones.filter(s => !(s.x === x && s.y === y));
-                } else {
-                    const color = 'B';
-                    boardStones.push({ x: x, y: y, color: color, moveNum: 0 });
-                }
-                renderBoard();
-                return;
-            }
+            if (mode === "setup") { if (!existing) { boardStones.push({ x: x, y: y, color: "B", moveNum: 0 }); } else if (existing.color === "B") { existing.color = "W"; } else { boardStones = boardStones.filter(s => !(s.x === x && s.y === y)); } renderBoard(); return; }
 
                      // B. 正解手順記録モード（record：黒先・白先・四隅の複数①ルート対応）
             if (mode === "record") {
