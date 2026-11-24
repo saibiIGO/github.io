@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>囲碁・詰碁＆問題保存庫</title>    
+    <title>詰碁・問題＆保存庫</title>    
+
     <style>
         body { font-family: 'Segoe UI', Meiryo, sans-serif; background-color: #f4f1ea; color: #333; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
         h1 { margin: 0 0 5px 0; color: #2c3e50; font-size: 24px; }
@@ -224,7 +225,9 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
 </head>
 <body>
 
-    <h1>🧩 囲碁・詰碁＆問題保存庫</h1>
+    <h1>🧩 詰碁・問題＆保存庫</h1>
+
+
     <p class="subtitle">必須問題の演習・正誤判定・自作問題の保存ライブラリ</p>
 
     <!-- 🏁 【碁盤の上部エリア】解き直し・正解表示・操作マニュアルバー（横幅520pxで碁盤と統一） -->
@@ -268,10 +271,18 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
             <button type="button" onclick="location.href='./index.html'" style="padding: 6px 14px; font-size: 13px; font-weight: bold; background: #1e293b; color: #ffffff; border: none; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);">
                 🏠 トップページへ戻る
             </button>
+
       <!-- 🏠 才美プリンターへ移動バー（独立配置・くっきり視認性） -->
                     <button type="button" onclick="location.href='./saibiprint.html'" style="padding: 6px 14px; font-size: 13px; font-weight: bold; background: #b45309; color: #ffffff; border: none; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);">
                 🏠 才美プリンターページへ
+                
             </button>
+            <!-- ▼ English とまったく同じ枠・色・サイズで揃えた来塾者数カウンター ▼ -->
+<span style="display: inline-flex; align-items: center; margin-left: 6px; font-size: 12px; color: #b35900; font-weight: bold; border: 1px solid #b35900; padding: 3px 8px; border-radius: 4px; background-color: #ffffff; white-space: nowrap; vertical-align: middle;">
+    <span style="display: inline-block; width: 8px; height: 8px; background: #222; border-radius: 50%; margin-right: 2px;"></span>
+    <span style="display: inline-block; width: 8px; height: 8px; background: #fff; border: 1px solid #555; border-radius: 50%; margin-right: 5px;"></span>
+    受講者数：<span id="count" style="margin-left: 1px;">...</span>
+</span>
         </div>
         <!-- 📚 生徒用・問題選択＆問題ファイル（パス）指定パネル（開閉式コンパクト版） -->
         <div id="studentProblemSelectorPanel" style="margin-top: 6px; padding: 6px 10px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; text-align: left;">
@@ -1380,7 +1391,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
                 if (existing) {
                     boardStones = boardStones.filter(s => !(s.x === x && s.y === y));
                 } else {
-                    const color = document.querySelector('input[name="createColor"]:checked').value;
+                    const color = 'B';
                     boardStones.push({ x: x, y: y, color: color, moveNum: 0 });
                 }
                 renderBoard();
@@ -3052,7 +3063,18 @@ document.getElementById('btnPasteSgfText')?.addEventListener('click', () => {
             URL.revokeObjectURL(url);
             alert(`✅ パソコンのダウンロードフォルダに「${fileName}」（全${library.length}問）を保存しました！`);
         }
-
    </script>
+
+      // ▼ 最後の 'index' を教室ごとの英数字（例: innoshima, onomichi など）に変えるだけ
+    <script>
+      fetch('https://abacus.jasoncameron.dev/hit/saibiigo-kyoshitu/tsumego')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('count').textContent = data.value.toLocaleString();
+        })
+        .catch(() => {
+          document.getElementById('count').textContent = '---';
+        });
+    </script>
 </body>
 </html>
