@@ -1603,7 +1603,8 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
         });
 
         // 新規問題作成フロー
-        createBoardSize.addEventListener('change', () => {
+        function changeBoardSizeDirect(val){mode="setup";currentProblem=null;boardSize=parseInt(val,10)||19;boardStones=[];if(saveFormArea)saveFormArea.style.display="none";initBoard();renderLibraryList();setBanner("【問題作成モード】"+boardSize+"路盤に切り替えました","judge-create");}
+createBoardSize.addEventListener('change', () => {
             mode = "setup";
             currentProblem = null;
             boardSize = parseInt(createBoardSize.value, 10);
