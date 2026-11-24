@@ -386,7 +386,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
                     【手順2】碁盤をクリックして問題図（黒石・白石）を置く
                 </div>
                 <div style="font-size: 11px; color: #475569; margin-bottom: 10px; background: #f8fafc; padding: 5px 8px; border-radius: 4px; border: 1px solid #e2e8f0;">
-                    ※ クリックで「黒石 → 白石 → 消す」の順に切り替わります。
+                    <label style="cursor:pointer;margin-right:12px;font-weight:bold;"><input type="radio" name="createColor" value="B" checked> ⚫ 黒石を連続配置</label><label style="cursor:pointer;font-weight:bold;"><input type="radio" name="createColor" value="W"> ⚪ 白石を連続配置</label>
                 </div>
                 <!-- 【手順3】手番選択 -->
                 <div style="font-size: 12px; font-weight: bold; color: #0369a1; margin-bottom: 4px;">
@@ -1387,7 +1387,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
             const existing = boardStones.find(s => s.x === x && s.y === y);
 
             // A. 問題図配置モード（setup）
-            if (mode === "setup") { if (!existing) { boardStones.push({ x: x, y: y, color: "B", moveNum: 0 }); } else if (existing.color === "B") { existing.color = "W"; } else { boardStones = boardStones.filter(s => !(s.x === x && s.y === y)); } renderBoard(); return; }
+            if (mode === "setup") { if (existing) { boardStones = boardStones.filter(s => !(s.x === x && s.y === y)); } else { const color = document.querySelector('input[name="createColor"]:checked')?.value || "B"; boardStones.push({ x: x, y: y, color: color, moveNum: 0 }); } renderBoard(); return; }
 
                      // B. 正解手順記録モード（record：黒先・白先・四隅の複数①ルート対応）
             if (mode === "record") {
