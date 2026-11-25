@@ -283,7 +283,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
 <span style="display: inline-flex; align-items: center; margin-left: 6px; font-size: 12px; color: #b35900; font-weight: bold; border: 1px solid #b35900; padding: 3px 8px; border-radius: 4px; background-color: #ffffff; white-space: nowrap; vertical-align: middle;">
     <span style="display: inline-block; width: 8px; height: 8px; background: #222; border-radius: 50%; margin-right: 2px;"></span>
     <span style="display: inline-block; width: 8px; height: 8px; background: #fff; border: 1px solid #555; border-radius: 50%; margin-right: 5px;"></span>
-    受講者数：<span id="count" style="margin-left: 1px;">...</span>
+    受講者数：<strong id="count" style="margin: 0 2px; font-size: 13px;">...</strong>名
 </span>
         </h1>
         <button type="button" class="btn" style="background:#b45309;" onclick="location.href='./tsumego.html'">
@@ -839,14 +839,26 @@ window.addEventListener('afterprint', restoreAfterPrint);
 
 </script>
     <script>
-      fetch('https://abacus.jasoncameron.dev/hit/saibiigo-kyoshitu/saibiprint')
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById('count').textContent = data.value.toLocaleString();
-        })
-        .catch(() => {
-          document.getElementById('count').textContent = '---';
-        });
+      (function() {
+        // 【プリント学習教室】のカウンター設定
+        const kyoshitsu = "saibiprint";
+        const today = new Date().toLocaleDateString("ja-JP");
+        const key = "abacus_visited_" + kyoshitsu;
+        const isVisited = (localStorage.getItem(key) === today);
+        const mode = isVisited ? "get" : "hit";
+
+        fetch("https://abacus.jasoncameron.dev/" + mode + "/saibiigo-kyoshitu/" + kyoshitsu)
+          .then(response => response.json())
+          .then(data => {
+            document.getElementById("count").textContent = data.value.toLocaleString();
+            if (!isVisited) {
+              localStorage.setItem(key, today);
+            }
+          })
+          .catch(() => {
+            document.getElementById("count").textContent = "---";
+          });
+      })();
     </script>
 </body>
 </html>

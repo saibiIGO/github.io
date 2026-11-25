@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>【ひな形】囲碁教室 カウンター用テンプレート</title>
+</head>
+<body>
+
+  <!-- =====================================================================
+       【使い方】新しい教室ページを作るときは、以下の「①」と「②」をコピーして貼ります。
+       
+       ■ すでに使用済みの教室ID一覧（重複しないように注意）：
+         - index        （総合トップ：さいび塾 囲碁教室）
+         - member       （会員専用教室）
+         - saibiprint   （プリント学習教室）
+         - tsumego      （詰碁教室）
+         - igogenerator （囲碁問題作成教室）
+         - komonjo      （古文書・古典棋譜教室）
+       ===================================================================== -->
+
+
+  <!-- ①【表示パーツ】画面の数字を出したい場所にそのまま貼る -->
+  <span style="display: inline-flex; align-items: center; margin-left: 6px; font-size: 12px; color: #b35900; font-weight: bold; border: 1px solid #b35900; padding: 3px 8px; border-radius: 4px; background-color: #ffffff; white-space: nowrap; vertical-align: middle;">
+      <span style="display: inline-block; width: 8px; height: 8px; background: #222; border-radius: 50%; margin-right: 2px;"></span>
+      <span style="display: inline-block; width: 8px; height: 8px; background: #fff; border: 1px solid #555; border-radius: 50%; margin-right: 5px;"></span>
+      受講者数：<strong id="count" style="margin: 0 2px; font-size: 13px;">...</strong>名
+  </span>
+
+
+  <!-- ②【プログラム】ページのいちばん下（</body> のすぐ上）に貼る -->
+  <script>
+    (function() {
+      // ★下の "atarashii_kyoshitsu" を、新しい教室の半角英数字（3文字以上）に変えてください
+      const kyoshitsu = "atarashii_kyoshitsu";
+
+      const today = new Date().toLocaleDateString("ja-JP");
+      const key = "abacus_visited_" + kyoshitsu;
+      const isVisited = (localStorage.getItem(key) === today);
+      const mode = isVisited ? "get" : "hit";
+      const domain = "abacus" + "." + "jasoncameron.dev";
+
+      fetch("https://" + domain + "/" + mode + "/saibiigo-kyoshitu/" + kyoshitsu)
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById("count").textContent = data.value.toLocaleString();
+          if (!isVisited) {
+            localStorage.setItem(key, today);
+          }
+        })
+        .catch(() => {
+          document.getElementById("count").textContent = "---";
+        });
+    })();
+  </script>
+
+</body>
+</html>

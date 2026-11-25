@@ -281,7 +281,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
 <span style="display: inline-flex; align-items: center; margin-left: 6px; font-size: 12px; color: #b35900; font-weight: bold; border: 1px solid #b35900; padding: 3px 8px; border-radius: 4px; background-color: #ffffff; white-space: nowrap; vertical-align: middle;">
     <span style="display: inline-block; width: 8px; height: 8px; background: #222; border-radius: 50%; margin-right: 2px;"></span>
     <span style="display: inline-block; width: 8px; height: 8px; background: #fff; border: 1px solid #555; border-radius: 50%; margin-right: 5px;"></span>
-    受講者数：<span id="count" style="margin-left: 1px;">...</span>
+    受講者数：<strong id="count" style="margin: 0 2px; font-size: 13px;">...</strong>名
 </span>
         </div>
         <!-- 📚 生徒用・問題選択＆問題ファイル（パス）指定パネル（開閉式コンパクト版） -->
@@ -386,7 +386,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
                     【手順2】碁盤をクリックして問題図（黒石・白石）を置く
                 </div>
                 <div style="font-size: 11px; color: #475569; margin-bottom: 10px; background: #f8fafc; padding: 5px 8px; border-radius: 4px; border: 1px solid #e2e8f0;">
-                    ※ クリックで「黒石 → 白石 → 消す」の順に切り替わります。
+                    <label style="cursor:pointer;margin-right:12px;font-weight:bold;"><input type="radio" name="createColor" value="B" checked> ⚫ 黒石を連続配置</label><label style="cursor:pointer;font-weight:bold;"><input type="radio" name="createColor" value="W"> ⚪ 白石を連続配置</label>
                 </div>
                 <!-- 【手順3】手番選択 -->
                 <div style="font-size: 12px; font-weight: bold; color: #0369a1; margin-bottom: 4px;">
@@ -1387,16 +1387,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
             const existing = boardStones.find(s => s.x === x && s.y === y);
 
             // A. 問題図配置モード（setup）
-            if (mode === "setup") {
-                if (existing) {
-                    boardStones = boardStones.filter(s => !(s.x === x && s.y === y));
-                } else {
-                    const color = document.querySelector('input[name="createColor"]:checked').value;
-                    boardStones.push({ x: x, y: y, color: color, moveNum: 0 });
-                }
-                renderBoard();
-                return;
-            }
+            if (mode === "setup") { if (existing) { boardStones = boardStones.filter(s => !(s.x === x && s.y === y)); } else { const color = document.querySelector('input[name="createColor"]:checked')?.value || "B"; boardStones.push({ x: x, y: y, color: color, moveNum: 0 }); } renderBoard(); return; }
 
                      // B. 正解手順記録モード（record：黒先・白先・四隅の複数①ルート対応）
             if (mode === "record") {
@@ -1612,7 +1603,9 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
         });
 
         // 新規問題作成フロー
-        createBoardSize.addEventListener('change', () => {
+        function changeBoardSizeDirect(val){mode="setup";currentProblem=null;boardSize=parseInt(val,10)||19;boardStones=[];if(saveFormArea)saveFormArea.style.display="none";initBoard();renderLibraryList();setBanner("【問題作成モード】"+boardSize+"路盤に切り替えました","judge-create");}
+function changeBoardSizeDirect(val){mode="setup";currentProblem=null;boardSize=parseInt(val,10)||19;boardStones=[];if(saveFormArea)saveFormArea.style.display="none";initBoard();renderLibraryList();setBanner("【問題作成モード】"+boardSize+"路盤に切り替えました","judge-create");}document.querySelectorAll("input[name=createColor]").forEach(r=>r.addEventListener("change",()=>{if(mode!=="record")mode="setup"}));
+createBoardSize.addEventListener('change', () => {
             mode = "setup";
             currentProblem = null;
             boardSize = parseInt(createBoardSize.value, 10);
@@ -3064,17 +3057,27 @@ document.getElementById('btnPasteSgfText')?.addEventListener('click', () => {
             alert(`✅ パソコンのダウンロードフォルダに「${fileName}」（全${library.length}問）を保存しました！`);
         }
    </script>
-
-      // ▼ 最後の 'index' を教室ごとの英数字（例: innoshima, onomichi など）に変えるだけ
     <script>
-      fetch('https://abacus.jasoncameron.dev/hit/saibiigo-kyoshitu/tsumego')
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById('count').textContent = data.value.toLocaleString();
-        })
-        .catch(() => {
-          document.getElementById('count').textContent = '---';
-        });
+      (function() {
+        // 【詰碁教室】のカウンター設定
+        const kyoshitsu = "tsumego";
+        const today = new Date().toLocaleDateString("ja-JP");
+        const key = "abacus_visited_" + kyoshitsu;
+        const isVisited = (localStorage.getItem(key) === today);
+        const mode = isVisited ? "get" : "hit";
+
+        fetch("https://abacus.jasoncameron.dev/" + mode + "/saibiigo-kyoshitu/" + kyoshitsu)
+          .then(response => response.json())
+          .then(data => {
+            document.getElementById("count").textContent = data.value.toLocaleString();
+            if (!isVisited) {
+              localStorage.setItem(key, today);
+            }
+          })
+          .catch(() => {
+            document.getElementById("count").textContent = "---";
+          });
+      })();
     </script>
 </body>
 </html>

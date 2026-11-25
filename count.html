@@ -2,47 +2,86 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>囲碁教室 カウンター</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>【講師用】さいび塾 囲碁教室 受講者数一覧</title>
+  <style>
+    body { font-family: sans-serif; background: #fdfaf2; padding: 20px; }
+    .card { max-width: 720px; margin: 0 auto; background: #fff; border: 2px solid #8b5a2b; border-radius: 10px; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+    th, td { padding: 10px; border-bottom: 1px solid #e6dcc8; text-align: left; }
+    .num { text-align: right; font-weight: bold; }
+    .total { background: #fdf6e9; font-weight: bold; }
+    .btn { background: #b35900; color: #fff; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; }
+  </style>
 </head>
 <body>
-
-  <!-- 囲碁教室風のカウンター表示 -->
-  <div style="text-align: center; padding: 15px; border: 2px solid #8b5a2b; background-color: #fdfaf2; border-radius: 8px; max-width: 280px; margin: 20px auto;">
-    <p style="margin: 0 0 8px; font-size: 14px; color: #555;">これまでのご来訪者数</p>
-    <p style="margin: 0; font-size: 26px; font-weight: bold; color: #222;">
-      <span id="count">読み込み中...</span> <span style="font-size: 14px;">名様</span>
-    </p>
+  <div class="card">
+    <h2>⚫⚪ さいび塾 囲碁教室｜月別・累計 受講者数一覧</h2>
+    <p style="font-size:13px;color:#666;">※閲覧専用のため、このページを開いてもカウントは増えません。（現在の集計期：<strong id="ver-label">v1</strong>）</p>
+    <table>
+      <thead>
+        <tr>
+          <th>教室名</th>
+          <th class="num" id="th-curr">今月</th>
+          <th class="num" id="th-prev">先月</th>
+          <th class="num">これまでの累計</th>
+        </tr>
+      </thead>
+      <tbody id="room-list"></tbody>
+      <tfoot>
+        <tr class="total">
+          <td>全教室 合計</td>
+          <td class="num"><span id="sum-curr">...</span> 名</td>
+          <td class="num"><span id="sum-prev">...</span> 名</td>
+          <td class="num"><span id="sum-all">...</span> 名</td>
+        </tr>
+      </tfoot>
+    </table>
+    <button class="btn" onclick="loadAll()">🔄 最新の数字に更新</button>
   </div>
-            <!-- ▼ English とまったく同じ枠・色・サイズで揃えた来塾者数カウンター ▼ -->
-<span style="display: inline-flex; align-items: center; margin-left: 6px; font-size: 12px; color: #b35900; font-weight: bold; border: 1px solid #b35900; padding: 3px 8px; border-radius: 4px; background-color: #ffffff; white-space: nowrap; vertical-align: middle;">
-    <span style="display: inline-block; width: 8px; height: 8px; background: #222; border-radius: 50%; margin-right: 2px;"></span>
-    <span style="display: inline-block; width: 8px; height: 8px; background: #fff; border: 1px solid #555; border-radius: 50%; margin-right: 5px;"></span>
-    受講者数：<span id="count" style="margin-left: 1px;">...</span>
-</span>
   <script>
-    // ページが開かれたときに自動で裏側の counter.php を呼び出す
-    fetch('counter.php')
-      .then(response => response.text())
-      .then(num => {
-        document.getElementById('count').textContent = Number(num).toLocaleString();
-      })
-      .catch(() => {
-        document.getElementById('count').textContent = '---';
-      });
+    const manualVer = "v2";
+    const rooms = [
+      { id: "index", name: "総合トップ" },
+      { id: "member", name: "会員専用教室" },
+      { id: "saibiprint", name: "プリント学習教室" },
+      { id: "tsumego", name: "詰碁教室" },
+      { id: "igogenerator", name: "囲碁問題作成教室" },
+      { id: "komonjo", name: "古文書・古典棋譜教室" }
+    ];
+    const now = new Date();
+    const currYM = now.getFullYear() + String(now.getMonth() + 1).padStart(2, "0");
+    const prevD = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const prevYM = prevD.getFullYear() + String(prevD.getMonth() + 1).padStart(2, "0");
+    document.getElementById("th-curr").textContent = "今月(" + currYM + ")";
+    document.getElementById("th-prev").textContent = "先月(" + prevYM + ")";
+    function getVal(key) {
+      const domain = "abacus" + "." + "jasoncameron.dev";
+      return fetch("https://" + domain + "/get/saibiigo-kyoshitu/" + key)
+        .then(r => r.ok ? r.json() : { value: 0 })
+        .then(d => Number(d.value) || 0)
+        .catch(() => 0);
+    }
+    async function loadAll() {
+      const tbody = document.getElementById("room-list");
+      tbody.innerHTML = "";
+      let sC = 0, sP = 0, sA = 0;
+      for (const rm of rooms) {
+        const [c, p, a] = await Promise.all([
+          getVal(rm.id + "_" + currYM + "_" + manualVer),
+          getVal(rm.id + "_" + prevYM + "_" + manualVer),
+          getVal(rm.id)
+        ]);
+        sC += c; sP += p; sA += a;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${rm.name}</td><td class="num">${c} 名</td><td class="num">${p} 名</td><td class="num">${a} 名</td>`;
+        tbody.appendChild(tr);
+      }
+      document.getElementById("sum-curr").textContent = sC.toLocaleString();
+      document.getElementById("sum-prev").textContent = sP.toLocaleString();
+      document.getElementById("sum-all").textContent = sA.toLocaleString();
+    }
+    loadAll();
   </script>
-
-
-      // ▼ 最後の 'index' を教室ごとの英数字（例: innoshima, onomichi など）に変えるだけ
-    <script>
-      fetch('https://abacus.jasoncameron.dev/hit/saibiigo-kyoshitu/saibiprint')
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById('count').textContent = data.value.toLocaleString();
-        })
-        .catch(() => {
-          document.getElementById('count').textContent = '---';
-        });
-    </script>
 </body>
 </html>
-

@@ -130,8 +130,9 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
         <!-- ▼ English とまったく同じ枠・色・サイズで揃えた来塾者数カウンター ▼ -->
 <span style="display: inline-flex; align-items: center; margin-left: 6px; font-size: 12px; color: #b35900; font-weight: bold; border: 1px solid #b35900; padding: 3px 8px; border-radius: 4px; background-color: #ffffff; white-space: nowrap; vertical-align: middle;">
     <span style="display: inline-block; width: 8px; height: 8px; background: #222; border-radius: 50%; margin-right: 2px;"></span>
+    
     <span style="display: inline-block; width: 8px; height: 8px; background: #fff; border: 1px solid #555; border-radius: 50%; margin-right: 5px;"></span>
-    受講者数：<span id="count" style="margin-left: 1px;">...</span>
+    受講者数：<strong id="count" style="margin: 0 2px; font-size: 13px;">...</strong>名
 </span>
     </h1>
 
@@ -212,7 +213,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
 
     <!-- ① 古文書ボタン -->
     <a href="komonjo.pdf" target="_blank" style="display: block; background-color: #8B4513; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
-      📜 古文書の案内 (PDF)
+      📜 古文書の案内 (因島)
     </a>
 
 <!-- ② ハーモニカボタン -->
@@ -264,17 +265,17 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
       </a>
       
       <a href="#lectures" style="display: block; background: #6c757d; color: white; padding: 10px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-        📚 講義の関連資料（PDF）
+        📚 講義の関連資料（映像）
       </a>
       
       <a href="#sponsors" style="display: block; background: #e83e8c; color: white; padding: 10px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
         🏆 協賛企業・周辺施設リンク
       </a>
             <a href="#komonjo" style="display: block; background: #28a745; color: white; padding: 10px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-         ✨ 予備のボタン1
+         ✨ 予備のボタン２
       </a>
                   <a href="#welcome" style="display: block; background: #28a745; color: white; padding: 10px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-         ✨ 予備のボタン2
+         ✨ 予備のボタン１
       </a>
     </div>
     </div>
@@ -962,20 +963,20 @@ function switchYouTube(button) {
 <!-- javascript エリア おわり-->
 
 <!-- ==========================================
-     【新設】スポンサー・地域関連リンク セクション
+     【新設】 才美塾 会員登録（無料：ギャラリー登録など連絡用）
      ========================================== -->
 
 <section id="saibiMemberSystem" style="background:#ffffff;border:2px solid #0d9488;border-radius:10px;padding:16px;margin:16px 0;box-shadow:0 3px 10px rgba(0,0,0,0.08);">
   <h2 style="margin:0 0 10px;font-size:18px;color:#0f766e;border-bottom:2px solid #ccfbf1;padding-bottom:6px;">
-    🏯 才美塾 会員登録＆6教室統合管理システム（師範・門弟）
+    🏯 才美塾 会員登録（無料：ギャラリー登録など連絡用）
   </h2>
   <div style="background:#f0fdfa;padding:12px;border-radius:8px;border:1px solid #99f6e4;margin-bottom:14px;">
-    <div style="font-weight:bold;font-size:13px;color:#115e59;margin-bottom:8px;">📝 新規登録（師範・門弟の選択と所属教室）</div>
+    <div style="font-weight:bold;font-size:13px;color:#115e59;margin-bottom:8px;">📝 新規登録（希望教室）</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;font-size:13px;">
       <div><label>区分（必須）:<br>
         <select id="regRole" style="width:100%;padding:6px;border-radius:4px;border:1px solid #5eead4;font-weight:bold;">
-          <option value="門弟" selected>🎓 門弟（生徒・塾生）</option>
-          <option value="師範">🏯 師範（講師・指導者）</option>
+          <option value="門弟" selected>🎓 師範・塾生</option>
+          <option value="師範">🏯 師範（講師・対局指導者）</option>
         </select></label></div>
       <div><label>お名前（必須）:<br><input type="text" id="regName" placeholder="例：因島 太郎" style="width:100%;box-sizing:border-box;padding:6px;border-radius:4px;border:1px solid #cbd5e1;"></label></div>
       <div><label>ふりがな:<br><input type="text" id="regKana" placeholder="例：いんのしま たろう" style="width:100%;box-sizing:border-box;padding:6px;border-radius:4px;border:1px solid #cbd5e1;"></label></div>
@@ -991,11 +992,11 @@ function switchYouTube(button) {
       <span style="font-weight:bold;color:#115e59;">所属教室（複数選択可）:</span><br>
       <div id="regRoomsBox" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;">
         <label><input type="checkbox" value="才美塾のひろば" checked> 才美塾のひろば</label>
-        <label><input type="checkbox" value="鏡浦町の歴史"> 鏡浦町の歴史</label>
-        <label><input type="checkbox" value="棋譜ならべ"> 棋譜ならべ</label>
+         <label><input type="checkbox" value="本校">INGO( 本校）</label>
         <label><input type="checkbox" value="詰碁"> 詰碁</label>
+         <label><input type="checkbox" value="棋譜ならべ"> 棋譜ならべ</label>
         <label><input type="checkbox" value="プリンター"> プリンター</label>
-        <label><input type="checkbox" value="本校"> 本校</label>
+        <label><input type="checkbox" value="鏡浦町の歴史"> 古文書</label>
       </div>
     </div>
     <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
@@ -1008,17 +1009,18 @@ function switchYouTube(button) {
     <b>教室別表示:</b>
     <button type="button" class="room-tab" onclick="filterMembers('ALL')" style="padding:4px 8px;border-radius:4px;border:1px solid #0d9488;background:#0d9488;color:#fff;cursor:pointer;">すべて</button>
     <button type="button" class="room-tab" onclick="filterMembers('才美塾のひろば')" style="padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;">才美塾のひろば</button>
-    <button type="button" class="room-tab" onclick="filterMembers('鏡浦町の歴史')" style="padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;">鏡浦町の歴史</button>
-    <button type="button" class="room-tab" onclick="filterMembers('棋譜ならべ')" style="padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;">棋譜ならべ</button>
+    <button type="button" class="room-tab" onclick="filterMembers('鏡浦町の歴史')" style="padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;">INGO（本校）</button>
+
     <button type="button" class="room-tab" onclick="filterMembers('詰碁')" style="padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;">詰碁</button>
+        <button type="button" class="room-tab" onclick="filterMembers('棋譜ならべ')" style="padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;">棋譜ならべ</button>
     <button type="button" class="room-tab" onclick="filterMembers('プリンター')" style="padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;">プリンター</button>
-    <button type="button" class="room-tab" onclick="filterMembers('本校')" style="padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;">本校</button>
+    <button type="button" class="room-tab" onclick="filterMembers('本校')" style="padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;">古文書</button>
   </div>
   <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;align-items:center;font-size:12px;">
     <select id="filterRoleSel" onchange="renderMemberTable()" style="padding:4px;border-radius:4px;">
-      <option value="ALL">区分：すべて（師範・門弟）</option>
+      <option value="ALL">区分：すべて（師範・塾生）</option>
       <option value="師範">🏯 師範のみ</option>
-      <option value="門弟">🎓 門弟のみ</option>
+      <option value="塾生">🎓 塾生のみ</option>
     </select>
     <input type="text" id="searchMemberInput" oninput="renderMemberTable()" placeholder="名前・番号・メモで検索..." style="padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;">
     <button type="button" onclick="exportMembersCsv()" style="background:#059669;color:#fff;border:none;padding:5px 10px;border-radius:4px;font-weight:bold;cursor:pointer;">📥 CSV保存（Excel/スプシ用）</button>
@@ -1519,17 +1521,27 @@ function openGoogleFormLink() {
 }
 window.addEventListener("DOMContentLoaded", renderMemberTable);
 </script>
-
-      // ▼ 最後の 'index' を教室ごとの英数字（例: innoshima, onomichi など）に変えるだけ
     <script>
-      fetch('https://abacus.jasoncameron.dev/hit/saibiigo-kyoshitu/member')
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById('count').textContent = data.value.toLocaleString();
-        })
-        .catch(() => {
-          document.getElementById('count').textContent = '---';
-        });
+      (function() {
+        // 【会員専用教室】のカウンター設定
+        const kyoshitsu = "member";
+        const today = new Date().toLocaleDateString("ja-JP");
+        const key = "abacus_visited_" + kyoshitsu;
+        const isVisited = (localStorage.getItem(key) === today);
+        const mode = isVisited ? "get" : "hit";
+
+        fetch("https://abacus.jasoncameron.dev/" + mode + "/saibiigo-kyoshitu/" + kyoshitsu)
+          .then(response => response.json())
+          .then(data => {
+            document.getElementById("count").textContent = data.value.toLocaleString();
+            if (!isVisited) {
+              localStorage.setItem(key, today);
+            }
+          })
+          .catch(() => {
+            document.getElementById("count").textContent = "---";
+          });
+      })();
     </script>
 </body>
 </html>
