@@ -156,11 +156,17 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
     <!-- CONCEPT（教室の理念や概要） -->
     <div style="margin: 20px 0; line-height: 1.2; color: #444;">
         <p style="font-weight: bold; color: #b26f1a; font-size: 1.1rem; margin-bottom: 10px;">📌 CONCEPT（📖 教室の概要）      
-             <!-- 🌐 英語版への切り替えリンク（地頭力のすぐ右側に配置） -->
+<!-- 🌐 英語版への切り替えリンク（地頭力のすぐ右側に配置） -->
     <a href="en.html" style="font-size: 12px; color: #b35900; text-decoration: none; font-weight: bold; border: 1px solid #b35900; padding: 3px 8px; border-radius: 4px; background-color: #ffffff; white-space: nowrap;">
-        🌐 English
-    </a>
-    </p>
+        🌐 English</a>
+
+<!-- ▼ English とまったく同じ枠・色・サイズで揃えた来塾者数カウンター ▼ -->
+<span style="display: inline-flex; align-items: center; margin-left: 6px; font-size: 12px; color: #b35900; font-weight: bold; border: 1px solid #b35900; padding: 3px 8px; border-radius: 4px; background-color: #ffffff; white-space: nowrap; vertical-align: middle;">
+    <span style="display: inline-block; width: 8px; height: 8px; background: #222; border-radius: 50%; margin-right: 2px;"></span>
+    <span style="display: inline-block; width: 8px; height: 8px; background: #fff; border: 1px solid #555; border-radius: 50%; margin-right: 5px;"></span>
+    受講者数：<strong id="count" style="margin: 0 2px; font-size: 13px;">...</strong>名
+</span>
+
 
         <p style="margin: 0;">
             尾道市因島の『さいび塾（才美塾）囲碁教室』です。はじめて囲碁にふれる子どもたちから、見守る先輩たちまで楽しく囲碁を学んでいます。無意識のうちに自然と集中力や考える力が身につきます。
@@ -256,11 +262,11 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
        🧭  鏡浦町の歴史
 </a>
 <a href="igogenerator.html" target="_blank" rel="noopener noreferrer" style="display: block; background-color: #2e8b57; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); margin-top: 10px;">
-    ✨ 囲碁・棋譜並べ＆解説作成ジェネレーター
+    ✨ 棋譜並べ＆解説ジェネレーター
 </a>
 
           <a href="tsumego.html"  target="_blank" rel="noopener noreferrer" style="display: block; background: #28a745; color: white; padding: 10px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-         ✨詰碁＆問題保存庫
+         ✨詰碁・問題＆保存庫
       </a>
         <a href="saibiprint.html" style="display: block; background: #28a745; color: white; padding: 10px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
          ✨才美プリンター
@@ -1339,11 +1345,37 @@ function switchYouTube(button) {
 </script>
 </div>
 </div> <!-- 💡 800pxの全体コンテナをここで閉じます -->
-    <!-- フッター部分（トップに戻るリンクなど） -->
+
+<!-- フッター部分（トップに戻るリンクなど） -->
     <footer style="margin-top: 50px; text-align: center; border-top: 1px solid #ddd; padding-top: 20px;">
         <a href="index.html" style="color: #b35900; text-decoration: none; font-weight: bold;">← トップページに戻る</a>
-        <p style="font-size: 12px; color: #999; margin-top: 15px;">&copy; 才美塾囲碁教室</p>
     </footer>
+    <script>
+      (function() {
+        // 【総合トップ（さいび塾 囲碁教室）】のカウンター設定
+        const kyoshitsu = "index";
+        const today = new Date().toLocaleDateString("ja-JP");
+        const key = "abacus_visited_" + kyoshitsu;
+        const isVisited = (localStorage.getItem(key) === today);
+        const mode = isVisited ? "get" : "hit";
+
+        fetch("https://abacus.jasoncameron.dev/" + mode + "/saibiigo-kyoshitu/" + kyoshitsu)
+          .then(response => response.json())
+          .then(data => {
+            document.getElementById("count").textContent = data.value.toLocaleString();
+            if (!isVisited) {
+              localStorage.setItem(key, today);
+            }
+          })
+          .catch(() => {
+            document.getElementById("count").textContent = "---";
+          });
+      })();
+    </script>
 </body>
 </html>
+
+
+
+
 
