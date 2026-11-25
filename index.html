@@ -775,7 +775,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
   
   // 過去の記憶を完全に無視して、コードに書いた最新データを強制的にセットします！
   let saibiGalleryData = defaultGalleryData;
-  localStorage.clear(); // ブラウザに残っている古いゴミ箱データを一度きれいに大掃除します
+  localStorage.removeItem(STORAGE_KEY); // ブラウザに残っている古いゴミ箱データを一度きれいに大掃除します
 
   // 🚀 ブラウザの古い記憶を完全にリセットし、コードに書いた文字を強制採用します！
   Object.keys(defaultGalleryData).forEach(key => {
