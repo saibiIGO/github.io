@@ -270,7 +270,9 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
       <a href="#go-ai" style="display: block; background: #17a2b8; color: white; padding: 10px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
         🤖 囲碁AI・検討ツール
       </a>
-
+      <a href="#toroku" style="display: block; background: #17a2b8; color: white; padding: 10px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        🤖 会員登録（無料）
+      </a>
 
           <a href="#komonjo" style="display: block; background: #28a745; color: white; padding: 10px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
          ✨予備１
@@ -558,87 +560,7 @@ INGOは2011年5月に発足しましたが、このほどシステムを改良�
 
     </div>
     
-<!-- ==========================================
-     【新設】 才美塾 会員登録（無料：ギャラリー登録など連絡用）
-     ========================================== -->
 
-<section id="saibiMemberSystem" style="background:#ffffff;border:2px solid #0d9488;border-radius:10px;padding:16px;margin:16px 0;box-shadow:0 3px 10px rgba(0,0,0,0.08);">
-  <h2 style="margin:0 0 10px;font-size:18px;color:#0f766e;border-bottom:2px solid #ccfbf1;padding-bottom:6px;">
-    🏯 才美塾 会員登録所（無料：こども囲碁大会など連絡用）
-  </h2>
-  <div style="background:#f0fdfa;padding:12px;border-radius:8px;border:1px solid #99f6e4;margin-bottom:14px;">
-    <div style="font-weight:bold;font-size:13px;color:#115e59;margin-bottom:8px;">📝 新規登録（希望教室）</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;font-size:13px;">
-      <div><label>区分（必須）:<br>
-        <select id="regRole" style="width:100%;padding:6px;border-radius:4px;border:1px solid #5eead4;font-weight:bold;">
-          <option value="門弟" selected>🎓 師範・塾生</option>
-          <option value="師範">🏯 師範（講師・対局指導者）</option>
-        </select></label></div>
-      <div><label>お名前（必須）:<br><input type="text" id="regName" placeholder="例：因島 太郎" style="width:100%;box-sizing:border-box;padding:6px;border-radius:4px;border:1px solid #cbd5e1;"></label></div>
-      <div><label>ふりがな:<br><input type="text" id="regKana" placeholder="例：いんのしま たろう" style="width:100%;box-sizing:border-box;padding:6px;border-radius:4px;border:1px solid #cbd5e1;"></label></div>
-      <div><label>棋力・段級位:<br>
-        <select id="regRank" style="width:100%;padding:6px;border-radius:4px;border:1px solid #cbd5e1;">
-          <option value="入門">入門</option><option value="30級〜20級">30級〜20級</option><option value="19級〜10級">19級〜10級</option>
-          <option value="9級〜1級" selected>9級〜1級</option><option value="初段">初段</option><option value="二段">二段</option>
-          <option value="三段">三段</option><option value="四段">四段</option><option value="五段以上">五段以上</option>
-        </select></label></div>
-      <div><label>連絡先・メモ:<br><input type="text" id="regMemo" placeholder="電話番号や備考" style="width:100%;box-sizing:border-box;padding:6px;border-radius:10px;border:1px solid #cbd5e1;"></label></div>
-            <div><label>子供囲碁大会要項希望者:<br><input type="text" id="regMemo" placeholder="電話番号や備考" style="width:100%;box-sizing:border-box;padding:6px;border-radius:4px;border:1px solid #cbd5e1;"></label></div>
-    </div>
-    <div style="margin-top:8px;font-size:13px;">
-      <span style="font-weight:bold;color:#115e59;">所属教室（複数選択可）:</span><br>
-      <div id="regRoomsBox" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;">
-        <label><input type="checkbox" value="才美塾のひろば" checked> 才美塾のひろば</label>
-         <label><input type="checkbox" value="本校">INGO( 本校）</label>
-        <label><input type="checkbox" value="詰碁"> 詰碁</label>
-         <label><input type="checkbox" value="棋譜ならべ"> 棋譜ならべ</label>
-        <label><input type="checkbox" value="プリンター"> プリンター</label>
-        <label><input type="checkbox" value="鏡浦町の歴史"> 古文書</label>
-      </div>
-    </div>
-    <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
-      <button type="button" onclick="registerSaibiMember()" style="background:#0d9488;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;cursor:pointer;">✅ 登録する</button>
-      <button type="button" onclick="openGoogleFormLink()" style="background:#2563eb;color:#fff;border:none;padding:8px 12px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer;">🌐 Googleフォーム（B方式）を開く</button>
-      <button type="button" onclick="setGoogleFormUrl()" style="background:#64748b;color:#fff;border:none;padding:8px 10px;border-radius:6px;font-size:12px;cursor:pointer;">⚙️ フォームURL設定</button>
-    </div>
-  </div>
-  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;align-items:center;font-size:12px;">
-    <b>教室別表示:</b>
-    <button type="button" class="room-tab" onclick="filterMembers('ALL')" style="padding:4px 8px;border-radius:4px;border:1px solid #0d9488;background:#0d9488;color:#fff;cursor:pointer;">すべて</button>
-    <button type="button" class="room-tab" onclick="filterMembers('才美塾のひろば')" style="padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;">才美塾のひろば</button>
-    <button type="button" class="room-tab" onclick="filterMembers('鏡浦町の歴史')" style="padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;">INGO（本校）</button>
-
-    <button type="button" class="room-tab" onclick="filterMembers('詰碁')" style="padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;">詰碁</button>
-        <button type="button" class="room-tab" onclick="filterMembers('棋譜ならべ')" style="padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;">棋譜ならべ</button>
-    <button type="button" class="room-tab" onclick="filterMembers('プリンター')" style="padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;">プリンター</button>
-    <button type="button" class="room-tab" onclick="filterMembers('本校')" style="padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;">古文書</button>
-  </div>
-  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;align-items:center;font-size:12px;">
-    <select id="filterRoleSel" onchange="renderMemberTable()" style="padding:4px;border-radius:4px;">
-      <option value="ALL">区分：すべて（師範・塾生）</option>
-      <option value="師範">🏯 師範のみ</option>
-      <option value="塾生">🎓 塾生のみ</option>
-    </select>
-    <input type="text" id="searchMemberInput" oninput="renderMemberTable()" placeholder="名前・番号・メモで検索..." style="padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;">
-    <button type="button" onclick="exportMembersCsv()" style="background:#059669;color:#fff;border:none;padding:5px 10px;border-radius:4px;font-weight:bold;cursor:pointer;">📥 CSV保存（Excel/スプシ用）</button>
-    <label style="background:#d97706;color:#fff;padding:5px 10px;border-radius:4px;font-weight:bold;cursor:pointer;">📤 CSV取込<input type="file" accept=".csv" onchange="importMembersCsv(event)" style="display:none;"></label>
-  </div>
-  <div style="overflow-x:auto;">
-    <table style="width:100%;border-collapse:collapse;font-size:12px;text-align:left;">
-      <thead><tr style="background:#e2e8f0;color:#1e293b;">
-        <th style="padding:6px;border:1px solid #cbd5e1;">番号</th>
-        <th style="padding:6px;border:1px solid #cbd5e1;">区分</th>
-        <th style="padding:6px;border:1px solid #cbd5e1;">お名前（ふりがな）</th>
-        <th style="padding:6px;border:1px solid #cbd5e1;">所属教室</th>
-        <th style="padding:6px;border:1px solid #cbd5e1;">棋力</th>
-        <th style="padding:6px;border:1px solid #cbd5e1;">出席</th>
-        <th style="padding:6px;border:1px solid #cbd5e1;">連絡先・メモ</th>
-        <th style="padding:6px;border:1px solid #cbd5e1;">操作</th>
-      </tr></thead>
-      <tbody id="memberTableBody"></tbody>
-    </table>
-  </div>
-</section>
 <!-========================================== -->
 <!-- 👉【右側】：写真ギャラリー（Sキーで管理人室起動 ＆ 枚数・時間自由設定版） -->
 <!-- ==========================================-->
@@ -762,10 +684,10 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
         { img: "image1/photo4.jpg", text: "④ やったー！見事正解です！", duration: 6 },
         { img: "image1/photo5.jpg", text: "⑤ こんどはシチョウの練習です。", duration: 5 }, // 🚀 5 を半角に修正
         { img: "image1/photo6.jpg", text: "⑥ どうかな？先生が優しく教えてくれるよ！", duration: 4 }, // 🚀 6 を半角に修正
-        { img: "image1/photo7.jpg", text: "⑦ いま、ならったシチョウかな？", duration: 4 }, // 🚀 7 を半角に修正
-        { img: "image1/photo8.jpg", text: "⑧ やったー先生！見事正解です！", duration: 4 }, // 🚀 8 を半角に修正
-        { img: "image1/photo9.jpg", text: " ⑨いつもとちがう、ぼくがいるよ！", duration: 4 }, // 🚀 9 を半角に修正
-        { img: "image1/photo10.jpg", text: "⑩ そう！わたしが、わかるかな！", duration: 4 }
+        { img: "image1/photo7.jpg", text: "⑦ いま、ならったシチョウかな？", duration: 5 }, // 🚀 7 を半角に修正
+        { img: "image1/photo8.jpg", text: "⑧ やったー先生！見事正解です！", duration: 5 }, // 🚀 8 を半角に修正
+        { img: "image1/photo9.jpg", text: " ⑨いつもとちがう、ぼくがいるよ！", duration: 5}, // 🚀 9 を半角に修正
+        { img: "image1/photo10.jpg", text: "⑩ そう！わたしが、わかるかな！", duration: 5 }
       ]
     },
 
@@ -789,14 +711,14 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
       slides: [
         { img: "image3/photo1.jpg", text: "① 初めてのシニアに挑戦。", duration: 5 }, 
         { img: "image3/photo2.jpg", text: "② 御初手合、緊張のスタートです。", duration: 5 }, 
-        { img: "image3/photo3.jpg", text: "③ お姉さんが棋譜をとっています。", duration: 3 },
+        { img: "image3/photo3.jpg", text: "③ お姉さんが棋譜をとっています。", duration: 4},
         { img: "image3/photo4.jpg", text: "④ 隣の教室では、後輩たちが出番待ちです。", duration: 3 },
-        { img: "image3/photo5.jpg", text: "⑤ こちらでも真剣な眼差しです。", duration: 3 },
-        { img: "image3/photo6.jpg", text: "⑥ どうやらシノギ勝負となって考慮中！", duration: 3 },
-        { img: "image3/photo7.jpg", text: "⑦ 局後の難解定石だったところの復習。", duration: 3 },
-        { img: "image3/photo8.jpg", text: "⑧ 優しい恩師の言葉。まず守り。これが秘伝だよ！", duration: 3},
-        { img: "image3/photo9.jpg", text: "⑨ 御初手合の浦丸社長を囲んで一同パチリ！", duration: 3 },
-        { img: "image3/photo10.jpg", text: "⑩ 翌週の中国こども本因坊戦では第２位でした。次回に向けて頑張ります。", duration: 3} 
+        { img: "image3/photo5.jpg", text: "⑤ こちらでも真剣な眼差しです。", duration: 5 },
+        { img: "image3/photo6.jpg", text: "⑥ どうやらシノギ勝負となって考慮中！", duration: 5},
+        { img: "image3/photo7.jpg", text: "⑦ 局後の難解定石だったところの復習。", duration: 5 },
+        { img: "image3/photo8.jpg", text: "⑧ 優しい恩師の言葉。まず守り。これが秘伝だよ！", duration: 4},
+        { img: "image3/photo9.jpg", text: "⑨ 御初手合の浦丸社長を囲んで一同パチリ！", duration: 5 },
+        { img: "image3/photo10.jpg", text: "⑩ 翌週の中国こども本因坊戦では第２位でした。次回に向けて頑張ります。", duration: 5} 
       ]
     }, 
  // 🖼️ 既存のセット4
@@ -1069,7 +991,87 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     <footer style="margin-top: 50px; text-align: center; border-top: 1px solid #ddd; padding-top: 20px;">
         <a href="index.html" style="color: #b35900; text-decoration: none; font-weight: bold;">← トップページに戻る</a>
     </footer>
+<!-- ==========================================
+     【新設】 才美塾 会員登録（無料：ギャラリー登録など連絡用）
+     ========================================== -->
 
+<section id="saibiMemberSystem" style="background:#ffffff;border:2px solid #0d9488;border-radius:10px;padding:16px;margin:16px 0;box-shadow:0 3px 10px rgba(0,0,0,0.08);">
+  <h2 style="margin:0 0 10px;font-size:18px;color:#0f766e;border-bottom:2px solid #ccfbf1;padding-bottom:6px;" id="toroku">
+    🏯 才美塾 会員登録所（無料：こども囲碁大会など連絡用）
+  </h2>
+  <div style="background:#f0fdfa;padding:12px;border-radius:8px;border:1px solid #99f6e4;margin-bottom:14px;">
+    <div style="font-weight:bold;font-size:13px;color:#115e59;margin-bottom:8px;">📝 新規登録（希望教室）</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;font-size:13px;">
+      <div><label>区分（必須）:<br>
+        <select id="regRole" style="width:100%;padding:6px;border-radius:4px;border:1px solid #5eead4;font-weight:bold;">
+          <option value="門弟" selected>🎓 師範・塾生</option>
+          <option value="師範">🏯 師範（講師・対局指導者）</option>
+        </select></label></div>
+      <div><label>お名前（必須）:<br><input type="text" id="regName" placeholder="例：因島 太郎" style="width:100%;box-sizing:border-box;padding:6px;border-radius:4px;border:1px solid #cbd5e1;"></label></div>
+      <div><label>ふりがな:<br><input type="text" id="regKana" placeholder="例：いんのしま たろう" style="width:100%;box-sizing:border-box;padding:6px;border-radius:4px;border:1px solid #cbd5e1;"></label></div>
+      <div><label>棋力・段級位:<br>
+        <select id="regRank" style="width:100%;padding:6px;border-radius:4px;border:1px solid #cbd5e1;">
+          <option value="入門">入門</option><option value="30級〜20級">30級〜20級</option><option value="19級〜10級">19級〜10級</option>
+          <option value="9級〜1級" selected>9級〜1級</option><option value="初段">初段</option><option value="二段">二段</option>
+          <option value="三段">三段</option><option value="四段">四段</option><option value="五段以上">五段以上</option>
+        </select></label></div>
+      <div><label>連絡先・メモ:<br><input type="text" id="regMemo" placeholder="電話番号や備考" style="width:100%;box-sizing:border-box;padding:6px;border-radius:4px;border:1px solid #cbd5e1;"></label></div>
+            <div><label>子供囲碁大会要項希望者:<br><input type="text" id="regMemo" placeholder="住所や備考" style="width:100%;box-sizing:border-box;padding:6px;border-radius:4px;border:1px solid #cbd5e1;"></label></div>
+    </div>
+    <div style="margin-top:8px;font-size:13px;">
+      <span style="font-weight:bold;color:#115e59;">所属教室（複数選択可）:</span><br>
+      <div id="regRoomsBox" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;">
+        <label><input type="checkbox" value="才美塾のひろば" checked> 才美塾のひろば</label>
+         <label><input type="checkbox" value="本校">INGO( 本校）</label>
+        <label><input type="checkbox" value="詰碁"> 詰碁</label>
+         <label><input type="checkbox" value="棋譜ならべ"> 棋譜ならべ</label>
+        <label><input type="checkbox" value="プリンター"> プリンター</label>
+        <label><input type="checkbox" value="鏡浦町の歴史"> 古文書</label>
+      </div>
+    </div>
+    <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+      <button type="button" onclick="registerSaibiMember()" style="background:#0d9488;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;cursor:pointer;">✅ 登録する</button>
+      <button type="button" onclick="openGoogleFormLink()" style="background:#2563eb;color:#fff;border:none;padding:8px 12px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer;">🌐 Googleフォーム（B方式）を開く</button>
+      <button type="button" onclick="setGoogleFormUrl()" style="background:#64748b;color:#fff;border:none;padding:8px 10px;border-radius:6px;font-size:12px;cursor:pointer;">⚙️ フォームURL設定</button>
+    </div>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;align-items:center;font-size:12px;">
+    <b>教室別表示:</b>
+    <button type="button" class="room-tab" onclick="filterMembers('ALL')" style="padding:4px 8px;border-radius:4px;border:1px solid #0d9488;background:#0d9488;color:#fff;cursor:pointer;">すべて</button>
+    <button type="button" class="room-tab" onclick="filterMembers('才美塾のひろば')" style="padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;">才美塾のひろば</button>
+    <button type="button" class="room-tab" onclick="filterMembers('鏡浦町の歴史')" style="padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;">INGO（本校）</button>
+
+    <button type="button" class="room-tab" onclick="filterMembers('詰碁')" style="padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;">詰碁</button>
+        <button type="button" class="room-tab" onclick="filterMembers('棋譜ならべ')" style="padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;">棋譜ならべ</button>
+    <button type="button" class="room-tab" onclick="filterMembers('プリンター')" style="padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;">プリンター</button>
+    <button type="button" class="room-tab" onclick="filterMembers('本校')" style="padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;">古文書</button>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;align-items:center;font-size:12px;">
+    <select id="filterRoleSel" onchange="renderMemberTable()" style="padding:4px;border-radius:4px;">
+      <option value="ALL">区分：すべて（師範・塾生）</option>
+      <option value="師範">🏯 師範のみ</option>
+      <option value="塾生">🎓 塾生のみ</option>
+    </select>
+    <input type="text" id="searchMemberInput" oninput="renderMemberTable()" placeholder="名前・番号・メモで検索..." style="padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1;">
+    <button type="button" onclick="exportMembersCsv()" style="background:#059669;color:#fff;border:none;padding:5px 10px;border-radius:4px;font-weight:bold;cursor:pointer;">📥 CSV保存（Excel/スプシ用）</button>
+    <label style="background:#d97706;color:#fff;padding:5px 10px;border-radius:4px;font-weight:bold;cursor:pointer;">📤 CSV取込<input type="file" accept=".csv" onchange="importMembersCsv(event)" style="display:none;"></label>
+  </div>
+  <div style="overflow-x:auto;">
+    <table style="width:100%;border-collapse:collapse;font-size:12px;text-align:left;">
+      <thead><tr style="background:#e2e8f0;color:#1e293b;">
+        <th style="padding:6px;border:1px solid #cbd5e1;">番号</th>
+        <th style="padding:6px;border:1px solid #cbd5e1;">区分</th>
+        <th style="padding:6px;border:1px solid #cbd5e1;">お名前（ふりがな）</th>
+        <th style="padding:6px;border:1px solid #cbd5e1;">所属教室</th>
+        <th style="padding:6px;border:1px solid #cbd5e1;">棋力</th>
+        <th style="padding:6px;border:1px solid #cbd5e1;">出席</th>
+        <th style="padding:6px;border:1px solid #cbd5e1;">連絡先・メモ</th>
+        <th style="padding:6px;border:1px solid #cbd5e1;">操作</th>
+      </tr></thead>
+      <tbody id="memberTableBody"></tbody>
+    </table>
+  </div>
+</section>
 
 <!-- ==========================================
      【新設】スポンサー・地域関連リンク セクション
@@ -1269,7 +1271,7 @@ document.getElementById('piano-sound').addEventListener('ended', function() {
     <footer style="margin-top: 50px; text-align: center; border-top: 1px solid #ddd; padding-top: 20px;">
         <a href="index.html" style="color: #b35900; text-decoration: none; font-weight: bold;">← トップページに戻る</a>
     </footer>
-   <!-- ===============================================================-->
+   <!-- ==============================================-->
 <!-- 🎁 教室おすすめの囲碁AI＆お役立ちツールコーナー（完全版・色調整済み） -->
 <div style="max-width: 700px; margin: 25px auto; font-family: sans-serif; text-align: left; background-color: #f7f9fa; border: 2px solid #20b2aa; border-radius: 8px; padding: 20px;">
 
