@@ -2,10 +2,61 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>【講師用】さいび塾 囲碁教室 受講者数一覧</title>
-  <!-- スタイルおよび本体スクリプトを含む完全版HTML -->
+  <style>
+    body { font-family: sans-serif; background-color: #fdfaf2; padding: 20px; }
+    .card { max-width: 640px; margin: 0 auto; background: #fff; border: 2px solid #8b5a2b; border-radius: 10px; padding: 24px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 18px; }
+    th, td { padding: 10px 12px; border-bottom: 1px solid #e6dcc8; }
+    .btn { background-color: #b35900; color: #fff; border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; }
+  </style>
 </head>
 <body>
-  <!-- 実際のコード全文は提供元のスクリプト（rooms定義やfetch処理を含むHTML）をご利用ください -->
+  <div class="card">
+    <h1>さいび塾 囲碁教室｜教室別 受講者数一覧</h1>
+    <table>
+      <thead>
+        <tr><th>教室名</th><th>ID / ページ</th><th style="text-align: right;">受講者数</th></tr>
+      </thead>
+      <tbody id="room-list"><tr><td colspan="3">読み込み中...</td></tr></tbody>
+      <tfoot>
+        <tr class="total-row"><td colspan="2">全教室 合計</td><td class="num"><span id="total-count">...</span> 名</td></tr>
+      </tfoot>
+    </table>
+    <button class="btn" onclick="loadAllCounts()">🔄 最新の数字に更新</button>
+  </div>
+  <script>
+    const rooms = [
+      { id: "index", name: "総合トップ（さいび塾 囲碁教室）", file: "index.html" },
+      { id: "member", name: "会員専用教室", file: "member.html" },
+      { id: "saibiprint", name: "プリント学習教室", file: "saibiprint.html" },
+      { id: "tsumego", name: "詰碁教室", file: "tsumego.html" },
+      { id: "igogenerator", name: "囲碁問題作成教室", file: "igogenerator.html" },
+      { id: "komonjo", name: "古文書・古典棋譜教室", file: "komonjo.html" }
+    ];
+    function loadAllCounts() {
+      const tbody = document.getElementById("room-list");
+      const totalEl = document.getElementById("total-count");
+      const domain = "abacus" + "." + "jasoncameron.dev";
+      tbody.innerHTML = "";
+      const promises = rooms.map(room => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${room.name}</td><td>${room.id}</td><td id="val-${room.id}">... 名</td>`;
+        tbody.appendChild(tr);
+        return fetch(`https://${domain}/get/saibiigo-kyoshitu/${room.id}`)
+          .then(res => res.json())
+          .then(data => {
+            const v = Number(data.value) || 0;
+            document.getElementById(`val-${room.id}`).textContent = v.toLocaleString() + " 名";
+            return v;
+          }).catch(() => 0);
+      });
+      Promise.all(promises).then(values => {
+        totalEl.textContent = values.reduce((a, b) => a + b, 0).toLocaleString();
+      });
+    }
+    loadAllCounts();
+  </script>
 </body>
 </html>
