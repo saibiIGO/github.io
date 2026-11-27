@@ -373,6 +373,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
                     【作図1】盤面サイズを選ぶ（やり直す時はクリア）
                 </div>
 
+                    <div style="display: flex; gap: 6px; margin-bottom: 10px;">
                     <select id="createBoardSize" onchange="changeBoardSizeDirect(this.value)" style="flex: 1; padding: 6px; border-radius: 5px; border: 1px solid #cbd5e1; font-weight: bold;">
 
                         <option value="9">9路盤</option>
@@ -1818,12 +1819,19 @@ createBoardSize.addEventListener('change', () => {
             const btnFinish = document.getElementById('btnFinishRecordMoves');
             if (btnFinish) btnFinish.style.display = "none";
 
-            alert(`✅ 問題保存庫に登録しました！\n\n・問題名：${title}\n・保存先倉庫：${selectedLevel}（全${finalBranches.length}問）\n・保存場所：ブラウザ内問題保存庫（localStorage）\n※パソコンにファイル保存したい場合は下の「📤 出題中の問題をSGFで保存」を押してください。`);
+            alert(`✅ 問題保存庫に登録しました！\n・問題名：${title}\n・保存先倉庫：${selectedLevel}（全${finalBranches.length}問）`);
             startProblem(newProblem);
         });
 
         // 8. 初期起動処理
         window.addEventListener('DOMContentLoaded', () => {
+            if (typeof loadLibrary === 'function') loadLibrary();
+            if (!library || library.length === 0) {
+                library = JSON.parse(JSON.stringify(DEFAULT_PROBLEMS));
+                if (typeof saveLibrary === 'function') saveLibrary();
+                if (typeof renderLibraryList === 'function') renderLibraryList();
+            }
+            if (typeof renderStudentProblemGrid === 'function') renderStudentProblemGrid();
             const targetUrl = localStorage.getItem(CUSTOM_SGF_PATH_KEY) || './default_problems.sgf';
             if (window.location.protocol === 'file:' && !targetUrl.startsWith('http')) {
                 if (library && library.length > 0) startProblem(library.at(0));
@@ -2141,8 +2149,7 @@ createBoardSize.addEventListener('change', () => {
             if (titleTapCount >= 5) {
                 titleTapCount = 0;
                 localStorage.setItem(TEACHER_AUTH_KEY, "true");
-                document.body.classList.add('can-teacher'); document.body.classList.add('teacher-mode'); const btnT = document.getElementById('btnToggleTeacherMode'); if (btnT) { btnT.textContent = '🧒 生徒画面に戻す'; btnT.style.backgroundColor = '#dc2626'; } alert('🔧 先生モードに切り替えました！\n（生徒画面に戻すときは、赤い「🧒 生徒画面に戻す」ボタンを押してください）');
-            }
+                document.body.classList.add('can-teacher'); document.body.classList.add('teacher-mode'); const btnT = document.getElementById('btnToggleTeacherMode'); if (btnT) { btnT.textContent = '🧒 生徒画面に戻す'; btnT.style.backgroundColor = '#dc2626'; } alert('🔧 先生モードに切り替えました！\n（生徒画面に戻すときは、赤い「🧒 生徒画面に戻す」ボタンを押してください）'); }
         });
         // 🛠️ 現在の保存庫の全問題を「初期必須問題（DEFAULT_PROBLEMS）」の完成コードとしてコピー（キャンセルボタン付き）
         document.getElementById('btnCopyDefaultCode')?.addEventListener('click', () => {
