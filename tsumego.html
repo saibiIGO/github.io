@@ -174,7 +174,7 @@
             }
         }
         /* 🧒 通常時（小学生・演習モード）：作成パネル・SGF管理・削除ボタン・マニュアルを隠して超シンプルにする */
-        body:not(.teacher-mode) .teacher-only,
+        html body:not(.teacher-mode) .teacher-only, body:not(.teacher-mode) button.teacher-only, body:not(.teacher-mode) a.teacher-only,
         body:not(.teacher-mode) .btn-danger,
         body:not(.teacher-mode) #btnResetDefault,
         body:not(.teacher-mode) #btnToggleManual,
@@ -223,7 +223,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
 }
 </script>
 </head>
-<body>
+<body onload="document.body.classList.remove('teacher-mode')">
 
     <h1>🧩 詰碁・問題＆保存庫</h1>
 
@@ -243,9 +243,10 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
             <button id="btnToggleManual" type="button" onclick="const box = document.getElementById('tsumegoManualBox'); const isHidden = box.style.display === 'none'; box.style.display = isHidden ? 'block' : 'none'; this.textContent = isHidden ? '📕 マニュアル閉じる' : '📖 操作マニュアル';" style="flex: 1; background-color: #4a5568; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer; white-space: nowrap;">
                 📖 操作マニュアル
             </button>
-            <button id="btnToggleTeacherMode" type="button" onclick="const isTeacher = document.body.classList.toggle('teacher-mode'); this.textContent = isTeacher ? '🧒 生徒画面に戻す' : '🔧 先生用（作成・管理）'; this.style.backgroundColor = isTeacher ? '#dc2626' : '#64748b';" style="flex: 0 0 auto; background-color: #64748b; color: white; border: none; padding: 10px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; white-space: nowrap;">
+            <button id="btnToggleTeacherMode" type="button" onclick="const isTeacher = document.body.classList.toggle('teacher-mode'); if (!isTeacher) document.body.classList.remove('can-teacher'); this.textContent = isTeacher ? '🧒 生徒画面に戻す' : '🔧 先生用（作成・管理）'; this.style.backgroundColor = isTeacher ? '#dc2626' : '#64748b';" style="flex: 0 0 auto; background-color: #64748b; color: white; border: none; padding: 10px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; white-space: nowrap;">
                 🔧 先生用（作成・管理）
             </button>
+            <button type="button" class="teacher-only" onclick="location.href='katrain://launch'" style="flex: 0 0 auto; background-color: #0f766e; color: white; border: none; padding: 10px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; white-space: nowrap;">🤖 KaTrain起動</button>
         </div>
 
         <!-- 🅰️🅱️ 碁盤の外側（上部）に配置する「問題選択（A・B・C・D）＆ヒント表示バー」 -->
@@ -261,10 +262,10 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
         <div id="hintDisplayBox" style="display: none; margin-top: 6px; padding: 8px 12px; background: #fffbeb; border-left: 4px solid #f59e0b; border-radius: 4px; font-size: 13px; color: #78350f;"></div>
         <!-- 生徒用：はじめてでも迷わない3ステップ案内 -->
         <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 8px 12px; margin-top: 6px; margin-bottom: 6px; font-size: 12.5px; color: #0c4a6e; line-height: 1.6; text-align: left;">
-            <div style="font-weight: bold; margin-bottom: 2px; color: #0369a1;">🔰 つかいかた（3ステップ）</div>
-            <div><b>【ステップ1】</b> 下の「📚 問題を開く」を押して、解きたい問題（初級・中級など）をえらびます。</div>
-            <div><b>【ステップ2】</b> 碁盤の打ちたい場所をタップ（クリック）して、正解の手順を打ちます。</div>
-            <div><b>【ステップ3】</b> わからない時は「💡 ヒント」、やり直す時は「🔄 最初からやり直す」を押します。</div>
+            <div style="font-weight: bold; margin-bottom: 2px; color: #0369a1;">🔰 問題の解きかた（やりかた）</div>
+            <div><b>①</b> 下の「📚 問題を開く」を押して、解きたい問題（初級・中級など）をえらびます。</div>
+            <div><b>②</b> 碁盤の打ちたい場所をタップ（クリック）して、正解の手順を打ちます。</div>
+            <div><b>③</b> わからない時は「💡 ヒント」、やり直す時は「🔄 最初からやり直す」を押します。</div>
         </div>
   <!-- 🏠 トップページへ戻るバー（独立配置・くっきり視認性） -->
         <div style="margin-top: 6px; margin-bottom: 4px; display: flex; justify-content: flex-start;">
@@ -273,7 +274,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
             </button>
 
       <!-- 🏠 才美プリンターへ移動バー（独立配置・くっきり視認性） -->
-                    <button type="button" onclick="location.href='./saibiprint.html'" style="padding: 6px 14px; font-size: 13px; font-weight: bold; background: #b45309; color: #ffffff; border: none; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);">
+                    <button type="button" class="teacher-only" onclick="location.href='./saibiprint.html'" style="padding: 6px 14px; font-size: 13px; font-weight: bold; background: #b45309; color: #ffffff; border: none; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);">
                 🏠 才美プリンターページへ
                 
             </button>
@@ -303,18 +304,18 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
                         <option value="対局棋譜">対局棋譜（問題倉庫）</option>
                     </select>
 
-                    <button type="button" id="btnOpenStudentSgf" style="padding: 4px 8px; font-size: 12px; font-weight: bold; background: #0284c7; color: #fff; border: none; border-radius: 5px; cursor: pointer;">
+                    <button type="button" class="teacher-only" id="btnOpenStudentSgf" style="padding: 4px 8px; font-size: 12px; font-weight: bold; background: #0284c7; color: #fff; border: none; border-radius: 5px; cursor: pointer;">
                         📂 SGFファイルを開く
                     </button>
                     <input type="file" id="studentFileImportSgf" accept="text/plain,.sgf,application/x-go-sgf" style="position: absolute; left: -9999px; opacity: 0;">
 
         </div>
-                    <button type="button" id="btnSetProblemPath" style="padding: 4px 8px; font-size: 12px; font-weight: bold; background: #475569; color: #fff; border: none; border-radius: 5px; cursor: pointer;">
+                    <button type="button" class="teacher-only" id="btnSetProblemPath" style="padding: 4px 8px; font-size: 12px; font-weight: bold; background: #475569; color: #fff; border: none; border-radius: 5px; cursor: pointer;">
                         🌐 パス設定
                     </button>
-                   <button type="button" id="btnPasteSgfText" style="padding: 4px 8px; font-size: 12px; font-weight: bold; background: #0d9488; color: #fff; border: none; border-radius: 5px; cursor: pointer;">📋 文字貼付で読込
+                   <button type="button" class="teacher-only" id="btnPasteSgfText" style="padding: 4px 8px; font-size: 12px; font-weight: bold; background: #0d9488; color: #fff; border: none; border-radius: 5px; cursor: pointer;">📋 文字貼付で読込
                    </button>
-                   <a href="kifu_conv.html" target="_blank" style="padding:4px 8px;font-size:12px;font-weight:bold;background:#7c3aed;color:#fff;text-decoration:none;border-radius:5px;display:inline-block;">🔄 数字譜 ⇔ 文字譜</a>
+                   <a href="kifu_conv.html" target="_blank" class="teacher-only" style="padding:4px 8px;font-size:12px;font-weight:bold;background:#7c3aed;color:#fff;text-decoration:none;border-radius:5px;display:inline-block;">🔄 数字譜 ⇔ 文字譜</a>
 
             </div>
             <!-- 折りたたみ本体（問題を選んだら自動で閉じる./default_problems.sgf） -->
@@ -356,7 +357,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
                 <div class="board-grid" id="boardGrid"></div>
             </div>
             <div class="judge-banner judge-normal" id="judgeBanner">
-                右側の「問題保存庫」から問題を選択してください（黒先）
+                上の「📚 問題を開く ▼」ボタンを押して、解きたい問題をえらんでください
             </div>
         </div>
 
@@ -367,9 +368,9 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
             <div class="panel-section teacher-only">
                 <div class="section-title">✏️ 新しい詰碁を保存庫に登録する</div>
 
-                <!-- 【手順1】盤面サイズと初期化 -->
+                <!-- 【作図1】盤面サイズと初期化 -->
                 <div style="font-size: 12px; font-weight: bold; color: #0369a1; margin-bottom: 4px;">
-                    【手順1】盤面サイズを選ぶ（やり直す時はクリア）
+                    【作図1】盤面サイズを選ぶ（やり直す時はクリア）
                 </div>
 
                     <select id="createBoardSize" onchange="changeBoardSizeDirect(this.value)" style="flex: 1; padding: 6px; border-radius: 5px; border: 1px solid #cbd5e1; font-weight: bold;">
@@ -381,29 +382,29 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
                     <button type="button" id="btnClearCreate" class="btn-secondary" style="background-color: #64748b;">🧹 盤面クリア</button>
                 </div>
 
-                <!-- 【手順2】問題図の配置 -->
+                <!-- 【作図2】問題図の配置 -->
                 <div style="font-size: 12px; font-weight: bold; color: #0369a1; margin-bottom: 4px;">
-                    【手順2】碁盤をクリックして問題図（黒石・白石）を置く
+                    【作図2】碁盤をクリックして問題図（黒石・白石）を置く
                 </div>
                 <div style="font-size: 11px; color: #475569; margin-bottom: 10px; background: #f8fafc; padding: 5px 8px; border-radius: 4px; border: 1px solid #e2e8f0;">
                     <label style="cursor:pointer;margin-right:12px;font-weight:bold;"><input type="radio" name="createColor" value="B" checked> ⚫ 黒石を連続配置</label><label style="cursor:pointer;font-weight:bold;"><input type="radio" name="createColor" value="W"> ⚪ 白石を連続配置</label>
                 </div>
-                <!-- 【手順3】手番選択 -->
+                <!-- 【作図3】手番選択 -->
                 <div style="font-size: 12px; font-weight: bold; color: #0369a1; margin-bottom: 4px;">
-                    【手順3】最初の1手（出題の手番）を選ぶ
+                    【作図3】最初の1手（出題の手番）を選ぶ
                 </div>
                 <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 10px; font-size: 13px; background: #f1f5f9; padding: 6px 8px; border-radius: 5px;">
                     <label><input type="radio" name="problemTurn" value="B" checked> ⚫ 黒先（黒①）</label>
                     <label><input type="radio" name="problemTurn" value="W"> ⚪ 白先（白①）</label>
                 </div>
 
-                <!-- 【手順4】正解手順の記録開始・打ち込み -->
+                <!-- 【作図4】正解手順の記録開始・打ち込み -->
                 <div style="font-size: 12px; font-weight: bold; color: #0369a1; margin-bottom: 4px;">
-                    【手順4】問題図を確定して正解手順（①〜）を打ち込む
+                    【作図4】問題図を確定して正解手順（①〜）を打ち込む
                 </div>
                 <div class="btn-group" style="flex-direction: column; gap: 6px; margin-bottom: 10px;">
                     <button type="button" class="btn-warning" id="btnStartRecordAnswer" style="width: 100%; font-weight: bold;">
-                        ▶️ 【手順4-1】ここを押してから正解手順（①〜）を打つ
+                        ▶️ 【作図4-1】ここを押してから正解手順（①〜）を打つ
                     </button>
                     <button type="button" id="btnUndoRecordMove" class="btn-secondary" style="width: 100%; display: none; background-color: #64748b;">
                         ↩️ 【やり直し】正解手順を1手戻る
@@ -412,7 +413,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
                         ➕ 【四隅用】次の問題箇所（別の①〜）を続けて記録
                     </button>
                     <button type="button" id="btnFinishRecordMoves" class="btn-primary" style="width: 100%; display: none; background-color: #059669; font-weight: bold;">
-                        ✅ 【手順4-2】手順の打ち込みを終了（確定）する
+                        ✅ 【作図4-2】手順の打ち込みを終了（確定）する
                     </button>
                 </div>
 
@@ -421,7 +422,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
                     <div id="branchCountInfo" style="font-size: 12px; font-weight: bold; color: #0369a1; margin-bottom: 6px;">現在 1 箇所目（右上=Ⓐ / 右下=Ⓑ / 左下=Ⓒ / 左上=Ⓓ）を記録中</div>
                     
                     <div style="font-size: 12px; font-weight: bold; color: #0369a1; margin-bottom: 4px;">
-                        【手順5】タイトル・ヒント・難易度（倉庫）を入力
+                        【作図5】タイトル・ヒント・難易度（倉庫）を入力
                     </div>
                     <input type="text" id="inputProblemTitle" placeholder="問題タイトル（例：初級死活 第1問）" style="width: 100%; padding: 6px; box-sizing: border-box; margin-bottom: 6px;">
 
@@ -452,8 +453,8 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
                         </label>
                     </div>
 
-                    <button type="button" id="btnSaveProblem" class="btn-primary" style="width: 100%; margin-top: 8px; background-color: #16a34a; font-size: 14px; font-weight: bold;">
-                        💾 【手順6】問題保存庫に登録して完了！
+                    <button type="button" id="btnSaveToLibrary" class="btn-primary" style="width: 100%; margin-top: 8px; background-color: #16a34a; font-size: 14px; font-weight: bold;">
+                        💾 【作図6】問題保存庫に登録して完了！
                     </button>
                 </div>
 
@@ -1413,7 +1414,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
  }
             // C. 詰碁解答モード（solve：A・B・C・D選択＆白先・黒先混在完全対応）
             if (mode === "solve") {
-                if (!currentProblem) return alert("右側の「問題保存庫」から問題を選んでください。");
+                if (!currentProblem) return alert("上の「📚 問題を開く ▼」ボタンを押して、解きたい問題をえらんでください。");
                 if (isSolved) return;
                 if (existing) return;
 
@@ -1817,7 +1818,7 @@ createBoardSize.addEventListener('change', () => {
             const btnFinish = document.getElementById('btnFinishRecordMoves');
             if (btnFinish) btnFinish.style.display = "none";
 
-            alert(`「${title}」（${selectedLevel}・全${finalBranches.length}問）を問題保存庫に登録しました！`);
+            alert(`✅ 問題保存庫に登録しました！\n\n・問題名：${title}\n・保存先倉庫：${selectedLevel}（全${finalBranches.length}問）\n・保存場所：ブラウザ内問題保存庫（localStorage）\n※パソコンにファイル保存したい場合は下の「📤 出題中の問題をSGFで保存」を押してください。`);
             startProblem(newProblem);
         });
 
@@ -2128,9 +2129,7 @@ createBoardSize.addEventListener('change', () => {
         if (window.location.href.indexOf('teacher=1') !== -1) {
             localStorage.setItem(TEACHER_AUTH_KEY, "true");
         }
-        if (localStorage.getItem(TEACHER_AUTH_KEY) === "true") {
-            document.body.classList.add('can-teacher');
-        }
+        // 起動時は常に生徒画面から開始（5連打で先生モードへ）
 
         // 📱 携帯用ショートカット：一番上の「🧩 囲碁・詰碁＆問題保存庫」を素早く5回タップで先生ボタン出現
         let titleTapCount = 0;
@@ -2142,8 +2141,7 @@ createBoardSize.addEventListener('change', () => {
             if (titleTapCount >= 5) {
                 titleTapCount = 0;
                 localStorage.setItem(TEACHER_AUTH_KEY, "true");
-                document.body.classList.add('can-teacher');
-                alert("先生用端末として記憶しました！右上の「🔧 先生用」ボタンから作成・管理ができます。");
+                document.body.classList.add('can-teacher'); document.body.classList.add('teacher-mode'); const btnT = document.getElementById('btnToggleTeacherMode'); if (btnT) { btnT.textContent = '🧒 生徒画面に戻す'; btnT.style.backgroundColor = '#dc2626'; } alert('🔧 先生モードに切り替えました！\n（生徒画面に戻すときは、赤い「🧒 生徒画面に戻す」ボタンを押してください）');
             }
         });
         // 🛠️ 現在の保存庫の全問題を「初期必須問題（DEFAULT_PROBLEMS）」の完成コードとしてコピー（キャンセルボタン付き）
@@ -2387,7 +2385,7 @@ createBoardSize.addEventListener('change', () => {
             if (savedPath) {
                 pathInfo.textContent = `🌐 設定中の問題パス： ${savedPath}`;
             } else if (window.location.protocol === 'file:') {
-             pathInfo.textContent = `💡 パソコン内のファイルを開くときは、すぐ上の青いボタン「📂 SGFファイルを開く」からファイルを選んでください`;
+             pathInfo.textContent = `💡 解きたい問題のボタンを押すと、すぐ上の碁盤に問題が表示されます（選んだあとは自動で閉じます）`;
             } else {
                 pathInfo.textContent = `🌐 自動読込パス： ./default_problems.sgf`;
             }
@@ -2880,23 +2878,35 @@ document.getElementById('btnPasteSgfText')?.addEventListener('click', () => {
             alert(`9路・13路盤の座標を自動変換し、「${mergedProblem.title}」（19路盤・全${mergedBranches.length}問）を「${finalLevel}」倉庫に登録しました！`);
         }
         // 📤 出題中の問題（または現在盤面に出ている問題）を1問だけSGFで保存する
-        function exportCurrentProblemNow() {
+        async function saveSgfWithPicker(sgfText, fileName, label) {
+            if (window.showSaveFilePicker) {
+                try {
+                    const handle = await window.showSaveFilePicker({
+                        suggestedName: fileName,
+                        types: [{ description: "SGF 囲碁問題・棋譜ファイル", accept: { "application/x-go-sgf": [".sgf"], "text/plain": [".sgf"] } }]
+                    });
+                    const w = await handle.createWritable();
+                    await w.write(sgfText);
+                    await w.close();
+                    alert("✅ 指定した保管庫フォルダに「" + handle.name + "」を保存しました！");
+                    return;
+                } catch (e) { if (e && e.name === "AbortError") return; }
+            }
+            const url = URL.createObjectURL(new Blob([sgfText], { type: "application/octet-stream" }));
+            const a = document.createElement("a");
+            a.href = url; a.download = fileName;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            alert("✅ 「" + fileName + "」をダウンロードフォルダに保存しました！");
+        }
+        async function exportCurrentProblemNow() {
             const targetProb = currentProblem || (library && library.length > 0 ? library.at(0) : null);
             if (!targetProb) {
                 return alert("保存する問題が選ばれていません。保存庫から問題を選んでから押してください。");
             }
             const sgf = buildSingleProblemSgf(targetProb);
-            const blob = new Blob(Array.of(sgf), { type: "application/octet-stream" });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.href = url;
             const safeTitle = (targetProb.title || "tsumego_problem").replace(/[\\/:*?"<>|]/g, "_");
-            link.download = safeTitle + ".sgf";
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-            alert("「" + targetProb.title + "」を " + safeTitle + ".sgf としてダウンロードしました！");
+            await saveSgfWithPicker(sgf, safeTitle + ".sgf", targetProb.title);
         }
         // 📥 SGFファイル（1問でも複数問でもOK）を確実に読み込んで保存庫＆盤面へ反映する
         function importSgfFileDirect(input) {
@@ -3035,7 +3045,7 @@ document.getElementById('btnPasteSgfText')?.addEventListener('click', () => {
         }
 
         // 📦 パソコンに日時付きのファイル名で保存（(1)(2)が付かず最新が一目でわかる）
-        function exportAllProblemsWithDate() {
+        async function exportAllProblemsWithDate() {
             if (!library || library.length === 0) {
                 return alert("保存庫に問題が登録されていません。");
             }
@@ -3045,15 +3055,7 @@ document.getElementById('btnPasteSgfText')?.addEventListener('click', () => {
             const stamp = `${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}`;
             const fileName = `tsumego_backup_${stamp}.sgf`;
 
-            const blob = new Blob(Array.of(allSgf), { type: "application/octet-stream" });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = fileName;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
+            await saveSgfWithPicker(allSgf, fileName, "全問題バックアップ");
             alert(`✅ パソコンのダウンロードフォルダに「${fileName}」（全${library.length}問）を保存しました！`);
         }
    </script>
