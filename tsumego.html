@@ -174,7 +174,7 @@
             }
         }
         /* 🧒 通常時（小学生・演習モード）：作成パネル・SGF管理・削除ボタン・マニュアルを隠して超シンプルにする */
-        body:not(.teacher-mode) .teacher-only,
+        html body:not(.teacher-mode) .teacher-only, body:not(.teacher-mode) button.teacher-only, body:not(.teacher-mode) a.teacher-only,
         body:not(.teacher-mode) .btn-danger,
         body:not(.teacher-mode) #btnResetDefault,
         body:not(.teacher-mode) #btnToggleManual,
@@ -223,7 +223,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
 }
 </script>
 </head>
-<body>
+<body onload="document.body.classList.remove('teacher-mode')">
 
     <h1>🧩 詰碁・問題＆保存庫</h1>
 
@@ -243,9 +243,10 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
             <button id="btnToggleManual" type="button" onclick="const box = document.getElementById('tsumegoManualBox'); const isHidden = box.style.display === 'none'; box.style.display = isHidden ? 'block' : 'none'; this.textContent = isHidden ? '📕 マニュアル閉じる' : '📖 操作マニュアル';" style="flex: 1; background-color: #4a5568; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer; white-space: nowrap;">
                 📖 操作マニュアル
             </button>
-            <button id="btnToggleTeacherMode" type="button" onclick="const isTeacher = document.body.classList.toggle('teacher-mode'); this.textContent = isTeacher ? '🧒 生徒画面に戻す' : '🔧 先生用（作成・管理）'; this.style.backgroundColor = isTeacher ? '#dc2626' : '#64748b';" style="flex: 0 0 auto; background-color: #64748b; color: white; border: none; padding: 10px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; white-space: nowrap;">
+            <button id="btnToggleTeacherMode" type="button" onclick="const isTeacher = document.body.classList.toggle('teacher-mode'); if (!isTeacher) document.body.classList.remove('can-teacher'); this.textContent = isTeacher ? '🧒 生徒画面に戻す' : '🔧 先生用（作成・管理）'; this.style.backgroundColor = isTeacher ? '#dc2626' : '#64748b';" style="flex: 0 0 auto; background-color: #64748b; color: white; border: none; padding: 10px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; white-space: nowrap;">
                 🔧 先生用（作成・管理）
             </button>
+            <button type="button" class="teacher-only" onclick="location.href='katrain://launch'" style="flex: 0 0 auto; background-color: #0f766e; color: white; border: none; padding: 10px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; white-space: nowrap;">🤖 KaTrain起動</button>
         </div>
 
         <!-- 🅰️🅱️ 碁盤の外側（上部）に配置する「問題選択（A・B・C・D）＆ヒント表示バー」 -->
@@ -261,10 +262,10 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
         <div id="hintDisplayBox" style="display: none; margin-top: 6px; padding: 8px 12px; background: #fffbeb; border-left: 4px solid #f59e0b; border-radius: 4px; font-size: 13px; color: #78350f;"></div>
         <!-- 生徒用：はじめてでも迷わない3ステップ案内 -->
         <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 8px 12px; margin-top: 6px; margin-bottom: 6px; font-size: 12.5px; color: #0c4a6e; line-height: 1.6; text-align: left;">
-            <div style="font-weight: bold; margin-bottom: 2px; color: #0369a1;">🔰 つかいかた（3ステップ）</div>
-            <div><b>【ステップ1】</b> 下の「📚 問題を開く」を押して、解きたい問題（初級・中級など）をえらびます。</div>
-            <div><b>【ステップ2】</b> 碁盤の打ちたい場所をタップ（クリック）して、正解の手順を打ちます。</div>
-            <div><b>【ステップ3】</b> わからない時は「💡 ヒント」、やり直す時は「🔄 最初からやり直す」を押します。</div>
+            <div style="font-weight: bold; margin-bottom: 2px; color: #0369a1;">🔰 問題の解きかた（やりかた）</div>
+            <div><b>①</b> 下の「📚 問題を開く」を押して、解きたい問題（初級・中級など）をえらびます。</div>
+            <div><b>②</b> 碁盤の打ちたい場所をタップ（クリック）して、正解の手順を打ちます。</div>
+            <div><b>③</b> わからない時は「💡 ヒント」、やり直す時は「🔄 最初からやり直す」を押します。</div>
         </div>
   <!-- 🏠 トップページへ戻るバー（独立配置・くっきり視認性） -->
         <div style="margin-top: 6px; margin-bottom: 4px; display: flex; justify-content: flex-start;">
@@ -273,7 +274,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
             </button>
 
       <!-- 🏠 才美プリンターへ移動バー（独立配置・くっきり視認性） -->
-                    <button type="button" onclick="location.href='./saibiprint.html'" style="padding: 6px 14px; font-size: 13px; font-weight: bold; background: #b45309; color: #ffffff; border: none; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);">
+                    <button type="button" class="teacher-only" onclick="location.href='./saibiprint.html'" style="padding: 6px 14px; font-size: 13px; font-weight: bold; background: #b45309; color: #ffffff; border: none; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);">
                 🏠 才美プリンターページへ
                 
             </button>
@@ -303,18 +304,18 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
                         <option value="対局棋譜">対局棋譜（問題倉庫）</option>
                     </select>
 
-                    <button type="button" id="btnOpenStudentSgf" style="padding: 4px 8px; font-size: 12px; font-weight: bold; background: #0284c7; color: #fff; border: none; border-radius: 5px; cursor: pointer;">
+                    <button type="button" class="teacher-only" id="btnOpenStudentSgf" style="padding: 4px 8px; font-size: 12px; font-weight: bold; background: #0284c7; color: #fff; border: none; border-radius: 5px; cursor: pointer;">
                         📂 SGFファイルを開く
                     </button>
                     <input type="file" id="studentFileImportSgf" accept="text/plain,.sgf,application/x-go-sgf" style="position: absolute; left: -9999px; opacity: 0;">
 
         </div>
-                    <button type="button" id="btnSetProblemPath" style="padding: 4px 8px; font-size: 12px; font-weight: bold; background: #475569; color: #fff; border: none; border-radius: 5px; cursor: pointer;">
+                    <button type="button" class="teacher-only" id="btnSetProblemPath" style="padding: 4px 8px; font-size: 12px; font-weight: bold; background: #475569; color: #fff; border: none; border-radius: 5px; cursor: pointer;">
                         🌐 パス設定
                     </button>
-                   <button type="button" id="btnPasteSgfText" style="padding: 4px 8px; font-size: 12px; font-weight: bold; background: #0d9488; color: #fff; border: none; border-radius: 5px; cursor: pointer;">📋 文字貼付で読込
+                   <button type="button" class="teacher-only" id="btnPasteSgfText" style="padding: 4px 8px; font-size: 12px; font-weight: bold; background: #0d9488; color: #fff; border: none; border-radius: 5px; cursor: pointer;">📋 文字貼付で読込
                    </button>
-                   <a href="kifu_conv.html" target="_blank" style="padding:4px 8px;font-size:12px;font-weight:bold;background:#7c3aed;color:#fff;text-decoration:none;border-radius:5px;display:inline-block;">🔄 数字譜 ⇔ 文字譜</a>
+                   <a href="kifu_conv.html" target="_blank" class="teacher-only" style="padding:4px 8px;font-size:12px;font-weight:bold;background:#7c3aed;color:#fff;text-decoration:none;border-radius:5px;display:inline-block;">🔄 数字譜 ⇔ 文字譜</a>
 
             </div>
             <!-- 折りたたみ本体（問題を選んだら自動で閉じる./default_problems.sgf） -->
@@ -356,7 +357,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
                 <div class="board-grid" id="boardGrid"></div>
             </div>
             <div class="judge-banner judge-normal" id="judgeBanner">
-                右側の「問題保存庫」から問題を選択してください（黒先）
+                上の「📚 問題を開く ▼」ボタンを押して、解きたい問題をえらんでください
             </div>
         </div>
 
@@ -367,11 +368,12 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
             <div class="panel-section teacher-only">
                 <div class="section-title">✏️ 新しい詰碁を保存庫に登録する</div>
 
-                <!-- 【手順1】盤面サイズと初期化 -->
+                <!-- 【作図1】盤面サイズと初期化 -->
                 <div style="font-size: 12px; font-weight: bold; color: #0369a1; margin-bottom: 4px;">
-                    【手順1】盤面サイズを選ぶ（やり直す時はクリア）
+                    【作図1】盤面サイズを選ぶ（やり直す時はクリア）
                 </div>
 
+                    <div style="display: flex; gap: 6px; margin-bottom: 10px;">
                     <select id="createBoardSize" onchange="changeBoardSizeDirect(this.value)" style="flex: 1; padding: 6px; border-radius: 5px; border: 1px solid #cbd5e1; font-weight: bold;">
 
                         <option value="9">9路盤</option>
@@ -381,29 +383,29 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
                     <button type="button" id="btnClearCreate" class="btn-secondary" style="background-color: #64748b;">🧹 盤面クリア</button>
                 </div>
 
-                <!-- 【手順2】問題図の配置 -->
+                <!-- 【作図2】問題図の配置 -->
                 <div style="font-size: 12px; font-weight: bold; color: #0369a1; margin-bottom: 4px;">
-                    【手順2】碁盤をクリックして問題図（黒石・白石）を置く
+                    【作図2】碁盤をクリックして問題図（黒石・白石）を置く
                 </div>
                 <div style="font-size: 11px; color: #475569; margin-bottom: 10px; background: #f8fafc; padding: 5px 8px; border-radius: 4px; border: 1px solid #e2e8f0;">
                     <label style="cursor:pointer;margin-right:12px;font-weight:bold;"><input type="radio" name="createColor" value="B" checked> ⚫ 黒石を連続配置</label><label style="cursor:pointer;font-weight:bold;"><input type="radio" name="createColor" value="W"> ⚪ 白石を連続配置</label>
                 </div>
-                <!-- 【手順3】手番選択 -->
+                <!-- 【作図3】手番選択 -->
                 <div style="font-size: 12px; font-weight: bold; color: #0369a1; margin-bottom: 4px;">
-                    【手順3】最初の1手（出題の手番）を選ぶ
+                    【作図3】最初の1手（出題の手番）を選ぶ
                 </div>
                 <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 10px; font-size: 13px; background: #f1f5f9; padding: 6px 8px; border-radius: 5px;">
                     <label><input type="radio" name="problemTurn" value="B" checked> ⚫ 黒先（黒①）</label>
                     <label><input type="radio" name="problemTurn" value="W"> ⚪ 白先（白①）</label>
                 </div>
 
-                <!-- 【手順4】正解手順の記録開始・打ち込み -->
+                <!-- 【作図4】正解手順の記録開始・打ち込み -->
                 <div style="font-size: 12px; font-weight: bold; color: #0369a1; margin-bottom: 4px;">
-                    【手順4】問題図を確定して正解手順（①〜）を打ち込む
+                    【作図4】問題図を確定して正解手順（①〜）を打ち込む
                 </div>
                 <div class="btn-group" style="flex-direction: column; gap: 6px; margin-bottom: 10px;">
                     <button type="button" class="btn-warning" id="btnStartRecordAnswer" style="width: 100%; font-weight: bold;">
-                        ▶️ 【手順4-1】ここを押してから正解手順（①〜）を打つ
+                        ▶️ 【作図4-1】ここを押してから正解手順（①〜）を打つ
                     </button>
                     <button type="button" id="btnUndoRecordMove" class="btn-secondary" style="width: 100%; display: none; background-color: #64748b;">
                         ↩️ 【やり直し】正解手順を1手戻る
@@ -412,8 +414,21 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
                         ➕ 【四隅用】次の問題箇所（別の①〜）を続けて記録
                     </button>
                     <button type="button" id="btnFinishRecordMoves" class="btn-primary" style="width: 100%; display: none; background-color: #059669; font-weight: bold;">
-                        ✅ 【手順4-2】手順の打ち込みを終了（確定）する
+                        ✅ 【作図4-2】手順の打ち込みを終了（確定）する
                     </button>
+                    <div style="margin-top: 4px; padding: 6px; background: #fff7ed; border: 1px solid #fdba74; border-radius: 5px; display: flex; flex-direction: column; gap: 5px;">
+                        <div style="font-size: 11px; font-weight: bold; color: #9a3412;">🛠️ いつでも手直し（他の隅の手順は消えません）</div>
+                        <button type="button" id="btnEditSetupAnytime" onclick="toggleEditSetupAnytime()" style="width: 100%; padding: 6px; font-size: 12px; font-weight: bold; background: #ea580c; color: #fff; border: none; border-radius: 4px; cursor: pointer;">
+                            🪨 置き石（問題図）をいつでも修正する
+                        </button>
+                        <select onchange="replaceCornerBranch(this)" style="width: 100%; padding: 6px; font-size: 12px; font-weight: bold; background: #fff; color: #9a3412; border: 1px solid #fb923c; border-radius: 4px; cursor: pointer;">
+                            <option value="">🎯 記号(A/B/C/D)を選んでその隅だけ打ち直す ▼</option>
+                            <option value="A">Ⓐ（右上）の手順を消して打ち直す</option>
+                            <option value="B">Ⓑ（右下）の手順を消して打ち直す</option>
+                            <option value="C">Ⓒ（左下）の手順を消して打ち直す</option>
+                            <option value="D">Ⓓ（左上）の手順を消して打ち直す</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div id="saveFormArea" style="display: block; margin-top: 10px; border-top: 2px solid #0284c7; border-radius: 6px; padding: 8px; background: #f8fafc;">
@@ -421,7 +436,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
                     <div id="branchCountInfo" style="font-size: 12px; font-weight: bold; color: #0369a1; margin-bottom: 6px;">現在 1 箇所目（右上=Ⓐ / 右下=Ⓑ / 左下=Ⓒ / 左上=Ⓓ）を記録中</div>
                     
                     <div style="font-size: 12px; font-weight: bold; color: #0369a1; margin-bottom: 4px;">
-                        【手順5】タイトル・ヒント・難易度（倉庫）を入力
+                        【作図5】タイトル・ヒント・難易度（倉庫）を入力
                     </div>
                     <input type="text" id="inputProblemTitle" placeholder="問題タイトル（例：初級死活 第1問）" style="width: 100%; padding: 6px; box-sizing: border-box; margin-bottom: 6px;">
 
@@ -439,9 +454,9 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
                     <div id="levelSelectBox" style="margin-bottom: 8px; padding: 6px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 12px;">
                         <label style="font-weight: bold; color: #0f172a; display: block; margin-bottom: 3px;">📊 保存先の倉庫（難易度）：</label>
                         <select id="selectProblemLevel" style="width: 100%; padding: 5px; border-radius: 4px; border: 1px solid #94a3b8;">
-                            <option value="初級">初級</option>
-                            <option value="中級">中級</option>
-                            <option value="上級">上級</option>
+                            <option value="初級（8〜10級）">初級（8〜10級）</option>
+                            <option value="中級（4〜7級）">中級（4〜7級）</option>
+                            <option value="上級（1〜3級）">上級（1〜3級）</option>
                             <option value="有段者">有段者</option>
                             <option value="プロ級">プロ級</option>
                             <option value="総合">総合</option>
@@ -452,8 +467,8 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
                         </label>
                     </div>
 
-                    <button type="button" id="btnSaveProblem" class="btn-primary" style="width: 100%; margin-top: 8px; background-color: #16a34a; font-size: 14px; font-weight: bold;">
-                        💾 【手順6】問題保存庫に登録して完了！
+                    <button type="button" id="btnSaveToLibrary" class="btn-primary" style="width: 100%; margin-top: 8px; background-color: #16a34a; font-size: 14px; font-weight: bold;">
+                        💾 【作図6】問題保存庫に登録して完了！
                     </button>
                 </div>
 
@@ -1413,7 +1428,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
  }
             // C. 詰碁解答モード（solve：A・B・C・D選択＆白先・黒先混在完全対応）
             if (mode === "solve") {
-                if (!currentProblem) return alert("右側の「問題保存庫」から問題を選んでください。");
+                if (!currentProblem) return alert("上の「📚 問題を開く ▼」ボタンを押して、解きたい問題をえらんでください。");
                 if (isSolved) return;
                 if (existing) return;
 
@@ -1817,12 +1832,19 @@ createBoardSize.addEventListener('change', () => {
             const btnFinish = document.getElementById('btnFinishRecordMoves');
             if (btnFinish) btnFinish.style.display = "none";
 
-            alert(`「${title}」（${selectedLevel}・全${finalBranches.length}問）を問題保存庫に登録しました！`);
+            alert(`✅ 問題保存庫に登録しました！\n・問題名：${title}\n・保存先倉庫：${selectedLevel}（全${finalBranches.length}問）`);
             startProblem(newProblem);
         });
 
         // 8. 初期起動処理
         window.addEventListener('DOMContentLoaded', () => {
+            if (typeof loadLibrary === 'function') loadLibrary();
+            if (!library || library.length === 0) {
+                library = JSON.parse(JSON.stringify(DEFAULT_PROBLEMS));
+                if (typeof saveLibrary === 'function') saveLibrary();
+                if (typeof renderLibraryList === 'function') renderLibraryList();
+            }
+            if (typeof renderStudentProblemGrid === 'function') renderStudentProblemGrid();
             const targetUrl = localStorage.getItem(CUSTOM_SGF_PATH_KEY) || './default_problems.sgf';
             if (window.location.protocol === 'file:' && !targetUrl.startsWith('http')) {
                 if (library && library.length > 0) startProblem(library.at(0));
@@ -2128,9 +2150,7 @@ createBoardSize.addEventListener('change', () => {
         if (window.location.href.indexOf('teacher=1') !== -1) {
             localStorage.setItem(TEACHER_AUTH_KEY, "true");
         }
-        if (localStorage.getItem(TEACHER_AUTH_KEY) === "true") {
-            document.body.classList.add('can-teacher');
-        }
+        // 起動時は常に生徒画面から開始（5連打で先生モードへ）
 
         // 📱 携帯用ショートカット：一番上の「🧩 囲碁・詰碁＆問題保存庫」を素早く5回タップで先生ボタン出現
         let titleTapCount = 0;
@@ -2142,9 +2162,7 @@ createBoardSize.addEventListener('change', () => {
             if (titleTapCount >= 5) {
                 titleTapCount = 0;
                 localStorage.setItem(TEACHER_AUTH_KEY, "true");
-                document.body.classList.add('can-teacher');
-                alert("先生用端末として記憶しました！右上の「🔧 先生用」ボタンから作成・管理ができます。");
-            }
+                document.body.classList.add('can-teacher'); document.body.classList.add('teacher-mode'); const btnT = document.getElementById('btnToggleTeacherMode'); if (btnT) { btnT.textContent = '🧒 生徒画面に戻す'; btnT.style.backgroundColor = '#dc2626'; } alert('🔧 先生モードに切り替えました！\n（生徒画面に戻すときは、赤い「🧒 生徒画面に戻す」ボタンを押してください）'); }
         });
         // 🛠️ 現在の保存庫の全問題を「初期必須問題（DEFAULT_PROBLEMS）」の完成コードとしてコピー（キャンセルボタン付き）
         document.getElementById('btnCopyDefaultCode')?.addEventListener('click', () => {
@@ -2250,7 +2268,7 @@ createBoardSize.addEventListener('change', () => {
             const selectedLevel = filterEl ? filterEl.value : "ALL";
             const filtered = (selectedLevel === "ALL")
                 ? library
-                : library.filter(p => (p.level || "初級（8〜10級）") === selectedLevel);
+                : library.filter(p => { const lv = p.level || "初級（8〜10級）"; return lv === selectedLevel || selectedLevel.startsWith(lv) || lv.startsWith(selectedLevel.split("（")[0]); });
 
             grid.innerHTML = "";
 
@@ -2260,7 +2278,13 @@ createBoardSize.addEventListener('change', () => {
             }
 
             if (filtered.length === 0) {
-                grid.innerHTML = `<div style="grid-column: 1 / -1; font-size: 12px; color: #475569; padding: 6px;">「${selectedLevel}」の問題はまだありません。</div>`;
+                grid.innerHTML = `<div style="grid-column: 1 / -1; font-size: 12px; color: #b91c1c; font-weight: bold; padding: 6px;">「${selectedLevel}」の問題はまだ登録されていません。別のクラスをえらんでください。</div>`;
+                if (selectedLevel !== "ALL") {
+                    currentProblem = null;
+                    boardStones = [];
+                    if (typeof initBoard === 'function') initBoard();
+                    if (typeof setBanner === 'function') setBanner(`「${selectedLevel}」の問題はまだありません（別のクラスをえらんでください）`, "judge-normal");
+                }
                 return;
             }
 
@@ -2387,7 +2411,7 @@ createBoardSize.addEventListener('change', () => {
             if (savedPath) {
                 pathInfo.textContent = `🌐 設定中の問題パス： ${savedPath}`;
             } else if (window.location.protocol === 'file:') {
-             pathInfo.textContent = `💡 パソコン内のファイルを開くときは、すぐ上の青いボタン「📂 SGFファイルを開く」からファイルを選んでください`;
+             pathInfo.textContent = `💡 解きたい問題のボタンを押すと、すぐ上の碁盤に問題が表示されます（選んだあとは自動で閉じます）`;
             } else {
                 pathInfo.textContent = `🌐 自動読込パス： ./default_problems.sgf`;
             }
@@ -3079,5 +3103,49 @@ document.getElementById('btnPasteSgfText')?.addEventListener('click', () => {
           });
       })();
     </script>
+<script>
+let savedBranchesBackup = null;
+let savedCurrentMovesBackup = null;
+
+function rebuildRecordBoardDisplay() {
+  boardStones = tempSetupStones.map(s => ({ x: s.x, y: s.y, color: s.color, moveNum: 0 }));
+  tempBranches.forEach(br => br.forEach((m, i) => { boardStones.push({ x: m.x, y: m.y, color: m.color, moveNum: i + 1 }); boardStones = applyCapture(boardStones, m.x, m.y, m.color); }));
+  tempSolutionMoves.forEach((m, i) => { boardStones.push({ x: m.x, y: m.y, color: m.color, moveNum: i + 1 }); boardStones = applyCapture(boardStones, m.x, m.y, m.color); });
+  renderBoard();
+}
+
+function toggleEditSetupAnytime() {
+  const btn = document.getElementById('btnEditSetupAnytime');
+  if (mode === "record") {
+    savedBranchesBackup = [...tempBranches]; savedCurrentMovesBackup = [...tempSolutionMoves];
+    mode = "setup"; boardStones = tempSetupStones.map(s => ({ x: s.x, y: s.y, color: s.color, moveNum: 0 })); renderBoard();
+    if (btn) { btn.textContent = "✅ 置き石の修正を完了（手順へ戻る）"; btn.style.backgroundColor = "#16a34a"; }
+    setBanner("【置き石の修正中】黒石・白石の追加・削除ができます（終わったら緑の完了ボタンを押してください）", "judge-create");
+  } else if (mode === "setup" && savedBranchesBackup !== null) {
+    tempSetupStones = boardStones.map(s => ({ x: s.x, y: s.y, color: s.color }));
+    tempBranches = savedBranchesBackup; tempSolutionMoves = savedCurrentMovesBackup || [];
+    savedBranchesBackup = null; savedCurrentMovesBackup = null; mode = "record"; rebuildRecordBoardDisplay();
+    if (btn) { btn.textContent = "🪨 置き石（問題図）をいつでも修正する"; btn.style.backgroundColor = "#ea580c"; }
+    setBanner("【置き石を反映しました】他の隅の正解手順も保持されています。続けて入力または確定できます", "judge-correct");
+  } else { alert("今はすでに問題図（置き石）を置く状態です。碁盤をクリックして黒石・白石を置いてください。"); }
+}
+function replaceCornerBranch(sel) {
+  const tc = sel.value; sel.value = "";
+  if (!tc) return;
+  if (mode !== "record" && savedBranchesBackup === null) return alert("先に【作図4-1】を押して手順記録モードに入ってから選択してください。");
+  if (mode === "setup" && savedBranchesBackup !== null) toggleEditSetupAnytime();
+  if (tempSolutionMoves.length > 0) { tempBranches.push([...tempSolutionMoves]); tempSolutionMoves = []; }
+  const mid = (boardSize - 1) / 2;
+  const names = { A: "Ⓐ（右上）", B: "Ⓑ（右下）", C: "Ⓒ（左下）", D: "Ⓓ（左上）" };
+  const before = tempBranches.length;
+  tempBranches = tempBranches.filter((br, i) => br && br.length > 0 && getQuadrantInfo(br.x, br.y, mid, i).symbol !== tc);
+  rebuildRecordBoardDisplay();
+  const infoEl = document.getElementById('branchCountInfo');
+  if (infoEl) infoEl.textContent = `✅ ${tempBranches.length}問保持中 ／ 現在「${names[tc]}」を打ち直し中`;
+  const sc = document.querySelector('input[name="problemTurn"]:checked')?.value || 'B';
+  setBanner(`【${names[tc]}の差し替え】${before > tempBranches.length ? "古い手順を削除しました。" : ""}${sc === 'W' ? '⚪白①' : '⚫黒①'}から打ち直してください`, "judge-create");
+}
+</script>
 </body>
+
 </html>
