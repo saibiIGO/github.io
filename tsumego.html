@@ -454,9 +454,9 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
                     <div id="levelSelectBox" style="margin-bottom: 8px; padding: 6px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 12px;">
                         <label style="font-weight: bold; color: #0f172a; display: block; margin-bottom: 3px;">📊 保存先の倉庫（難易度）：</label>
                         <select id="selectProblemLevel" style="width: 100%; padding: 5px; border-radius: 4px; border: 1px solid #94a3b8;">
-                            <option value="初級">初級</option>
-                            <option value="中級">中級</option>
-                            <option value="上級">上級</option>
+                            <option value="初級（8〜10級）">初級（8〜10級）</option>
+                            <option value="中級（4〜7級）">中級（4〜7級）</option>
+                            <option value="上級（1〜3級）">上級（1〜3級）</option>
                             <option value="有段者">有段者</option>
                             <option value="プロ級">プロ級</option>
                             <option value="総合">総合</option>
@@ -536,6 +536,9 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
                     <button type="button" id="btnCopyDefaultCode" class="btn-secondary" style="width: 100%; background-color: #b45309;">
                         🛠️ 初期問題コード（プログラム用）をコピー
                     </button>
+                    <button type="button" id="btnExportEmbeddedHtml" onclick="exportEmbeddedHtml()" class="btn-primary" style="width: 100%; margin-top: 6px; background-color: #0369a1;">
+                        💾 現在の問題集を埋め込んだ tsumego.html を保存
+                    </button>
                </div>
             </div>
                             <!-- 3. 問題保存庫（2列カードでコンパクトに表示） -->
@@ -594,33 +597,19 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
             },
             {
                 id: "default_2",
-                title: "必須・基本死活 第2問（急所の一撃・三目中手）",
+                title: "必須・手筋 第2問（オイオトシの基本）",
                 isMust: true,
-                size: 9,
-                setup: Array.of(
-                    { x: 0, y: 0, color: 'W' }, { x: 2, y: 0, color: 'W' }, { x: 0, y: 1, color: 'W' }, { x: 1, y: 1, color: 'W' }, { x: 2, y: 1, color: 'W' },
-                    { x: 3, y: 0, color: 'B' }, { x: 3, y: 1, color: 'B' }, { x: 3, y: 2, color: 'B' },
-                    { x: 2, y: 2, color: 'B' }, { x: 1, y: 2, color: 'B' }, { x: 0, y: 2, color: 'B' }
-                ),
-                solution: Array.of(
-                    { x: 1, y: 0, color: 'B' }
-                )
+                size: 13,
+                setup: Array.of({ x: 9, y: 0, color: 'B' }, { x: 8, y: 1, color: 'B' }, { x: 5, y: 2, color: 'B' }, { x: 4, y: 2, color: 'B' }, { x: 6, y: 3, color: 'B' }, { x: 7, y: 3, color: 'B' }, { x: 8, y: 3, color: 'B' }, { x: 9, y: 3, color: 'B' }, { x: 9, y: 2, color: 'B' }, { x: 9, y: 4, color: 'B' }, { x: 11, y: 1, color: 'W' }, { x: 10, y: 1, color: 'W' }, { x: 9, y: 1, color: 'W' }, { x: 10, y: 2, color: 'W' }, { x: 10, y: 3, color: 'W' }, { x: 10, y: 5, color: 'W' }, { x: 11, y: 5, color: 'W' }, { x: 9, y: 6, color: 'W' }, { x: 8, y: 5, color: 'W' }, { x: 6, y: 5, color: 'W' }, { x: 5, y: 4, color: 'W' }, { x: 5, y: 3, color: 'W' }, { x: 6, y: 2, color: 'W' }, { x: 7, y: 2, color: 'W' }, { x: 8, y: 2, color: 'W' }, { x: 7, y: 0, color: 'W' }),
+                solution: Array.of({ x: 6, y: 1, color: 'B' }, { x: 7, y: 1, color: 'W' }, { x: 6, y: 0, color: 'B' }, { x: 8, y: 0, color: 'W' }, { x: 8, y: 1, color: 'B' })
             },
             {
                 id: "default_3",
                 title: "必須・手筋 第3問（ウッテガエシの基本）",
                 isMust: true,
-                size: 9,
-                setup: Array.of(
-                    { x: 1, y: 0, color: 'W' }, { x: 0, y: 1, color: 'W' }, { x: 2, y: 1, color: 'W' },
-                    { x: 2, y: 0, color: 'B' }, { x: 3, y: 0, color: 'B' }, { x: 3, y: 1, color: 'B' },
-                    { x: 1, y: 2, color: 'B' }, { x: 2, y: 2, color: 'B' }, { x: 0, y: 2, color: 'B' }
-                ),
-                solution: Array.of(
-                    { x: 1, y: 1, color: 'B' },
-                    { x: 0, y: 0, color: 'W' },
-                    { x: 1, y: 1, color: 'B' }
-                )
+                size: 13,
+                setup: Array.of({ x: 9, y: 0, color: 'B' }, { x: 8, y: 1, color: 'B' }, { x: 5, y: 2, color: 'B' }, { x: 4, y: 2, color: 'B' }, { x: 6, y: 3, color: 'B' }, { x: 7, y: 3, color: 'B' }, { x: 8, y: 3, color: 'B' }, { x: 9, y: 3, color: 'B' }, { x: 9, y: 2, color: 'B' }, { x: 9, y: 4, color: 'B' }, { x: 11, y: 1, color: 'W' }, { x: 10, y: 1, color: 'W' }, { x: 9, y: 1, color: 'W' }, { x: 10, y: 2, color: 'W' }, { x: 10, y: 3, color: 'W' }, { x: 10, y: 5, color: 'W' }, { x: 11, y: 5, color: 'W' }, { x: 9, y: 6, color: 'W' }, { x: 8, y: 5, color: 'W' }, { x: 6, y: 5, color: 'W' }, { x: 5, y: 4, color: 'W' }, { x: 5, y: 3, color: 'W' }, { x: 6, y: 2, color: 'W' }, { x: 7, y: 2, color: 'W' }, { x: 8, y: 2, color: 'W' }, { x: 7, y: 0, color: 'W' }),
+                solution: Array.of({ x: 6, y: 1, color: 'B' }, { x: 7, y: 1, color: 'W' }, { x: 6, y: 0, color: 'B' }, { x: 8, y: 0, color: 'W' }, { x: 8, y: 1, color: 'B' })
             }
         );
 
@@ -2268,7 +2257,7 @@ createBoardSize.addEventListener('change', () => {
             const selectedLevel = filterEl ? filterEl.value : "ALL";
             const filtered = (selectedLevel === "ALL")
                 ? library
-                : library.filter(p => (p.level || "初級（8〜10級）") === selectedLevel);
+                : library.filter(p => { const lv = p.level || "初級（8〜10級）"; return lv === selectedLevel || selectedLevel.startsWith(lv) || lv.startsWith(selectedLevel.split("（")[0]); });
 
             grid.innerHTML = "";
 
@@ -2278,7 +2267,13 @@ createBoardSize.addEventListener('change', () => {
             }
 
             if (filtered.length === 0) {
-                grid.innerHTML = `<div style="grid-column: 1 / -1; font-size: 12px; color: #475569; padding: 6px;">「${selectedLevel}」の問題はまだありません。</div>`;
+                grid.innerHTML = `<div style="grid-column: 1 / -1; font-size: 12px; color: #b91c1c; font-weight: bold; padding: 6px;">「${selectedLevel}」の問題はまだ登録されていません。別のクラスをえらんでください。</div>`;
+                if (selectedLevel !== "ALL") {
+                    currentProblem = null;
+                    boardStones = [];
+                    if (typeof initBoard === 'function') initBoard();
+                    if (typeof setBanner === 'function') setBanner(`「${selectedLevel}」の問題はまだありません（別のクラスをえらんでください）`, "judge-normal");
+                }
                 return;
             }
 
@@ -3140,6 +3135,26 @@ function replaceCornerBranch(sel) {
   setBanner(`【${names[tc]}の差し替え】${before > tempBranches.length ? "古い手順を削除しました。" : ""}${sc === 'W' ? '⚪白①' : '⚫黒①'}から打ち直してください`, "judge-create");
 }
 </script>
+<script>
+async function exportEmbeddedHtml() {
+  if (!library || library.length === 0) return alert("保存庫に問題がありません。");
+  if (!confirm(`現在の保存庫にある全 ${library.length} 問を「初期問題（DEFAULT_PROBLEMS）」としてコード内に埋め込んだ完成版 tsumego.html を保存しますか？`)) return;
+  const items = library.map((p, i) => `            ${JSON.stringify({ id: p.id || ("default_" + (i + 1)), title: p.title || ("問題 " + (i + 1)), level: p.level || "初級（8〜10級）", turn: p.turn || "B", hint: p.hint || "", branchHints: p.branchHints || {}, isMust: Boolean(p.isMust), size: p.size || 9, setup: p.setup || [], solution: p.solution || [], branches: p.branches || [p.solution || []] })}`).join(",\n");
+  const newBlock = "const DEFAULT_PROBLEMS = Array.of(\n" + items + "\n        );";
+  const html = document.documentElement.outerHTML.replace(/const DEFAULT_PROBLEMS = Array\.of\([\s\S]*?\n        \);/, newBlock);
+  const fullDoc = "<!DOCTYPE html>\n" + html;
+  if (window.showSaveFilePicker) {
+    try {
+      const h = await window.showSaveFilePicker({ suggestedName: "tsumego.html", types: [{ description: "HTMLファイル", accept: { "text/html": [".html"] } }] });
+      const w = await h.createWritable(); await w.write(fullDoc); await w.close();
+      return alert("✅ 初期問題を埋め込んだ「" + h.name + "」を保存しました！\nあとは git push すればタブレットにも反映されます。");
+    } catch (e) { if (e && e.name === "AbortError") return; }
+  }
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([fullDoc], { type: "text/html" })); a.download = "tsumego.html"; a.click();
+  alert("✅ 初期問題を埋め込んだ tsumego.html をダウンロードフォルダに保存しました！");
+}
+</script>
+
 </body>
 
 </html>
