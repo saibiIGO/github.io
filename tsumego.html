@@ -536,6 +536,9 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
                     <button type="button" id="btnCopyDefaultCode" class="btn-secondary" style="width: 100%; background-color: #b45309;">
                         🛠️ 初期問題コード（プログラム用）をコピー
                     </button>
+                    <button type="button" id="btnExportEmbeddedHtml" onclick="exportEmbeddedHtml()" class="btn-primary" style="width: 100%; margin-top: 6px; background-color: #0369a1;">
+                        💾 現在の問題集を埋め込んだ tsumego.html を保存
+                    </button>
                </div>
             </div>
                             <!-- 3. 問題保存庫（2列カードでコンパクトに表示） -->
@@ -3132,6 +3135,26 @@ function replaceCornerBranch(sel) {
   setBanner(`【${names[tc]}の差し替え】${before > tempBranches.length ? "古い手順を削除しました。" : ""}${sc === 'W' ? '⚪白①' : '⚫黒①'}から打ち直してください`, "judge-create");
 }
 </script>
+<script>
+async function exportEmbeddedHtml() {
+  if (!library || library.length === 0) return alert("保存庫に問題がありません。");
+  if (!confirm(`現在の保存庫にある全 ${library.length} 問を「初期問題（DEFAULT_PROBLEMS）」としてコード内に埋め込んだ完成版 tsumego.html を保存しますか？`)) return;
+  const items = library.map((p, i) => `            ${JSON.stringify({ id: p.id || ("default_" + (i + 1)), title: p.title || ("問題 " + (i + 1)), level: p.level || "初級（8〜10級）", turn: p.turn || "B", hint: p.hint || "", branchHints: p.branchHints || {}, isMust: Boolean(p.isMust), size: p.size || 9, setup: p.setup || [], solution: p.solution || [], branches: p.branches || [p.solution || []] })}`).join(",\n");
+  const newBlock = "const DEFAULT_PROBLEMS = Array.of(\n" + items + "\n        );";
+  const html = document.documentElement.outerHTML.replace(/const DEFAULT_PROBLEMS = Array\.of\([\s\S]*?\n        \);/, newBlock);
+  const fullDoc = "<!DOCTYPE html>\n" + html;
+  if (window.showSaveFilePicker) {
+    try {
+      const h = await window.showSaveFilePicker({ suggestedName: "tsumego.html", types: [{ description: "HTMLファイル", accept: { "text/html": [".html"] } }] });
+      const w = await h.createWritable(); await w.write(fullDoc); await w.close();
+      return alert("✅ 初期問題を埋め込んだ「" + h.name + "」を保存しました！\nあとは git push すればタブレットにも反映されます。");
+    } catch (e) { if (e && e.name === "AbortError") return; }
+  }
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([fullDoc], { type: "text/html" })); a.download = "tsumego.html"; a.click();
+  alert("✅ 初期問題を埋め込んだ tsumego.html をダウンロードフォルダに保存しました！");
+}
+</script>
+
 </body>
 
 </html>
